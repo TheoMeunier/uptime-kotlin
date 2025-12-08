@@ -25,7 +25,7 @@ class LoginAction(
                 user.password
             )
         ) {
-            var refreshToken = UUID.randomUUID()
+            val refreshToken = UUID.randomUUID()
 
             RefreshTokenEntity().apply {
                 id = UUID.randomUUID()
