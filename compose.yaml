@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17.4-alpine
+    container_name: uptime_kotlin_database
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: uptime-kotlin
+      POSTGRES_USER: uptime-kotlin
+      POSTGRES_PASSWORD: uptime-kotlin
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./storage-db:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
