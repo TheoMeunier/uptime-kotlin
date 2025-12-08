@@ -3,19 +3,23 @@ package tmenier.fr.http.auth.resources
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
+import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.actions.auth.LoginAction
 import tmenier.fr.actions.auth.RefreshTokenAction
 import tmenier.fr.http.auth.dtos.requests.LoginRequest
 import tmenier.fr.http.auth.dtos.requests.RefreshTokenRequest
 
-@ApplicationScoped
+@Path("/api/auth/refresh")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 class RefreshTokenResource(private val refreshTokenAction: RefreshTokenAction) {
 
     @POST
-    @Path("/refresh")
     @Transactional
     fun login(
         @Valid payload: RefreshTokenRequest
