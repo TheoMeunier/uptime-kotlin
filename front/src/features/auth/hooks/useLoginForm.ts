@@ -22,7 +22,7 @@ export default function useLoginForm() {
         mutationFn: async (data: LoginSchema) => {
             return authService.login(data.email, data.password)
         },
-        onSuccess: () => navigation('/'),
+        onSuccess: () => navigation('/dashboard'),
     })
 
     const onsubmit: SubmitHandler<LoginSchema> = async (
