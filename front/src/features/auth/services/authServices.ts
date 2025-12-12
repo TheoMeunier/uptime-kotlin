@@ -4,10 +4,12 @@ import {auth} from "@/features/auth/enums/auth-enum.ts";
 
 const authService = {
     getAccessToken() {
+        console.log(localStorage.getItem(auth.TOKEN))
         return localStorage.getItem(auth.TOKEN);
     },
 
     getRefreshToken() {
+        console.log(localStorage.getItem(auth.REFRESH_TOKEN))
         return localStorage.getItem(auth.REFRESH_TOKEN);
     },
 
@@ -19,24 +21,28 @@ const authService = {
     logout() {
         localStorage.removeItem(auth.TOKEN);
         localStorage.removeItem(auth.REFRESH_TOKEN);
-        window.location.href = "/login";
     },
 
     async tryRefreshToken(): Promise<boolean> {
         const refresh = this.getRefreshToken();
+        console.log("Trying to refresh token with refresh token:", refresh);
         if (!refresh) return false;
 
         try {
-            const res = await fetch("/auth/refresh", {
+            const baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8080/api";
+
+            const res = await fetch(`${baseUrl}/auth/refresh`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ refreshToken: refresh }),
+                body: JSON.stringify({ refresh_token: refresh }),
             });
+
+            console.log(res)
 
             if (!res.ok) return false;
 
             const data = await res.json();
-            this.saveTokens(data.accessToken, data.refreshToken);
+            this.saveTokens(data.token, data.refresh_token);
 
             return true;
         } catch {

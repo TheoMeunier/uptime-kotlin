@@ -12,7 +12,7 @@ class JwtService
     fun generateJwt(userId: UUID): String {
         return Jwt.claims()
             .subject(userId.toString())
-            .issuer("")
+            .issuer("https://uptime-kotlin.theomeunier.fr/")
             .issuedAt(Instant.now())
             .expiresAt(Instant.now().plus(Duration.ofHours(10)))
             .sign()
