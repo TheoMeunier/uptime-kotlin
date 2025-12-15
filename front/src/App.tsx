@@ -1,23 +1,10 @@
-import { useState } from 'react'
-
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+        <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+        <p className="text-gray-600">Sélectionne un moniteur dans la barre latérale.</p>
+    </div>
   )
 }
 
