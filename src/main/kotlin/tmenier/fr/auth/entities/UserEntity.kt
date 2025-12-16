@@ -9,7 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
-import tmenier.fr.monitors.entities.RefreshTokenEntity
+import tmenier.fr.auth.entities.RefreshTokenEntity
 import java.time.LocalDateTime
 import java.util.UUID
 

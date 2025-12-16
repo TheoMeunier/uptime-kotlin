@@ -5,41 +5,38 @@ import org.xbill.DNS.*
 import org.xbill.DNS.SimpleResolver
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.schedulers.ProbeSchedulerInterface
+import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
-
 @ApplicationScoped
-class ProbeProtocolDns: ProbeSchedulerInterface {
-    override fun execute(probe: ProbesEntity): ProbeResult {
-        val startTime = System.currentTimeMillis()
+class ProbeProtocolDns : ProbeProtocolAbstract() {
+    override fun execute(probe: ProbesEntity, isFailed: Boolean?): ProbeResult {
+        val start = now()
 
-        try {
-            val resolver = getResolver(probe)
+        return try {
+            val resolver = SimpleResolver(probe.dnsServer).apply {
+                port = probe.dnsPort!!
+            }
 
             val lookup = Lookup(probe.url, Type.A)
             lookup.setResolver(resolver)
 
             val record = lookup.run()
-            val responseTime = System.currentTimeMillis() - startTime
 
-            return ProbeResult(
-                true, responseTime,
-                "DNS résolu: " + (record?.joinToString { it.rdataToString() } ?: "Aucun enregistrement trouvé")
+            ProbeResult(
+                ProbeMonitorLogStatus.SUCCESS,
+                getResponseTime(start),
+                "DNS lookup successful: ${record?.size ?: 0} record(s) found in ${getResponseTime(start)} ms",
+                getRunAt(start)
             )
         } catch (e: Exception) {
-            val responseTime = System.currentTimeMillis() - startTime
-            val result = ProbeResult(
-                false, responseTime,
-                "Échec résolution DNS"
+            ProbeResult(
+                status = if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                responseTime = getResponseTime(start),
+                message = "DNS lookup failed: ${e.message}",
+                runAt = getRunAt(start)
             )
-            result.error = e.message
-            return result
         }
-    }
-
-    private fun getResolver(probe: ProbesEntity): SimpleResolver {
-        return SimpleResolver("${probe.dnsServer}:${probe.dnsPort}")
     }
 
     override fun getProtocolType() = ProbeProtocol.DNS.name

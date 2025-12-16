@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.auth.dtos.requests.RefreshTokenRequest
 import tmenier.fr.auth.dtos.responses.LoginResponse
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
-import tmenier.fr.monitors.entities.RefreshTokenEntity
+import tmenier.fr.auth.entities.RefreshTokenEntity
 import tmenier.fr.auth.services.JwtService
 import java.time.LocalDateTime
 import java.util.UUID

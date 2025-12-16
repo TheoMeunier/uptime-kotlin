@@ -3,39 +3,40 @@ package tmenier.fr.monitors.schedulers.templates
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.ProbeSchedulerInterface
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.net.InetSocketAddress
 import java.net.Socket
 
 @ApplicationScoped
-class ProbeProtocolTcp: ProbeSchedulerInterface {
-    override fun execute(probe: ProbesEntity): ProbeResult {
-        val startTime = System.currentTimeMillis()
+class ProbeProtocolTcp: ProbeProtocolAbstract() {
+    override fun execute(probe: ProbesEntity, isFailed: Boolean?): ProbeResult {
+        val start = now()
 
-        try {
+        return try {
             Socket().use { socket ->
                 socket.connect(
                     InetSocketAddress(
                         probe.url,
                         probe.tcpPort!!
                     ),
-                    5000
+                    probe.timeout
                 )
-                val responseTime = System.currentTimeMillis() - startTime
                 return ProbeResult(
-                    true, responseTime,
-                    "Port TCP " + probe.tcpPort + " ouvert"
+                    status = ProbeMonitorLogStatus.SUCCESS,
+                    responseTime = getResponseTime(start),
+                    message = "TCP connection successful in ${getResponseTime(start)}ms",
+                    runAt = getRunAt(start)
                 )
             }
         } catch (e: Exception) {
-            val responseTime = System.currentTimeMillis() - startTime
-            val result = ProbeResult(
-                false, responseTime,
-                "Port TCP inaccessible"
+            ProbeResult(
+                status = if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                responseTime = getResponseTime(start),
+                message = "TCP connection failed: ${e.message}",
+                runAt = getRunAt(start)
             )
-            result.error = e.message
-            return result
         }
     }
 

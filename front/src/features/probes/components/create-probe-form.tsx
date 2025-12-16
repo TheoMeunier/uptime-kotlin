@@ -22,10 +22,6 @@ export default function CreateProbeForm() {
     const {form, isLoading, onsubmit, error} = useStoreProbeForm()
     const protocol = form.watch('protocol')
 
-    if (protocol === ProbeProtocol.DNS) {
-        form.setValue('url', "1.1.1.1")
-    }
-
     return <div>
         <form onSubmit={form.handleSubmit(onsubmit)}>
             <div className="grid grid-cols-2 gap-4">
@@ -57,18 +53,16 @@ export default function CreateProbeForm() {
                                     required
                                 />
                             </Field>
-                            {protocol !== ProbeProtocol.DNS && (
-                                <Field>
-                                    <FieldLabel htmlFor="url">
-                                        Monitor URL
-                                    </FieldLabel>
-                                    <Input
-                                        {...form.register("url")}
-                                        id="url"
-                                        required
-                                    />
-                                </Field>
-                            )}
+                            <Field>
+                                <FieldLabel htmlFor="url">
+                                    Monitor URL
+                                </FieldLabel>
+                                <Input
+                                    {...form.register("url")}
+                                    id="url"
+                                    required
+                                />
+                            </Field>
                             {protocol === ProbeProtocol.TCP && (
                                 <Field>
                                     <FieldLabel htmlFor="tcp_port">
@@ -90,9 +84,8 @@ export default function CreateProbeForm() {
                                             DNS Server
                                         </FieldLabel>
                                         <Input
-                                            {...form.register("url")}
+                                            {...form.register("dns_server")}
                                             id="dns_server"
-                                            defaultValue={"1.1.1.1"}
                                         />
                                         <FieldDescription>
                                             Cloudflare is the default server. You can change the resolver server
@@ -122,8 +115,9 @@ export default function CreateProbeForm() {
                                             Heartbeat Interval
                                         </FieldLabel>
                                         <Input
-                                            {...form.register("ping_heartbeat_interval")}
+                                            {...form.register("ping_heartbeat_interval", {valueAsNumber: true})}
                                             id="ping_heartbeat_interval"
+                                            min={1}
                                             required
                                         />
                                         <FieldDescription>

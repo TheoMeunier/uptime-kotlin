@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.entities
+package tmenier.fr.auth.entities
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
@@ -9,7 +9,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import tmenier.fr.auth.entities.UserEntity
 import java.time.LocalDateTime
 import java.util.UUID
 

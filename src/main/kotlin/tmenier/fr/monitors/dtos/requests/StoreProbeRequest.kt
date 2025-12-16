@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
+import org.hibernate.validator.constraints.IpAddress
 import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.common.validations.UrlOrIp
@@ -78,7 +79,10 @@ data class ValidProbeProtocolTcpRequest(
 data class ValidProbeProtocolDnsRequest(
     @field:Min(1)
     @field:Max(65535)
-    val dnsPort: Int
+    val dnsPort: Int,
+
+    @field:IpAddress()
+    val dnsServer: String
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection

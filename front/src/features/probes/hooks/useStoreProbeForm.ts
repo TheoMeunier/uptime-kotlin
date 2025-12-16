@@ -43,7 +43,8 @@ const pingProbeSchema = baseStoreProbeSchema.extend({
 
 const dnsProbeSchema = baseStoreProbeSchema.extend({
     protocol: z.literal('DNS'),
-    url: z.ipv4(),
+    url: z.url(),
+    dns_server: z.ipv4(),
     dns_port: z.number().min(1).max(65535).optional(),
 });
 
@@ -65,9 +66,10 @@ export function useStoreProbeForm() {
             protocol: ProbeProtocol.HTTP,
             interval: 60,
             interval_retry: 60,
-            retry: 0,
+            retry: 3,
             timeout: 30,
             enabled: true,
+            dns_server: '1.1.1.1',
             dns_port: 53,
             ping_delay: 2,
             ping_size: 56,

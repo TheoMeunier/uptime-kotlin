@@ -37,6 +37,7 @@ class StoreProbeAction {
 
             is ValidProbeProtocolDnsRequest -> {
                 probe.dnsPort = payload.dnsPort
+                probe.dnsServer = payload.dnsServer
             }
 
             is ValidProbeProtocolPingRequest -> {

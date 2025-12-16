@@ -5,7 +5,7 @@ import tmenier.fr.auth.dtos.requests.LoginRequest
 import tmenier.fr.auth.dtos.responses.LoginResponse
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.common.exceptions.common.NotFoundException
-import tmenier.fr.monitors.entities.RefreshTokenEntity
+import tmenier.fr.auth.entities.RefreshTokenEntity
 import tmenier.fr.auth.entities.UserEntity
 import tmenier.fr.auth.services.JwtService
 import tmenier.fr.auth.services.PasswordService
