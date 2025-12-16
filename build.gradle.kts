@@ -42,6 +42,8 @@ dependencies {
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
+
+    implementation("dnsjava:dnsjava:3.5.2")
 }
 
 group = "tmenier.fr"
