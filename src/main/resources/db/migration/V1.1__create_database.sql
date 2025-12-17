@@ -9,6 +9,7 @@ CREATE TABLE probes
     interval_retry            INT          NOT NULL,
     enabled                   BOOLEAN      NOT NULL,
     protocol                  INT          NOT NULL DEFAULT 0,
+    status                    INT                   DEFAULT NULL,
     description               TEXT                  DEFAULT NULL,
     last_run                  TIMESTAMP             DEFAULT NULL,
 

@@ -33,7 +33,7 @@ class ProbeSchedulerTemplateFactory(
 
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
 
-    @Scheduled(every = "10s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
+    @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
         val probes = ProbesEntity.getActiveProbes()
         val now = LocalDateTime.now()

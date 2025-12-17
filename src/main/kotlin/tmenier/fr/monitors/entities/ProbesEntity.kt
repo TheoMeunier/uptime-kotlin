@@ -15,6 +15,7 @@ import tmenier.fr.auth.entities.RefreshTokenEntity
 import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.converts.HttpStatusCodeConverter
+import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -45,6 +46,9 @@ class ProbesEntity : PanacheEntityBase {
 
     @Column(nullable = false)
     var enabled: Boolean = false
+
+    @Column(nullable = false)
+    var status: ProbeMonitorLogStatus = ProbeMonitorLogStatus.FAILURE
 
     @Column(nullable = false)
     var protocol: ProbeProtocol = ProbeProtocol.HTTP

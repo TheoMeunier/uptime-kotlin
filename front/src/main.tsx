@@ -8,6 +8,7 @@ import {ProtectedRouteProvider} from "@/features/auth/contexts/protected-route-p
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 import Layout from "@/components/layouts/layout.tsx";
 import CreateProbe from "@/pages/probes/create-probe.tsx";
+import ShowProbe from "@/pages/probes/show-probe.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
                           <Route index element={<App/>} />
 
                           <Route path="monitors/new" element={<CreateProbe />} />
+                          <Route path="monitors/:id" element={<ShowProbe />} />
                       </Route>
                   </Route>
                   <Route path='/login' element={<Login/>}/>

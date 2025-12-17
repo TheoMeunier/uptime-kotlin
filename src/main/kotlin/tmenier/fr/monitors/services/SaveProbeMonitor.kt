@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.ProbesMonitorsLogEntity
+import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.time.LocalDateTime
 import java.util.UUID
@@ -16,7 +17,7 @@ class SaveProbeMonitor {
         val manageProbe = ProbesEntity.findById(probe.id)
             ?: throw IllegalArgumentException("Probe not found with id: ${probe.id}")
 
-        setLastRun(manageProbe, runAt)
+        setLastRun(manageProbe, runAt, result.status)
 
         val monitorLog = ProbesMonitorsLogEntity()
         monitorLog.id = UUID.randomUUID()
@@ -28,7 +29,8 @@ class SaveProbeMonitor {
         monitorLog.persist()
     }
 
-    private fun setLastRun(probe: ProbesEntity, runAt: LocalDateTime) {
+    private fun setLastRun(probe: ProbesEntity, runAt: LocalDateTime, status: ProbeMonitorLogStatus) {
+        probe.status = status
         probe.lastRun = runAt
         probe.persist()
     }

@@ -2,7 +2,7 @@ import {z} from "zod";
 import {useNavigate} from "react-router";
 import {type SubmitHandler, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import probeService from "@/features/probes/services/probeService.ts";
 import ProbeProtocol from "@/features/probes/enums/probe-enum.ts";
 import HttpStatusCode from "@/features/probes/enums/http-status-code.ts";
@@ -59,6 +59,7 @@ export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;
 
 export function useStoreProbeForm() {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     const form = useForm<StoreProbeSchema>({
         resolver: zodResolver(storeProbeSchema),
@@ -84,7 +85,11 @@ export function useStoreProbeForm() {
         mutationFn: async (data: StoreProbeSchema) => {
             return probeService.storeProbe(data)
         },
-        onSuccess: () => navigate('/dashboard'),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['probes']}).then(() => {
+                navigate('/dashboard')
+            })
+        },
     })
 
     const onsubmit: SubmitHandler<StoreProbeSchema> = async (data: StoreProbeSchema) => {

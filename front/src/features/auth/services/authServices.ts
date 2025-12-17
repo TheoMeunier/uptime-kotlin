@@ -4,12 +4,10 @@ import {auth} from "@/features/auth/enums/auth-enum.ts";
 
 const authService = {
     getAccessToken() {
-        console.log(localStorage.getItem(auth.TOKEN))
         return localStorage.getItem(auth.TOKEN);
     },
 
     getRefreshToken() {
-        console.log(localStorage.getItem(auth.REFRESH_TOKEN))
         return localStorage.getItem(auth.REFRESH_TOKEN);
     },
 
@@ -25,7 +23,6 @@ const authService = {
 
     async tryRefreshToken(): Promise<boolean> {
         const refresh = this.getRefreshToken();
-        console.log("Trying to refresh token with refresh token:", refresh);
         if (!refresh) return false;
 
         try {
