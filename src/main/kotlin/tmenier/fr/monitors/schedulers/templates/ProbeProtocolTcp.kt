@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import tmenier.fr.monitors.schedulers.ProbeSchedulerInterface
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.net.InetSocketAddress
 import java.net.Socket

@@ -1,6 +1,7 @@
 package tmenier.fr.monitors.dtos.responses
 
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import java.time.LocalDateTime
 import java.util.UUID
 
 data class ProbeListDTO(
@@ -10,8 +11,13 @@ data class ProbeListDTO(
     val status: ProbeMonitorLogStatus
 )
 
+data class ProbeShowDTO(
+    val probe: ProbeDTO,
+    val monitors: List<ProbeMonitorDTO>
+)
+
 data class ProbeDTO(
-    val id: String,
+    val id: UUID,
     val name: String,
     val url: String,
     val interval: Int,
@@ -21,7 +27,8 @@ data class ProbeDTO(
     val enabled: Boolean,
     val protocol: String,
     val description: String?,
-    val lastRun: String?,
+    val lastRun: LocalDateTime?,
+    val status: ProbeMonitorLogStatus,
     val notificationCertified: Boolean,
     val ignoreCertificateErrors: Boolean,
     val httpCodeAllowed: List<String>,
@@ -32,6 +39,6 @@ data class ProbeDTO(
     val pingSize: Int?,
     val pingDelay: Int?,
     val pingNumericOutput: Boolean?,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime,
 )
