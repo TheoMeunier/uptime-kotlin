@@ -2,22 +2,15 @@ package tmenier.fr.monitors.entities
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
-import jakarta.persistence.Convert
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import tmenier.fr.auth.entities.RefreshTokenEntity
-import tmenier.fr.monitors.enums.HttpCodeEnum
-import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.converts.HttpStatusCodeConverter
+import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.enums.ProbeProtocol
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "probes")
@@ -102,16 +95,20 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "updated_at", nullable = false)
     lateinit var updatedAt: LocalDateTime
 
-    @OneToMany(mappedBy = "probe", cascade = [CascadeType.REMOVE])    open var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()
+    @OneToMany(mappedBy = "probe", cascade = [CascadeType.REMOVE])
+    open var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()
 
-    companion object : PanacheCompanion<ProbesEntity>
-    {
+    companion object : PanacheCompanion<ProbesEntity> {
         fun findById(id: UUID): ProbesEntity? {
             return find("id = ?1", id).firstResult()
         }
 
-        fun getActiveProbes(): List<ProbesEntity>{
+        fun getActiveProbes(): List<ProbesEntity> {
             return find("enabled = ?1", true).list()
+        }
+
+        fun delete(id: UUID): Long {
+            return delete("id = ?1", id)
         }
     }
 }
