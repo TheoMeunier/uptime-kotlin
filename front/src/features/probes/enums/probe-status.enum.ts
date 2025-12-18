@@ -1,7 +1,8 @@
 enum ProbeStatusEnum {
-    SUCCESS = "SUCCESS",
-    WARNING = "WARNING",
-    FAILURE = "FAILURE",
+  SUCCESS = "SUCCESS",
+  WARNING = "WARNING",
+  PAUSE = "PAUSE",
+  FAILURE = "FAILURE",
 }
 
-export default ProbeStatusEnum
+export default ProbeStatusEnum;

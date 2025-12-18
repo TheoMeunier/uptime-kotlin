@@ -107,6 +107,10 @@ class ProbesEntity : PanacheEntityBase {
             return find("enabled = ?1", true).list()
         }
 
+        fun getAllProbes(): List<ProbesEntity> {
+            return findAll().list()
+        }
+
         fun delete(id: UUID): Long {
             return delete("id = ?1", id)
         }

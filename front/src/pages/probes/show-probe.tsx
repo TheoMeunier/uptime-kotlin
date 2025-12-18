@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import probeService from "@/features/probes/services/probeService.ts";
 import { Button } from "@/components/atoms/button.tsx";
-import { Pause, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { ButtonGroup } from "@/components/atoms/button-group.tsx";
 import { Card, CardContent } from "@/components/atoms/card.tsx";
 import DeleteProbeDialogue from "@/features/probes/components/actions/delete-probe-dialogue.tsx";
 import ProbeMonitorChartBar from "@/features/probes/components/modules/probe-monitor-chart-bar.tsx";
 import ProbeChart from "@/features/probes/components/modules/probe-chart.tsx";
 import ProbeMonitorLog from "@/features/probes/components/modules/probe-monitor-log.tsx";
+import OnOffMonitorProbeDialogue from "@/features/probes/components/actions/on-off-probe-dialogue.tsx";
 
 export function ShowProbe() {
   const params = useParams();
@@ -32,9 +33,10 @@ export function ShowProbe() {
 
         <div>
           <ButtonGroup>
-            <Button variant="outline">
-              <Pause /> Pause{" "}
-            </Button>
+            <OnOffMonitorProbeDialogue
+              probeId={data!.probe.id}
+              enabled={data!.probe.enabled}
+            />
             <Button variant="outline">
               <Pencil /> Edit
             </Button>
@@ -46,7 +48,10 @@ export function ShowProbe() {
       <section>
         <Card>
           <CardContent>
-            <ProbeMonitorChartBar monitors={data!.monitors} />
+            <ProbeMonitorChartBar
+              monitors={data!.monitors}
+              probeStatus={data!.probe.status}
+            />
           </CardContent>
         </Card>
       </section>

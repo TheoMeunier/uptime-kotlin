@@ -23,6 +23,14 @@ const probeService = {
       .json();
   },
 
+  async onoffline(id: string, enabled: boolean) {
+    await api
+      .post(`probes/${id}/update-on-off`, {
+        body: JSON.stringify({ enabled }),
+      })
+      .json();
+  },
+
   async deleteProbe(id: string) {
     await api.post(`probes/${id}/remove`).json();
   },

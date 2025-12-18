@@ -1,8 +1,8 @@
 package tmenier.fr.monitors.enums
 
-enum class ProbeMonitorLogStatus
-{
+enum class ProbeMonitorLogStatus {
     SUCCESS,
     WARNING,
+    PAUSE,
     FAILURE,
 }

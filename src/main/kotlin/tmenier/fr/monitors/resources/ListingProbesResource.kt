@@ -7,7 +7,6 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.monitors.dtos.responses.ProbeDTO
 import tmenier.fr.monitors.dtos.responses.ProbeListDTO
 import tmenier.fr.monitors.entities.ProbesEntity
 
@@ -19,7 +18,7 @@ class ListingProbesResource {
     @GET
     @Authenticated
     fun list(): Response {
-        val probes = ProbesEntity.getActiveProbes().toList().map {
+        val probes = ProbesEntity.getAllProbes().map {
             ProbeListDTO(
                 it.id,
                 it.name,
