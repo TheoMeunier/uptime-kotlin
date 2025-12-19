@@ -6,7 +6,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/atoms/dialog.tsx";
 import { Trash2 } from "lucide-react";
 import { DialogClose } from "@radix-ui/react-dialog";
@@ -14,6 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import probeService from "@/features/probes/services/probeService.ts";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function DeleteProbeDialogue({ probeId }: { probeId: string }) {
   const client = useQueryClient();
@@ -26,6 +27,7 @@ export default function DeleteProbeDialogue({ probeId }: { probeId: string }) {
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["probes"] }).then(() => {
+        toast.success("Monitor deleted successfully");
         navigate("/dashboard");
       });
     },

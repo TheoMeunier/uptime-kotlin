@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import probeService from "@/features/probes/services/probeService.ts";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function OnOffMonitorProbeDialogue({
   probeId,
@@ -31,6 +32,7 @@ export default function OnOffMonitorProbeDialogue({
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ["probes"] }).then(() => {
+        toast.success(`Monitor ${enabled ? "Pause" : "Start"} successfully`);
         navigate("/dashboard");
       });
     },
