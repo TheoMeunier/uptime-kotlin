@@ -29,9 +29,19 @@ class ProbeSchedulerTemplateFactory(
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
         val probes = ProbesEntity.getActiveProbes()
+        val activeProbeIds = probes.filter { it.enabled }.map { it.id }.toSet()
 
+        // Scheduler canceled probes
+        scheduledProbes.keys.forEach { probeId ->
+            if (probeId !in activeProbeIds) {
+                scheduledProbes.remove(probeId)?.cancel()
+                logger.info("Cancelled probe $probeId (disabled or deleted)")
+            }
+        }
+
+        // Scheduler news probes
         probes.filter { it.enabled }.forEach { probe ->
-            if (!scheduledProbes.containsKey(key = probe.id)) {
+            if (!scheduledProbes.containsKey(probe.id)) {
                 scheduleProbe(probe)
             }
         }
@@ -39,7 +49,7 @@ class ProbeSchedulerTemplateFactory(
 
     private fun scheduleProbe(probe: ProbesEntity) {
         val job = probeTaskContext.launch {
-            while (isActive && probe.enabled) {
+            while (isActive) {
                 val now = LocalDateTime.now()
                 val nextRun = calculateNextRun(probe, now)
                 val delayMs = Duration.between(now, nextRun).toMillis()
