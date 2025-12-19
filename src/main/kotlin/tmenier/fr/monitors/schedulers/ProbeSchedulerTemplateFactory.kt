@@ -3,22 +3,14 @@ package tmenier.fr.monitors.schedulers
 import io.quarkus.scheduler.Scheduled
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import tmenier.fr.monitors.entities.ProbesEntity
+import kotlinx.coroutines.*
 import tmenier.fr.common.utils.logger
+import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.services.SaveProbeMonitor
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
@@ -32,29 +24,43 @@ class ProbeSchedulerTemplateFactory(
     )
 
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
+    private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
 
-    @Scheduled(every = "2s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
+    @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
         val probes = ProbesEntity.getActiveProbes()
-        val now = LocalDateTime.now()
 
-        probeTaskContext.launch {
-            probes
-                .filter { shouldRunProbe(it, now) }
-                .filter { it.enabled }
-                .filter { runningProbes.add(it.id) }
-                .forEach { probe ->
-                    launch {
-                        try {
-                            executeWithRetry(probe, now)
-                        } catch (e: Exception) {
-                            logger.error("Error executing probe id=${probe.id}: ${e.message}", e)
-                        } finally {
-                            runningProbes.remove(probe.id)
-                        }
+        probes.filter { it.enabled }.forEach { probe ->
+            if (!scheduledProbes.containsKey(key = probe.id)) {
+                scheduleProbe(probe)
+            }
+        }
+    }
+
+    private fun scheduleProbe(probe: ProbesEntity) {
+        val job = probeTaskContext.launch {
+            while (isActive && probe.enabled) {
+                val now = LocalDateTime.now()
+                val nextRun = calculateNextRun(probe, now)
+                val delayMs = Duration.between(now, nextRun).toMillis()
+
+                if (delayMs > 0) {
+                    delay(delayMs)
+                }
+
+                if (runningProbes.add(probe.id)) {
+                    try {
+                        executeWithRetry(probe, LocalDateTime.now())
+                    } catch (e: Exception) {
+                        logger.error("Error executing probe id=${probe.id}: ${e.message}", e)
+                    } finally {
+                        runningProbes.remove(probe.id)
                     }
                 }
+            }
         }
+
+        scheduledProbes[probe.id] = job
     }
 
     private suspend fun executeWithRetry(probe: ProbesEntity, now: LocalDateTime) {
@@ -80,7 +86,7 @@ class ProbeSchedulerTemplateFactory(
             }
         }
 
-        val r = protocolHandler.execute(probe,  true)
+        val r = protocolHandler.execute(probe, true)
         return withContext(Dispatchers.IO) {
             saveProbeMonitorLog.saveProbeMonitorLog(probe, now, r)
         }
@@ -91,6 +97,18 @@ class ProbeSchedulerTemplateFactory(
 
         val timeSinceLastRun = Duration.between(probe.lastRun, now)
         return timeSinceLastRun.seconds >= probe.interval
+    }
+
+    private fun calculateNextRun(probe: ProbesEntity, from: LocalDateTime): LocalDateTime {
+        val lastRun = probe.lastRun ?: return from
+        val intervalSeconds = probe.interval
+        var nextRun = lastRun.plusSeconds(intervalSeconds.toLong())
+
+        while (nextRun.isBefore(from)) {
+            nextRun = nextRun.plusSeconds(intervalSeconds.toLong())
+        }
+
+        return nextRun
     }
 
     @PreDestroy
