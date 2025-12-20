@@ -10,7 +10,7 @@ class NotificationFactory(
 ) {
     fun getNotification(notificationType: NotificationChannelsEnum): NotificationInterfaces? {
         return notificationServices.stream()
-            .filter { it.getNotificationType() == notificationType.name } // == au lieu de ===
+            .filter { it.getNotificationType() == notificationType.name }
             .findFirst()
             .orElse(null)
     }
