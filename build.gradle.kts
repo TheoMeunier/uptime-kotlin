@@ -31,6 +31,7 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("io.quarkus:quarkus-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
 
     // Auth
     implementation("io.quarkus:quarkus-smallrye-jwt")
@@ -39,6 +40,7 @@ dependencies {
 
     // Tools
     implementation("io.quarkus:quarkus-scheduler")
+    implementation("io.quarkus:quarkus-mailer")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")

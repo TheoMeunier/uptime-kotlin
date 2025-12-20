@@ -87,6 +87,14 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "ping_numeric_output")
     var pingNumericOutput: Boolean? = null
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "probes_notifications_channels",
+        joinColumns = [JoinColumn("probe_id")],
+        inverseJoinColumns = [JoinColumn("notification_channel_id")]
+    )
+    open var notifications: MutableSet<NotificationsChannelEntity> = mutableSetOf()
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     lateinit var createdAt: LocalDateTime
