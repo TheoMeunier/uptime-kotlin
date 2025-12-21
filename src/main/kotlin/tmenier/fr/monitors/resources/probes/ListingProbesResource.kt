@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources
+package tmenier.fr.monitors.resources.probes
 
 import io.quarkus.security.Authenticated
 import jakarta.ws.rs.Consumes

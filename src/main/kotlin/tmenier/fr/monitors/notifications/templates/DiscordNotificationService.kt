@@ -65,7 +65,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
 
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
             if (response.statusCode() != 204) {
-                logger.error("Failed to send Discord notification: ${response.statusCode()} ${response.body()}")
+                logger.error { "Failed to send Discord notification: ${response.statusCode()} ${response.body()}" }
             }
         } catch (e: Exception) {
             e.printStackTrace()
