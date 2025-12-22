@@ -1,0 +1,65 @@
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import notificationService from "@/features/notifications/services/notification-service.ts";
+
+const baseStoreNotificationSchema = z.object({
+  name: z.string().min(3).max(255),
+  is_default: z.boolean().optional(),
+});
+
+const discordNotificationSchema = baseStoreNotificationSchema.extend({
+  notification_type: z.literal("DISCORD"),
+  url_webhook: z.url(),
+  name_reboot: z.string().min(3).max(255),
+});
+
+const MailNotificationSchema = baseStoreNotificationSchema.extend({
+  notification_type: z.literal("MAIL"),
+  hostname: z.url(),
+  port: z.number().min(1).max(65535),
+  username: z.email().min(3).max(255),
+  password: z.string().min(3).max(255),
+  mail_from: z.email().min(3).max(255),
+  mail_to: z.email().min(3).max(255),
+});
+
+export const storeNotificationSchema = z.discriminatedUnion(
+  "notification_type",
+  [discordNotificationSchema, MailNotificationSchema],
+);
+
+export type StoreNotificationSchema = z.infer<typeof storeNotificationSchema>;
+
+export default function useNotificationForm() {
+  const queryClient = useQueryClient();
+
+  const form = useForm<StoreNotificationSchema>({
+    resolver: zodResolver(storeNotificationSchema),
+    defaultValues: {
+      notification_type: "DISCORD",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: StoreNotificationSchema) => {
+      return notificationService.storeNotification(data);
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
+  const onSubmit: SubmitHandler<StoreNotificationSchema> = async (
+    data: StoreNotificationSchema,
+  ) => {
+    mutation.mutate(data);
+  };
+
+  return {
+    form,
+    onSubmit,
+    isLoading: mutation.isPending,
+    errors: form.formState.errors,
+  };
+}

@@ -101,7 +101,6 @@ export function useStoreProbeForm() {
   const onsubmit: SubmitHandler<StoreProbeSchema> = async (
     data: StoreProbeSchema,
   ) => {
-    console.log(data);
     mutation.mutate(data);
   };
 

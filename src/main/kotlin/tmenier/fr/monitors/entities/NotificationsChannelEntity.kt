@@ -25,12 +25,12 @@ class NotificationsChannelEntity : PanacheEntityBase {
     @Column(nullable = false)
     var type: NotificationChannelsEnum = NotificationChannelsEnum.DISCORD
 
-    @Column(nullable = false)
-    val isDefault: Boolean = false
+    @Column(name = "is_default", nullable = false)
+    var isDefault: Boolean = false
 
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    val content: JsonNode? = null
+    var content: JsonNode? = null
 
     @ManyToMany(mappedBy = "notifications", fetch = FetchType.LAZY)
     var probes: MutableSet<ProbesEntity> = mutableSetOf()
