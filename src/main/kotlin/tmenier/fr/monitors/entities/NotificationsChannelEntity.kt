@@ -45,6 +45,12 @@ class NotificationsChannelEntity : PanacheEntityBase {
 
 
     companion object : PanacheCompanion<NotificationsChannelEntity> {
+        fun getAll(): List<NotificationsChannelEntity> {
+            return findAll().list()
+        }
 
+        fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> {
+            return find("id in ?1 OR isDefault", ids).list()
+        }
     }
 }

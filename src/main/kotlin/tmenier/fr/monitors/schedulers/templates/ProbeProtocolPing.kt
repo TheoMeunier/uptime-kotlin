@@ -2,9 +2,9 @@ package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
-import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -116,7 +116,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract() {
             val success = exitCode == 0
 
             if (!success) {
-                logger.debug("Ping failed for $host. Exit code: $exitCode. Output: ${output.toString().trim()}")
+                logger.info { "Ping failed for $host. Exit code: $exitCode. Output: ${output.toString().trim()}" }
             }
 
             Pair(success, responseTime)

@@ -3,6 +3,7 @@ package tmenier.fr.monitors.entities.mapper
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.monitors.dtos.responses.ListingNotificationsDto
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.notifications.dto.NotificationContent
@@ -34,3 +35,8 @@ object NotificationContentMapper {
         return jsonNode to type
     }
 }
+
+fun NotificationsChannelEntity.toListingsDTO() = ListingNotificationsDto(
+    id = id,
+    name = name,
+)

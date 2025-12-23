@@ -1,13 +1,10 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolDnsRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolHttpRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolPingRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolTcpRequest
+import tmenier.fr.monitors.dtos.requests.*
+import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.entities.ProbesEntity
-import java.util.UUID
+import java.util.*
 
 @ApplicationScoped
 class StoreProbeAction {
@@ -23,6 +20,10 @@ class StoreProbeAction {
         probe.enabled = payload.enabled == true
         probe.description = payload.description
         probe.url = payload.url!!
+
+        // save notification
+        val notificationFromDb = NotificationsChannelEntity.findByIds(payload.notifications)
+        probe.notifications.addAll(notificationFromDb)
 
         when (payload) {
             is ValidProbeProtocolHttpRequest -> {

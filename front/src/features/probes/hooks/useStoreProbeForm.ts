@@ -19,6 +19,7 @@ const baseStoreProbeSchema = z.object({
     .string()
     .transform((val) => (val === "" ? null : val))
     .optional(),
+  notifications: z.array(z.uuid()).optional(),
 });
 
 const httpProbeSchema = baseStoreProbeSchema.extend({
@@ -82,6 +83,7 @@ export function useStoreProbeForm() {
       ignore_certificate_errors: false,
       notification_certificate: false,
       http_code_allowed: [],
+      notifications: [],
     },
   });
 
@@ -102,6 +104,7 @@ export function useStoreProbeForm() {
     data: StoreProbeSchema,
   ) => {
     mutation.mutate(data);
+    console.log(data);
   };
 
   return {

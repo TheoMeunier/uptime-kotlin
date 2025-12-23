@@ -18,6 +18,7 @@ import FormSwitch from "@/components/molecules/forms/form-switch.tsx";
 import FormSelect from "@/components/molecules/forms/form-select.tsx";
 import FormMultiSelect from "@/components/molecules/forms/form-select-multiple.tsx";
 import CreateNotificationDialogue from "@/features/notifications/components/actions/create-notification-dialogue.tsx";
+import FormSelectNotification from "@/features/notifications/components/forms/form-select-notification.tsx";
 
 export default function CreateProbeForm() {
   const { form, isLoading, onsubmit, error } = useStoreProbeForm();
@@ -262,7 +263,8 @@ export default function CreateProbeForm() {
               <FieldLegend className="flex items-center gap-2">
                 <Bell /> Notifications
               </FieldLegend>
-              <FieldGroup>
+              <FieldGroup className="mt-4">
+                <FormSelectNotification form={form} />
                 <CreateNotificationDialogue />
               </FieldGroup>
             </FieldSet>
