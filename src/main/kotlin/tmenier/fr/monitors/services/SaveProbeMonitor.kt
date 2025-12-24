@@ -7,7 +7,7 @@ import tmenier.fr.monitors.entities.ProbesMonitorsLogEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @ApplicationScoped
 class SaveProbeMonitor {

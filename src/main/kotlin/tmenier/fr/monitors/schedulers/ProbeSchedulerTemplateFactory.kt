@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.notifications.NotificationService
 import tmenier.fr.monitors.services.SaveProbeMonitor
 import java.time.Duration
 import java.time.LocalDateTime
@@ -18,6 +19,7 @@ import java.util.concurrent.Executors
 class ProbeSchedulerTemplateFactory(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
     private val saveProbeMonitorLog: SaveProbeMonitor,
+    private val notificationService: NotificationService
 ) {
     val probeTaskContext = CoroutineScope(
         Executors.newScheduledThreadPool(4).asCoroutineDispatcher() + CoroutineName("ProbeTask") + SupervisorJob()
@@ -75,6 +77,7 @@ class ProbeSchedulerTemplateFactory(
 
     private suspend fun executeWithRetry(probe: ProbesEntity, now: LocalDateTime) {
         val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
+        val maxAttempts = probe.retry + 1
 
         if (protocolHandler == null) {
             logger.warn { "Unknown probe protocol: ${probe.protocol}" }
@@ -82,28 +85,31 @@ class ProbeSchedulerTemplateFactory(
         }
 
         repeat(probe.retry) { attempt ->
-            val result = protocolHandler.execute(probe)
+            val result = protocolHandler.execute(probe, attempt == maxAttempts - 1)
 
-            if (result.status == ProbeMonitorLogStatus.SUCCESS) {
-                logger.info { "Probe ${probe.id} succeeded after ${attempt + 1} retries" }
-                return saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+            when (result.status) {
+                ProbeMonitorLogStatus.SUCCESS -> {
+                    logger.info { "Probe ${probe.id} succeeded after ${attempt + 1} retries" }
+                    notificationService.sendNotification(probe, result)
+                    return saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                }
+
+                ProbeMonitorLogStatus.WARNING -> {
+                    logger.info { "Probe ${probe.id} warning after ${attempt + 1} retries" }
+                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                }
+
+                else -> {
+                    logger.warn { "Probe ${probe.id} failed after ${attempt + 1} retries" }
+
+                    if (attempt == maxAttempts - 1) {
+                        notificationService.sendNotification(probe, result)
+                        return saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                    }
+
+                    delay(probe.interval * 1000L)
+                }
             }
-
-            if (result.status == ProbeMonitorLogStatus.WARNING) {
-                logger.info { "Probe ${probe.id} warning after ${attempt + 1} retries" }
-                saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
-            }
-
-            logger.warn { "Probe ${probe.id} failed after ${attempt + 1} retries" }
-
-            if (attempt < probe.retry - 1) {
-                delay(probe.intervalRetry * 1000L)
-            }
-        }
-
-        val r = protocolHandler.execute(probe, true)
-        return withContext(Dispatchers.IO) {
-            saveProbeMonitorLog.saveProbeMonitorLog(probe, now, r)
         }
     }
 

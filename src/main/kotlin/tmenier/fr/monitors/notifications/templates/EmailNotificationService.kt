@@ -4,11 +4,11 @@ import io.vertx.core.Vertx
 import io.vertx.ext.mail.*
 import jakarta.enterprise.context.ApplicationScoped
 import org.jboss.logging.Logger
-import tmenier.fr.monitors.dtos.responses.ProbeMonitorDTO
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.notifications.TypedNotificationInterfaces
 import tmenier.fr.monitors.notifications.dto.NotificationContent
+import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
 @ApplicationScoped
 class EmailNotificationService(
@@ -20,7 +20,7 @@ class EmailNotificationService(
     override fun sendSuccess(
         content: NotificationContent.Mail,
         probe: ProbesEntity,
-        result: ProbeMonitorDTO
+        result: ProbeResult
     ) {
         val client = getMailClient(content)
         val message = MailMessage()
@@ -46,7 +46,7 @@ class EmailNotificationService(
     override fun sendFailure(
         content: NotificationContent.Mail,
         probe: ProbesEntity,
-        result: ProbeMonitorDTO
+        result: ProbeResult
     ) {
         val client = getMailClient(content)
         val message = MailMessage()

@@ -2,11 +2,11 @@ package tmenier.fr.monitors.notifications.templates
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
-import tmenier.fr.monitors.dtos.responses.ProbeMonitorDTO
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.notifications.TypedNotificationInterfaces
 import tmenier.fr.monitors.notifications.dto.NotificationContent
+import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -20,7 +20,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
     override fun sendSuccess(
         content: NotificationContent.Discord,
         probe: ProbesEntity,
-        result: ProbeMonitorDTO
+        result: ProbeResult
     ) {
         val jsonPayload = buildEmbed(probe.name, result.message, 0x00FF00)
         sendDiscordEmbed(content, jsonPayload)
@@ -29,7 +29,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
     override fun sendFailure(
         content: NotificationContent.Discord,
         probe: ProbesEntity,
-        result: ProbeMonitorDTO
+        result: ProbeResult
     ) {
         val jsonPayload = buildEmbed(probe.name, result.message, 0xFF0000)
         sendDiscordEmbed(content, jsonPayload)

@@ -3,18 +3,20 @@ package tmenier.fr.monitors.notifications
 import jakarta.enterprise.context.ApplicationScoped
 import kotlinx.coroutines.coroutineScope
 import tmenier.fr.common.utils.logger
-import tmenier.fr.monitors.dtos.responses.ProbeMonitorDTO
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
 @ApplicationScoped
 class NotificationService(
     val notificationFactory: NotificationFactory
 ) {
 
-    suspend fun sendNotification(probe: ProbesEntity, result: ProbeMonitorDTO) {
+    suspend fun sendNotification(probe: ProbesEntity, result: ProbeResult) {
         val notifications = probe.notifications
+
+        if (probe.status === result.status) return
 
         coroutineScope {
             notifications.forEach { notification ->
@@ -26,10 +28,10 @@ class NotificationService(
                     return@forEach
                 }
 
-                when (result.status) {
-                    ProbeMonitorLogStatus.SUCCESS -> handler.sendSuccess(content, probe, result)
-                    ProbeMonitorLogStatus.FAILURE -> handler.sendFailure(content, probe, result)
-                    else -> logger.warn("Unknown status: ${result.status}")
+                if (probe.status === ProbeMonitorLogStatus.SUCCESS && result.status === ProbeMonitorLogStatus.FAILURE) {
+                    handler.sendFailure(content, probe, result)
+                } else if (probe.status === ProbeMonitorLogStatus.FAILURE && result.status === ProbeMonitorLogStatus.SUCCESS) {
+                    handler.sendSuccess(content, probe, result)
                 }
             }
         }
