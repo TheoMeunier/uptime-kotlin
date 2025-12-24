@@ -35,7 +35,7 @@ class ProbeSchedulerTemplateFactory(
         scheduledProbes.keys.forEach { probeId ->
             if (probeId !in activeProbeIds) {
                 scheduledProbes.remove(probeId)?.cancel()
-                logger.info("Cancelled probe $probeId (disabled or deleted)")
+                logger.info { "Cancelled probe $probeId (disabled or deleted)" }
             }
         }
 
@@ -62,7 +62,7 @@ class ProbeSchedulerTemplateFactory(
                     try {
                         executeWithRetry(probe, LocalDateTime.now())
                     } catch (e: Exception) {
-                        logger.error("Error executing probe id=${probe.id}: ${e.message}", e)
+                        logger.error { "Error executing probe id=${probe.id}: ${e.stackTraceToString()}" }
                     } finally {
                         runningProbes.remove(probe.id)
                     }
@@ -77,7 +77,7 @@ class ProbeSchedulerTemplateFactory(
         val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
 
         if (protocolHandler == null) {
-            logger.warn("Unknown probe protocol: ${probe.protocol}")
+            logger.warn { "Unknown probe protocol: ${probe.protocol}" }
             return
         }
 
@@ -85,11 +85,16 @@ class ProbeSchedulerTemplateFactory(
             val result = protocolHandler.execute(probe)
 
             if (result.status == ProbeMonitorLogStatus.SUCCESS) {
-                logger.info("Probe ${probe.id} succeeded after ${attempt + 1} retries")
+                logger.info { "Probe ${probe.id} succeeded after ${attempt + 1} retries" }
                 return saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
             }
 
-            logger.warn("Probe ${probe.id} failed after ${attempt + 1} retries")
+            if (result.status == ProbeMonitorLogStatus.WARNING) {
+                logger.info { "Probe ${probe.id} warning after ${attempt + 1} retries" }
+                saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+            }
+
+            logger.warn { "Probe ${probe.id} failed after ${attempt + 1} retries" }
 
             if (attempt < probe.retry - 1) {
                 delay(probe.intervalRetry * 1000L)
@@ -100,13 +105,6 @@ class ProbeSchedulerTemplateFactory(
         return withContext(Dispatchers.IO) {
             saveProbeMonitorLog.saveProbeMonitorLog(probe, now, r)
         }
-    }
-
-    private fun shouldRunProbe(probe: ProbesEntity, now: LocalDateTime): Boolean {
-        if (probe.lastRun == null) return true
-
-        val timeSinceLastRun = Duration.between(probe.lastRun, now)
-        return timeSinceLastRun.seconds >= probe.interval
     }
 
     private fun calculateNextRun(probe: ProbesEntity, from: LocalDateTime): LocalDateTime {
