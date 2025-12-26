@@ -47,6 +47,8 @@ export default function ProbeMonitorChartBar({
         return "bg-green-400";
       case "PAUSE":
         return "bg-gray-400";
+      case "WARNING":
+        return "bg-yellow-400";
       default:
         return "bg-red-400";
     }
@@ -58,6 +60,8 @@ export default function ProbeMonitorChartBar({
         return "bg-green-500/20 text-green-400";
       case "PAUSE":
         return "bg-gray-500/20 text-gray-400";
+      case "WARNING":
+        return "bg-yellow-500/20 text-yellow-400";
       default:
         return "bg-red-500/20 text-red-400";
     }
@@ -69,6 +73,8 @@ export default function ProbeMonitorChartBar({
         return "Succès";
       case "PAUSE":
         return "En pause";
+      case "WARNING":
+        return "Warning";
       default:
         return "Échec";
     }
