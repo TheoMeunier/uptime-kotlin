@@ -30,8 +30,16 @@ class SaveProbeMonitor {
     }
 
     private fun setLastRun(probe: ProbesEntity, runAt: LocalDateTime, status: ProbeMonitorLogStatus) {
-        probe.status = status
+        if (status in UPDATABLE_STATUSES) {
+            probe.status = status
+        }
+
         probe.lastRun = runAt
         probe.persist()
     }
+
+    private val UPDATABLE_STATUSES = setOf(
+        ProbeMonitorLogStatus.SUCCESS,
+        ProbeMonitorLogStatus.FAILURE
+    )
 }

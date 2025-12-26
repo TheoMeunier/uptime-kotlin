@@ -1,7 +1,9 @@
 package tmenier.fr.monitors.notifications
 
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.transaction.Transactional
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
@@ -13,6 +15,7 @@ class NotificationService(
     val notificationFactory: NotificationFactory
 ) {
 
+    @Transactional
     suspend fun sendNotification(probe: ProbesEntity, result: ProbeResult) {
         val notifications = probe.notifications
 
@@ -20,18 +23,23 @@ class NotificationService(
 
         coroutineScope {
             notifications.forEach { notification ->
-                val content = NotificationContentMapper.toDTO(notification)
-                val handler = notificationFactory.getNotification(notification.type)
+                launch {
+                    val content = NotificationContentMapper.toDTO(notification)
+                    val handler = notificationFactory.getNotification(notification.type)
 
-                if (handler == null) {
-                    logger.warn("No handler found for notification type: ${notification.type}")
-                    return@forEach
-                }
+                    if (handler == null) {
+                        logger.warn { "Unknown notification handle type: ${notification.type}" }
+                        return@launch
+                    }
 
-                if (probe.status === ProbeMonitorLogStatus.SUCCESS && result.status === ProbeMonitorLogStatus.FAILURE) {
-                    handler.sendFailure(content, probe, result)
-                } else if (probe.status === ProbeMonitorLogStatus.FAILURE && result.status === ProbeMonitorLogStatus.SUCCESS) {
-                    handler.sendSuccess(content, probe, result)
+                    @Suppress("UNCHECKED_CAST")
+                    val typedHandler = handler as TypedNotificationInterfaces<Any>
+
+                    if (probe.status === ProbeMonitorLogStatus.SUCCESS && result.status === ProbeMonitorLogStatus.FAILURE) {
+                        typedHandler.sendFailure(content, probe, result)
+                    } else if (probe.status === ProbeMonitorLogStatus.FAILURE && result.status === ProbeMonitorLogStatus.SUCCESS) {
+                        typedHandler.sendSuccess(content, probe, result)
+                    }
                 }
             }
         }

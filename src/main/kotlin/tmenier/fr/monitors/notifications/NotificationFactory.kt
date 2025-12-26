@@ -6,9 +6,9 @@ import tmenier.fr.monitors.enums.NotificationChannelsEnum
 
 @ApplicationScoped
 class NotificationFactory(
-    private val notificationServices: Instance<NotificationInterfaces>
+    private val notificationServices: Instance<TypedNotificationInterfaces<*>>
 ) {
-    fun getNotification(notificationType: NotificationChannelsEnum): NotificationInterfaces? {
+    fun getNotification(notificationType: NotificationChannelsEnum): TypedNotificationInterfaces<*>? {
         return notificationServices.stream()
             .filter { it.getNotificationType() == notificationType.name }
             .findFirst()

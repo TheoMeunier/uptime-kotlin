@@ -1,10 +1,10 @@
 package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.monitors.enums.HttpCodeEnum
-import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.net.URI
 import java.net.http.HttpClient
@@ -20,7 +20,7 @@ import javax.net.ssl.X509TrustManager
 @ApplicationScoped
 class ProbeProtocolHttp : ProbeProtocolAbstract() {
 
-    override fun execute(probe: ProbesEntity, isFailed: Boolean?): ProbeResult {
+    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
         val start = now()
 
         return try {
@@ -44,14 +44,14 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
             val success = checkIfStatusCodeIsValid(probe.httpCodeAllowed, response.statusCode())
 
             ProbeResult(
-                status = if (success) ProbeMonitorLogStatus.SUCCESS else ProbeMonitorLogStatus.WARNING,
+                status = getStatus(success, isLastAttempt),
                 responseTime = getResponseTime(start),
                 message = "HTTP Status: ${response.statusCode()} in ${getResponseTime(start)} ms",
-                runAt =  getRunAt(start)
+                runAt = getRunAt(start)
             )
         } catch (e: Exception) {
             ProbeResult(
-                status = if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "HTTP request failed: ${e.message}",
                 runAt = getRunAt(start)
@@ -78,8 +78,20 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
                     val (start, end) = allowedCode.value.split("-").map { it.toInt() }
                     statusCode in start..end
                 }
+
                 else -> allowedCode.value.toInt() == statusCode
             }
+        }
+    }
+
+    private fun getStatus(isSuccess: Boolean, isLastAttempt: Boolean): ProbeMonitorLogStatus {
+        return if (isSuccess) {
+            ProbeMonitorLogStatus.SUCCESS
+        } else if (isLastAttempt) {
+            ProbeMonitorLogStatus.FAILURE
+        } else {
+            ProbeMonitorLogStatus.WARNING
+
         }
     }
 

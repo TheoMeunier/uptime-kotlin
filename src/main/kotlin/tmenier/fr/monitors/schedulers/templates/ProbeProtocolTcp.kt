@@ -1,16 +1,16 @@
 package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.net.InetSocketAddress
 import java.net.Socket
 
 @ApplicationScoped
-class ProbeProtocolTcp: ProbeProtocolAbstract() {
-    override fun execute(probe: ProbesEntity, isFailed: Boolean?): ProbeResult {
+class ProbeProtocolTcp : ProbeProtocolAbstract() {
+    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
         val start = now()
 
         return try {
@@ -31,7 +31,7 @@ class ProbeProtocolTcp: ProbeProtocolAbstract() {
             }
         } catch (e: Exception) {
             ProbeResult(
-                status = if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "TCP connection failed: ${e.message}",
                 runAt = getRunAt(start)

@@ -84,32 +84,56 @@ class ProbeSchedulerTemplateFactory(
             return
         }
 
-        repeat(probe.retry) { attempt ->
-            val result = protocolHandler.execute(probe, attempt == maxAttempts - 1)
+        repeat(maxAttempts) { attempt ->
+            val isLastAttempt = attempt == maxAttempts - 1
+            val result = protocolHandler.execute(probe, isLastAttempt)
 
             when (result.status) {
                 ProbeMonitorLogStatus.SUCCESS -> {
                     logger.info { "Probe ${probe.id} succeeded after ${attempt + 1} retries" }
+
                     notificationService.sendNotification(probe, result)
-                    return saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                    return
                 }
 
                 ProbeMonitorLogStatus.WARNING -> {
-                    logger.info { "Probe ${probe.id} warning after ${attempt + 1} retries" }
+                    if (isLastAttempt) {
+                        logger.error { "Probe ${probe.id} failed after $maxAttempts attempts" }
+
+                        val failedResult = result.copy(
+                            status = ProbeMonitorLogStatus.FAILURE
+                        )
+
+                        notificationService.sendNotification(probe, failedResult)
+                        saveProbeMonitorLog.saveProbeMonitorLog(probe, now, failedResult)
+                        return
+                    }
+
+                    logger.warn { "Probe ${probe.id} warning after ${attempt + 1}/$maxAttempts attempts" }
                     saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
                 }
 
-                else -> {
-                    logger.warn { "Probe ${probe.id} failed after ${attempt + 1} retries" }
+                ProbeMonitorLogStatus.FAILURE -> {
+                    logger.error { "Probe ${probe.id} failed on attempt ${attempt + 1}/$maxAttempts" }
 
-                    if (attempt == maxAttempts - 1) {
+                    if (isLastAttempt) {
                         notificationService.sendNotification(probe, result)
-                        return saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                        saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                        return
                     }
+                }
 
-                    delay(probe.interval * 1000L)
+                else -> {
+                    if (isLastAttempt) {
+                        notificationService.sendNotification(probe, result)
+                        saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                        return
+                    }
                 }
             }
+
+            delay(probe.interval * 1000L)
         }
     }
 

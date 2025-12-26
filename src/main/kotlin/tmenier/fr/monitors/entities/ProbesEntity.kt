@@ -87,7 +87,7 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "ping_numeric_output")
     var pingNumericOutput: Boolean? = null
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "probes_notifications_channels",
         joinColumns = [JoinColumn("probe_id")],

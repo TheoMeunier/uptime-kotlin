@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 @ApplicationScoped
 class ProbeProtocolPing : ProbeProtocolAbstract() {
-    override fun execute(probe: ProbesEntity, isFailed: Boolean?): ProbeResult {
+    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
         val start = now()
 
         return try {
@@ -49,7 +49,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract() {
             val status = when {
                 successfulPings == maxPackets -> ProbeMonitorLogStatus.SUCCESS
                 successfulPings > 0 -> ProbeMonitorLogStatus.WARNING
-                else -> if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING
+                else -> if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING
             }
 
             val message = if (status == ProbeMonitorLogStatus.SUCCESS) {
@@ -69,7 +69,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract() {
 
         } catch (e: Exception) {
             ProbeResult(
-                status = if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "Ping failed: ${e.message}",
                 runAt = getRunAt(start)

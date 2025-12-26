@@ -36,18 +36,21 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
     }
 
     override fun sendTest(content: NotificationContent.Discord) {
-        sendDiscordEmbed(content, buildEmbed("Test", "Test", 0x0000FF))
+        sendDiscordEmbed(content, buildEmbed("Test", "Test notification", 0x0000FF))
     }
 
     override fun getNotificationType() = NotificationChannelsEnum.DISCORD.name
 
     private fun buildEmbed(title: String, description: String, color: Int): String {
+        val escapedTitle = title.replace("\"", "\\\"").replace("\n", "\\n")
+        val escapedDescription = description.replace("\"", "\\\"").replace("\n", "\\n")
+
         return """
             {
                 "embeds": [
                     {
-                        "title": "$title",
-                        "description": "$description",
+                        "title": "$escapedTitle",
+                        "description": "$escapedDescription",
                         "color": $color
                     }
                 ]
@@ -57,6 +60,9 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
 
     private fun sendDiscordEmbed(content: NotificationContent.Discord, jsonPayload: String) {
         try {
+            logger.info { "Sending Discord notification to: ${content.webhookUrl.take(50)}..." }
+            logger.debug { "Payload: $jsonPayload" }
+
             val request = HttpRequest.newBuilder()
                 .uri(URI.create(content.webhookUrl))
                 .header("Content-Type", "application/json")
@@ -64,11 +70,37 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
                 .build()
 
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-            if (response.statusCode() != 204) {
-                logger.error { "Failed to send Discord notification: ${response.statusCode()} ${response.body()}" }
+
+            logger.info { "Discord API response: ${response.statusCode()}" }
+
+            when (response.statusCode()) {
+                204, 200 -> {
+                    logger.info { "Discord notification sent successfully" }
+                }
+
+                400 -> {
+                    logger.error { "Bad request to Discord API: ${response.body()}" }
+                    logger.error { "Payload was: $jsonPayload" }
+                }
+
+                401 -> {
+                    logger.error { "Unauthorized - Invalid Discord webhook URL" }
+                }
+
+                404 -> {
+                    logger.error { "Webhook not found - The Discord webhook may have been deleted" }
+                }
+
+                429 -> {
+                    logger.error { "Rate limited by Discord API: ${response.body()}" }
+                }
+
+                else -> {
+                    logger.error { "Failed to send Discord notification: ${response.statusCode()} ${response.body()}" }
+                }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error(e) { "Exception while sending Discord notification: ${e.message}" }
         }
     }
 }

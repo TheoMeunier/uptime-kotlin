@@ -1,16 +1,17 @@
 package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
-import org.xbill.DNS.*
+import org.xbill.DNS.Lookup
 import org.xbill.DNS.SimpleResolver
-import tmenier.fr.monitors.enums.ProbeProtocol
+import org.xbill.DNS.Type
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
 @ApplicationScoped
 class ProbeProtocolDns : ProbeProtocolAbstract() {
-    override fun execute(probe: ProbesEntity, isFailed: Boolean?): ProbeResult {
+    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
         val start = now()
 
         return try {
@@ -31,7 +32,7 @@ class ProbeProtocolDns : ProbeProtocolAbstract() {
             )
         } catch (e: Exception) {
             ProbeResult(
-                status = if (isFailed == true) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "DNS lookup failed: ${e.message}",
                 runAt = getRunAt(start)
