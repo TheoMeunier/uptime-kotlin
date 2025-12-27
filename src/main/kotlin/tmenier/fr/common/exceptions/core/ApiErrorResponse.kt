@@ -1,4 +1,4 @@
-package tmeunier.fr.http.exceptions.core
+package tmenier.fr.common.exceptions.core
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import java.time.Instant
