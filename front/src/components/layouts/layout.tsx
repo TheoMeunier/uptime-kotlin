@@ -13,19 +13,32 @@ import {
   SidebarTrigger,
 } from "@/components/atoms/sidebar.tsx";
 import { Button } from "@/components/atoms/button.tsx";
-import { ChevronsUpDown, Plus } from "lucide-react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Avatar } from "@/components/atoms/avatar.tsx";
-import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { BadgeCheck, ChevronsUpDown, LogOut, Plus } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/atoms/avatar.tsx";
 import { Link, Outlet } from "react-router";
-import { Separator } from "@radix-ui/react-separator";
 import { useQuery } from "@tanstack/react-query";
 import probeService from "@/features/probes/services/probeService.ts";
 import { Skeleton } from "@/components/atoms/skeleton.tsx";
 import type { ProbeListItem } from "@/features/probes/schemas/probe-response.schema.ts";
 import { Toaster } from "@/components/atoms/sonner.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/atoms/dropdown-menu.tsx";
+import { useIsMobile } from "@/hooks/use-mobile.ts";
+import { ScrollArea } from "@/components/atoms/scroll-area.tsx";
+import { Separator } from "@/components/atoms/separator.tsx";
+import authServices from "@/features/auth/services/authServices.ts";
+import { getInitials } from "@/lib/utils.ts";
 
 export default function Layout() {
+  const isMobile = useIsMobile();
+  const user = authServices.getUser();
   const { data, isLoading } = useQuery({
     queryKey: ["probes"],
     queryFn: async () => {
@@ -40,22 +53,63 @@ export default function Layout() {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground rounded-xl hover:bg-gray-100 transition"
-              >
-                <Avatar className="h-9 w-9 rounded-lg">
-                  <AvatarImage src="/im.png" alt="Théo Meunier avatar" />
-                  <AvatarFallback className="rounded-lg">TM</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Théo Meunier</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    contact@theomeunier.fr
-                  </span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4 opacity-70" />
-              </SidebarMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarFallback className="rounded-lg">
+                        {getInitials(user.username)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">
+                        {user.username}
+                      </span>
+                      <span className="truncate text-xs">{user.email}</span>
+                    </div>
+                    <ChevronsUpDown className="ml-auto size-4" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                  side={isMobile ? "bottom" : "right"}
+                  align="end"
+                  sideOffset={4}
+                >
+                  <DropdownMenuLabel className="p-0 font-normal">
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarFallback className="rounded-lg">
+                          {getInitials(user.username)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-medium">
+                          {user.username}
+                        </span>
+                        <span className="truncate text-xs">{user.email}</span>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <Link to={"/profile"}>
+                      <DropdownMenuItem>
+                        <BadgeCheck />
+                        Account
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <DropdownMenuItem>
+                      <LogOut />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -66,7 +120,7 @@ export default function Layout() {
               asChild
               className="w-full flex items-center gap-2 shadow-sm p-3 font-medium"
             >
-              <Link to={"/dashboard/monitors/new"}>
+              <Link to={"/monitors/new"}>
                 <Plus size={18} /> New monitor
               </Link>
             </Button>
@@ -89,7 +143,7 @@ export default function Layout() {
                   : data?.map((monitor: ProbeListItem) => (
                       <Link
                         key={monitor.id}
-                        to={`/dashboard/monitors/${monitor.id}`}
+                        to={`/monitors/${monitor.id}`}
                         className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition text-left group"
                       >
                         {monitor.status === "SUCCESS" ? (

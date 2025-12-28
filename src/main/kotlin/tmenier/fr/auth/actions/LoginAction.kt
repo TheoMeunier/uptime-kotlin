@@ -38,7 +38,7 @@ class LoginAction(
                 }.persist()
 
             return LoginResponse(
-                token = jwtService.generateJwt(user.id),
+                token = jwtService.generateJwt(user.id, user.name, user.email),
                 refreshToken = refreshToken.toString(),
             )
         } else {

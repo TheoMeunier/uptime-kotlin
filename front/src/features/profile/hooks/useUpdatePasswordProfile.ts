@@ -39,6 +39,6 @@ export default function useUpdatePasswordProfile() {
     form,
     onSubmit,
     isLoading: mutation.isPending,
-    error: mutation.error,
+    errors: form.formState.errors,
   };
 }

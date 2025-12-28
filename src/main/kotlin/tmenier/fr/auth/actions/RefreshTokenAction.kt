@@ -7,14 +7,16 @@ import tmenier.fr.auth.entities.RefreshTokenEntity
 import tmenier.fr.auth.services.JwtService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @ApplicationScoped
 class RefreshTokenAction(
     private val jwtService: JwtService,
 ) {
     fun execute(payload: RefreshTokenRequest): LoginResponse {
-        val rt = RefreshTokenEntity.findByRefreshToken(UUID.fromString(payload.refreshToken)) ?: throw InvalidCredentialsException()
+        val rt =
+            RefreshTokenEntity.findByRefreshToken(UUID.fromString(payload.refreshToken))
+                ?: throw InvalidCredentialsException()
 
         if (rt.expiredAt.isBefore(LocalDateTime.now())) {
             rt.delete()
@@ -32,7 +34,7 @@ class RefreshTokenAction(
             }.persist()
 
         return LoginResponse(
-            jwtService.generateJwt(rt.user.id),
+            jwtService.generateJwt(rt.user.id, rt.user.name, rt.user.email),
             newRefreshToken.toString(),
         )
     }
