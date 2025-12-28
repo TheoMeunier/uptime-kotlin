@@ -14,12 +14,13 @@ import tmenier.fr.auth.dtos.requests.RefreshTokenRequest
 @Path("/api/auth/refresh")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class RefreshTokenResource(private val refreshTokenAction: RefreshTokenAction) {
-
+class RefreshTokenResource(
+    private val refreshTokenAction: RefreshTokenAction,
+) {
     @POST
     @Transactional
     fun login(
-        @Valid payload: RefreshTokenRequest
+        @Valid payload: RefreshTokenRequest,
     ): Response {
         val result = refreshTokenAction.execute(payload)
         return Response.ok(result).build()

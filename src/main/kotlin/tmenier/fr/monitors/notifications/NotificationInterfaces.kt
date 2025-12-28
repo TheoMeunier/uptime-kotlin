@@ -8,10 +8,17 @@ interface NotificationInterfaces {
 }
 
 interface TypedNotificationInterfaces<T> : NotificationInterfaces {
+    fun sendSuccess(
+        content: T,
+        probe: ProbesEntity,
+        result: ProbeResult,
+    )
 
-    fun sendSuccess(content: T, probe: ProbesEntity, result: ProbeResult);
+    fun sendFailure(
+        content: T,
+        probe: ProbesEntity,
+        result: ProbeResult,
+    )
 
-    fun sendFailure(content: T, probe: ProbesEntity, result: ProbeResult);
-
-    fun sendTest(content: T);
+    fun sendTest(content: T)
 }

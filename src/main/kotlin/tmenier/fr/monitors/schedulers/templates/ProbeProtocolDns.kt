@@ -11,13 +11,17 @@ import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
 @ApplicationScoped
 class ProbeProtocolDns : ProbeProtocolAbstract() {
-    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
+    override fun execute(
+        probe: ProbesEntity,
+        isLastAttempt: Boolean,
+    ): ProbeResult {
         val start = now()
 
         return try {
-            val resolver = SimpleResolver(probe.dnsServer).apply {
-                port = probe.dnsPort!!
-            }
+            val resolver =
+                SimpleResolver(probe.dnsServer).apply {
+                    port = probe.dnsPort!!
+                }
 
             val lookup = Lookup(probe.url, Type.A)
             lookup.setResolver(resolver)
@@ -28,14 +32,14 @@ class ProbeProtocolDns : ProbeProtocolAbstract() {
                 ProbeMonitorLogStatus.SUCCESS,
                 getResponseTime(start),
                 "DNS lookup successful: ${record?.size ?: 0} record(s) found in ${getResponseTime(start)} ms",
-                getRunAt(start)
+                getRunAt(start),
             )
         } catch (e: Exception) {
             ProbeResult(
                 status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "DNS lookup failed: ${e.message}",
-                runAt = getRunAt(start)
+                runAt = getRunAt(start),
             )
         }
     }

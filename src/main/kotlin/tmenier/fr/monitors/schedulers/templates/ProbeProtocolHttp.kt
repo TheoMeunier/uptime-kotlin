@@ -19,13 +19,17 @@ import javax.net.ssl.X509TrustManager
 
 @ApplicationScoped
 class ProbeProtocolHttp : ProbeProtocolAbstract() {
-
-    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
+    override fun execute(
+        probe: ProbesEntity,
+        isLastAttempt: Boolean,
+    ): ProbeResult {
         val start = now()
 
         return try {
-            val clientBuilder = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
+            val clientBuilder =
+                HttpClient
+                    .newBuilder()
+                    .connectTimeout(Duration.ofSeconds(5))
 
             // skip error certificate
             if (probe.ignoreCertificateErrors) {
@@ -34,11 +38,13 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
 
             val client = clientBuilder.build()
 
-            val request = HttpRequest.newBuilder()
-                .uri(URI(probe.url))
-                .timeout(Duration.ofSeconds(5))
-                .GET()
-                .build()
+            val request =
+                HttpRequest
+                    .newBuilder()
+                    .uri(URI(probe.url))
+                    .timeout(Duration.ofSeconds(5))
+                    .GET()
+                    .build()
 
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
             val success = checkIfStatusCodeIsValid(probe.httpCodeAllowed, response.statusCode())
@@ -47,53 +53,69 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
                 status = getStatus(success, isLastAttempt),
                 responseTime = getResponseTime(start),
                 message = "HTTP Status: ${response.statusCode()} in ${getResponseTime(start)} ms",
-                runAt = getRunAt(start)
+                runAt = getRunAt(start),
             )
         } catch (e: Exception) {
             ProbeResult(
                 status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "HTTP request failed: ${e.message}",
-                runAt = getRunAt(start)
+                runAt = getRunAt(start),
             )
         }
     }
 
     private fun createInsecureSSLContext(): SSLContext {
-        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        })
+        val trustAllCerts =
+            arrayOf<TrustManager>(
+                object : X509TrustManager {
+                    override fun checkClientTrusted(
+                        chain: Array<X509Certificate>,
+                        authType: String,
+                    ) {}
+
+                    override fun checkServerTrusted(
+                        chain: Array<X509Certificate>,
+                        authType: String,
+                    ) {}
+
+                    override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                },
+            )
 
         return SSLContext.getInstance("TLS").apply {
             init(null, trustAllCerts, SecureRandom())
         }
     }
 
-    private fun checkIfStatusCodeIsValid(httpCodeAllowed: List<HttpCodeEnum>, statusCode: Int): Boolean {
-        return httpCodeAllowed.any { allowedCode ->
+    private fun checkIfStatusCodeIsValid(
+        httpCodeAllowed: List<HttpCodeEnum>,
+        statusCode: Int,
+    ): Boolean =
+        httpCodeAllowed.any { allowedCode ->
             when {
                 allowedCode.value.contains("-") -> {
                     val (start, end) = allowedCode.value.split("-").map { it.toInt() }
                     statusCode in start..end
                 }
 
-                else -> allowedCode.value.toInt() == statusCode
+                else -> {
+                    allowedCode.value.toInt() == statusCode
+                }
             }
         }
-    }
 
-    private fun getStatus(isSuccess: Boolean, isLastAttempt: Boolean): ProbeMonitorLogStatus {
-        return if (isSuccess) {
+    private fun getStatus(
+        isSuccess: Boolean,
+        isLastAttempt: Boolean,
+    ): ProbeMonitorLogStatus =
+        if (isSuccess) {
             ProbeMonitorLogStatus.SUCCESS
         } else if (isLastAttempt) {
             ProbeMonitorLogStatus.FAILURE
         } else {
             ProbeMonitorLogStatus.WARNING
-
         }
-    }
 
     override fun getProtocolType() = ProbeProtocol.HTTP.name
 }

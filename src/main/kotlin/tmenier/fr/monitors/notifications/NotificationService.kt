@@ -12,11 +12,13 @@ import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
 @ApplicationScoped
 class NotificationService(
-    val notificationFactory: NotificationFactory
+    val notificationFactory: NotificationFactory,
 ) {
-
     @Transactional
-    suspend fun sendNotification(probe: ProbesEntity, result: ProbeResult) {
+    suspend fun sendNotification(
+        probe: ProbesEntity,
+        result: ProbeResult,
+    ) {
         val notifications = probe.notifications
 
         if (probe.status === result.status) return

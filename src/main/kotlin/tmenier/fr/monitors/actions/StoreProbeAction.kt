@@ -8,7 +8,6 @@ import java.util.*
 
 @ApplicationScoped
 class StoreProbeAction {
-
     fun execute(payload: BaseStoreProbeRequest) {
         val probe = ProbesEntity()
         probe.id = UUID.randomUUID()

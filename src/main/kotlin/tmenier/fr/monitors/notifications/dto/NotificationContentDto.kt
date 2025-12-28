@@ -14,7 +14,6 @@ sealed interface NotificationContent {
         val password: String,
         val from: String,
         val to: String,
-        val cc: List<String>? = null
+        val cc: List<String>? = null,
     ) : NotificationContent
-
 }

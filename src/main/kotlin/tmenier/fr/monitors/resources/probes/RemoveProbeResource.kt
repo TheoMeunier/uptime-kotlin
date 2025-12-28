@@ -14,12 +14,11 @@ import java.util.*
 @Path("/api/probes/{probeId}/remove")
 @Produces(MediaType.APPLICATION_JSON)
 class RemoveProbeResource {
-
     @POST
     @Authenticated
     @Transactional
     fun removeProbe(
-        @PathParam("probeId") probeId: String
+        @PathParam("probeId") probeId: String,
     ): Response {
         ProbesEntity.delete(UUID.fromString(probeId))
         return Response.noContent().build()

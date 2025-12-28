@@ -1,9 +1,8 @@
 package tmenier.fr.monitors.enums
 
-enum class ProbeProtocol
-{
+enum class ProbeProtocol {
     HTTP,
     TCP,
     PING,
-    DNS
+    DNS,
 }

@@ -19,11 +19,12 @@ import java.util.concurrent.Executors
 class ProbeSchedulerTemplateFactory(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
     private val saveProbeMonitorLog: SaveProbeMonitor,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
 ) {
-    val probeTaskContext = CoroutineScope(
-        Executors.newScheduledThreadPool(4).asCoroutineDispatcher() + CoroutineName("ProbeTask") + SupervisorJob()
-    )
+    val probeTaskContext =
+        CoroutineScope(
+            Executors.newScheduledThreadPool(4).asCoroutineDispatcher() + CoroutineName("ProbeTask") + SupervisorJob(),
+        )
 
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
@@ -50,32 +51,36 @@ class ProbeSchedulerTemplateFactory(
     }
 
     private fun scheduleProbe(probe: ProbesEntity) {
-        val job = probeTaskContext.launch {
-            while (isActive) {
-                val now = LocalDateTime.now()
-                val nextRun = calculateNextRun(probe, now)
-                val delayMs = Duration.between(now, nextRun).toMillis()
+        val job =
+            probeTaskContext.launch {
+                while (isActive) {
+                    val now = LocalDateTime.now()
+                    val nextRun = calculateNextRun(probe, now)
+                    val delayMs = Duration.between(now, nextRun).toMillis()
 
-                if (delayMs > 0) {
-                    delay(delayMs)
-                }
+                    if (delayMs > 0) {
+                        delay(delayMs)
+                    }
 
-                if (runningProbes.add(probe.id)) {
-                    try {
-                        executeWithRetry(probe, LocalDateTime.now())
-                    } catch (e: Exception) {
-                        logger.error { "Error executing probe id=${probe.id}: ${e.stackTraceToString()}" }
-                    } finally {
-                        runningProbes.remove(probe.id)
+                    if (runningProbes.add(probe.id)) {
+                        try {
+                            executeWithRetry(probe, LocalDateTime.now())
+                        } catch (e: Exception) {
+                            logger.error { "Error executing probe id=${probe.id}: ${e.stackTraceToString()}" }
+                        } finally {
+                            runningProbes.remove(probe.id)
+                        }
                     }
                 }
             }
-        }
 
         scheduledProbes[probe.id] = job
     }
 
-    private suspend fun executeWithRetry(probe: ProbesEntity, now: LocalDateTime) {
+    private suspend fun executeWithRetry(
+        probe: ProbesEntity,
+        now: LocalDateTime,
+    ) {
         val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
         val maxAttempts = probe.retry + 1
 
@@ -101,9 +106,10 @@ class ProbeSchedulerTemplateFactory(
                     if (isLastAttempt) {
                         logger.error { "Probe ${probe.id} failed after $maxAttempts attempts" }
 
-                        val failedResult = result.copy(
-                            status = ProbeMonitorLogStatus.FAILURE
-                        )
+                        val failedResult =
+                            result.copy(
+                                status = ProbeMonitorLogStatus.FAILURE,
+                            )
 
                         notificationService.sendNotification(probe, failedResult)
                         saveProbeMonitorLog.saveProbeMonitorLog(probe, now, failedResult)
@@ -137,7 +143,10 @@ class ProbeSchedulerTemplateFactory(
         }
     }
 
-    private fun calculateNextRun(probe: ProbesEntity, from: LocalDateTime): LocalDateTime {
+    private fun calculateNextRun(
+        probe: ProbesEntity,
+        from: LocalDateTime,
+    ): LocalDateTime {
         val lastRun = probe.lastRun ?: return from
         val intervalSeconds = probe.interval
         var nextRun = lastRun.plusSeconds(intervalSeconds.toLong())

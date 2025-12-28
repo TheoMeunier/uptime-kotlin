@@ -104,7 +104,6 @@ export function useStoreProbeForm() {
     data: StoreProbeSchema,
   ) => {
     mutation.mutate(data);
-    console.log(data);
   };
 
   return {

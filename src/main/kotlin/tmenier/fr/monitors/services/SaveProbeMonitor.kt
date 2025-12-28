@@ -11,11 +11,15 @@ import java.util.*
 
 @ApplicationScoped
 class SaveProbeMonitor {
-
     @Transactional
-    fun saveProbeMonitorLog(probe: ProbesEntity, runAt: LocalDateTime, result: ProbeResult) {
-        val manageProbe = ProbesEntity.findById(probe.id)
-            ?: throw IllegalArgumentException("Probe not found with id: ${probe.id}")
+    fun saveProbeMonitorLog(
+        probe: ProbesEntity,
+        runAt: LocalDateTime,
+        result: ProbeResult,
+    ) {
+        val manageProbe =
+            ProbesEntity.findById(probe.id)
+                ?: throw IllegalArgumentException("Probe not found with id: ${probe.id}")
 
         setLastRun(manageProbe, runAt, result.status)
 
@@ -29,7 +33,11 @@ class SaveProbeMonitor {
         monitorLog.persist()
     }
 
-    private fun setLastRun(probe: ProbesEntity, runAt: LocalDateTime, status: ProbeMonitorLogStatus) {
+    private fun setLastRun(
+        probe: ProbesEntity,
+        runAt: LocalDateTime,
+        status: ProbeMonitorLogStatus,
+    ) {
         if (status in UPDATABLE_STATUSES) {
             probe.status = status
         }
@@ -38,8 +46,9 @@ class SaveProbeMonitor {
         probe.persist()
     }
 
-    private val UPDATABLE_STATUSES = setOf(
-        ProbeMonitorLogStatus.SUCCESS,
-        ProbeMonitorLogStatus.FAILURE
-    )
+    private val UPDATABLE_STATUSES =
+        setOf(
+            ProbeMonitorLogStatus.SUCCESS,
+            ProbeMonitorLogStatus.FAILURE,
+        )
 }

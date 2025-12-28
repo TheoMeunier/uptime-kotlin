@@ -37,12 +37,8 @@ class UserEntity : PanacheEntityBase {
     open var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()
 
     companion object : PanacheCompanion<UserEntity> {
-        fun findByEmail(email: String): UserEntity? {
-            return find("email", email).firstResult()
-        }
+        fun findByEmail(email: String): UserEntity? = find("email", email).firstResult()
 
-        fun findById(id: UUID): UserEntity? {
-            return find("id = ?1", id).firstResult()
-        }
+        fun findById(id: UUID): UserEntity? = find("id = ?1", id).firstResult()
     }
 }

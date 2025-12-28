@@ -17,9 +17,10 @@ class ListNotificationResource {
     @GET
     @Authenticated
     fun list(): Response {
-        val notifications = NotificationsChannelEntity.getAll().map {
-            it.toListingsDTO()
-        }
+        val notifications =
+            NotificationsChannelEntity.getAll().map {
+                it.toListingsDTO()
+            }
 
         return Response.ok(notifications).build()
     }

@@ -16,14 +16,13 @@ import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class CreateProbeResource(
-    private val storeProbeAction: StoreProbeAction
+    private val storeProbeAction: StoreProbeAction,
 ) {
-
     @POST
     @Authenticated
     @Transactional
     fun store(
-        @Valid payload: BaseStoreProbeRequest
+        @Valid payload: BaseStoreProbeRequest,
     ): Response {
         storeProbeAction.execute(payload)
 

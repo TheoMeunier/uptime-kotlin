@@ -6,13 +6,12 @@ import tmenier.fr.monitors.enums.ProbeProtocol
 
 @ApplicationScoped
 class ProbeSchedulerFactory(
-    private val probeProtocols: Instance<ProbeSchedulerInterface>
+    private val probeProtocols: Instance<ProbeSchedulerInterface>,
 ) {
-
-    fun getProtocol(protocolType: ProbeProtocol): ProbeSchedulerInterface? {
-        return probeProtocols.stream()
+    fun getProtocol(protocolType: ProbeProtocol): ProbeSchedulerInterface? =
+        probeProtocols
+            .stream()
             .filter { it.getProtocolType() == protocolType.name }
             .findFirst()
             .orElse(null)
-    }
 }

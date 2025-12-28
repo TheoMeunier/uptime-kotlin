@@ -8,8 +8,10 @@ import java.util.*
 
 @ApplicationScoped
 class OnOffProbeMonitorAction {
-
-    fun execute(probeId: UUID, enabled: Boolean) {
+    fun execute(
+        probeId: UUID,
+        enabled: Boolean,
+    ) {
         val probe = ProbesEntity.findById(probeId) ?: throw NotFoundException("Probe not found")
 
         probe.enabled = enabled

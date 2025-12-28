@@ -12,7 +12,10 @@ import java.util.concurrent.TimeUnit
 
 @ApplicationScoped
 class ProbeProtocolPing : ProbeProtocolAbstract() {
-    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
+    override fun execute(
+        probe: ProbesEntity,
+        isLastAttempt: Boolean,
+    ): ProbeResult {
         val start = now()
 
         return try {
@@ -38,56 +41,60 @@ class ProbeProtocolPing : ProbeProtocolAbstract() {
                 }
             }
 
-            val avgResponseTime = if (successfulPings > 0) {
-                totalResponseTime / successfulPings
-            } else {
-                0L
-            }
+            val avgResponseTime =
+                if (successfulPings > 0) {
+                    totalResponseTime / successfulPings
+                } else {
+                    0L
+                }
 
             val successRate = (successfulPings.toDouble() / maxPackets) * 100
 
-            val status = when {
-                successfulPings == maxPackets -> ProbeMonitorLogStatus.SUCCESS
-                successfulPings > 0 -> ProbeMonitorLogStatus.WARNING
-                else -> if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING
-            }
+            val status =
+                when {
+                    successfulPings == maxPackets -> ProbeMonitorLogStatus.SUCCESS
+                    successfulPings > 0 -> ProbeMonitorLogStatus.WARNING
+                    else -> if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING
+                }
 
-            val message = if (status == ProbeMonitorLogStatus.SUCCESS) {
-                "Ping successful to ${probe.url}: ${successfulPings}/${maxPackets} packets received - Avg: ${avgResponseTime}ms"
-            } else if (successfulPings > 0) {
-                "Ping warning to ${probe.url}: ${successfulPings}/${maxPackets} packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
-            } else {
-                "Ping failed to ${probe.url}: 0/${maxPackets} packets received - Host unreachable or ICMP blocked"
-            }
+            val message =
+                if (status == ProbeMonitorLogStatus.SUCCESS) {
+                    "Ping successful to ${probe.url}: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
+                } else if (successfulPings > 0) {
+                    "Ping warning to ${probe.url}: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
+                } else {
+                    "Ping failed to ${probe.url}: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
+                }
 
             ProbeResult(
                 status = status,
                 responseTime = avgResponseTime,
                 message = message,
-                runAt = getRunAt(start)
+                runAt = getRunAt(start),
             )
-
         } catch (e: Exception) {
             ProbeResult(
                 status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "Ping failed: ${e.message}",
-                runAt = getRunAt(start)
+                runAt = getRunAt(start),
             )
         }
     }
 
     override fun getProtocolType() = ProbeProtocol.PING.name
 
-    private fun parseUrl(url: String): String {
-        return url
+    private fun parseUrl(url: String): String =
+        url
             .replace("http://", "")
             .replace("https://", "")
             .split("/")[0]
             .split(":")[0]
-    }
 
-    private fun systemPing(host: String, timeoutSeconds: Int = 5): Pair<Boolean, Long> {
+    private fun systemPing(
+        host: String,
+        timeoutSeconds: Int = 5,
+    ): Pair<Boolean, Long> {
         val startTime = System.currentTimeMillis()
 
         return try {
@@ -120,7 +127,6 @@ class ProbeProtocolPing : ProbeProtocolAbstract() {
             }
 
             Pair(success, responseTime)
-
         } catch (e: Exception) {
             logger.error("System ping execution failed for $host", e)
             val responseTime = System.currentTimeMillis() - startTime

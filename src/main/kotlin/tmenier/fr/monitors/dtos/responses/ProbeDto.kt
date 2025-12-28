@@ -8,12 +8,12 @@ data class ProbeListDTO(
     val id: UUID,
     val name: String,
     val description: String? = null,
-    val status: ProbeMonitorLogStatus
+    val status: ProbeMonitorLogStatus,
 )
 
 data class ProbeShowDTO(
     val probe: ProbeDTO,
-    val monitors: List<ProbeMonitorDTO>
+    val monitors: List<ProbeMonitorDTO>,
 )
 
 data class ProbeDTO(

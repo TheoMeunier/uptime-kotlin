@@ -91,7 +91,7 @@ class ProbesEntity : PanacheEntityBase {
     @JoinTable(
         name = "probes_notifications_channels",
         joinColumns = [JoinColumn("probe_id")],
-        inverseJoinColumns = [JoinColumn("notification_channel_id")]
+        inverseJoinColumns = [JoinColumn("notification_channel_id")],
     )
     open var notifications: MutableSet<NotificationsChannelEntity> = mutableSetOf()
 
@@ -107,20 +107,12 @@ class ProbesEntity : PanacheEntityBase {
     open var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()
 
     companion object : PanacheCompanion<ProbesEntity> {
-        fun findById(id: UUID): ProbesEntity? {
-            return find("id = ?1", id).firstResult()
-        }
+        fun findById(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
 
-        fun getActiveProbes(): List<ProbesEntity> {
-            return find("enabled = ?1", true).list()
-        }
+        fun getActiveProbes(): List<ProbesEntity> = find("enabled = ?1", true).list()
 
-        fun getAllProbes(): List<ProbesEntity> {
-            return findAll().list()
-        }
+        fun getAllProbes(): List<ProbesEntity> = findAll().list()
 
-        fun delete(id: UUID): Long {
-            return delete("id = ?1", id)
-        }
+        fun delete(id: UUID): Long = delete("id = ?1", id)
     }
 }

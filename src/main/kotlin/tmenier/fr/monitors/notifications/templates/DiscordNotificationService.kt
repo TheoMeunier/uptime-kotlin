@@ -14,13 +14,12 @@ import java.net.http.HttpResponse
 
 @ApplicationScoped
 class DiscordNotificationService : TypedNotificationInterfaces<NotificationContent.Discord> {
-
     private val client = HttpClient.newHttpClient()
 
     override fun sendSuccess(
         content: NotificationContent.Discord,
         probe: ProbesEntity,
-        result: ProbeResult
+        result: ProbeResult,
     ) {
         val jsonPayload = buildEmbed(probe.name, result.message, 0x00FF00)
         sendDiscordEmbed(content, jsonPayload)
@@ -29,7 +28,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
     override fun sendFailure(
         content: NotificationContent.Discord,
         probe: ProbesEntity,
-        result: ProbeResult
+        result: ProbeResult,
     ) {
         val jsonPayload = buildEmbed(probe.name, result.message, 0xFF0000)
         sendDiscordEmbed(content, jsonPayload)
@@ -41,7 +40,11 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
 
     override fun getNotificationType() = NotificationChannelsEnum.DISCORD.name
 
-    private fun buildEmbed(title: String, description: String, color: Int): String {
+    private fun buildEmbed(
+        title: String,
+        description: String,
+        color: Int,
+    ): String {
         val escapedTitle = title.replace("\"", "\\\"").replace("\n", "\\n")
         val escapedDescription = description.replace("\"", "\\\"").replace("\n", "\\n")
 
@@ -55,19 +58,24 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
                     }
                 ]
             }
-        """.trimIndent()
+            """.trimIndent()
     }
 
-    private fun sendDiscordEmbed(content: NotificationContent.Discord, jsonPayload: String) {
+    private fun sendDiscordEmbed(
+        content: NotificationContent.Discord,
+        jsonPayload: String,
+    ) {
         try {
             logger.info { "Sending Discord notification to: ${content.webhookUrl.take(50)}..." }
             logger.debug { "Payload: $jsonPayload" }
 
-            val request = HttpRequest.newBuilder()
-                .uri(URI.create(content.webhookUrl))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                .build()
+            val request =
+                HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(content.webhookUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                    .build()
 
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 

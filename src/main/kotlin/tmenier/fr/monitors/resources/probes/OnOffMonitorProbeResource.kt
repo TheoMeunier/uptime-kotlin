@@ -14,15 +14,14 @@ import java.util.*
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class OnOffMonitorProbeResource(
-    private val onOffProbeMonitorAction: OnOffProbeMonitorAction
+    private val onOffProbeMonitorAction: OnOffProbeMonitorAction,
 ) {
-
     @POST
     @Authenticated
     @Transactional
     fun onOffProbeMonitor(
         @PathParam("probeId") probeId: String,
-        @Valid payload: OnOffRequest
+        @Valid payload: OnOffRequest,
     ): Response {
         onOffProbeMonitorAction.execute(UUID.fromString(probeId), payload.enabled)
 

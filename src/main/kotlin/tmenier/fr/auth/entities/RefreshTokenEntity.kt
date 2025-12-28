@@ -30,8 +30,6 @@ class RefreshTokenEntity : PanacheEntityBase {
     lateinit var expiredAt: LocalDateTime
 
     companion object : PanacheCompanion<RefreshTokenEntity> {
-        fun findByRefreshToken(refreshToken: UUID): RefreshTokenEntity? {
-            return find("refreshToken = ?1", refreshToken).firstResult()
-        }
+        fun findByRefreshToken(refreshToken: UUID): RefreshTokenEntity? = find("refreshToken = ?1", refreshToken).firstResult()
     }
 }

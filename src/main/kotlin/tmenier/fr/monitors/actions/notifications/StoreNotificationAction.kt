@@ -12,9 +12,8 @@ import java.util.*
 
 @ApplicationScoped
 class StoreNotificationAction(
-    private val encryptionService: EncryptionService
+    private val encryptionService: EncryptionService,
 ) {
-
     fun execute(payload: BaseStoreNotificationRequest) {
         val notification = NotificationsChannelEntity()
         notification.id = UUID.randomUUID()
@@ -24,28 +23,30 @@ class StoreNotificationAction(
 
         when (payload) {
             is ValidNotificationChannelDiscordRequest -> {
-                val (jsonNode, _) = NotificationContentMapper.toEntity(
-                    NotificationContent.Discord(
-                        webhookUrl = payload.urlWebhook,
-                        username = payload.nameReboot
+                val (jsonNode, _) =
+                    NotificationContentMapper.toEntity(
+                        NotificationContent.Discord(
+                            webhookUrl = payload.urlWebhook,
+                            username = payload.nameReboot,
+                        ),
                     )
-                )
 
                 notification.content = jsonNode
             }
 
             is ValidNotificationChannelMailRequest -> {
-                val (jsonNode, _) = NotificationContentMapper.toEntity(
-                    NotificationContent.Mail(
-                        hostname = payload.hostname,
-                        port = payload.port,
-                        starttls = payload.starttls == true,
-                        username = payload.username,
-                        password = encryptionService.encrypt(payload.password),
-                        from = payload.mailFrom,
-                        to = payload.mailTo
+                val (jsonNode, _) =
+                    NotificationContentMapper.toEntity(
+                        NotificationContent.Mail(
+                            hostname = payload.hostname,
+                            port = payload.port,
+                            starttls = payload.starttls == true,
+                            username = payload.username,
+                            password = encryptionService.encrypt(payload.password),
+                            from = payload.mailFrom,
+                            to = payload.mailTo,
+                        ),
                     )
-                )
 
                 notification.content = jsonNode
             }
@@ -56,7 +57,5 @@ class StoreNotificationAction(
         }
 
         notification.persist()
-
     }
-
 }

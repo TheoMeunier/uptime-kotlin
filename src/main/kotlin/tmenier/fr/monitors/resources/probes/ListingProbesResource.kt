@@ -14,20 +14,19 @@ import tmenier.fr.monitors.entities.ProbesEntity
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class ListingProbesResource {
-
     @GET
     @Authenticated
     fun list(): Response {
-        val probes = ProbesEntity.getAllProbes().map {
-            ProbeListDTO(
-                it.id,
-                it.name,
-                it.description,
-                it.status
-            )
-        }
+        val probes =
+            ProbesEntity.getAllProbes().map {
+                ProbeListDTO(
+                    it.id,
+                    it.name,
+                    it.description,
+                    it.status,
+                )
+            }
 
         return Response.ok(probes).build()
     }
-
 }

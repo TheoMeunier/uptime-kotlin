@@ -16,13 +16,13 @@ import tmenier.fr.monitors.dtos.requests.BaseStoreNotificationRequest
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class StoreNotificationResource(
-    private val storeNotificationAction: StoreNotificationAction
+    private val storeNotificationAction: StoreNotificationAction,
 ) {
     @POST
     @Authenticated
     @Transactional
     fun store(
-        @Valid payload: BaseStoreNotificationRequest
+        @Valid payload: BaseStoreNotificationRequest,
     ): Response {
         storeNotificationAction.execute(payload)
 

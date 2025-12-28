@@ -9,5 +9,5 @@ data class ProbeResult(
     val message: String,
     val runAt: LocalDateTime,
     val statusCode: Int? = null,
-    val responseBody: String? = null
+    val responseBody: String? = null,
 )

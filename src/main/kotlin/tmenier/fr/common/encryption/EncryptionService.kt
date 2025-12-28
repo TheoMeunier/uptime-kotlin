@@ -12,7 +12,6 @@ import javax.crypto.spec.SecretKeySpec
 @Unremovable
 @ApplicationScoped
 class EncryptionService {
-
     @ConfigProperty(name = "encryption.master-key", defaultValue = "ezfzefzefzef")
     private lateinit var masterKey: String
 
@@ -23,9 +22,10 @@ class EncryptionService {
     }
 
     fun encrypt(plainText: String): String {
-        val iv = ByteArray(12).apply {
-            java.security.SecureRandom().nextBytes(this)
-        }
+        val iv =
+            ByteArray(12).apply {
+                java.security.SecureRandom().nextBytes(this)
+            }
 
         val gcmSpec = GCMParameterSpec(128, iv)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec)

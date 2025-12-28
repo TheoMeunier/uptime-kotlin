@@ -6,12 +6,12 @@ import tmenier.fr.monitors.enums.NotificationChannelsEnum
 
 @ApplicationScoped
 class NotificationFactory(
-    private val notificationServices: Instance<TypedNotificationInterfaces<*>>
+    private val notificationServices: Instance<TypedNotificationInterfaces<*>>,
 ) {
-    fun getNotification(notificationType: NotificationChannelsEnum): TypedNotificationInterfaces<*>? {
-        return notificationServices.stream()
+    fun getNotification(notificationType: NotificationChannelsEnum): TypedNotificationInterfaces<*>? =
+        notificationServices
+            .stream()
             .filter { it.getNotificationType() == notificationType.name }
             .findFirst()
             .orElse(null)
-    }
 }

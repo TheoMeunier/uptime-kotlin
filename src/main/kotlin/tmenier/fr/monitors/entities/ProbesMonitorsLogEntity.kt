@@ -24,7 +24,7 @@ class ProbesMonitorsLogEntity : PanacheEntityBase {
     lateinit var status: ProbeMonitorLogStatus
 
     @Column(name = "response_time", nullable = false)
-     var responseTime: Long = 0L
+    var responseTime: Long = 0L
 
     @Column(name = "message", nullable = false)
     lateinit var message: String
@@ -36,8 +36,7 @@ class ProbesMonitorsLogEntity : PanacheEntityBase {
     @Column(name = "run_at", nullable = false, updatable = false)
     lateinit var runAt: LocalDateTime
 
-    companion object : PanacheCompanion<ProbesMonitorsLogEntity>
-    {
-       //
+    companion object : PanacheCompanion<ProbesMonitorsLogEntity> {
+        //
     }
 }

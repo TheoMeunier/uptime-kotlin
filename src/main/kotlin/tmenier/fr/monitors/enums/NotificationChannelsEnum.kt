@@ -5,5 +5,5 @@ enum class NotificationChannelsEnum {
     MAIL,
     TEAMS,
     SLACK,
-    WEBHOOK
+    WEBHOOK,
 }

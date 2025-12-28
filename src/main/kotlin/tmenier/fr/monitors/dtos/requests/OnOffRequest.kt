@@ -6,5 +6,5 @@ import jakarta.validation.constraints.NotNull
 @RegisterForReflection
 data class OnOffRequest(
     @field:NotNull(message = "enabled must not be null")
-    var enabled: Boolean
+    var enabled: Boolean,
 )

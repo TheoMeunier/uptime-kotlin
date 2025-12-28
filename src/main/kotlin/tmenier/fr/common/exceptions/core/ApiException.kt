@@ -10,25 +10,26 @@ import jakarta.ws.rs.ext.Provider
 open class ApiException(
     val errorCode: String,
     message: String,
-    val httpStatus: Response.Status = Response.Status.UNAUTHORIZED
+    val httpStatus: Response.Status = Response.Status.UNAUTHORIZED,
 ) : RuntimeException(message)
 
 @Provider
 class ApiExceptionMapper : ExceptionMapper<ApiException> {
-
     @Context
     private lateinit var uriInfo: UriInfo
 
     override fun toResponse(exception: ApiException): Response {
-        val error = exception.message?.let {
-            ApiErrorResponse(
-                error = exception.errorCode,
-                message = it,
-                path = uriInfo.path,
-            )
-        }
+        val error =
+            exception.message?.let {
+                ApiErrorResponse(
+                    error = exception.errorCode,
+                    message = it,
+                    path = uriInfo.path,
+                )
+            }
 
-        return Response.status(exception.httpStatus)
+        return Response
+            .status(exception.httpStatus)
             .entity(error)
             .type(MediaType.APPLICATION_JSON)
             .build()

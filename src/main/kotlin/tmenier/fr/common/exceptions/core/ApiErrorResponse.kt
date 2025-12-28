@@ -10,5 +10,5 @@ data class ApiErrorResponse(
     val details: String? = null,
     val timestamp: String = Instant.now().toString(),
     val path: String? = null,
-    val traceId: String? = null
+    val traceId: String? = null,
 )

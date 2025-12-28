@@ -10,7 +10,10 @@ import java.net.Socket
 
 @ApplicationScoped
 class ProbeProtocolTcp : ProbeProtocolAbstract() {
-    override fun execute(probe: ProbesEntity, isLastAttempt: Boolean): ProbeResult {
+    override fun execute(
+        probe: ProbesEntity,
+        isLastAttempt: Boolean,
+    ): ProbeResult {
         val start = now()
 
         return try {
@@ -18,15 +21,15 @@ class ProbeProtocolTcp : ProbeProtocolAbstract() {
                 socket.connect(
                     InetSocketAddress(
                         probe.url,
-                        probe.tcpPort!!
+                        probe.tcpPort!!,
                     ),
-                    probe.timeout
+                    probe.timeout,
                 )
                 return ProbeResult(
                     status = ProbeMonitorLogStatus.SUCCESS,
                     responseTime = getResponseTime(start),
                     message = "TCP connection successful in ${getResponseTime(start)}ms",
-                    runAt = getRunAt(start)
+                    runAt = getRunAt(start),
                 )
             }
         } catch (e: Exception) {
@@ -34,7 +37,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract() {
                 status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "TCP connection failed: ${e.message}",
-                runAt = getRunAt(start)
+                runAt = getRunAt(start),
             )
         }
     }

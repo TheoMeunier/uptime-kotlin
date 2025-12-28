@@ -11,32 +11,35 @@ import tmenier.fr.monitors.notifications.dto.NotificationContent
 object NotificationContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
 
-    fun toDTO(notification: NotificationsChannelEntity): NotificationContent {
-        return when (notification.type) {
-            NotificationChannelsEnum.DISCORD ->
+    fun toDTO(notification: NotificationsChannelEntity): NotificationContent =
+        when (notification.type) {
+            NotificationChannelsEnum.DISCORD -> {
                 objectMapper.treeToValue(notification.content, NotificationContent.Discord::class.java)
+            }
 
-            NotificationChannelsEnum.MAIL ->
+            NotificationChannelsEnum.MAIL -> {
                 objectMapper.treeToValue(notification.content, NotificationContent.Mail::class.java)
+            }
 
             else -> {
                 // TODO: create default notification content
             }
         } as NotificationContent
-    }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
-        val type = when (content) {
-            is NotificationContent.Discord -> NotificationChannelsEnum.DISCORD
-            is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
-        }
+        val type =
+            when (content) {
+                is NotificationContent.Discord -> NotificationChannelsEnum.DISCORD
+                is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
+            }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 
         return jsonNode to type
     }
 }
 
-fun NotificationsChannelEntity.toListingsDTO() = ListingNotificationsDto(
-    id = id,
-    name = name,
-)
+fun NotificationsChannelEntity.toListingsDTO() =
+    ListingNotificationsDto(
+        id = id,
+        name = name,
+    )

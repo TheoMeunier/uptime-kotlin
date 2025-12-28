@@ -9,5 +9,5 @@ data class ProbeMonitorDTO(
     val status: ProbeMonitorLogStatus,
     val responseTime: Long,
     val message: String,
-    val runAt: LocalDateTime
+    val runAt: LocalDateTime,
 )

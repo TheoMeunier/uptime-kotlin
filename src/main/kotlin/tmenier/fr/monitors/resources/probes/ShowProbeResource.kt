@@ -13,11 +13,10 @@ import java.util.*
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class ShowProbeResource {
-
     @GET
     @Authenticated
     fun show(
-        @PathParam("probeId") probeId: String
+        @PathParam("probeId") probeId: String,
     ): Response {
         val probeEntity = ProbesEntity.findById(UUID.fromString(probeId)) ?: throw NotFoundException("Probe not found")
 

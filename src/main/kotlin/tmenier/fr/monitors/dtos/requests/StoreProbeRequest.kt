@@ -16,9 +16,8 @@ import java.util.*
     JsonSubTypes.Type(value = ValidProbeProtocolHttpRequest::class, name = "HTTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolTcpRequest::class, name = "TCP"),
     JsonSubTypes.Type(value = ValidProbeProtocolDnsRequest::class, name = "DNS"),
-    JsonSubTypes.Type(value = ValidProbeProtocolPingRequest::class, name = "PING")
+    JsonSubTypes.Type(value = ValidProbeProtocolPingRequest::class, name = "PING"),
 )
-
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
     @field:NotBlank(message = "Name is required")
@@ -61,17 +60,16 @@ abstract class BaseStoreProbeRequest {
 data class ValidProbeProtocolHttpRequest(
     val notificationCertificate: Boolean? = false,
     val ignoreCertificateErrors: Boolean? = false,
-
     @field:Valid
     @field:Size(min = 1, message = "At least one HTTP code is required")
-    val httpCodeAllowed: List<HttpCodeEnum> = emptyList()
+    val httpCodeAllowed: List<HttpCodeEnum> = emptyList(),
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
 data class ValidProbeProtocolTcpRequest(
     @field:Min(1)
     @field:Max(65535)
-    val tcpPort: Int? = null
+    val tcpPort: Int? = null,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
@@ -79,9 +77,8 @@ data class ValidProbeProtocolDnsRequest(
     @field:Min(1)
     @field:Max(65535)
     val dnsPort: Int,
-
     @field:IpAddress()
-    val dnsServer: String
+    val dnsServer: String,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
@@ -89,18 +86,14 @@ data class ValidProbeProtocolPingRequest(
     @field:Min(1)
     @field:Max(60)
     val pingHeartbeatInterval: Int? = null,
-
     @field:Min(1)
     @field:Max(10)
     val pingMaxPacket: Int? = null,
-
     @field:Min(32)
     @field:Max(65500)
     val pingSize: Int? = null,
-
     @field:Min(1)
     @field:Max(60)
     val pingDelay: Int? = null,
-
-    val pingNumericOutput: Boolean? = false
+    val pingNumericOutput: Boolean? = false,
 ) : BaseStoreProbeRequest()
