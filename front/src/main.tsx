@@ -10,6 +10,7 @@ import Layout from "@/components/layouts/layout.tsx";
 import CreateProbe from "@/pages/probes/create-probe.tsx";
 import { ShowProbe } from "@/pages/probes/show-probe.tsx";
 import Profile from "@/pages/profile/profile.tsx";
+import ProbesStatus from "@/pages/probes/probes-status.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -28,6 +29,8 @@ createRoot(document.getElementById("root")!).render(
               <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
+
+          <Route path="/status" element={<ProbesStatus />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>

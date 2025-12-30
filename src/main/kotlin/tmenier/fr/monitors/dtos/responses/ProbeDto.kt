@@ -2,7 +2,7 @@ package tmenier.fr.monitors.dtos.responses
 
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class ProbeListDTO(
     val id: UUID,
@@ -13,6 +13,11 @@ data class ProbeListDTO(
 
 data class ProbeShowDTO(
     val probe: ProbeDTO,
+    val monitors: List<ProbeMonitorDTO>,
+)
+
+data class ProbeStatusDTO(
+    val probe: ProbeListDTO,
     val monitors: List<ProbeMonitorDTO>,
 )
 

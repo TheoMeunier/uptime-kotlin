@@ -11,6 +11,10 @@ const probeService = {
     return probeResponseSchema.parse(response);
   },
 
+  async getProbesStatus() {
+    return await api.get("probes/status").json();
+  },
+
   async getProbe(id: string): Promise<ProbeShow> {
     return await api.get(`probes/${id}`).json();
   },

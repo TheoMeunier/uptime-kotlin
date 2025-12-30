@@ -12,8 +12,6 @@ const api = ky.extend({
       (request) => {
         const token = authService.getAccessToken();
 
-        console.log(token);
-
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`);
         }

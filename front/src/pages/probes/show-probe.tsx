@@ -4,12 +4,18 @@ import probeService from "@/features/probes/services/probeService.ts";
 import { Button } from "@/components/atoms/button.tsx";
 import { Pencil } from "lucide-react";
 import { ButtonGroup } from "@/components/atoms/button-group.tsx";
-import { Card, CardContent } from "@/components/atoms/card.tsx";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/atoms/card.tsx";
 import DeleteProbeDialogue from "@/features/probes/components/actions/delete-probe-dialogue.tsx";
 import ProbeMonitorChartBar from "@/features/probes/components/modules/probe-monitor-chart-bar.tsx";
 import ProbeChart from "@/features/probes/components/modules/probe-chart.tsx";
 import ProbeMonitorLog from "@/features/probes/components/modules/probe-monitor-log.tsx";
 import OnOffMonitorProbeDialogue from "@/features/probes/components/actions/on-off-probe-dialogue.tsx";
+import ProbeStatus from "@/features/probes/components/modules/probe-status.tsx";
 
 export function ShowProbe() {
   const params = useParams();
@@ -48,10 +54,23 @@ export function ShowProbe() {
       <section>
         <Card>
           <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">Final hours</CardTitle>
+                <CardDescription className="mt-1">
+                  Check every 60 seconds (1 minute)
+                </CardDescription>
+              </div>
+              <ProbeStatus status={data!.probe.status} />
+            </div>
             <ProbeMonitorChartBar
               monitors={data!.monitors}
               probeStatus={data!.probe.status}
             />
+            <div className="flex justify-between text-xs text-slate-500 mt-1">
+              <span>1 hour ago</span>
+              <span>Now</span>
+            </div>
           </CardContent>
         </Card>
       </section>

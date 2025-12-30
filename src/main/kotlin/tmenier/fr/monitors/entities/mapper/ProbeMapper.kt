@@ -1,8 +1,6 @@
 package tmenier.fr.monitors.entities.mapper
 
-import tmenier.fr.monitors.dtos.responses.ProbeDTO
-import tmenier.fr.monitors.dtos.responses.ProbeMonitorDTO
-import tmenier.fr.monitors.dtos.responses.ProbeShowDTO
+import tmenier.fr.monitors.dtos.responses.*
 import tmenier.fr.monitors.entities.ProbesEntity
 
 fun ProbesEntity.toShowDtp() =
@@ -33,6 +31,27 @@ fun ProbesEntity.toShowDtp() =
                 pingNumericOutput = pingNumericOutput,
                 createdAt = createdAt,
                 updatedAt = updatedAt,
+            ),
+        monitors =
+            probesMonitorLogs.map {
+                ProbeMonitorDTO(
+                    id = it.id,
+                    status = it.status,
+                    responseTime = it.responseTime,
+                    message = it.message,
+                    runAt = it.runAt,
+                )
+            },
+    )
+
+fun ProbesEntity.toStatusDto() =
+    ProbeStatusDTO(
+        probe =
+            ProbeListDTO(
+                id = id,
+                name = name,
+                description = description,
+                status = status
             ),
         monitors =
             probesMonitorLogs.map {

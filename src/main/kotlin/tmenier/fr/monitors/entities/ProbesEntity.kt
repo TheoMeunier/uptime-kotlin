@@ -113,6 +113,12 @@ class ProbesEntity : PanacheEntityBase {
 
         fun getAllProbes(): List<ProbesEntity> = findAll().list()
 
+        fun getProbesLastHour(): List<ProbesEntity> = find(
+            "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true",
+            LocalDateTime.now().minusHours(1),
+        )
+            .list()
+
         fun delete(id: UUID): Long = delete("id = ?1", id)
     }
 }
