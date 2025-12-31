@@ -34,7 +34,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract() {
             }
         } catch (e: Exception) {
             ProbeResult(
-                status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                status = getStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "TCP connection failed: ${e.message}",
                 runAt = getRunAt(start),
@@ -43,4 +43,12 @@ class ProbeProtocolTcp : ProbeProtocolAbstract() {
     }
 
     override fun getProtocolType() = ProbeProtocol.TCP.name
+
+    private fun getStatus(isLastAttempt: Boolean, probe: ProbesEntity): ProbeMonitorLogStatus {
+        if (isLastAttempt) return ProbeMonitorLogStatus.FAILURE
+
+        if (probe.status == ProbeMonitorLogStatus.FAILURE) return ProbeMonitorLogStatus.FAILURE
+
+        return ProbeMonitorLogStatus.WARNING
+    }
 }

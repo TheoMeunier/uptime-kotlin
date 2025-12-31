@@ -64,7 +64,7 @@ class ProbeSchedulerTemplateFactory(
 
                     if (runningProbes.add(probe.id)) {
                         try {
-                            executeWithRetry(probe, LocalDateTime.now())
+                            executeWithRetry(probe)
                         } catch (e: Exception) {
                             logger.error { "Error executing probe id=${probe.id}: ${e.stackTraceToString()}" }
                         } finally {
@@ -79,7 +79,6 @@ class ProbeSchedulerTemplateFactory(
 
     private suspend fun executeWithRetry(
         probe: ProbesEntity,
-        now: LocalDateTime,
     ) {
         val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
         val maxAttempts = probe.retry + 1
@@ -90,6 +89,7 @@ class ProbeSchedulerTemplateFactory(
         }
 
         repeat(maxAttempts) { attempt ->
+            val now = LocalDateTime.now()
             val isLastAttempt = attempt == maxAttempts - 1
             val result = protocolHandler.execute(probe, isLastAttempt)
 
@@ -128,6 +128,8 @@ class ProbeSchedulerTemplateFactory(
                         saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
                         return
                     }
+
+                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
                 }
 
                 else -> {
@@ -136,6 +138,8 @@ class ProbeSchedulerTemplateFactory(
                         saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
                         return
                     }
+
+                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
                 }
             }
 

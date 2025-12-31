@@ -50,7 +50,7 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
             val success = checkIfStatusCodeIsValid(probe.httpCodeAllowed, response.statusCode())
 
             ProbeResult(
-                status = getStatus(success, isLastAttempt),
+                status = getStatus(success, isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "HTTP Status: ${response.statusCode()} in ${getResponseTime(start)} ms",
                 runAt = getRunAt(start),
@@ -72,12 +72,14 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
                     override fun checkClientTrusted(
                         chain: Array<X509Certificate>,
                         authType: String,
-                    ) {}
+                    ) {
+                    }
 
                     override fun checkServerTrusted(
                         chain: Array<X509Certificate>,
                         authType: String,
-                    ) {}
+                    ) {
+                    }
 
                     override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
                 },
@@ -108,14 +110,23 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
     private fun getStatus(
         isSuccess: Boolean,
         isLastAttempt: Boolean,
-    ): ProbeMonitorLogStatus =
+        probe: ProbesEntity
+    ): ProbeMonitorLogStatus {
         if (isSuccess) {
-            ProbeMonitorLogStatus.SUCCESS
-        } else if (isLastAttempt) {
-            ProbeMonitorLogStatus.FAILURE
-        } else {
-            ProbeMonitorLogStatus.WARNING
+            return ProbeMonitorLogStatus.SUCCESS
         }
+
+        if (isLastAttempt) {
+            return ProbeMonitorLogStatus.FAILURE
+        }
+
+        if (probe.status == ProbeMonitorLogStatus.FAILURE) {
+            return ProbeMonitorLogStatus.FAILURE
+        }
+
+        return ProbeMonitorLogStatus.WARNING
+    }
+
 
     override fun getProtocolType() = ProbeProtocol.HTTP.name
 }
