@@ -57,7 +57,7 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
             )
         } catch (e: Exception) {
             ProbeResult(
-                status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
+                status = getStatus(false, isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "HTTP request failed: ${e.message}",
                 runAt = getRunAt(start),
