@@ -151,7 +151,10 @@ class ProbeSchedulerTemplateFactory(
         probe: ProbesEntity,
         from: LocalDateTime,
     ): LocalDateTime {
-        val lastRun = probe.lastRun ?: return from
+        val lastRun = probe.lastRun
+
+        if (lastRun === null) return from.plusSeconds(probe.interval.toLong())
+
         val intervalSeconds = probe.interval
         var nextRun = lastRun.plusSeconds(intervalSeconds.toLong())
 
