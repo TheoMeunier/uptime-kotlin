@@ -62,7 +62,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
                         "title": "Your service $escapedTitle is $status",
                         "description": "$escapedDescription",
                         "color": $color,
-                        timestamp: "${runAt.toString()}",
+                        "timestamp": "${runAt.toString()}",
                     }
                 ]
             }
