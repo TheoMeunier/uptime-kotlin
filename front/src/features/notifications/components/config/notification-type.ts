@@ -15,6 +15,20 @@ const NOTIFICATION_FIELDS_CONFIG = {
       placeholder: "Uptime kotlin",
     },
   ],
+  [NotificationTypeEnum.TEAMS]: [
+    {
+      name: "url_webhook",
+      label: "Webhook Url",
+      input_type: "text",
+      placeholder: "https://microsoft-teams.com/api/webhooks/...",
+    },
+    {
+      name: "name_reboot",
+      label: "Name reboot",
+      input_type: "text",
+      placeholder: "Uptime kotlin",
+    },
+  ],
   [NotificationTypeEnum.MAIL]: [
     {
       name: "hostname",

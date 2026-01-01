@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
+import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.notifications.TypedNotificationInterfaces
 import tmenier.fr.monitors.notifications.dto.NotificationContent
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
@@ -11,6 +12,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.LocalDateTime
 
 @ApplicationScoped
 class DiscordNotificationService : TypedNotificationInterfaces<NotificationContent.Discord> {
@@ -21,7 +23,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
         probe: ProbesEntity,
         result: ProbeResult,
     ) {
-        val jsonPayload = buildEmbed(probe.name, result.message, 0x00FF00)
+        val jsonPayload = buildEmbed(probe.name, result.message, 0x00FF00, result.runAt, result.status)
         sendDiscordEmbed(content, jsonPayload)
     }
 
@@ -30,12 +32,15 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
         probe: ProbesEntity,
         result: ProbeResult,
     ) {
-        val jsonPayload = buildEmbed(probe.name, result.message, 0xFF0000)
+        val jsonPayload = buildEmbed(probe.name, result.message, 0xFF0000, result.runAt, result.status)
         sendDiscordEmbed(content, jsonPayload)
     }
 
     override fun sendTest(content: NotificationContent.Discord) {
-        sendDiscordEmbed(content, buildEmbed("Test", "Test notification", 0x0000FF))
+        sendDiscordEmbed(
+            content,
+            buildEmbed("Test", "Test notification", 0x0000FF, LocalDateTime.now(), ProbeMonitorLogStatus.SUCCESS)
+        )
     }
 
     override fun getNotificationType() = NotificationChannelsEnum.DISCORD.name
@@ -44,6 +49,8 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
         title: String,
         description: String,
         color: Int,
+        runAt: LocalDateTime,
+        status: ProbeMonitorLogStatus,
     ): String {
         val escapedTitle = title.replace("\"", "\\\"").replace("\n", "\\n")
         val escapedDescription = description.replace("\"", "\\\"").replace("\n", "\\n")
@@ -52,9 +59,10 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
             {
                 "embeds": [
                     {
-                        "title": "$escapedTitle",
+                        "title": "Your service $escapedTitle is $status",
                         "description": "$escapedDescription",
-                        "color": $color
+                        "color": $color,
+                        timestamp: "${runAt.toString()}",
                     }
                 ]
             }
@@ -84,27 +92,6 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
             when (response.statusCode()) {
                 204, 200 -> {
                     logger.info { "Discord notification sent successfully" }
-                }
-
-                400 -> {
-                    logger.error { "Bad request to Discord API: ${response.body()}" }
-                    logger.error { "Payload was: $jsonPayload" }
-                }
-
-                401 -> {
-                    logger.error { "Unauthorized - Invalid Discord webhook URL" }
-                }
-
-                404 -> {
-                    logger.error { "Webhook not found - The Discord webhook may have been deleted" }
-                }
-
-                429 -> {
-                    logger.error { "Rate limited by Discord API: ${response.body()}" }
-                }
-
-                else -> {
-                    logger.error { "Failed to send Discord notification: ${response.statusCode()} ${response.body()}" }
                 }
             }
         } catch (e: Exception) {

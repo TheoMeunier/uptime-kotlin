@@ -4,6 +4,7 @@ import io.vertx.core.Vertx
 import io.vertx.ext.mail.*
 import jakarta.enterprise.context.ApplicationScoped
 import org.jboss.logging.Logger
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.notifications.TypedNotificationInterfaces
@@ -14,6 +15,7 @@ import tmenier.fr.monitors.schedulers.dto.ProbeResult
 class EmailNotificationService(
     private val vertx: Vertx,
     private val logger: Logger,
+    private val encryptionService: EncryptionService,
 ) : TypedNotificationInterfaces<NotificationContent.Mail> {
     override fun sendSuccess(
         content: NotificationContent.Mail,
@@ -98,7 +100,7 @@ class EmailNotificationService(
                 starttls = if (credential.starttls) StartTLSOptions.REQUIRED else StartTLSOptions.DISABLED
                 login = LoginOption.REQUIRED
                 username = credential.username
-                password = credential.password
+                password = encryptionService.decrypt(credential.password)
             }
 
         return MailClient.createShared(vertx, config)

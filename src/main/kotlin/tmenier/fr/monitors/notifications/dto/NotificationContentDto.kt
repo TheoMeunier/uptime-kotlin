@@ -6,6 +6,11 @@ sealed interface NotificationContent {
         val username: String?,
     ) : NotificationContent
 
+    data class Teams(
+        val webhookUrl: String,
+        val username: String?,
+    ) : NotificationContent
+
     data class Mail(
         val hostname: String,
         val port: Int,

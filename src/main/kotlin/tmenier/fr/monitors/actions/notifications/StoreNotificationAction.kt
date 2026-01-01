@@ -5,6 +5,7 @@ import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.monitors.dtos.requests.BaseStoreNotificationRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelMailRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelTeamsRequest
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.notifications.dto.NotificationContent
@@ -26,6 +27,18 @@ class StoreNotificationAction(
                 val (jsonNode, _) =
                     NotificationContentMapper.toEntity(
                         NotificationContent.Discord(
+                            webhookUrl = payload.urlWebhook,
+                            username = payload.nameReboot,
+                        ),
+                    )
+
+                notification.content = jsonNode
+            }
+
+            is ValidNotificationChannelTeamsRequest -> {
+                val (jsonNode, _) =
+                    NotificationContentMapper.toEntity(
+                        NotificationContent.Teams(
                             webhookUrl = payload.urlWebhook,
                             username = payload.nameReboot,
                         ),

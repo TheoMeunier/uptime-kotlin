@@ -17,6 +17,10 @@ object NotificationContentMapper {
                 objectMapper.treeToValue(notification.content, NotificationContent.Discord::class.java)
             }
 
+            NotificationChannelsEnum.TEAMS -> {
+                objectMapper.treeToValue(notification.content, NotificationContent.Teams::class.java)
+            }
+
             NotificationChannelsEnum.MAIL -> {
                 objectMapper.treeToValue(notification.content, NotificationContent.Mail::class.java)
             }
@@ -30,6 +34,7 @@ object NotificationContentMapper {
         val type =
             when (content) {
                 is NotificationContent.Discord -> NotificationChannelsEnum.DISCORD
+                is NotificationContent.Teams -> NotificationChannelsEnum.TEAMS
                 is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
