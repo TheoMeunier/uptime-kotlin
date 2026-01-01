@@ -24,7 +24,8 @@ import NOTIFICATION_FIELDS_CONFIG from "@/features/notifications/components/conf
 import FormFieldNotification from "@/features/notifications/components/forms/form-field-notification.tsx";
 
 export default function CreateNotificationDialogue() {
-  const { form, onSubmit, isLoading, errors } = useNotificationForm();
+  const { openDialogue, setOpenDialogue, form, onSubmit, isLoading, errors } =
+    useNotificationForm();
   const notificationType = form.watch("notification_type");
 
   const dynamicFields = notificationType
@@ -32,7 +33,7 @@ export default function CreateNotificationDialogue() {
     : NOTIFICATION_FIELDS_CONFIG[NotificationTypeEnum.DISCORD];
 
   return (
-    <Dialog>
+    <Dialog open={openDialogue} onOpenChange={setOpenDialogue}>
       <DialogTrigger asChild>
         <Button>
           <BellPlus className="mr-2 h-4 w-4" />

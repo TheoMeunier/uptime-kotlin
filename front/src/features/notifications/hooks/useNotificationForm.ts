@@ -3,6 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import notificationService from "@/features/notifications/services/notification-service.ts";
+import { useState } from "react";
+import { toast } from "sonner";
+import { data } from "react-router";
 
 const baseStoreNotificationSchema = z.object({
   name: z.string().min(3).max(255),
@@ -40,6 +43,7 @@ export type StoreNotificationSchema = z.infer<typeof storeNotificationSchema>;
 
 export default function useNotificationForm() {
   const queryClient = useQueryClient();
+  const [openDialogue, setOpenDialogue] = useState(false);
 
   const form = useForm<StoreNotificationSchema>({
     resolver: zodResolver(storeNotificationSchema),
@@ -52,8 +56,14 @@ export default function useNotificationForm() {
     mutationFn: async (data: StoreNotificationSchema) => {
       return notificationService.storeNotification(data);
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () => {
+      queryClient
+        .invalidateQueries({ queryKey: ["notifications"] })
+        .then(() => {
+          setOpenDialogue(false);
+          toast.success(`Notification ${data.name} successfully created`);
+        });
+    },
   });
 
   const onSubmit: SubmitHandler<StoreNotificationSchema> = async (
@@ -63,6 +73,8 @@ export default function useNotificationForm() {
   };
 
   return {
+    openDialogue,
+    setOpenDialogue,
     form,
     onSubmit,
     isLoading: mutation.isPending,
