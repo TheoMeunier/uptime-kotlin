@@ -18,7 +18,7 @@ const baseStoreProbeSchema = z.object({
   description: z
     .string()
     .transform((val) => (val === "" ? null : val))
-    .optional(),
+    .nullish(),
   notifications: z.array(z.uuid()).optional(),
 });
 
@@ -75,14 +75,6 @@ export function useStoreProbeForm() {
       retry: 3,
       timeout: 30,
       enabled: true,
-      dns_server: "1.1.1.1",
-      dns_port: 53,
-      ping_delay: 2,
-      ping_size: 56,
-      ping_max_packet: 3,
-      ignore_certificate_errors: false,
-      notification_certificate: false,
-      http_code_allowed: [],
       notifications: [],
     },
   });
@@ -110,6 +102,6 @@ export function useStoreProbeForm() {
     form,
     onsubmit,
     isLoading: mutation.isPending,
-    error: mutation.error,
+    errors: form.formState.errors,
   };
 }

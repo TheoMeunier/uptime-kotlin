@@ -1,31 +1,18 @@
-export interface SelectOption {
-  value: string;
-  label: string;
-}
-
-export interface ValidationRule {
-  required?: string | boolean;
-  pattern?: {
-    value: RegExp;
-    message: string;
-  };
-  minLength?: {
-    value: number;
-    message: string;
-  };
-  maxLength?: {
-    value: number;
-    message: string;
-  };
-}
+import type {
+  MultiSelectGroup,
+  MultiSelectOption,
+} from "@/components/atoms/multi-select.tsx";
 
 export interface FieldConfig {
   name: string;
   label: string;
   input_type: string;
+  default_value?: string | number | boolean | string[] | number[];
   placeholder?: string;
-  rules?: ValidationRule;
-  options?: SelectOption[];
+  description?: string;
+  searchable?: boolean;
+  closeOnSelect?: boolean;
+  options?: MultiSelectOption[] | MultiSelectGroup[] | readonly string[];
 }
 
 export interface NotificationTypeConfig {
