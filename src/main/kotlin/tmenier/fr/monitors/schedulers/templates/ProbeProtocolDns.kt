@@ -4,26 +4,28 @@ import jakarta.enterprise.context.ApplicationScoped
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.SimpleResolver
 import org.xbill.DNS.Type
+import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 
 @ApplicationScoped
-class ProbeProtocolDns : ProbeProtocolAbstract() {
+class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
     override fun execute(
         probe: ProbesEntity,
+        content: ProbeContent.Dns,
         isLastAttempt: Boolean,
     ): ProbeResult {
         val start = now()
 
         return try {
             val resolver =
-                SimpleResolver(probe.dnsServer).apply {
-                    port = probe.dnsPort!!
+                SimpleResolver(content.dnsServer).apply {
+                    port = content.dnsPort
                 }
 
-            val lookup = Lookup(probe.url, Type.A)
+            val lookup = Lookup(content.hostname, Type.A)
             lookup.setResolver(resolver)
 
             val record = lookup.run()

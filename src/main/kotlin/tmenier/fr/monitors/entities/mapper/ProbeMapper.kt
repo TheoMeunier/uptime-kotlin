@@ -1,7 +1,52 @@
 package tmenier.fr.monitors.entities.mapper
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.dtos.responses.*
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.enums.ProbeProtocol
+
+object ProbeContentMapper {
+    private val objectMapper = ObjectMapper().registerKotlinModule()
+
+    fun toDto(probe: ProbesEntity): ProbeContent =
+        when (probe.protocol) {
+            ProbeProtocol.HTTP -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.Http::class.java)
+            }
+
+            ProbeProtocol.DNS -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.Dns::class.java)
+            }
+
+            ProbeProtocol.TCP -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.Tcp::class.java)
+            }
+
+            ProbeProtocol.PING -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.Ping::class.java)
+            }
+
+            else -> {
+                // TODO: create default probe content
+            }
+        } as ProbeContent
+
+    fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
+        val type = when (content) {
+            is ProbeContent.Http -> ProbeProtocol.HTTP
+            is ProbeContent.Dns -> ProbeProtocol.DNS
+            is ProbeContent.Tcp -> ProbeProtocol.TCP
+            is ProbeContent.Ping -> ProbeProtocol.PING
+        }
+
+        val jsonNode = objectMapper.valueToTree<JsonNode>(content)
+
+        return jsonNode to type
+    }
+}
 
 fun ProbesEntity.toShowDtp() =
     ProbeShowDTO(
@@ -9,7 +54,6 @@ fun ProbesEntity.toShowDtp() =
             ProbeDTO(
                 id = id,
                 name = name,
-                url = url,
                 interval = interval,
                 timeout = timeout,
                 retry = retry,
@@ -19,16 +63,7 @@ fun ProbesEntity.toShowDtp() =
                 description = description,
                 lastRun = lastRun,
                 status = status,
-                notificationCertified = notificationCertified,
-                ignoreCertificateErrors = ignoreCertificateErrors,
-                httpCodeAllowed = httpCodeAllowed.map { it.name },
-                tcpPort = tcpPort,
-                dnsPort = dnsPort,
-                dnsServer = dnsServer,
-                pingMaxPacket = pingMaxPacket,
-                pingSize = pingSize,
-                pingDelay = pingDelay,
-                pingNumericOutput = pingNumericOutput,
+                content = ProbeContentMapper.toDto(this),
                 createdAt = createdAt,
                 updatedAt = updatedAt,
             ),

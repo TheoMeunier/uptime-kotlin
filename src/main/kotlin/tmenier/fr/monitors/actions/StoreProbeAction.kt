@@ -1,9 +1,11 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.dtos.requests.*
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
 import java.util.*
 
 @ApplicationScoped
@@ -11,14 +13,13 @@ class StoreProbeAction {
     fun execute(payload: BaseStoreProbeRequest) {
         val probe = ProbesEntity()
         probe.id = UUID.randomUUID()
-        probe.name = payload.name!!
+        probe.name = payload.name
         probe.interval = payload.interval!!
         probe.intervalRetry = payload.intervalRetry!!
         probe.retry = payload.retry!!
-        probe.protocol = payload.protocol!!
+        probe.protocol = payload.protocol
         probe.enabled = payload.enabled == true
         probe.description = payload.description
-        probe.url = payload.url!!
 
         // save notification
         val notificationFromDb = NotificationsChannelEntity.findByIds(payload.notifications)
@@ -26,25 +27,53 @@ class StoreProbeAction {
 
         when (payload) {
             is ValidProbeProtocolHttpRequest -> {
-                probe.notificationCertified = payload.notificationCertificate == true
-                probe.ignoreCertificateErrors = payload.ignoreCertificateErrors == true
-                probe.httpCodeAllowed = payload.httpCodeAllowed
+                val (jsonNode, _) = ProbeContentMapper.toEntity(
+                    ProbeContent.Http(
+                        url = payload.url,
+                        notificationCertified = payload.notificationCertificate,
+                        ignoreCertificateErrors = payload.ignoreCertificateErrors,
+                        httpCodeAllowed = payload.httpCodeAllowed
+                    )
+                )
+
+                probe.content = jsonNode
             }
 
             is ValidProbeProtocolTcpRequest -> {
-                probe.tcpPort = payload.tcpPort
+                val (jsonNode, _) = ProbeContentMapper.toEntity(
+                    ProbeContent.Tcp(
+                        url = payload.url,
+                        tcpPort = payload.tcpPort
+                    )
+                )
+
+                probe.content = jsonNode
             }
 
             is ValidProbeProtocolDnsRequest -> {
-                probe.dnsPort = payload.dnsPort
-                probe.dnsServer = payload.dnsServer
+                val (jsonNode, _) = ProbeContentMapper.toEntity(
+                    ProbeContent.Dns(
+                        hostname = payload.url,
+                        dnsPort = payload.dnsPort,
+                        dnsServer = payload.dnsServer
+                    )
+                )
+
+                probe.content = jsonNode
             }
 
             is ValidProbeProtocolPingRequest -> {
-                probe.pingSize = payload.pingSize
-                probe.pingMaxPacket = payload.pingMaxPacket
-                probe.pingDelay = payload.pingDelay
-                probe.pingNumericOutput = payload.pingNumericOutput
+                val (jsonNode, _) = ProbeContentMapper.toEntity(
+                    ProbeContent.Ping(
+                        ip = payload.url,
+                        pingMaxPacket = payload.pingMaxPacket,
+                        pingSize = payload.pingSize,
+                        pingDelay = payload.pingDelay,
+                        pingNumericOutput = payload.pingNumericOutput
+                    )
+                )
+
+                probe.content = jsonNode
             }
 
             else -> {

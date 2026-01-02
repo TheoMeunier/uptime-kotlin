@@ -2,6 +2,7 @@ package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
+import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
@@ -11,17 +12,18 @@ import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
 
 @ApplicationScoped
-class ProbeProtocolPing : ProbeProtocolAbstract() {
+class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
     override fun execute(
         probe: ProbesEntity,
+        content: ProbeContent.Ping,
         isLastAttempt: Boolean,
     ): ProbeResult {
         val start = now()
 
         return try {
-            val cleanUrl = parseUrl(probe.url)
-            val maxPackets = probe.pingMaxPacket ?: 3
-            val delay = probe.pingDelay?.toLong() ?: 1000L
+            val cleanUrl = parseUrl(content.ip)
+            val maxPackets = content.pingMaxPacket
+            val delay = content.pingDelay.toLong()
 
             var successfulPings = 0
             var totalResponseTime = 0L
@@ -59,11 +61,11 @@ class ProbeProtocolPing : ProbeProtocolAbstract() {
 
             val message =
                 if (status == ProbeMonitorLogStatus.SUCCESS) {
-                    "Ping successful to ${probe.url}: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
+                    "Ping successful to ${content.ip}: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
                 } else if (successfulPings > 0) {
-                    "Ping warning to ${probe.url}: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
+                    "Ping warning to ${content.ip}: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
                 } else {
-                    "Ping failed to ${probe.url}: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
+                    "Ping failed to ${content.ip}: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
                 }
 
             ProbeResult(

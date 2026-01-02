@@ -34,8 +34,6 @@ class EmailNotificationService(
                     Status: SUCCESS
                     Response Time: ${result.responseTime}ms
                     Timestamp: ${result.runAt}
-                    
-                    URL: ${probe.url}
                     """.trimIndent(),
                 )
 
@@ -62,8 +60,6 @@ class EmailNotificationService(
                     Status: FAILURE
                     Error: ${result.message}
                     Timestamp: ${result.runAt}
-                    
-                    URL: ${probe.url}
                     """.trimIndent(),
                 )
 

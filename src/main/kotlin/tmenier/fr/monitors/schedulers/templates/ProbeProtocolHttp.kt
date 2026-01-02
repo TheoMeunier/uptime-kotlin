@@ -1,7 +1,9 @@
 package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
 import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
@@ -18,12 +20,14 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 @ApplicationScoped
-class ProbeProtocolHttp : ProbeProtocolAbstract() {
+class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
     override fun execute(
         probe: ProbesEntity,
+        content: ProbeContent.Http,
         isLastAttempt: Boolean,
     ): ProbeResult {
         val start = now()
+        val probeContent = ProbeContentMapper.toDto(probe)
 
         return try {
             val clientBuilder =
@@ -32,7 +36,7 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
                     .connectTimeout(Duration.ofSeconds(5))
 
             // skip error certificate
-            if (probe.ignoreCertificateErrors) {
+            if (content.ignoreCertificateErrors) {
                 clientBuilder.sslContext(createInsecureSSLContext())
             }
 
@@ -41,13 +45,13 @@ class ProbeProtocolHttp : ProbeProtocolAbstract() {
             val request =
                 HttpRequest
                     .newBuilder()
-                    .uri(URI(probe.url))
+                    .uri(URI(content.url))
                     .timeout(Duration.ofSeconds(5))
                     .GET()
                     .build()
 
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-            val success = checkIfStatusCodeIsValid(probe.httpCodeAllowed, response.statusCode())
+            val success = checkIfStatusCodeIsValid(content.httpCodeAllowed, response.statusCode())
 
             ProbeResult(
                 status = getStatus(success, isLastAttempt, probe),

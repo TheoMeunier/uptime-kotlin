@@ -21,7 +21,7 @@ import java.util.*
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
     @field:NotBlank(message = "Name is required")
-    var name: String? = null
+    lateinit var name: String
 
     @field:NotNull(message = "Interval is required")
     @field:Min(value = 1, message = "Interval must be at least 1 second")
@@ -29,7 +29,7 @@ abstract class BaseStoreProbeRequest {
     var interval: Int? = null
 
     @field:NotNull(message = "Protocol is required")
-    var protocol: ProbeProtocol? = null
+    lateinit var protocol: ProbeProtocol
 
     @field:NotNull(message = "Retry is required")
     @field:Min(value = 1, message = "Retry must be at least 1")
@@ -50,7 +50,7 @@ abstract class BaseStoreProbeRequest {
 
     @field:NotBlank(message = "Url is required")
     @field:UrlOrIp(message = "Invalid URL or IP format")
-    var url: String? = null
+    lateinit var url: String
 
     @field:Size(min = 1, message = "At least one notification is required")
     val notifications: List<UUID> = emptyList()
@@ -58,8 +58,8 @@ abstract class BaseStoreProbeRequest {
 
 @RegisterForReflection
 data class ValidProbeProtocolHttpRequest(
-    val notificationCertificate: Boolean? = false,
-    val ignoreCertificateErrors: Boolean? = false,
+    val notificationCertificate: Boolean,
+    val ignoreCertificateErrors: Boolean,
     @field:Valid
     @field:Size(min = 1, message = "At least one HTTP code is required")
     val httpCodeAllowed: List<HttpCodeEnum> = emptyList(),
@@ -69,7 +69,7 @@ data class ValidProbeProtocolHttpRequest(
 data class ValidProbeProtocolTcpRequest(
     @field:Min(1)
     @field:Max(65535)
-    val tcpPort: Int? = null,
+    val tcpPort: Int
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
@@ -85,15 +85,15 @@ data class ValidProbeProtocolDnsRequest(
 data class ValidProbeProtocolPingRequest(
     @field:Min(1)
     @field:Max(60)
-    val pingHeartbeatInterval: Int? = null,
+    val pingHeartbeatInterval: Int,
     @field:Min(1)
     @field:Max(10)
-    val pingMaxPacket: Int? = null,
+    val pingMaxPacket: Int,
     @field:Min(32)
     @field:Max(65500)
-    val pingSize: Int? = null,
+    val pingSize: Int,
     @field:Min(1)
     @field:Max(60)
-    val pingDelay: Int? = null,
-    val pingNumericOutput: Boolean? = false,
+    val pingDelay: Int,
+    val pingNumericOutput: Boolean,
 ) : BaseStoreProbeRequest()

@@ -1,12 +1,13 @@
 package tmenier.fr.monitors.entities
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UpdateTimestamp
-import tmenier.fr.monitors.entities.converts.HttpStatusCodeConverter
-import tmenier.fr.monitors.enums.HttpCodeEnum
+import org.hibernate.type.SqlTypes
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
 import java.time.LocalDateTime
@@ -21,9 +22,6 @@ class ProbesEntity : PanacheEntityBase {
 
     @Column(nullable = false, length = 255)
     lateinit var name: String
-
-    @Column(nullable = false, length = 255)
-    lateinit var url: String
 
     @Column(nullable = false)
     var interval: Int = 0
@@ -52,42 +50,11 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "last_run")
     var lastRun: LocalDateTime? = null
 
-    // --- HTTP ---
-    @Column(name = "notification_certified", nullable = false)
-    var notificationCertified: Boolean = false
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    var content: JsonNode? = null
 
-    @Column(name = "ignore_certificate_errors", nullable = false)
-    var ignoreCertificateErrors: Boolean = false
-
-    @Column(name = "http_code_allowed")
-    @Convert(converter = HttpStatusCodeConverter::class)
-    var httpCodeAllowed: List<HttpCodeEnum> = emptyList()
-
-    // --- TCP ---
-    @Column(name = "tcp_port")
-    var tcpPort: Int? = null
-
-    // --- DNS ---
-    @Column(name = "dns_port")
-    var dnsPort: Int? = null
-
-    @Column(name = "dns_server")
-    var dnsServer: String? = null
-
-    // --- PING ---
-    @Column(name = "ping_max_packet")
-    var pingMaxPacket: Int? = null
-
-    @Column(name = "ping_size")
-    var pingSize: Int? = null
-
-    @Column(name = "ping_delay")
-    var pingDelay: Int? = null
-
-    @Column(name = "ping_numeric_output")
-    var pingNumericOutput: Boolean? = null
-
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @JoinTable(
         name = "probes_notifications_channels",
         joinColumns = [JoinColumn("probe_id")],

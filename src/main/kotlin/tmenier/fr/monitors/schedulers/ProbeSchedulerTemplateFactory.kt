@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import kotlinx.coroutines.*
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.notifications.NotificationService
 import tmenier.fr.monitors.services.SaveProbeMonitor
@@ -80,7 +81,9 @@ class ProbeSchedulerTemplateFactory(
     private suspend fun executeWithRetry(
         probe: ProbesEntity,
     ) {
+        val content = ProbeContentMapper.toDto(probe)
         val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
+
         val maxAttempts = probe.retry + 1
 
         if (protocolHandler == null) {
@@ -88,10 +91,13 @@ class ProbeSchedulerTemplateFactory(
             return
         }
 
+        @Suppress("UNCHECKED_CAST")
+        val typeHandler = protocolHandler as ProbeSchedulerInterfaceType<Any>
+
         repeat(maxAttempts) { attempt ->
             val now = LocalDateTime.now()
             val isLastAttempt = attempt == maxAttempts - 1
-            val result = protocolHandler.execute(probe, isLastAttempt)
+            val result = typeHandler.execute(probe, content, isLastAttempt)
 
             when (result.status) {
                 ProbeMonitorLogStatus.SUCCESS -> {

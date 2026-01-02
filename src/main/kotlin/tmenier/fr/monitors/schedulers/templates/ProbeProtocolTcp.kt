@@ -1,6 +1,7 @@
 package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
@@ -9,9 +10,10 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 @ApplicationScoped
-class ProbeProtocolTcp : ProbeProtocolAbstract() {
+class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
     override fun execute(
         probe: ProbesEntity,
+        content: ProbeContent.Tcp,
         isLastAttempt: Boolean,
     ): ProbeResult {
         val start = now()
@@ -20,8 +22,8 @@ class ProbeProtocolTcp : ProbeProtocolAbstract() {
             Socket().use { socket ->
                 socket.connect(
                     InetSocketAddress(
-                        probe.url,
-                        probe.tcpPort!!,
+                        content.url,
+                        content.tcpPort,
                     ),
                     probe.timeout,
                 )
