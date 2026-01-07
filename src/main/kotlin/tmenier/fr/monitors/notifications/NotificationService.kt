@@ -41,6 +41,8 @@ class NotificationService(
                         typedHandler.sendFailure(content, probe, result)
                     } else if (probe.status === ProbeMonitorLogStatus.FAILURE && result.status === ProbeMonitorLogStatus.SUCCESS) {
                         typedHandler.sendSuccess(content, probe, result)
+                    } else {
+                        return@launch
                     }
                 }
             }
