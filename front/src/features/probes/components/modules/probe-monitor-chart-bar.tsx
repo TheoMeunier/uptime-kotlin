@@ -140,11 +140,11 @@ export default function ProbeMonitorChartBar({
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="flex gap-1 my-3 h-12 items-end min-w-max">
+      <div className="flex gap-1 my-3 h-8 items-end min-w-max">
         {Array.from({ length: emptyBars }).map((_, i) => (
           <div
             key={`empty-${i}`}
-            className="h-12 w-2 flex-shrink-0 rounded bg-gray-500/40"
+            className="h-8 w-2 flex-shrink-0 rounded bg-gray-500/40"
           />
         ))}
 
@@ -153,7 +153,7 @@ export default function ProbeMonitorChartBar({
             return (
               <HoverCard key={item.id} openDelay={100}>
                 <HoverCardTrigger asChild>
-                  <div className="h-12 w-2 flex-shrink-0 rounded cursor-pointer transition-all hover:scale-110 bg-gray-400" />
+                  <div className="h-8 w-2 flex-shrink-0 rounded cursor-pointer transition-all hover:scale-110 bg-gray-400" />
                 </HoverCardTrigger>
                 <HoverCardContent className="w-80 border-gray-300">
                   <div className="space-y-2">
@@ -185,7 +185,7 @@ export default function ProbeMonitorChartBar({
             <HoverCard key={check.id} openDelay={100}>
               <HoverCardTrigger asChild>
                 <div
-                  className={`h-12 w-2 flex-shrink-0 rounded cursor-pointer transition-all hover:scale-110 ${getBarColor(
+                  className={`h-8 w-2 flex-shrink-0 rounded cursor-pointer transition-all hover:scale-110 ${getBarColor(
                     check.status,
                   )}`}
                 />
