@@ -1,11 +1,11 @@
-import { Controller } from 'react-hook-form';
+import { Controller, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form';
 import type { MultiSelectGroup, MultiSelectOption } from '@/components/atoms/multi-select';
 import { MultiSelect } from '@/components/atoms/multi-select';
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/atoms/field';
 
-interface FormMultiSelectProps {
-	form: any;
-	name: string;
+interface FormMultiSelectProps<TFieldValues extends FieldValues> {
+	form: UseFormReturn<TFieldValues>;
+	name: Path<TFieldValues>;
 	label: string;
 	description?: string;
 	placeholder?: string;
@@ -18,7 +18,7 @@ interface FormMultiSelectProps {
 	disabled?: boolean;
 }
 
-export default function FormMultiSelect({
+export default function FormMultiSelect<TFieldValues extends FieldValues>({
 	form,
 	name,
 	label,
@@ -31,7 +31,7 @@ export default function FormMultiSelect({
 	emptyIndicator,
 	closeOnSelect = false,
 	disabled = false,
-}: FormMultiSelectProps) {
+}: FormMultiSelectProps<TFieldValues>) {
 	const normalizedOptions = (() => {
 		if (options.length === 0) return [];
 
@@ -75,7 +75,7 @@ export default function FormMultiSelect({
 						disabled={disabled}
 						className={fieldState.invalid ? 'border-red-500' : ''}
 					/>
-					<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
+					<FieldError>{form.formState.errors[field.name]?.message as string}</FieldError>
 				</Field>
 			)}
 		/>

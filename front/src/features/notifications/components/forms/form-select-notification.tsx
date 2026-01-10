@@ -1,13 +1,17 @@
 import useNotifications from '@/features/notifications/hooks/useNotifications.ts';
-import { Controller } from 'react-hook-form';
+import { Controller, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form';
 import { Switch } from '@/components/atoms/switch.tsx';
 import { Label } from '@/components/atoms/label';
 
-interface FormSelectNotificationProps {
-	form: any;
+interface FormSelectNotificationProps<TFieldValues extends FieldValues> {
+	form: UseFormReturn<TFieldValues>;
+	name: Path<TFieldValues>;
 }
 
-export default function FormSelectNotification({ form }: FormSelectNotificationProps) {
+export default function FormSelectNotification<TFieldValues extends FieldValues>({
+	form,
+	name = 'notifications' as Path<TFieldValues>,
+}: FormSelectNotificationProps<TFieldValues>) {
 	const { data, isLoading } = useNotifications();
 
 	if (isLoading) return <div>Loading...</div>;
@@ -18,7 +22,7 @@ export default function FormSelectNotification({ form }: FormSelectNotificationP
 				<Controller
 					key={notification.id}
 					control={form.control}
-					name={`notifications`}
+					name={name}
 					render={({ field }) => {
 						const isChecked = field.value?.includes(notification.id) || false;
 

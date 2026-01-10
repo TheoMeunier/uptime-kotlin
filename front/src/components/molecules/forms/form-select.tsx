@@ -1,19 +1,24 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atoms/select.tsx';
-import { Controller } from 'react-hook-form';
+import { Controller, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form';
 
 interface SelectOption {
 	value: string;
 	label: string;
 }
 
-interface FormSelectProps {
-	form: any;
-	name: string;
+interface FormSelectProps<TFieldValues extends FieldValues> {
+	form: UseFormReturn<TFieldValues>;
+	name: Path<TFieldValues>;
 	placeholder?: string;
 	options: SelectOption[] | readonly string[];
 }
 
-export default function FormSelect({ form, name, placeholder = 'Select an option', options }: FormSelectProps) {
+export default function FormSelect<TFieldValues extends FieldValues>({
+	form,
+	name,
+	placeholder = 'Select an option',
+	options,
+}: FormSelectProps<TFieldValues>) {
 	// Normalise les options pour supporter les deux formats
 	const normalizedOptions = options.map((option) =>
 		typeof option === 'string' ? { value: option, label: option } : option
@@ -40,3 +45,5 @@ export default function FormSelect({ form, name, placeholder = 'Select an option
 		/>
 	);
 }
+
+export type { SelectOption };
