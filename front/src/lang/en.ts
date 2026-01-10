@@ -1,147 +1,141 @@
 const en = {
-  form: {
-    label: {
-      email: "Email",
-      password: "Password",
-      webhook_url: "Webhook URL",
-      name: "Name {{ entity }}",
-      description: "Description",
-      hostname: "Hostname",
-      port: "Port",
-      username: "Username",
-      address_from: "Address From",
-      address_to: "Address To",
-      host: "Host",
-      url: "Url",
-      enabled: "Enabled",
-    },
-    placeholder: {
-      email: "john.doe@exemple.com",
-      password: "********",
-      mailer_url: "smtp.exemple.com",
-    },
-  },
+	form: {
+		label: {
+			email: 'Email',
+			password: 'Password',
+			webhook_url: 'Webhook URL',
+			name: 'Name {{ entity }}',
+			description: 'Description',
+			hostname: 'Hostname',
+			port: 'Port',
+			username: 'Username',
+			address_from: 'Address From',
+			address_to: 'Address To',
+			host: 'Host',
+			url: 'Url',
+			enabled: 'Enabled',
+		},
+		placeholder: {
+			email: 'john.doe@exemple.com',
+			password: '********',
+			mailer_url: 'smtp.exemple.com',
+		},
+	},
 
-  button: {
-    login: "Login",
-    close: "Close",
-    cancel: "Cancel",
-    loading: "Logging...",
-    create: "Create {{entity}}",
-    remove: "Remove {{entity}}",
-    saving: "Saving...",
-    save: "Save {{entity}}",
+	button: {
+		login: 'Login',
+		close: 'Close',
+		cancel: 'Cancel',
+		loading: 'Logging...',
+		create: 'Create {{entity}}',
+		remove: 'Remove {{entity}}',
+		saving: 'Saving...',
+		save: 'Save {{entity}}',
 
-    actions: {
-      remove: "Remove",
-      edit: "Edit",
-    },
-  },
+		actions: {
+			remove: 'Remove',
+			edit: 'Edit',
+		},
+	},
 
-  entity: {
-    monitor: "monitor",
-    notification: "notification",
-    profile: "profile",
-  },
+	entity: {
+		monitor: 'monitor',
+		notification: 'notification',
+		profile: 'profile',
+	},
 
-  pages: {
-    status_page: {
-      title: "Dashboard",
-      subtitle: "Real-time infrastructure monitoring",
-      description: {
-        last_update: "Last update: ",
-        automatic_refresh: "Auto-refresh",
-      },
-    },
-  },
+	pages: {
+		status_page: {
+			title: 'Dashboard',
+			subtitle: 'Real-time infrastructure monitoring',
+			description: {
+				last_update: 'Last update: ',
+				automatic_refresh: 'Auto-refresh',
+			},
+		},
+	},
 
-  notifications: {
-    title: {
-      create: "Create notification",
-      notifications: "Notifications",
-    },
-    label: {
-      type_notification: "Type notification",
-      notification_name: "Notification name",
-    },
-    placeholder: {
-      notification_name: "Discord bot",
-    },
-    alerts: {
-      create: "Notification {{ date }} successfully created",
-    },
-  },
+	notifications: {
+		title: {
+			create: 'Create notification',
+			notifications: 'Notifications',
+		},
+		label: {
+			type_notification: 'Type notification',
+			notification_name: 'Notification name',
+		},
+		placeholder: {
+			notification_name: 'Discord bot',
+		},
+		alerts: {
+			create: 'Notification {{ date }} successfully created',
+		},
+	},
 
-  monitors: {
-    title: {
-      create: "Create monitor",
-      remove: "Remove monitor",
-      final_hour: "Final hour",
-    },
-    label: {
-      tcp_host: "TCP host",
-      tcp_port: "TCP port",
-      dns_server: "DNS server",
-      dns_port: "DNS port",
-      notification_certificate: "Certificate expiry notification",
-      ignore_certificate_errors: "Ignore TLS / SSL errors for HTTS websites",
-      http_code_allowed: "Accepted Status Codes",
-      ping_heartbeat_interval: "Heartbeat interval",
-      ping_max_packet: "Max packet loss",
-      ping_size: "Packet size",
-      ping_delay: "Delay between pings (ms)",
-      protocol: "Monitor protocol",
-      name_monitor: "Monitor name",
-      retry: "Retry",
-      interval_retry: "Retry interval",
-    },
-    description: {
-      remove:
-        "This action is irreversible. All All associated data will be permanently deleted",
-      dns_server:
-        "Cloudflare is the default server. You can change the resolver server anytime.",
-      dns_port:
-        "DNS server port. Defaults to 53. You can change the port at any time.",
-      internal_retry:
-        "Maximum retries before the service is marked as down and a notification is sent",
-      check_interval: "Check every {{ interval }} secondes",
-      now: "Now",
-      one_hour_ago: "1 hour ago",
-    },
-    alerts: {
-      create: "Monitor {{ date }} successfully created",
-      remove: "Monitor successfully removed",
-    },
-  },
+	monitors: {
+		title: {
+			create: 'Create monitor',
+			remove: 'Remove monitor',
+			final_hour: 'Final hour',
+		},
+		label: {
+			tcp_host: 'TCP host',
+			tcp_port: 'TCP port',
+			dns_server: 'DNS server',
+			dns_port: 'DNS port',
+			notification_certificate: 'Certificate expiry notification',
+			ignore_certificate_errors: 'Ignore TLS / SSL errors for HTTS websites',
+			http_code_allowed: 'Accepted Status Codes',
+			ping_heartbeat_interval: 'Heartbeat interval',
+			ping_max_packet: 'Max packet loss',
+			ping_size: 'Packet size',
+			ping_delay: 'Delay between pings (ms)',
+			protocol: 'Monitor protocol',
+			name_monitor: 'Monitor name',
+			retry: 'Retry',
+			interval_retry: 'Retry interval',
+		},
+		description: {
+			remove: 'This action is irreversible. All All associated data will be permanently deleted',
+			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
+			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
+			internal_retry: 'Maximum retries before the service is marked as down and a notification is sent',
+			check_interval: 'Check every {{ interval }} secondes',
+			now: 'Now',
+			one_hour_ago: '1 hour ago',
+		},
+		alerts: {
+			create: 'Monitor {{ date }} successfully created',
+			remove: 'Monitor successfully removed',
+		},
+	},
 
-  profile: {
-    title: {
-      update_profile: "Update profile",
-      update_password: "Update password",
-    },
-    tabs: {
-      account: "Account",
-      password: "Password",
-    },
-    description: {
-      update_password:
-        "Changing your password will log you out of all your sessions. You will need to log in again.",
-      update_profile:
-        "Manage your personal information to keep your account accurate and secure.",
-    },
-    label: {
-      password: "Password",
-      password_confirm: "Confirmation Password",
-    },
-  },
+	profile: {
+		title: {
+			update_profile: 'Update profile',
+			update_password: 'Update password',
+		},
+		tabs: {
+			account: 'Account',
+			password: 'Password',
+		},
+		description: {
+			update_password: 'Changing your password will log you out of all your sessions. You will need to log in again.',
+			update_profile: 'Manage your personal information to keep your account accurate and secure.',
+		},
+		label: {
+			password: 'Password',
+			password_confirm: 'Confirmation Password',
+		},
+	},
 
-  timeRanger: {
-    last_1_hour: "Last 1 hour",
-    last_3_hours: "Last 3 hours",
-    last_6_hours: "Last 6 hours",
-    last_24_hours: "Last 24 hours",
-    last_7_days: "Last 7 days",
-  },
+	timeRanger: {
+		last_1_hour: 'Last 1 hour',
+		last_3_hours: 'Last 3 hours',
+		last_6_hours: 'Last 6 hours',
+		last_24_hours: 'Last 24 hours',
+		last_7_days: 'Last 7 days',
+	},
 };
 
 export default en;
