@@ -45,7 +45,10 @@ const authService = {
 
 	async tryRefreshToken(): Promise<boolean> {
 		const refresh = this.getRefreshToken();
-		if (!refresh) return false;
+		if (!refresh) {
+			window.location.href = '/login';
+			return false;
+		}
 
 		try {
 			const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api';
@@ -56,7 +59,11 @@ const authService = {
 				body: JSON.stringify({ refresh_token: refresh }),
 			});
 
-			if (!res.ok) return false;
+			if (!res.ok) {
+				this.logout();
+				window.location.href = '/login';
+				return false;
+			}
 
 			const data = await res.json();
 			this.saveUser(jwtDecode.parseJwt(data.token).email, jwtDecode.parseJwt(data.token).name);
@@ -64,6 +71,8 @@ const authService = {
 
 			return true;
 		} catch {
+			this.logout();
+			window.location.href = '/login';
 			return false;
 		}
 	},
