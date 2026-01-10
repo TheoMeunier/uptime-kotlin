@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./assets/index.css";
 import App from "./App.tsx";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import Login from "@/pages/auth/login.tsx";
 import { ProtectedRouteProvider } from "@/features/auth/contexts/protected-route-provider.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -33,6 +33,8 @@ createRoot(document.getElementById("root")!).render(
 
           <Route path="/status" element={<ProbesStatus />} />
           <Route path="/login" element={<Login />} />
+
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
