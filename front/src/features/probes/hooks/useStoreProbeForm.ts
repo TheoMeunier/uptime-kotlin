@@ -7,6 +7,7 @@ import probeService from "@/features/probes/services/probeService.ts";
 import ProbeProtocol from "@/features/probes/enums/probe-enum.ts";
 import HttpStatusCode from "@/features/probes/enums/http-status-code.ts";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const baseStoreProbeSchema = z.object({
   name: z.string().min(3).max(255),
@@ -63,6 +64,7 @@ export const storeProbeSchema = z.discriminatedUnion("protocol", [
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;
 
 export function useStoreProbeForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -85,8 +87,7 @@ export function useStoreProbeForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["probes"] }).then(() => {
-        toast.success(`Monitor ${data.name} successfully created`);
-
+        toast.success(t("monitors.alerts.create", { data: data.name }));
         navigate("/dashboard");
       });
     },

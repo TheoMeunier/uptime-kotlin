@@ -6,6 +6,7 @@ import notificationService from "@/features/notifications/services/notification-
 import { useState } from "react";
 import { toast } from "sonner";
 import { data } from "react-router";
+import { useTranslation } from "react-i18next";
 
 const baseStoreNotificationSchema = z.object({
   name: z.string().min(3).max(255),
@@ -42,6 +43,7 @@ export const storeNotificationSchema = z.discriminatedUnion(
 export type StoreNotificationSchema = z.infer<typeof storeNotificationSchema>;
 
 export default function useNotificationForm() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [openDialogue, setOpenDialogue] = useState(false);
 
@@ -61,7 +63,7 @@ export default function useNotificationForm() {
         .invalidateQueries({ queryKey: ["notifications"] })
         .then(() => {
           setOpenDialogue(false);
-          toast.success(`Notification ${data.name} successfully created`);
+          toast.success(t("notifications.alerts.create", { data: data.name }));
         });
     },
   });

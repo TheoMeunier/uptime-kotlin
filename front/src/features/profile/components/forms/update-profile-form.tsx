@@ -7,30 +7,33 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/atoms/field";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateProfileForm() {
+  const { t } = useTranslation();
   const { form, isLoading, onSubmit, errors } = useUpdateProfile();
 
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold">Update information</h2>
+        <h2 className="text-xl font-semibold">
+          {t("profile.title.update_profile")}
+        </h2>
         <p className="text-sm text-muted-foreground">
-          Manage your personal information to keep your account accurate and
-          secure.
+          {t("profile.description.update_profile")}
         </p>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="name">Username</FieldLabel>
+            <FieldLabel htmlFor="name">{t("form.label.username")}</FieldLabel>
             <Input {...form.register("name")} id="name" type="text" required />
             <FieldError>{errors.name?.message}</FieldError>
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">{t("form.label.email")}</FieldLabel>
             <Input
               {...form.register("email")}
               id="email"
@@ -43,7 +46,9 @@ export default function UpdateProfileForm() {
 
         <div>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save changes"}
+            {isLoading
+              ? t("button.saving")
+              : t("button.save", { entity: t("entity.profile") })}
           </Button>
         </div>
       </form>

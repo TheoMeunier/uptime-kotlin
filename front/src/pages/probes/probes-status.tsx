@@ -11,8 +11,10 @@ import ProbeStatus from "@/features/probes/components/modules/probe-status.tsx";
 import { Activity, Clock, Server } from "lucide-react";
 import { Skeleton } from "@/components/atoms/skeleton.tsx";
 import { Badge } from "@/components/atoms/badge.tsx";
+import { useTranslation } from "react-i18next";
 
 export default function ProbesStatus() {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ["probes-status"],
     queryFn: async () => {
@@ -71,10 +73,10 @@ export default function ProbesStatus() {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                Tableau de bord
+                {t("pages.status_page.title")}
               </h1>
               <p className="text-slate-600 mt-1">
-                Surveillance en temps réel de l'infrastructure
+                {t("pages.status_page.subtitle")}
               </p>
             </div>
           </div>
@@ -82,10 +84,11 @@ export default function ProbesStatus() {
           <div className="flex items-center gap-2 text-sm text-slate-500">
             <Clock className="h-4 w-4" />
             <span>
-              Dernière mise à jour : {new Date().toLocaleTimeString("fr-FR")}
+              {t("pages.status_page.description.last_update")}
+              {new Date().toLocaleTimeString("fr-FR")}
             </span>
             <Badge variant="outline" className="ml-2">
-              Auto-refresh: 2min
+              {t("pages.status_page.description.automatic_refresh")} 2min
             </Badge>
           </div>
         </div>
@@ -93,15 +96,6 @@ export default function ProbesStatus() {
 
       {/* Probes Grid */}
       <div className="w-[98rem] mx-auto py-12">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Sondes actives
-          </h2>
-          <p className="text-sm text-slate-600 mt-1">
-            Vue détaillée de toutes les sondes de monitoring
-          </p>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {data.map((probe) => (
             <Card

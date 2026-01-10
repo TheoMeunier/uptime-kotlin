@@ -7,7 +7,7 @@ import {
 } from "@/components/atoms/dialog.tsx";
 import { Button } from "@/components/atoms/button.tsx";
 import { BellPlus } from "lucide-react";
-import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import useNotificationForm from "@/features/notifications/hooks/useNotificationForm.ts";
 import {
   Field,
@@ -22,8 +22,10 @@ import FormSwitch from "@/components/molecules/forms/form-switch.tsx";
 import NotificationTypeEnum from "@/features/notifications/enums/notification-type-enum.ts";
 import NOTIFICATION_FIELDS_CONFIG from "@/features/notifications/components/config/notification-type.ts";
 import FormFieldNotification from "@/features/notifications/components/forms/form-field-notification.tsx";
+import { useTranslation } from "react-i18next";
 
 export default function CreateNotificationDialogue() {
+  const { t } = useTranslation();
   const { openDialogue, setOpenDialogue, form, onSubmit, isLoading, errors } =
     useNotificationForm();
   const notificationType = form.watch("notification_type");
@@ -37,21 +39,21 @@ export default function CreateNotificationDialogue() {
       <DialogTrigger asChild>
         <Button>
           <BellPlus className="mr-2 h-4 w-4" />
-          Create notification
+          {t("notifications.title.create")}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-xl">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Create notification</DialogTitle>
+            <DialogTitle>{t("notifications.title.create")}</DialogTitle>
           </DialogHeader>
 
           <div className="mt-4 space-y-4">
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="notification_type">
-                  Notification type
+                  {t("notifications.label.type_notification")}
                 </FieldLabel>
                 <FormSelect
                   form={form}
@@ -61,11 +63,13 @@ export default function CreateNotificationDialogue() {
                 <FieldError>{errors.notification_type?.message}</FieldError>
               </Field>
               <Field>
-                <FieldLabel htmlFor="name">Notification name</FieldLabel>
+                <FieldLabel htmlFor="name">
+                  {t("notifications.label.notification_name")}
+                </FieldLabel>
                 <Input
                   {...form.register("name")}
                   id="name"
-                  placeholder="Discord bot"
+                  placeholder={t("notifications.placeholder.notification_name")}
                   required
                 />
               </Field>
@@ -99,19 +103,15 @@ export default function CreateNotificationDialogue() {
           </div>
 
           <DialogFooter className="flex justify-between items-center gap-4 w-full mt-4">
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
+            <Button variant="outline" type="button">
+              Test notification
+            </Button>
 
-            <div>
-              <Button variant="secondary" type="button">
-                Test notification
-              </Button>
-
-              <Button type="submit">
-                {isLoading ? "Creating..." : "Create notification"}
-              </Button>
-            </div>
+            <Button type="submit">
+              {t(isLoading ? "button.loading" : "button.create", {
+                entity: "notification",
+              })}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

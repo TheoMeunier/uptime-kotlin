@@ -16,8 +16,10 @@ import ProbeChart from "@/features/probes/components/modules/probe-chart.tsx";
 import ProbeMonitorLog from "@/features/probes/components/modules/probe-monitor-log.tsx";
 import OnOffMonitorProbeDialogue from "@/features/probes/components/actions/on-off-probe-dialogue.tsx";
 import ProbeStatus from "@/features/probes/components/modules/probe-status.tsx";
+import { useTranslation } from "react-i18next";
 
 export function ShowProbe() {
+  const { t } = useTranslation();
   const params = useParams();
 
   const { data, isLoading } = useQuery({
@@ -44,7 +46,7 @@ export function ShowProbe() {
               enabled={data!.probe.enabled}
             />
             <Button variant="outline">
-              <Pencil /> Edit
+              <Pencil /> {t("button.actions.edit")}
             </Button>
             <DeleteProbeDialogue probeId={data!.probe.id} />
           </ButtonGroup>
@@ -56,9 +58,13 @@ export function ShowProbe() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-xl">Final hours</CardTitle>
+                <CardTitle className="text-xl">
+                  {t("monitors.title.final_hour")}
+                </CardTitle>
                 <CardDescription className="mt-1">
-                  Check every 60 seconds (1 minute)
+                  {t("monitors.description.check_interval", {
+                    interval: data?.probe.interval,
+                  })}
                 </CardDescription>
               </div>
               <ProbeStatus status={data!.probe.status} />
@@ -68,8 +74,8 @@ export function ShowProbe() {
               probeStatus={data!.probe.status}
             />
             <div className="flex justify-between text-xs text-slate-500 mt-1">
-              <span>1 hour ago</span>
-              <span>Now</span>
+              <span>{t("monitors.description.one_hour_ago")}</span>
+              <span>{t("monitors.description.now")}</span>
             </div>
           </CardContent>
         </Card>

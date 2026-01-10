@@ -11,6 +11,7 @@ import CreateProbe from "@/pages/probes/create-probe.tsx";
 import { ShowProbe } from "@/pages/probes/show-probe.tsx";
 import Profile from "@/pages/profile/profile.tsx";
 import ProbesStatus from "@/pages/probes/probes-status.tsx";
+import "./lang/i18n.ts";
 
 export const queryClient = new QueryClient();
 

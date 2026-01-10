@@ -7,24 +7,29 @@ import {
   FieldLabel,
 } from "@/components/atoms/field.tsx";
 import useUpdatePasswordProfile from "@/features/profile/hooks/useUpdatePasswordProfile.ts";
+import { useTranslation } from "react-i18next";
 
 export default function UpdatePasswordProfileForm() {
+  const { t } = useTranslation();
   const { form, isLoading, onSubmit, errors } = useUpdatePasswordProfile();
 
   return (
     <div className="w-full max-w-2xl space-y-6">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold">Update password</h2>
+        <h2 className="text-xl font-semibold">
+          {t("profile.title.update_password")}
+        </h2>
         <p className="text-sm text-muted-foreground">
-          Update your password regularly to help protect your account from
-          unauthorized access.
+          {t("profile.description.update_password")}
         </p>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="email">Password</FieldLabel>
+            <FieldLabel htmlFor="password">
+              {t("profile.label.password")}
+            </FieldLabel>
             <Input
               {...form.register("password")}
               id="password"
@@ -34,7 +39,9 @@ export default function UpdatePasswordProfileForm() {
             <FieldError>{errors.password?.message}</FieldError>
           </Field>
           <Field>
-            <FieldLabel htmlFor="email">Password confirmation</FieldLabel>
+            <FieldLabel htmlFor="password_confirmation">
+              {t("profile.label.password_confirm")}
+            </FieldLabel>
             <Input
               {...form.register("password_confirmation")}
               id="password_confirmation"
@@ -47,7 +54,9 @@ export default function UpdatePasswordProfileForm() {
 
         <div>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save password"}
+            {isLoading
+              ? t("button.saving")
+              : t("button.save", { entity: t("entity.profile") })}
           </Button>
         </div>
       </form>

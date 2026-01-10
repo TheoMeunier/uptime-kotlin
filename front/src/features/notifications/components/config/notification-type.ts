@@ -1,10 +1,11 @@
 import NotificationTypeEnum from "@/features/notifications/enums/notification-type-enum.ts";
+import i18n from "@/lang/i18n.ts";
 
 const NOTIFICATION_FIELDS_CONFIG = {
   [NotificationTypeEnum.DISCORD]: [
     {
       name: "url_webhook",
-      label: "Webhook Url",
+      label: i18n.t("form.label.webhook_url"),
       input_type: "text",
       placeholder: "https://discord.com/api/webhooks/...",
     },
@@ -18,7 +19,7 @@ const NOTIFICATION_FIELDS_CONFIG = {
   [NotificationTypeEnum.TEAMS]: [
     {
       name: "url_webhook",
-      label: "Webhook Url",
+      label: i18n.t("form.label.webhook_url"),
       input_type: "text",
       placeholder: "https://microsoft-teams.com/api/webhooks/...",
     },
@@ -32,39 +33,39 @@ const NOTIFICATION_FIELDS_CONFIG = {
   [NotificationTypeEnum.MAIL]: [
     {
       name: "hostname",
-      label: "Hostname",
+      label: i18n.t("form.label.hostname"),
       input_type: "text",
-      placeholder: "https://smtp.mailler.exemple",
+      placeholder: i18n.t("form.placeholder.mailer_url"),
     },
     {
       name: "port",
-      label: "Port",
+      label: i18n.t("form.label.port"),
       input_type: "number",
       placeholder: "587",
     },
     {
       name: "username",
-      label: "Username",
+      label: i18n.t("form.label.username"),
       input_type: "text",
       placeholder: "uptime-kotlin@exemple.com",
     },
     {
       name: "password",
-      label: "Password",
+      label: i18n.t("form.label.password"),
       input_type: "password",
       placeholder: "********",
     },
     {
       name: "mail_from",
-      label: "Address From",
+      label: i18n.t("form.label.address_from"),
       input_type: "email",
-      placeholder: "uptime-kotlin@exemple.fr",
+      placeholder: "uptime-kotlin@exemple.com",
     },
     {
       name: "mail_to",
-      label: "Address To",
+      label: i18n.t("form.label.address_to"),
       input_type: "email",
-      placeholder: "uptime-kotlin@exemple.fr, uptime-kotlin2@exemple.fr",
+      placeholder: "uptime-kotlin@exemple.com, uptime-kotlin2@exemple.com",
     },
   ],
 };
