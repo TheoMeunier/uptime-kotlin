@@ -18,45 +18,7 @@ export default function ProbesStatus() {
 		refetchInterval: 120000,
 	});
 
-	if (isLoading) {
-		return (
-			<div className="min-h-screen bg-slate-50">
-				<div className="border-b bg-white">
-					<div className="container mx-auto px-6 py-8">
-						<Skeleton className="h-8 w-48 mb-2" />
-						<Skeleton className="h-4 w-96" />
-					</div>
-				</div>
-
-				<div className="container mx-auto px-6 py-8">
-					<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-						{[1, 2, 3, 4].map((i) => (
-							<Card key={i}>
-								<CardContent className="p-6">
-									<Skeleton className="h-16 w-full" />
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				</div>
-
-				<div className="container mx-auto px-6 pb-12">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						{[1, 2, 3, 4].map((i) => (
-							<Card key={i}>
-								<CardHeader>
-									<Skeleton className="h-6 w-32" />
-								</CardHeader>
-								<CardContent>
-									<Skeleton className="h-32 w-full" />
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				</div>
-			</div>
-		);
-	}
+	if (isLoading) return <ProbesStatusSkeleton />;
 
 	return (
 		<div className="min-h-screen bg-slate-50">
@@ -85,7 +47,6 @@ export default function ProbesStatus() {
 				</div>
 			</div>
 
-			{/* Probes Grid */}
 			<div className="w-[98rem] mx-auto py-12">
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 					{data.map((probe) => (
@@ -125,6 +86,46 @@ export default function ProbesStatus() {
 						</CardContent>
 					</Card>
 				)}
+			</div>
+		</div>
+	);
+}
+
+function ProbesStatusSkeleton() {
+	return (
+		<div className="min-h-screen bg-slate-50">
+			<div className="border-b bg-white">
+				<div className="container mx-auto px-6 py-8">
+					<Skeleton className="h-8 w-48 mb-2" />
+					<Skeleton className="h-4 w-96" />
+				</div>
+			</div>
+
+			<div className="container mx-auto px-6 py-8">
+				<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+					{[1, 2, 3, 4].map((i) => (
+						<Card key={i}>
+							<CardContent className="p-6">
+								<Skeleton className="h-16 w-full" />
+							</CardContent>
+						</Card>
+					))}
+				</div>
+			</div>
+
+			<div className="container mx-auto px-6 pb-12">
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					{[1, 2, 3, 4].map((i) => (
+						<Card key={i}>
+							<CardHeader>
+								<Skeleton className="h-6 w-32" />
+							</CardHeader>
+							<CardContent>
+								<Skeleton className="h-32 w-full" />
+							</CardContent>
+						</Card>
+					))}
+				</div>
 			</div>
 		</div>
 	);
