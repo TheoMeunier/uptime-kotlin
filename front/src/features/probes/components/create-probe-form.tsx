@@ -28,8 +28,6 @@ export default function CreateProbeForm() {
 
 	const dynamicFields = protocol ? PROBE_FIELDS_CONFIG[protocol] : PROBE_FIELDS_CONFIG[ProbeProtocol.HTTP];
 
-	console.log(dynamicFields);
-
 	return (
 		<div>
 			<form onSubmit={form.handleSubmit(onsubmit)}>
@@ -128,7 +126,7 @@ export default function CreateProbeForm() {
 								<Bell /> {t('notifications.title.notifications')}
 							</FieldLegend>
 							<FieldGroup className="mt-4">
-								<FormSelectNotification form={form} />
+								<FormSelectNotification form={form} name="notifications" />
 								<CreateNotificationDialogue />
 							</FieldGroup>
 						</FieldSet>
