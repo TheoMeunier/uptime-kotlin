@@ -2,6 +2,7 @@ import useNotifications from '@/features/notifications/hooks/useNotifications.ts
 import { Controller, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form';
 import { Switch } from '@/components/atoms/switch.tsx';
 import { Label } from '@/components/atoms/label';
+import { Skeleton } from '@/components/atoms/skeleton.tsx';
 
 interface FormSelectNotificationProps<TFieldValues extends FieldValues> {
 	form: UseFormReturn<TFieldValues>;
@@ -14,7 +15,7 @@ export default function FormSelectNotification<TFieldValues extends FieldValues>
 }: FormSelectNotificationProps<TFieldValues>) {
 	const { data, isLoading } = useNotifications();
 
-	if (isLoading) return <div>Loading...</div>;
+	if (isLoading) return <FormSelectNotificationSkeleton />;
 
 	return (
 		<div className="space-y-4">
@@ -47,6 +48,19 @@ export default function FormSelectNotification<TFieldValues extends FieldValues>
 						);
 					}}
 				/>
+			))}
+		</div>
+	);
+}
+
+function FormSelectNotificationSkeleton() {
+	return (
+		<div className="space-y-4">
+			{[...Array(5)].map((_, index) => (
+				<div key={index} className="flex items-center gap-4">
+					<Skeleton className="h-6 w-11 rounded-full" />
+					<Skeleton className="h-4 w-[200px]" />
+				</div>
 			))}
 		</div>
 	);
