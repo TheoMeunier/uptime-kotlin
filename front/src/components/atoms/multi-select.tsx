@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { CheckIcon, XCircle, ChevronDown, XIcon, WandSparkles } from 'lucide-react';
+import { CheckIcon, ChevronDown, WandSparkles, XCircle, XIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/atoms/separator';
@@ -522,7 +522,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 					uniqueOptions.push(option);
 				}
 			});
-			if (process.env.NODE_ENV === 'development' && duplicates.length > 0) {
+			if (import.meta.env.NODE_ENV === 'development' && duplicates.length > 0) {
 				const action = deduplicateOptions ? 'automatically removed' : 'detected';
 				console.warn(
 					`MultiSelect: Duplicate option values ${action}: ${duplicates.join(', ')}. ` +
@@ -539,7 +539,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 		const getOptionByValue = React.useCallback(
 			(value: string): MultiSelectOption | undefined => {
 				const option = getAllOptions().find((option) => option.value === value);
-				if (!option && process.env.NODE_ENV === 'development') {
+				if (!option && import.meta.env.NODE_ENV === 'development') {
 					console.warn(`MultiSelect: Option with value "${value}" not found in options list`);
 				}
 				return option;
