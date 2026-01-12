@@ -35,12 +35,13 @@ object ProbeContentMapper {
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
-        val type = when (content) {
-            is ProbeContent.Http -> ProbeProtocol.HTTP
-            is ProbeContent.Dns -> ProbeProtocol.DNS
-            is ProbeContent.Tcp -> ProbeProtocol.TCP
-            is ProbeContent.Ping -> ProbeProtocol.PING
-        }
+        val type =
+            when (content) {
+                is ProbeContent.Http -> ProbeProtocol.HTTP
+                is ProbeContent.Dns -> ProbeProtocol.DNS
+                is ProbeContent.Tcp -> ProbeProtocol.TCP
+                is ProbeContent.Ping -> ProbeProtocol.PING
+            }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 
@@ -86,7 +87,7 @@ fun ProbesEntity.toStatusDto() =
                 id = id,
                 name = name,
                 description = description,
-                status = status
+                status = status,
             ),
         monitors =
             probesMonitorLogs.map {

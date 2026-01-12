@@ -76,15 +76,25 @@ class ProbesEntity : PanacheEntityBase {
     companion object : PanacheCompanion<ProbesEntity> {
         fun findById(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
 
+        fun findByIdWithLogs(
+            id: UUID,
+            hour: Long = 1,
+        ): ProbesEntity? =
+            find(
+                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2",
+                id,
+                LocalDateTime.now().minusHours(hour),
+            ).firstResult()
+
         fun getActiveProbes(): List<ProbesEntity> = find("enabled = ?1", true).list()
 
         fun getAllProbes(): List<ProbesEntity> = findAll().list()
 
-        fun getProbesLastHour(): List<ProbesEntity> = find(
-            "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true",
-            LocalDateTime.now().minusHours(1),
-        )
-            .list()
+        fun getProbesLastHour(): List<ProbesEntity> =
+            find(
+                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true",
+                LocalDateTime.now().minusHours(1),
+            ).list()
 
         fun delete(id: UUID): Long = delete("id = ?1", id)
     }

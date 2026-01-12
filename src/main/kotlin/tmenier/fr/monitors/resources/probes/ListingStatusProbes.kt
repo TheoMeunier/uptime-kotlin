@@ -17,9 +17,10 @@ class ListingStatusProbes {
     @GET
     @Authenticated
     fun list(): Response {
-        val probes = ProbesEntity.getProbesLastHour().map {
-            it.toStatusDto()
-        }
+        val probes =
+            ProbesEntity.getProbesLastHour().map {
+                it.toStatusDto()
+            }
 
         return Response.ok(probes).build()
     }

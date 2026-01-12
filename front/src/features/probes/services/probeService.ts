@@ -15,8 +15,8 @@ const probeService = {
 		return await api.get('probes/status').json();
 	},
 
-	async getProbe(id: string): Promise<ProbeShow> {
-		return await api.get(`probes/${id}`).json();
+	async getProbe(id: string, lastHour: number): Promise<ProbeShow> {
+		return await api.get(`probes/${id}?hours=${lastHour}`).json();
 	},
 
 	async storeProbe(data: StoreProbeSchema) {

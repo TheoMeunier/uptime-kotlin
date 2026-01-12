@@ -3,7 +3,6 @@ package tmenier.fr.monitors.dtos.propbes
 import tmenier.fr.monitors.enums.HttpCodeEnum
 
 sealed interface ProbeContent {
-
     data class Http(
         val url: String,
         val notificationCertified: Boolean,

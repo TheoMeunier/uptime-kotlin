@@ -48,7 +48,10 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
 
     override fun getProtocolType() = ProbeProtocol.DNS.name
 
-    private fun getStatus(isLastAttempt: Boolean, probe: ProbesEntity): ProbeMonitorLogStatus {
+    private fun getStatus(
+        isLastAttempt: Boolean,
+        probe: ProbesEntity,
+    ): ProbeMonitorLogStatus {
         if (isLastAttempt) return ProbeMonitorLogStatus.FAILURE
 
         if (probe.status == ProbeMonitorLogStatus.FAILURE) return ProbeMonitorLogStatus.FAILURE

@@ -78,9 +78,7 @@ class ProbeSchedulerTemplateFactory(
         scheduledProbes[probe.id] = job
     }
 
-    private suspend fun executeWithRetry(
-        probe: ProbesEntity,
-    ) {
+    private suspend fun executeWithRetry(probe: ProbesEntity) {
         val content = ProbeContentMapper.toDto(probe)
         val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
 

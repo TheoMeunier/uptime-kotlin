@@ -46,7 +46,10 @@ class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
 
     override fun getProtocolType() = ProbeProtocol.TCP.name
 
-    private fun getStatus(isLastAttempt: Boolean, probe: ProbesEntity): ProbeMonitorLogStatus {
+    private fun getStatus(
+        isLastAttempt: Boolean,
+        probe: ProbesEntity,
+    ): ProbeMonitorLogStatus {
         if (isLastAttempt) return ProbeMonitorLogStatus.FAILURE
 
         if (probe.status == ProbeMonitorLogStatus.FAILURE) return ProbeMonitorLogStatus.FAILURE

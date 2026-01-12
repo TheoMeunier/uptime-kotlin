@@ -13,19 +13,24 @@ import OnOffMonitorProbeDialogue from '@/features/probes/components/actions/on-o
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
+import { useState } from 'react';
 
 export function ShowProbe() {
 	const { t } = useTranslation();
 	const params = useParams();
+	const [hours, setHours] = useState(1);
 
-	const { data, isLoading } = useQuery({
-		queryKey: ['probe', params.probeId!],
+	const { data, isLoading, isFetching } = useQuery({
+		queryKey: ['probe', params.probeId!, hours],
 		queryFn: async () => {
-			return probeService.getProbe(params.probeId!);
+			return probeService.getProbe(params.probeId!, hours);
 		},
+		placeholderData: (previousData) => previousData,
 	});
 
 	if (isLoading) return <ShowProbeSkeleton />;
+
+	const isRefetching = isFetching && !isLoading;
 
 	return (
 		<div className="space-y-8">
@@ -70,11 +75,38 @@ export function ShowProbe() {
 			</section>
 
 			<section>
-				<ProbeChart monitors={data!.monitors} />
+				{isRefetching ? (
+					<Card>
+						<CardContent>
+							<Skeleton className="h-6 w-[200px] mb-4" />
+							<Skeleton className="h-[300px] w-full" />
+						</CardContent>
+					</Card>
+				) : (
+					<ProbeChart monitors={data!.monitors} lastHour={hours} setLastHour={setHours} />
+				)}
 			</section>
 
 			<section>
-				<ProbeMonitorLog monitors={data!.monitors} />
+				{isRefetching ? (
+					<Card>
+						<CardContent>
+							<Skeleton className="h-6 w-[180px] mb-4" />
+							<div className="space-y-3">
+								{[...Array(8)].map((_, index) => (
+									<div key={index} className="flex items-center gap-4 p-3 border rounded-lg">
+										<Skeleton className="h-4 w-4 rounded-full" />
+										<Skeleton className="h-4 w-[150px]" />
+										<Skeleton className="h-4 w-[100px]" />
+										<Skeleton className="h-4 flex-1" />
+									</div>
+								))}
+							</div>
+						</CardContent>
+					</Card>
+				) : (
+					<ProbeMonitorLog monitors={data!.monitors} />
+				)}
 			</section>
 		</div>
 	);
@@ -109,7 +141,7 @@ function ShowProbeSkeleton() {
 
 						<div className="flex gap-1 h-16 items-end">
 							{[...Array(60)].map((_, index) => (
-								<Skeleton key={index} className="flex-1 rounded-t" style={{ height: `${Math.random() * 60 + 20}%` }} />
+								<Skeleton key={index} className="flex-1 rounded-t" style={{ height: `${20 * 60 + 20}%` }} />
 							))}
 						</div>
 

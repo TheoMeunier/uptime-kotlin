@@ -16,8 +16,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @ApplicationScoped
-class TeamsNotificationService() :
-    TypedNotificationInterfaces<NotificationContent.Teams> {
+class TeamsNotificationService : TypedNotificationInterfaces<NotificationContent.Teams> {
     private val client = HttpClient.newHttpClient()
     private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
 
@@ -26,13 +25,14 @@ class TeamsNotificationService() :
         probe: ProbesEntity,
         result: ProbeResult,
     ) {
-        val jsonPayload = buildTeamsMessage(
-            "Service ${probe.name} - ${result.status}",
-            result.message,
-            "00FF00",
-            result.runAt,
-            result.status
-        )
+        val jsonPayload =
+            buildTeamsMessage(
+                "Service ${probe.name} - ${result.status}",
+                result.message,
+                "00FF00",
+                result.runAt,
+                result.status,
+            )
         sendTeamsNotification(content, jsonPayload)
     }
 
@@ -41,13 +41,14 @@ class TeamsNotificationService() :
         probe: ProbesEntity,
         result: ProbeResult,
     ) {
-        val jsonPayload = buildTeamsMessage(
-            "Service ${probe.name} - ${result.status}",
-            result.message,
-            "FF0000",
-            result.runAt,
-            result.status
-        )
+        val jsonPayload =
+            buildTeamsMessage(
+                "Service ${probe.name} - ${result.status}",
+                result.message,
+                "FF0000",
+                result.runAt,
+                result.status,
+            )
         sendTeamsNotification(content, jsonPayload)
     }
 
@@ -59,8 +60,8 @@ class TeamsNotificationService() :
                 "Test notification",
                 "0078D4",
                 LocalDateTime.now(),
-                ProbeMonitorLogStatus.SUCCESS
-            )
+                ProbeMonitorLogStatus.SUCCESS,
+            ),
         )
     }
 
@@ -99,7 +100,7 @@ class TeamsNotificationService() :
                     }
                 ]
             }
-        """.trimIndent()
+            """.trimIndent()
     }
 
     private fun sendTeamsNotification(
@@ -129,12 +130,11 @@ class TeamsNotificationService() :
         }
     }
 
-    private fun escapeJson(text: String): String {
-        return text
+    private fun escapeJson(text: String): String =
+        text
             .replace("\\", "\\\\")
             .replace("\"", "\\\"")
             .replace("\n", "\\n")
             .replace("\r", "\\r")
             .replace("\t", "\\t")
-    }
 }

@@ -69,7 +69,7 @@ data class ValidProbeProtocolHttpRequest(
 data class ValidProbeProtocolTcpRequest(
     @field:Min(1)
     @field:Max(65535)
-    val tcpPort: Int
+    val tcpPort: Int,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection

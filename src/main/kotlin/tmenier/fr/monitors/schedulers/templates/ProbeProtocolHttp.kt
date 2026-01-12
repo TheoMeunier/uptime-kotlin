@@ -114,7 +114,7 @@ class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
     private fun getStatus(
         isSuccess: Boolean,
         isLastAttempt: Boolean,
-        probe: ProbesEntity
+        probe: ProbesEntity,
     ): ProbeMonitorLogStatus {
         if (isSuccess) {
             return ProbeMonitorLogStatus.SUCCESS
@@ -130,7 +130,6 @@ class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
 
         return ProbeMonitorLogStatus.WARNING
     }
-
 
     override fun getProtocolType() = ProbeProtocol.HTTP.name
 }

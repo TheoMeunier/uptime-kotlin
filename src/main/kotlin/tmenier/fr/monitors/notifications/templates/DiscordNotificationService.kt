@@ -39,7 +39,7 @@ class DiscordNotificationService : TypedNotificationInterfaces<NotificationConte
     override fun sendTest(content: NotificationContent.Discord) {
         sendDiscordEmbed(
             content,
-            buildEmbed("Test", "Test notification", 0x0000FF, LocalDateTime.now(), ProbeMonitorLogStatus.SUCCESS)
+            buildEmbed("Test", "Test notification", 0x0000FF, LocalDateTime.now(), ProbeMonitorLogStatus.SUCCESS),
         )
     }
 

@@ -27,51 +27,55 @@ class StoreProbeAction {
 
         when (payload) {
             is ValidProbeProtocolHttpRequest -> {
-                val (jsonNode, _) = ProbeContentMapper.toEntity(
-                    ProbeContent.Http(
-                        url = payload.url,
-                        notificationCertified = payload.notificationCertificate,
-                        ignoreCertificateErrors = payload.ignoreCertificateErrors,
-                        httpCodeAllowed = payload.httpCodeAllowed
+                val (jsonNode, _) =
+                    ProbeContentMapper.toEntity(
+                        ProbeContent.Http(
+                            url = payload.url,
+                            notificationCertified = payload.notificationCertificate,
+                            ignoreCertificateErrors = payload.ignoreCertificateErrors,
+                            httpCodeAllowed = payload.httpCodeAllowed,
+                        ),
                     )
-                )
 
                 probe.content = jsonNode
             }
 
             is ValidProbeProtocolTcpRequest -> {
-                val (jsonNode, _) = ProbeContentMapper.toEntity(
-                    ProbeContent.Tcp(
-                        url = payload.url,
-                        tcpPort = payload.tcpPort
+                val (jsonNode, _) =
+                    ProbeContentMapper.toEntity(
+                        ProbeContent.Tcp(
+                            url = payload.url,
+                            tcpPort = payload.tcpPort,
+                        ),
                     )
-                )
 
                 probe.content = jsonNode
             }
 
             is ValidProbeProtocolDnsRequest -> {
-                val (jsonNode, _) = ProbeContentMapper.toEntity(
-                    ProbeContent.Dns(
-                        hostname = payload.url,
-                        dnsPort = payload.dnsPort,
-                        dnsServer = payload.dnsServer
+                val (jsonNode, _) =
+                    ProbeContentMapper.toEntity(
+                        ProbeContent.Dns(
+                            hostname = payload.url,
+                            dnsPort = payload.dnsPort,
+                            dnsServer = payload.dnsServer,
+                        ),
                     )
-                )
 
                 probe.content = jsonNode
             }
 
             is ValidProbeProtocolPingRequest -> {
-                val (jsonNode, _) = ProbeContentMapper.toEntity(
-                    ProbeContent.Ping(
-                        ip = payload.url,
-                        pingMaxPacket = payload.pingMaxPacket,
-                        pingSize = payload.pingSize,
-                        pingDelay = payload.pingDelay,
-                        pingNumericOutput = payload.pingNumericOutput
+                val (jsonNode, _) =
+                    ProbeContentMapper.toEntity(
+                        ProbeContent.Ping(
+                            ip = payload.url,
+                            pingMaxPacket = payload.pingMaxPacket,
+                            pingSize = payload.pingSize,
+                            pingDelay = payload.pingDelay,
+                            pingNumericOutput = payload.pingNumericOutput,
+                        ),
                     )
-                )
 
                 probe.content = jsonNode
             }
