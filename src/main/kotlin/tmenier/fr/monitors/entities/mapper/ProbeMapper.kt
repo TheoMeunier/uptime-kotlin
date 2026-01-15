@@ -49,6 +49,27 @@ object ProbeContentMapper {
     }
 }
 
+fun ProbesEntity.toProbeWithNotificationsDTO() = ProbeWithNotificationsDTO(
+    probe = ProbeDTO(
+        id = id,
+        name = name,
+        interval = interval,
+        timeout = timeout,
+        retry = retry,
+        intervalRetry = intervalRetry,
+        enabled = enabled,
+        protocol = protocol.name,
+        description = description,
+        lastRun = lastRun,
+        status = status,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        content = ProbeContentMapper.toDto(this),
+    ),
+
+    notifications = notifications.map { it.id }
+)
+
 fun ProbesEntity.toShowDtp() =
     ProbeShowDTO(
         probe =

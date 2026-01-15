@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Button } from '@/components/atoms/button.tsx';
 import { Pencil } from 'lucide-react';
@@ -14,6 +14,7 @@ import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { useState } from 'react';
+import { type ProbeShow, ProbeShowSchema } from '@/features/probes/schemas/probe-response.schema.ts';
 
 export function ShowProbe() {
 	const { t } = useTranslation();
@@ -23,7 +24,7 @@ export function ShowProbe() {
 	const { data, isLoading, isFetching } = useQuery({
 		queryKey: ['probe', params.probeId!, hours],
 		queryFn: async () => {
-			return probeService.getProbe(params.probeId!, hours);
+			return probeService.getProbe<ProbeShow>(params.probeId!, hours, ProbeShowSchema);
 		},
 		placeholderData: (previousData) => previousData,
 	});
@@ -37,14 +38,15 @@ export function ShowProbe() {
 			<section className="flex items-center justify-between">
 				<div>
 					<h1 className="text-3xl font-bold mb-4">{data?.probe.name}</h1>
-					<p className="text-gray-600">{data?.probe.url}</p>
 				</div>
 
 				<div>
 					<ButtonGroup>
 						<OnOffMonitorProbeDialogue probeId={data!.probe.id} enabled={data!.probe.enabled} />
-						<Button variant="outline">
-							<Pencil /> {t('button.actions.edit')}
+						<Button variant="outline" asChild>
+							<Link to={`/monitors/${data!.probe.id}/edit`}>
+								<Pencil /> {t('button.actions.edit')}
+							</Link>
 						</Button>
 						<DeleteProbeDialogue probeId={data!.probe.id} />
 					</ButtonGroup>

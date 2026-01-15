@@ -5,4 +5,10 @@ import java.util.*
 data class ListingNotificationsDto(
     val id: UUID,
     val name: String,
+    val isDefault: Boolean,
 )
+
+data class NotificationIdDto(
+    val id: UUID,
+)
+

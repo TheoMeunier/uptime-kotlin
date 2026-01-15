@@ -5,8 +5,8 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.exceptions.common.NotFoundException
-import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.entities.mapper.toProbeWithNotificationsDTO
 import tmenier.fr.monitors.entities.mapper.toShowDtp
 import java.util.*
 
@@ -20,8 +20,12 @@ class ShowProbeResource {
         @PathParam("probeId") probeId: String,
         @QueryParam("hours") hours: Long,
     ): Response {
-        logger.info { "Show probe $probeId" }
-        logger.info { "Show probe $probeId with hour $hours" }
+        if (hours == 0L) {
+            val probeEntity =
+                ProbesEntity.findById(UUID.fromString(probeId)) ?: throw NotFoundException("Probe not found")
+
+            return Response.ok(probeEntity.toProbeWithNotificationsDTO()).build()
+        }
 
         val validHours = setOf(1L, 3L, 6L, 24L, 168L)
         if (hours !in validHours) {

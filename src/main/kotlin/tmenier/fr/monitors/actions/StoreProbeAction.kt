@@ -1,6 +1,7 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.dtos.requests.*
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
@@ -10,9 +11,11 @@ import java.util.*
 
 @ApplicationScoped
 class StoreProbeAction {
-    fun execute(payload: BaseStoreProbeRequest) {
-        val probe = ProbesEntity()
-        probe.id = UUID.randomUUID()
+    fun execute(payload: BaseStoreProbeRequest, probeId: UUID? = null) {
+        val probe = probeId?.let {
+            ProbesEntity.findById(it) ?: throw NotFoundException("Probe with id $probeId not found")
+        } ?: ProbesEntity().apply { id = UUID.randomUUID() }
+
         probe.name = payload.name
         probe.interval = payload.interval!!
         probe.intervalRetry = payload.intervalRetry!!

@@ -8,7 +8,6 @@ interface FormSelectNotificationProps<TFieldValues extends FieldValues> {
 	form: UseFormReturn<TFieldValues>;
 	name: Path<TFieldValues>;
 }
-
 export default function FormSelectNotification<TFieldValues extends FieldValues>({
 	form,
 	name = 'notifications' as Path<TFieldValues>,
@@ -25,13 +24,14 @@ export default function FormSelectNotification<TFieldValues extends FieldValues>
 					control={form.control}
 					name={name}
 					render={({ field }) => {
-						const isChecked = field.value?.includes(notification.id) || false;
+						const isChecked = notification.is_default || field.value?.includes(notification.id) || false;
 
 						return (
 							<div className="flex items-center gap-4">
 								<Switch
 									id={notification.id}
 									checked={isChecked}
+									disabled={notification.is_default}
 									onCheckedChange={(checked) => {
 										const currentValue = field.value || [];
 										if (checked) {

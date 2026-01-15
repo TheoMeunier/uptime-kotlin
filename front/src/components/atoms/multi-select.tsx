@@ -297,6 +297,7 @@ export const MultiSelect = React.forwardRef<MultiSelectRef, MultiSelectProps>(
 			onValueChange,
 			variant,
 			defaultValue = [],
+			value,
 			placeholder = 'Select options',
 			animation = 0,
 			animationConfig,

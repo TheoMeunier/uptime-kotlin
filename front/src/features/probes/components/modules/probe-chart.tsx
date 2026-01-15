@@ -10,14 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atoms/select.tsx';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useTranslation } from 'react-i18next';
-
-interface Monitor {
-	id: string;
-	status: string;
-	response_time: number;
-	run_at: Date;
-	message?: string;
-}
+import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 
 export default function ProbeChart({
 	monitors,
@@ -58,8 +51,6 @@ export default function ProbeChart({
 				return '';
 		}
 	};
-
-	console.log(lastHour);
 
 	return (
 		<Card className="pt-0">

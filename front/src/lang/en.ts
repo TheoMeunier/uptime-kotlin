@@ -28,6 +28,7 @@ const en = {
 		cancel: 'Cancel',
 		loading: 'Logging...',
 		create: 'Create {{entity}}',
+		update: 'Update {{entity}}',
 		remove: 'Remove {{entity}}',
 		saving: 'Saving...',
 		save: 'Save {{entity}}',
@@ -106,6 +107,7 @@ const en = {
 		},
 		alerts: {
 			create: 'Monitor {{ date }} successfully created',
+			update: 'Monitor {{ date }} successfully updated',
 			remove: 'Monitor successfully removed',
 		},
 	},

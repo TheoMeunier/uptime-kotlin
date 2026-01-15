@@ -1,12 +1,5 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/atoms/hover-card';
-
-interface Monitor {
-	id: string;
-	status: string;
-	response_time: number;
-	run_at: Date;
-	message?: string;
-}
+import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 
 type BarItem = Monitor | { type: 'pause'; id: string; timestamp: Date };
 

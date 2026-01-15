@@ -1,13 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import { Activity, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
-
-interface Monitor {
-	id: string;
-	status: string;
-	response_time: number;
-	run_at: Date;
-	message?: string;
-}
+import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 
 export default function ProbeMonitorLog({ monitors }: { monitors: Monitor[] }) {
 	return (

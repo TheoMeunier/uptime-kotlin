@@ -32,23 +32,38 @@ export default function FormMultiSelect<TFieldValues extends FieldValues>({
 	closeOnSelect = false,
 	disabled = false,
 }: FormMultiSelectProps<TFieldValues>) {
+	const normalizeDash = (v: string) => v.replace(/[–—]/g, '-');
+
 	const normalizedOptions = (() => {
 		if (options.length === 0) return [];
 
 		const firstOption = options[0];
 
-		if (typeof firstOption === 'object' && firstOption !== null && 'heading' in firstOption) {
-			return options as MultiSelectGroup[];
+		const normalizeOption = (opt: MultiSelectOption | string): MultiSelectOption => {
+			if (typeof opt === 'string') {
+				const norm = normalizeDash(opt);
+				return { label: norm, value: norm };
+			}
+
+			return {
+				...opt,
+				label: normalizeDash(opt.label),
+				value: normalizeDash(opt.value),
+			};
+		};
+
+		if (firstOption && typeof firstOption === 'object' && 'heading' in firstOption) {
+			return (options as MultiSelectGroup[]).map((group) => ({
+				heading: normalizeDash(group.heading),
+				options: group.options.map((o) => normalizeOption(o)),
+			}));
 		}
 
-		if (typeof firstOption === 'object' && firstOption !== null && 'label' in firstOption && 'value' in firstOption) {
-			return options as MultiSelectOption[];
+		if (firstOption && typeof firstOption === 'object' && 'label' in firstOption && 'value' in firstOption) {
+			return (options as MultiSelectOption[]).map((opt) => normalizeOption(opt));
 		}
 
-		return (options as readonly string[]).map((option) => ({
-			label: option,
-			value: option,
-		}));
+		return (options as readonly string[]).map((opt) => normalizeOption(opt));
 	})();
 
 	return (
@@ -56,11 +71,10 @@ export default function FormMultiSelect<TFieldValues extends FieldValues>({
 			name={name}
 			control={form.control}
 			render={({ field, fieldState }) => (
-				<Field data-invalid={fieldState.invalid}>
+				<Field>
 					<FieldContent>
 						<FieldLabel htmlFor={name}>{label}</FieldLabel>
 						{description && <FieldDescription>{description}</FieldDescription>}
-						{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
 					</FieldContent>
 					<MultiSelect
 						options={normalizedOptions}
@@ -73,14 +87,12 @@ export default function FormMultiSelect<TFieldValues extends FieldValues>({
 						emptyIndicator={emptyIndicator}
 						closeOnSelect={closeOnSelect}
 						disabled={disabled}
-						className={fieldState.invalid ? 'border-red-500' : ''}
 					/>
-					<FieldError>{form.formState.errors[field.name]?.message as string}</FieldError>
+					<FieldError>{fieldState.error?.message}</FieldError>
 				</Field>
 			)}
 		/>
 	);
 }
 
-// Export des types pour utilisation
 export type { MultiSelectOption, MultiSelectGroup };

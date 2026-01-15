@@ -12,6 +12,7 @@ import { ShowProbe } from '@/pages/probes/show-probe.tsx';
 import Profile from '@/pages/profile/profile.tsx';
 import ProbesStatus from '@/pages/probes/probes-status.tsx';
 import './lang/i18n.ts';
+import EditProbe from '@/pages/probes/edit-probe.tsx';
 
 export const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
 							<Route path="/dashboard" element={<App />} />
 
 							<Route path="monitors/new" element={<CreateProbe />} />
+							<Route path="monitors/:probeId/edit" element={<EditProbe />} />
 							<Route path="monitors/:probeId" element={<ShowProbe />} />
 
 							<Route path="profile" element={<Profile />} />

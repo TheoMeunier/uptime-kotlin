@@ -22,6 +22,11 @@ data class ProbeStatusDTO(
     val monitors: List<ProbeMonitorDTO>,
 )
 
+data class ProbeWithNotificationsDTO(
+    val probe: ProbeDTO,
+    val notifications: List<UUID>,
+)
+
 data class ProbeDTO(
     val id: UUID,
     val name: String,

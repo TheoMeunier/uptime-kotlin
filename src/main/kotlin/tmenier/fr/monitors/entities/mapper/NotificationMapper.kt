@@ -47,4 +47,5 @@ fun NotificationsChannelEntity.toListingsDTO() =
     ListingNotificationsDto(
         id = id,
         name = name,
+        isDefault = isDefault,
     )

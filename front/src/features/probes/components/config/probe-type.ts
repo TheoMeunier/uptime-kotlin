@@ -30,7 +30,6 @@ const PROBE_FIELDS_CONFIG = {
 				label: i18n.t('monitors.label.http_code_allowed'),
 				input_type: 'switch_multiple',
 				options: Object.values(HttpStatusCode),
-				default_value: [],
 				searchable: false,
 				closeOnSelect: false,
 			},
