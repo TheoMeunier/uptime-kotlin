@@ -1,82 +1,144 @@
-# uptime-kotlin
+<div align="center">
+<a href="https://github.com/TheoMeunier/uptime-kotlin">
+<img src="doc/images/logo.svg" alt="Logo" width="100" height="100">
+</a>
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+<h2 align="center">Uptime Kotlin</h3>
+  <p align="center">
+    <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    ·
+    <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  </p>
+</div>
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## About The Project
 
-## Running the application in dev mode
+A simple, lightweight, and self-hostable uptime monitoring tool, built and optimized for cloud deployment.
+Ideal for monitoring service availability without relying on external solutions.
 
-You can run your application in dev mode that enables live coding using:
+<img src="doc/images/demo-filesox.png" alt="demo-uptime-kotlin" width="100%" height="auto">
 
-```shell script
-./gradlew quarkusDev
+## Getting Started
+
+### Prerequisites
+
+* nodejs lts
+* java 21
+* postgres 17.7
+
+### Installation for development
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/TheoMeunier/uptime-kotlin.git
+   ```
+2. Configuring the `variable environnement` file
+
+3. Build front-end
+   ```sh 
+    cd front
+    npm install
+    npm run dev
+   ```
+4. Build back-end
+   ```sh
+    ./gradlew quarkusDev
+   ```
+5. Run docker compose
+   ```sh
+    docker compose up -d
+   ```
+
+#### Docker
+
+### 1. Create keys for JWT token with `openssl`:
+
+```bash
+mkdir certs/ && cd certs
+
+openssl genrsa -out rsaPrivateKey.pem 2048
+openssl rsa -pubout -in rsaPrivateKey.pem -out publicKey.pem
+openssl pkcs8 -topk8 -nocrypt -inform pem -in rsaPrivateKey.pem -outform pem -out privateKey.pem
+
+chmod 644 privateKey.pem publicKey.pem
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+2. Create a `compose.yaml` file
 
-## Packaging and running the application
+```yml
+services:
+  uptime-kotlin:
+    image: ghcr.io/theomeunier/uptime/api-native:latest
+    container_name: uptime_api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      QUARKUS_DATASOURCE_USERNAME: uptime
+      QUARKUS_DATASOURCE_PASSWORD: uptime
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database/uptime
+      MP_JWT_VERIFY_PUBLICKEY_LOCATION: /certs/publicKey.pem
+      SMALLRYE_JWT_SIGN_KEY_LOCATION: /certs/privateKey.pem
+    volumes:
+      - ./certs:/certs
+    networks:
+      - app_network
 
-The application can be packaged using:
+networks:
+  app_network:
+    driver: bridge
 
-```shell script
-./gradlew build
 ```
 
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
+### 3. Configure the `variable environnement` file
 
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
+#### 3.1 PostgreSQL Configuration:
 
-If you want to build an _über-jar_, execute the following command:
+- `QUARKUS_DATASOURCE_USERNAME` : The username of your PostgreSQL database
+- `QUARKUS_DATASOURCE_PASSWORD` : The password of your PostgreSQL database
+- `QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://[host][:port][/database]` : The URL of your PostgreSQL database
 
-```shell script
-./gradlew build -Dquarkus.package.jar.type=uber-jar
+#### 3.2 JWT Configuration:
+
+- `MP_JWT_VERIFY_PUBLICKEY_LOCATION` : The location of the public key used to verify the JWT token
+- `SMALLRYE_JWT_SIGN_KEY_LOCATION` : The location of the private key used to sign the JWT token
+
+### 4. Start the application with docker-compose
+
+```bash
+docker compose up -d
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
+### 5. Access the application
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./gradlew build -Dquarkus.native.enabled=true
+```bash
+http://localhost:8888
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+#### Connect to the application
 
-```shell script
-./gradlew build -Dquarkus.native.enabled=true -Dquarkus.native.container-build=true
-```
+Your default admin credentials are:
 
-You can then execute your native executable with: `./build/uptime-kotlin-1.0-SNAPSHOT-runner`
+- Email: `admin@uptime-kotlin.com`
+- Password: `adminadmin`
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/gradle-tooling>.
+It is strongly recommended that you change this password immediately after your first login for security reasons.
 
-## Related Guides
+## Contributing
 
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and
-  method parameters for your beans (REST, CDI, Jakarta Persistence)
-- RESTEasy Classic Mutiny ([guide](https://quarkus.io/guides/resteasy#reactive)): Mutiny support for RESTEasy Classic
-  server
-- Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code
-  for Hibernate ORM via the active record or the repository pattern
-- SmallRye JWT ([guide](https://quarkus.io/guides/security-jwt)): Secure your applications with JSON Web Token
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
 
-## Provided Code
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
+simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
 
-### Hibernate ORM
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Create your first JPA entity
+## License
 
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
-
-### RESTEasy JAX-RS
-
-Easily start your RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+Distributed under the MIT License. See `LICENSE` for more information.
