@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atoms/select.tsx';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 
 export default function ProbeChart({
@@ -30,10 +31,49 @@ export default function ProbeChart({
 		},
 	} satisfies ChartConfig;
 
-	const chartData = monitors.map((monitor) => ({
-		date: new Date(monitor.run_at).toISOString(),
-		response_time: monitor.response_time,
-	}));
+	// Préparer les données avec séparation des gaps
+	const chartData = useMemo(() => {
+		const now = Date.now();
+		const startTime = now - lastHour * 60 * 60 * 1000;
+
+		// Définir le seuil de gap basé sur la plage temporelle
+		// Pour éviter de connecter des points trop éloignés
+		const gapThreshold = lastHour <= 6 ? 10 * 60 * 1000 : 60 * 60 * 1000; // 10 min pour <= 6h, 1h pour le reste
+
+		// Filtrer et mapper les monitors dans la plage temporelle
+		const filteredMonitors = monitors
+			.filter((monitor) => {
+				const monitorTime = new Date(monitor.run_at).getTime();
+				return monitorTime >= startTime && monitorTime <= now && monitor.response_time != null;
+			})
+			.map((monitor) => ({
+				timestamp: new Date(monitor.run_at).getTime(),
+				response_time: monitor.response_time,
+			}))
+			.sort((a, b) => a.timestamp - b.timestamp);
+
+		// Insérer des valeurs null entre les points trop espacés pour briser la ligne
+		const dataWithGaps: Array<{ timestamp: number; response_time: number | null }> = [];
+
+		for (let i = 0; i < filteredMonitors.length; i++) {
+			dataWithGaps.push(filteredMonitors[i]);
+
+			// Si ce n'est pas le dernier point, vérifier l'écart avec le suivant
+			if (i < filteredMonitors.length - 1) {
+				const gap = filteredMonitors[i + 1].timestamp - filteredMonitors[i].timestamp;
+
+				// Si l'écart est trop grand, insérer un point null pour briser la ligne
+				if (gap > gapThreshold) {
+					dataWithGaps.push({
+						timestamp: filteredMonitors[i].timestamp + 1,
+						response_time: null,
+					});
+				}
+			}
+		}
+
+		return dataWithGaps;
+	}, [monitors, lastHour]);
 
 	const getTimeRangeLabel = () => {
 		switch (lastHour) {
@@ -51,6 +91,35 @@ export default function ProbeChart({
 				return '';
 		}
 	};
+
+	// Formater l'heure selon la plage temporelle
+	const formatTime = (timestamp: number) => {
+		const date = new Date(timestamp);
+
+		// Pour 7 jours, afficher la date
+		if (lastHour === 168) {
+			return date.toLocaleDateString('en-US', {
+				month: 'short',
+				day: 'numeric',
+			});
+		}
+
+		// Pour les autres plages, afficher l'heure
+		return date.toLocaleTimeString('en-US', {
+			hour: '2-digit',
+			minute: '2-digit',
+		});
+	};
+
+	// Calculer le domaine de l'axe X
+	const xAxisDomain = useMemo(() => {
+		const now = Date.now();
+		const startTime = now - lastHour * 60 * 60 * 1000;
+		return [startTime, now];
+	}, [lastHour]);
+
+	// Vérifier s'il y a des données réelles (non null)
+	const hasData = chartData.some((d) => d.response_time !== null);
 
 	return (
 		<Card className="pt-0">
@@ -83,41 +152,34 @@ export default function ProbeChart({
 				</Select>
 			</CardHeader>
 			<CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-				<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
-					<AreaChart data={chartData}>
-						<CartesianGrid vertical={false} strokeDasharray="3 3" />
-						<XAxis
-							dataKey="date"
-							tickLine={false}
-							axisLine={false}
-							tickMargin={8}
-							minTickGap={32}
-							tickFormatter={(value) =>
-								new Date(value).toLocaleTimeString('en-US', {
-									hour: '2-digit',
-									minute: '2-digit',
-								})
-							}
-						/>
-						<YAxis tickLine={false} axisLine={true} tickMargin={8} />
-						<ChartTooltip
-							cursor={false}
-							content={
-								<ChartTooltipContent
-									labelFormatter={(value) =>
-										new Date(value).toLocaleTimeString('en-US', {
-											hour: '2-digit',
-											minute: '2-digit',
-										})
-									}
-									indicator="dot"
-								/>
-							}
-						/>
-						<Area dataKey="response_time" type="natural" fill="#dcfce7" stroke="#22c55e" connectNulls={false} />
-						<ChartLegend content={<ChartLegendContent />} />
-					</AreaChart>
-				</ChartContainer>
+				{!hasData ? (
+					<div className="flex h-[250px] w-full items-center justify-center text-muted-foreground">
+						No data available for the selected time range
+					</div>
+				) : (
+					<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+						<AreaChart data={chartData}>
+							<CartesianGrid vertical={false} strokeDasharray="3 3" />
+							<XAxis
+								dataKey="timestamp"
+								type="number"
+								domain={xAxisDomain}
+								tickLine={false}
+								axisLine={false}
+								tickMargin={8}
+								minTickGap={32}
+								tickFormatter={formatTime}
+							/>
+							<YAxis tickLine={false} axisLine={true} tickMargin={8} />
+							<ChartTooltip
+								cursor={false}
+								content={<ChartTooltipContent labelFormatter={(value) => formatTime(Number(value))} indicator="dot" />}
+							/>
+							<Area dataKey="response_time" type="monotone" fill="#dcfce7" stroke="#22c55e" connectNulls={false} />
+							<ChartLegend content={<ChartLegendContent />} />
+						</AreaChart>
+					</ChartContainer>
+				)}
 			</CardContent>
 		</Card>
 	);

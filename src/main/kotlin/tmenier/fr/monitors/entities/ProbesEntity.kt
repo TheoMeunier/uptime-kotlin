@@ -81,7 +81,7 @@ class ProbesEntity : PanacheEntityBase {
             hour: Long = 1,
         ): ProbesEntity? =
             find(
-                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2",
+                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2 ORDER BY pml.runAt ASC",
                 id,
                 LocalDateTime.now().minusHours(hour),
             ).firstResult()
@@ -92,7 +92,7 @@ class ProbesEntity : PanacheEntityBase {
 
         fun getProbesLastHour(): List<ProbesEntity> =
             find(
-                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true",
+                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ORDER BY pml.runAt ASC",
                 LocalDateTime.now().minusHours(1),
             ).list()
 
