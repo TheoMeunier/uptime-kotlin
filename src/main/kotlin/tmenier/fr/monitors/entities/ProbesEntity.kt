@@ -3,6 +3,7 @@ package tmenier.fr.monitors.entities
 import com.fasterxml.jackson.databind.JsonNode
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
+import io.quarkus.panache.common.Sort
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
@@ -86,9 +87,9 @@ class ProbesEntity : PanacheEntityBase {
                 LocalDateTime.now().minusHours(hour),
             ).firstResult()
 
-        fun getActiveProbes(): List<ProbesEntity> = find("enabled = ?1", true).list()
+        fun getActiveProbes(): List<ProbesEntity> = find("enabled = ?1 ORDER BY name ASC", true).list()
 
-        fun getAllProbes(): List<ProbesEntity> = findAll().list()
+        fun getAllProbes(): List<ProbesEntity> = findAll(Sort.by("name")).list()
 
         fun getProbesLastHour(): List<ProbesEntity> =
             find(
