@@ -1,14 +1,17 @@
 package tmenier.fr.monitors.schedulers
 
+import io.quarkus.narayana.jta.QuarkusTransaction
 import io.quarkus.scheduler.Scheduled
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.control.ActivateRequestContext
 import kotlinx.coroutines.*
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.notifications.NotificationService
+import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import tmenier.fr.monitors.services.SaveProbeMonitor
 import java.time.Duration
 import java.time.LocalDateTime
@@ -22,134 +25,169 @@ class ProbeSchedulerTemplateFactory(
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val notificationService: NotificationService,
 ) {
-    val probeTaskContext =
+
+    private val probeScope =
         CoroutineScope(
-            Executors.newScheduledThreadPool(4).asCoroutineDispatcher() + CoroutineName("ProbeTask") + SupervisorJob(),
+            Executors.newScheduledThreadPool(4).asCoroutineDispatcher()
+                    + CoroutineName("ProbeTask")
+                    + SupervisorJob()
         )
 
-    private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
+    private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
+
+    // -------------------------------------------------------------------------
+    // Scheduler (starter / stopper uniquement)
+    // -------------------------------------------------------------------------
 
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
         val probes = ProbesEntity.getActiveProbes()
         val activeProbeIds = probes.filter { it.enabled }.map { it.id }.toSet()
 
-        // Scheduler canceled probes
         scheduledProbes.keys.forEach { probeId ->
             if (probeId !in activeProbeIds) {
                 scheduledProbes.remove(probeId)?.cancel()
-                logger.info { "Cancelled probe $probeId (disabled or deleted)" }
+                logger.info { "Stopped probe $probeId (disabled or deleted)" }
             }
         }
 
-        // Scheduler news probes
         probes.filter { it.enabled }.forEach { probe ->
             if (!scheduledProbes.containsKey(probe.id)) {
-                scheduleProbe(probe)
+                scheduleProbe(probe.id)
+                logger.info { "Started probe ${probe.id}" }
             }
         }
     }
 
-    private fun scheduleProbe(probe: ProbesEntity) {
-        val job =
-            probeTaskContext.launch {
-                while (isActive) {
-                    val now = LocalDateTime.now()
-                    val nextRun = calculateNextRun(probe, now)
-                    val delayMs = Duration.between(now, nextRun).toMillis()
+    private fun scheduleProbe(probeId: UUID) {
+        val job = probeScope.launch {
+            while (isActive) {
+                val probe = loadProbe(probeId)
+                    ?: break
 
-                    if (delayMs > 0) {
-                        delay(delayMs)
-                    }
+                if (!probe.enabled) {
+                    logger.info { "Probe $probeId disabled, stopping job" }
+                    break
+                }
 
-                    if (runningProbes.add(probe.id)) {
-                        try {
-                            executeWithRetry(probe)
-                        } catch (e: Exception) {
-                            logger.error { "Error executing probe id=${probe.id}: ${e.stackTraceToString()}" }
-                        } finally {
-                            runningProbes.remove(probe.id)
-                        }
-                    }
+                val now = LocalDateTime.now()
+                val nextRun = calculateNextRun(probe, now)
+                val delayMs = Duration.between(now, nextRun).toMillis()
+
+                if (delayMs > 0) {
+                    delay(delayMs)
+                }
+
+                if (!runningProbes.add(probeId)) {
+                    continue
+                }
+
+                try {
+                    executeWithRetry(probe)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    logger.error(e) { "Unexpected error executing probe $probeId" }
+                } finally {
+                    runningProbes.remove(probeId)
                 }
             }
+        }
 
-        scheduledProbes[probe.id] = job
+        scheduledProbes[probeId] = job
     }
 
     private suspend fun executeWithRetry(probe: ProbesEntity) {
         val content = ProbeContentMapper.toDto(probe)
-        val protocolHandler = probeSchedulerFactory.getProtocol(probe.protocol)
-
-        val maxAttempts = probe.retry + 1
-
-        if (protocolHandler == null) {
-            logger.warn { "Unknown probe protocol: ${probe.protocol}" }
-            return
-        }
+        val handler = probeSchedulerFactory.getProtocol(probe.protocol)
+            ?: run {
+                logger.warn { "Unknown protocol ${probe.protocol}" }
+                return
+            }
 
         @Suppress("UNCHECKED_CAST")
-        val typeHandler = protocolHandler as ProbeSchedulerInterfaceType<Any>
+        val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
+
+        val maxAttempts = probe.retry + 1
 
         repeat(maxAttempts) { attempt ->
             val now = LocalDateTime.now()
             val isLastAttempt = attempt == maxAttempts - 1
+
             val result = typeHandler.execute(probe, content, isLastAttempt)
 
             when (result.status) {
                 ProbeMonitorLogStatus.SUCCESS -> {
-                    logger.info { "Probe ${probe.id} succeeded after ${attempt + 1} retries" }
-
-                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
-                    notificationService.sendNotification(probe.id, result)
+                    logger.info {
+                        "Probe ${probe.id} succeeded after ${attempt + 1} attempt(s)"
+                    }
+                    saveAndNotify(probe.id, now, result)
                     return
                 }
 
-                ProbeMonitorLogStatus.WARNING -> {
-                    if (isLastAttempt) {
-                        logger.error { "Probe ${probe.id} failed after $maxAttempts attempts" }
-
-                        val failedResult =
-                            result.copy(
-                                status = ProbeMonitorLogStatus.FAILURE,
-                            )
-
-                        saveProbeMonitorLog.saveProbeMonitorLog(probe, now, failedResult)
-                        notificationService.sendNotification(probe.id, failedResult)
-                        return
-                    }
-
-                    logger.warn { "Probe ${probe.id} warning after ${attempt + 1}/$maxAttempts attempts" }
-                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
-                }
-
+                ProbeMonitorLogStatus.WARNING,
                 ProbeMonitorLogStatus.FAILURE -> {
-                    logger.error { "Probe ${probe.id} failed on attempt ${attempt + 1}/$maxAttempts" }
+                    logger.warn {
+                        "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
+                    }
 
                     if (isLastAttempt) {
-                        saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
-                        notificationService.sendNotification(probe.id, result)
+                        saveAndNotify(
+                            probe.id,
+                            now,
+                            result.copy(status = ProbeMonitorLogStatus.FAILURE)
+                        )
                         return
                     }
 
-                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                    saveOnly(probe.id, now, result)
                 }
 
-                else -> {
-                    if (isLastAttempt) {
-                        saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
-                        notificationService.sendNotification(probe.id, result)
-                        return
-                    }
-
-                    saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
-                }
+                else -> {}
             }
 
             delay(probe.interval * 1000L)
         }
     }
+
+    private suspend fun saveOnly(
+        probeId: UUID,
+        now: LocalDateTime,
+        result: ProbeResult,
+    ) = withTransaction {
+        ProbesEntity.findById(probeId)?.let {
+            saveProbeMonitorLog.saveProbeMonitorLog(it, now, result)
+        }
+    }
+
+    private suspend fun saveAndNotify(
+        probeId: UUID,
+        now: LocalDateTime,
+        result: ProbeResult,
+    ) = withTransaction {
+        ProbesEntity.findById(probeId)?.let {
+            val previousStatus = it.status
+            saveProbeMonitorLog.saveProbeMonitorLog(it, now, result)
+            notificationService.sendNotification(it.id, result, previousStatus)
+        }
+    }
+
+    private suspend fun loadProbe(probeId: UUID): ProbesEntity? =
+        withContext(Dispatchers.IO) {
+            withRequestContext {
+                ProbesEntity.findById(probeId)
+            }
+        }
+
+    suspend fun <T> withTransaction(block: suspend () -> T): T =
+        withContext(Dispatchers.IO) {
+            withRequestContext {
+                QuarkusTransaction.requiringNew().call {
+                    runBlocking { block() }
+                }
+            }
+        } as T
 
     private fun calculateNextRun(
         probe: ProbesEntity,
@@ -169,6 +207,9 @@ class ProbeSchedulerTemplateFactory(
         return nextRun
     }
 
+    @ActivateRequestContext
+    fun <T> withRequestContext(block: () -> T): T = block()
+
     @PreDestroy
-    fun cleanup() = probeTaskContext.cancel()
+    fun cleanup() = probeScope.cancel()
 }
