@@ -20,11 +20,17 @@ class NotificationService(
     suspend fun sendNotification(
         probeId: UUID,
         result: ProbeResult,
+        previousStatus: ProbeMonitorLogStatus,
     ) {
         val probe = ProbesEntity.findById(probeId) ?: throw NotFoundException("Probe not found: $probeId")
         val notifications = probe.notifications
 
-        if (probe.status === result.status) return
+        if (previousStatus == result.status) {
+            logger.debug { "Probe ${probe.id}: No status change (${previousStatus}), skipping notifications" }
+            return
+        }
+
+        logger.info { "Probe ${probe.id}: Status changed from $previousStatus to ${result.status}" }
 
         coroutineScope {
             notifications.forEach { notification ->
@@ -33,24 +39,36 @@ class NotificationService(
                     val handler = notificationFactory.getNotification(notification.type)
 
                     if (handler == null) {
-                        logger.warn { "Unknown notification handle type: ${notification.type}" }
+                        logger.warn { "Unknown notification handler type: ${notification.type}" }
                         return@launch
                     }
 
                     @Suppress("UNCHECKED_CAST")
                     val typedHandler = handler as TypedNotificationInterfaces<Any>
 
-                    if (probe.status === ProbeMonitorLogStatus.SUCCESS && result.status === ProbeMonitorLogStatus.FAILURE) {
-                        typedHandler.sendFailure(content, probe, result)
-                    } else if (probe.status === ProbeMonitorLogStatus.FAILURE && result.status === ProbeMonitorLogStatus.SUCCESS) {
-                        typedHandler.sendSuccess(content, probe, result)
-                    } else {
-                        return@launch
+                    try {
+                        when {
+                            previousStatus != ProbeMonitorLogStatus.FAILURE && result.status == ProbeMonitorLogStatus.FAILURE -> {
+                                logger.info { "Sending failure notification for probe ${probe.id}" }
+                                typedHandler.sendFailure(content, probe, result)
+                            }
+
+                            previousStatus == ProbeMonitorLogStatus.FAILURE && result.status == ProbeMonitorLogStatus.SUCCESS -> {
+                                logger.info { "Sending recovery notification for probe ${probe.id}" }
+                                typedHandler.sendSuccess(content, probe, result)
+                            }
+
+                            else -> {
+                                logger.debug { "Probe ${probe.id}: Status change $previousStatus -> ${result.status} doesn't trigger notifications" }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        logger.error(e) { "Failed to send notification for probe ${probe.id}" }
                     }
                 }
             }
         }
 
-        logger.info("Probe ${probe.id} sent notifications")
+        logger.info { "Probe ${probe.id}: Notifications sent successfully" }
     }
 }
