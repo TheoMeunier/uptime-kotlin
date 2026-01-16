@@ -35,10 +35,7 @@ class ProbeSchedulerTemplateFactory(
 
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
-
-    // -------------------------------------------------------------------------
-    // Scheduler (starter / stopper uniquement)
-    // -------------------------------------------------------------------------
+    
 
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
