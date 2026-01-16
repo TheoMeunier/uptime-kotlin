@@ -4,11 +4,13 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
+import java.util.*
 
 @ApplicationScoped
 class NotificationService(
@@ -16,9 +18,10 @@ class NotificationService(
 ) {
     @Transactional
     suspend fun sendNotification(
-        probe: ProbesEntity,
+        probeId: UUID,
         result: ProbeResult,
     ) {
+        val probe = ProbesEntity.findById(probeId) ?: throw NotFoundException("Probe not found: $probeId")
         val notifications = probe.notifications
 
         if (probe.status === result.status) return

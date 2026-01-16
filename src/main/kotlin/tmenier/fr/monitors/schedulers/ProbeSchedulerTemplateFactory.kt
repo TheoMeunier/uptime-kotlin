@@ -101,8 +101,8 @@ class ProbeSchedulerTemplateFactory(
                 ProbeMonitorLogStatus.SUCCESS -> {
                     logger.info { "Probe ${probe.id} succeeded after ${attempt + 1} retries" }
 
-                    notificationService.sendNotification(probe, result)
                     saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                    notificationService.sendNotification(probe.id, result)
                     return
                 }
 
@@ -115,8 +115,8 @@ class ProbeSchedulerTemplateFactory(
                                 status = ProbeMonitorLogStatus.FAILURE,
                             )
 
-                        notificationService.sendNotification(probe, failedResult)
                         saveProbeMonitorLog.saveProbeMonitorLog(probe, now, failedResult)
+                        notificationService.sendNotification(probe.id, failedResult)
                         return
                     }
 
@@ -128,8 +128,8 @@ class ProbeSchedulerTemplateFactory(
                     logger.error { "Probe ${probe.id} failed on attempt ${attempt + 1}/$maxAttempts" }
 
                     if (isLastAttempt) {
-                        notificationService.sendNotification(probe, result)
                         saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                        notificationService.sendNotification(probe.id, result)
                         return
                     }
 
@@ -138,8 +138,8 @@ class ProbeSchedulerTemplateFactory(
 
                 else -> {
                     if (isLastAttempt) {
-                        notificationService.sendNotification(probe, result)
                         saveProbeMonitorLog.saveProbeMonitorLog(probe, now, result)
+                        notificationService.sendNotification(probe.id, result)
                         return
                     }
 
