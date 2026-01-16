@@ -13,7 +13,7 @@ import {
 	SidebarTrigger,
 } from '@/components/atoms/sidebar.tsx';
 import { Button } from '@/components/atoms/button.tsx';
-import { BadgeCheck, ChevronsUpDown, LogOut, Plus } from 'lucide-react';
+import { Activity, BadgeCheck, ChevronsUpDown, LogOut, Plus } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
@@ -113,6 +113,13 @@ export default function Layout() {
 								<Plus size={18} /> New monitor
 							</Link>
 						</Button>
+						<SidebarMenuItem className="mt-6">
+							<SidebarMenuButton asChild>
+								<Link to={'/status'}>
+									<Activity size={18} /> Status Page
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
 					</SidebarGroupContent>
 
 					<SidebarGroup>
