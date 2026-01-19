@@ -27,6 +27,7 @@ export function ShowProbe() {
 			return probeService.getProbe<ProbeShow>(params.probeId!, hours, ProbeShowSchema);
 		},
 		placeholderData: (previousData) => previousData,
+		refetchInterval: 120000,
 	});
 
 	if (isLoading) return <ShowProbeSkeleton />;
