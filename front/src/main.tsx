@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './assets/index.css';
-import App from './App.tsx';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import Login from '@/pages/auth/login.tsx';
 import { ProtectedRouteProvider } from '@/features/auth/contexts/protected-route-provider.tsx';
@@ -13,6 +12,7 @@ import Profile from '@/pages/profile/profile.tsx';
 import ProbesStatus from '@/pages/probes/probes-status.tsx';
 import './lang/i18n.ts';
 import EditProbe from '@/pages/probes/edit-probe.tsx';
+import Dashboard from '@/pages/dashboard.tsx';
 
 export const queryClient = new QueryClient();
 
@@ -23,7 +23,7 @@ createRoot(document.getElementById('root')!).render(
 				<Routes>
 					<Route path="/" element={<ProtectedRouteProvider />}>
 						<Route path="/" element={<Layout />}>
-							<Route path="/dashboard" element={<App />} />
+							<Route path="/dashboard" element={<Dashboard />} />
 
 							<Route path="monitors/new" element={<CreateProbe />} />
 							<Route path="monitors/:probeId/edit" element={<EditProbe />} />

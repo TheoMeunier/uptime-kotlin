@@ -1,6 +1,6 @@
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 
-export default function ProbeStatus({ status }: { status: string }) {
+export default function ProbeStatus({ status, size = 'size-8' }: { status: string; size?: string }) {
 	let pingColor = '';
 	let dotColor = '';
 
@@ -23,9 +23,9 @@ export default function ProbeStatus({ status }: { status: string }) {
 
 	return (
 		<div>
-			<span className="relative flex size-8">
+			<span className={`relative flex ${size}`}>
 				<span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${pingColor} opacity-75`} />
-				<span className={`relative inline-flex size-8 rounded-full ${dotColor}`} />
+				<span className={`relative inline-flex ${size} rounded-full ${dotColor}`} />
 			</span>
 		</div>
 	);

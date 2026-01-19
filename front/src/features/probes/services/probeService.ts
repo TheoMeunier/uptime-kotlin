@@ -1,7 +1,7 @@
-import type { StoreProbeSchema } from '@/features/probes/hooks/useStoreProbeForm.ts';
 import api from '@/api/kyClient.ts';
 import probeResponseSchema, { type ProbeListItem } from '@/features/probes/schemas/probe-response.schema.ts';
 import { z } from 'zod';
+import type { StoreProbeSchema } from '@/features/probes/hooks/useProbeForm.ts';
 
 const probeService = {
 	async getProbes(): Promise<ProbeListItem[]> {

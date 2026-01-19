@@ -131,6 +131,39 @@ const en = {
 		},
 	},
 
+	dashboard: {
+		title: {
+			monitors: 'Monitors',
+			monitors_up: 'Monitors UP',
+			monitors_down: 'Monitors DOWN',
+			uptime: 'Uptime average',
+			notifications: 'Notifications',
+			last_24_hours: 'Last 24 hours',
+			response_time_average: 'Response time average',
+			incidents: 'Incidents',
+			checks_executed: 'Checks executed',
+		},
+
+		description: {
+			monitors: 'Total monitors',
+			monitors_up: 'Functional',
+			monitors_down: 'Down',
+			uptime: 'All services',
+			avg_response_time: 'Average latency',
+			on_24_hours: 'On 24 hours',
+			latency_average: 'Average latency',
+			executing: 'Executed',
+			currently_incidents: 'Currently active incidents',
+		},
+
+		table: {
+			services: 'Services',
+			times: 'Times',
+			status: 'Status',
+			empty: 'No data available in the table',
+		},
+	},
+
 	timeRanger: {
 		last_1_hour: 'Last 1 hour',
 		last_3_hours: 'Last 3 hours',
