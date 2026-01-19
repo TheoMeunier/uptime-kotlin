@@ -3,6 +3,7 @@ package tmenier.fr.monitors.entities.mapper
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.dtos.responses.*
 import tmenier.fr.monitors.entities.ProbesEntity
@@ -30,7 +31,7 @@ object ProbeContentMapper {
             }
 
             else -> {
-                // TODO: create default probe content
+                logger.error { "Unknown protocol ${probe.protocol}" }
             }
         } as ProbeContent
 

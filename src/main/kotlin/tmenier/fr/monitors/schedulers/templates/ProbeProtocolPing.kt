@@ -130,7 +130,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
 
             Pair(success, responseTime)
         } catch (e: Exception) {
-            logger.error("System ping execution failed for $host", e)
+            logger.error { "Ping failed for $host: ${e.message}" }
             val responseTime = System.currentTimeMillis() - startTime
             Pair(false, responseTime)
         }
