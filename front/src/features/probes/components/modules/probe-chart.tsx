@@ -31,16 +31,12 @@ export default function ProbeChart({
 		},
 	} satisfies ChartConfig;
 
-	// Préparer les données avec séparation des gaps
 	const chartData = useMemo(() => {
 		const now = Date.now();
 		const startTime = now - lastHour * 60 * 60 * 1000;
 
-		// Définir le seuil de gap basé sur la plage temporelle
-		// Pour éviter de connecter des points trop éloignés
 		const gapThreshold = lastHour <= 6 ? 10 * 60 * 1000 : 60 * 60 * 1000; // 10 min pour <= 6h, 1h pour le reste
 
-		// Filtrer et mapper les monitors dans la plage temporelle
 		const filteredMonitors = monitors
 			.filter((monitor) => {
 				const monitorTime = new Date(monitor.run_at).getTime();
@@ -52,17 +48,14 @@ export default function ProbeChart({
 			}))
 			.sort((a, b) => a.timestamp - b.timestamp);
 
-		// Insérer des valeurs null entre les points trop espacés pour briser la ligne
 		const dataWithGaps: Array<{ timestamp: number; response_time: number | null }> = [];
 
 		for (let i = 0; i < filteredMonitors.length; i++) {
 			dataWithGaps.push(filteredMonitors[i]);
 
-			// Si ce n'est pas le dernier point, vérifier l'écart avec le suivant
 			if (i < filteredMonitors.length - 1) {
 				const gap = filteredMonitors[i + 1].timestamp - filteredMonitors[i].timestamp;
 
-				// Si l'écart est trop grand, insérer un point null pour briser la ligne
 				if (gap > gapThreshold) {
 					dataWithGaps.push({
 						timestamp: filteredMonitors[i].timestamp + 1,
@@ -92,11 +85,9 @@ export default function ProbeChart({
 		}
 	};
 
-	// Formater l'heure selon la plage temporelle
 	const formatTime = (timestamp: number) => {
 		const date = new Date(timestamp);
 
-		// Pour 7 jours, afficher la date
 		if (lastHour === 168) {
 			return date.toLocaleDateString('en-US', {
 				month: 'short',
@@ -104,21 +95,18 @@ export default function ProbeChart({
 			});
 		}
 
-		// Pour les autres plages, afficher l'heure
 		return date.toLocaleTimeString('en-US', {
 			hour: '2-digit',
 			minute: '2-digit',
 		});
 	};
 
-	// Calculer le domaine de l'axe X
 	const xAxisDomain = useMemo(() => {
 		const now = Date.now();
 		const startTime = now - lastHour * 60 * 60 * 1000;
 		return [startTime, now];
 	}, [lastHour]);
 
-	// Vérifier s'il y a des données réelles (non null)
 	const hasData = chartData.some((d) => d.response_time !== null);
 
 	return (
