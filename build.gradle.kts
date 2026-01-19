@@ -46,6 +46,9 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured")
 
     implementation("dnsjava:dnsjava:3.5.2")
+
+    // monitoring
+    implementation("io.quarkus:quarkus-smallrye-health")
 }
 
 group = "tmenier.fr"
