@@ -21,7 +21,13 @@ export default function CreateProbe() {
 				<h1 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">Create monitor</h1>
 			</div>
 
-			<ProbeForm mode="create" onSubmit={onsubmit} isLoading={isLoading} defaultValues={defaultValues} />
+			<ProbeForm
+				mode="create"
+				onSubmit={onsubmit}
+				cancelLink={'/dashboard'}
+				isLoading={isLoading}
+				defaultValues={defaultValues}
+			/>
 		</>
 	);
 }

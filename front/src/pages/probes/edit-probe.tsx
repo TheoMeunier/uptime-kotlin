@@ -38,5 +38,13 @@ export default function EditProbe() {
 function FormUpdateProbe({ data, probeId }: { data: ProbeGetUpdateResponse; probeId: string }) {
 	const { isLoading, onsubmit } = useUpdateMonitor(probeId);
 
-	return <ProbeForm mode="edit" defaultValues={data} onSubmit={onsubmit} isLoading={isLoading} />;
+	return (
+		<ProbeForm
+			mode="edit"
+			defaultValues={data}
+			cancelLink={`/monitors/${probeId}`}
+			onSubmit={onsubmit}
+			isLoading={isLoading}
+		/>
+	);
 }

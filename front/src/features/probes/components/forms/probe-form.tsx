@@ -20,17 +20,19 @@ import FormSelectNotification from '@/features/notifications/components/forms/fo
 import CreateNotificationDialogue from '@/features/notifications/components/actions/create-notification-dialogue.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import PROBE_FIELDS_CONFIG from '@/features/probes/components/config/probe-type.ts';
+import { Link } from 'react-router';
 
 type ProbeFormMode = 'create' | 'edit';
 
 interface ProbeFormProps {
 	mode: ProbeFormMode;
 	defaultValues: Partial<StoreProbeSchema>;
+	cancelLink: string;
 	onSubmit: (values: StoreProbeSchema) => void;
 	isLoading?: boolean;
 }
 
-export default function ProbeForm({ mode, defaultValues, isLoading, onSubmit }: ProbeFormProps) {
+export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, onSubmit }: ProbeFormProps) {
 	const { t } = useTranslation();
 	const { form, errors } = useProbeForm({ defaultValues });
 	const protocol = form.watch('protocol');
@@ -139,7 +141,7 @@ export default function ProbeForm({ mode, defaultValues, isLoading, onSubmit }: 
 			<FieldGroup className="mt-6">
 				<Field orientation="horizontal">
 					<Button variant="outline" type="button">
-						{t('button.cancel')}
+						<Link to={cancelLink}>{t('button.cancel')}</Link>
 					</Button>
 					<Button type="submit">
 						{t(isLoading ? 'button.loading' : mode === 'create' ? 'button.create' : 'button.update', {
