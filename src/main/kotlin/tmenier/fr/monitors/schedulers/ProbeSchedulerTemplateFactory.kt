@@ -25,17 +25,15 @@ class ProbeSchedulerTemplateFactory(
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val notificationService: NotificationService,
 ) {
-
     private val probeScope =
         CoroutineScope(
-            Executors.newScheduledThreadPool(4).asCoroutineDispatcher()
-                    + CoroutineName("ProbeTask")
-                    + SupervisorJob()
+            Executors.newScheduledThreadPool(4).asCoroutineDispatcher() +
+                CoroutineName("ProbeTask") +
+                SupervisorJob(),
         )
 
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
-    
 
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
@@ -58,50 +56,53 @@ class ProbeSchedulerTemplateFactory(
     }
 
     private fun scheduleProbe(probeId: UUID) {
-        val job = probeScope.launch {
-            while (isActive) {
-                val probe = loadProbe(probeId)
-                    ?: break
+        val job =
+            probeScope.launch {
+                while (isActive) {
+                    val probe =
+                        loadProbe(probeId)
+                            ?: break
 
-                if (!probe.enabled) {
-                    logger.info { "Probe $probeId disabled, stopping job" }
-                    break
-                }
+                    if (!probe.enabled) {
+                        logger.info { "Probe $probeId disabled, stopping job" }
+                        break
+                    }
 
-                val now = LocalDateTime.now()
-                val nextRun = calculateNextRun(probe, now)
-                val delayMs = Duration.between(now, nextRun).toMillis()
+                    val now = LocalDateTime.now()
+                    val nextRun = calculateNextRun(probe, now)
+                    val delayMs = Duration.between(now, nextRun).toMillis()
 
-                if (delayMs > 0) {
-                    delay(delayMs)
-                }
+                    if (delayMs > 0) {
+                        delay(delayMs)
+                    }
 
-                if (!runningProbes.add(probeId)) {
-                    continue
-                }
+                    if (!runningProbes.add(probeId)) {
+                        continue
+                    }
 
-                try {
-                    executeWithRetry(probe)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    logger.error(e) { "Unexpected error executing probe $probeId" }
-                } finally {
-                    runningProbes.remove(probeId)
+                    try {
+                        executeWithRetry(probe)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.error(e) { "Unexpected error executing probe $probeId" }
+                    } finally {
+                        runningProbes.remove(probeId)
+                    }
                 }
             }
-        }
 
         scheduledProbes[probeId] = job
     }
 
     private suspend fun executeWithRetry(probe: ProbesEntity) {
         val content = ProbeContentMapper.toDto(probe)
-        val handler = probeSchedulerFactory.getProtocol(probe.protocol)
-            ?: run {
-                logger.warn { "Unknown protocol ${probe.protocol}" }
-                return
-            }
+        val handler =
+            probeSchedulerFactory.getProtocol(probe.protocol)
+                ?: run {
+                    logger.warn { "Unknown protocol ${probe.protocol}" }
+                    return
+                }
 
         @Suppress("UNCHECKED_CAST")
         val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
@@ -124,7 +125,8 @@ class ProbeSchedulerTemplateFactory(
                 }
 
                 ProbeMonitorLogStatus.WARNING,
-                ProbeMonitorLogStatus.FAILURE -> {
+                ProbeMonitorLogStatus.FAILURE,
+                -> {
                     logger.warn {
                         "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                     }
@@ -133,7 +135,7 @@ class ProbeSchedulerTemplateFactory(
                         saveAndNotify(
                             probe.id,
                             now,
-                            result.copy(status = ProbeMonitorLogStatus.FAILURE)
+                            result.copy(status = ProbeMonitorLogStatus.FAILURE),
                         )
                         return
                     }

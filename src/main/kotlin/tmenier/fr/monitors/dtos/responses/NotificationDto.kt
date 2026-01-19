@@ -11,4 +11,3 @@ data class ListingNotificationsDto(
 data class NotificationIdDto(
     val id: UUID,
 )
-

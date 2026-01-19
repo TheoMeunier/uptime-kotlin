@@ -26,7 +26,7 @@ class NotificationService(
         val notifications = probe.notifications
 
         if (previousStatus == result.status) {
-            logger.debug { "Probe ${probe.id}: No status change (${previousStatus}), skipping notifications" }
+            logger.debug { "Probe ${probe.id}: No status change ($previousStatus), skipping notifications" }
             return
         }
 
@@ -59,7 +59,9 @@ class NotificationService(
                             }
 
                             else -> {
-                                logger.debug { "Probe ${probe.id}: Status change $previousStatus -> ${result.status} doesn't trigger notifications" }
+                                logger.debug {
+                                    "Probe ${probe.id}: Status change $previousStatus -> ${result.status} doesn't trigger notifications"
+                                }
                             }
                         }
                     } catch (e: Exception) {

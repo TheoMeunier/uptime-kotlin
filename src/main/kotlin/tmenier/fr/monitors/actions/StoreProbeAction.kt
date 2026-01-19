@@ -11,10 +11,14 @@ import java.util.*
 
 @ApplicationScoped
 class StoreProbeAction {
-    fun execute(payload: BaseStoreProbeRequest, probeId: UUID? = null) {
-        val probe = probeId?.let {
-            ProbesEntity.findById(it) ?: throw NotFoundException("Probe with id $probeId not found")
-        } ?: ProbesEntity().apply { id = UUID.randomUUID() }
+    fun execute(
+        payload: BaseStoreProbeRequest,
+        probeId: UUID? = null,
+    ) {
+        val probe =
+            probeId?.let {
+                ProbesEntity.findById(it) ?: throw NotFoundException("Probe with id $probeId not found")
+            } ?: ProbesEntity().apply { id = UUID.randomUUID() }
 
         probe.name = payload.name
         probe.interval = payload.interval!!
