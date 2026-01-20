@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/atoms/button.tsx';
 import { Activity, BadgeCheck, ChevronsUpDown, Home, LogOut, Plus } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
@@ -39,6 +39,8 @@ import { getInitials } from '@/lib/utils.ts';
 export default function Layout() {
 	const isMobile = useIsMobile();
 	const user = authServices.getUser();
+	const navigate = useNavigate();
+
 	const { data, isLoading } = useQuery({
 		queryKey: ['probes'],
 		queryFn: async () => {
@@ -46,6 +48,11 @@ export default function Layout() {
 		},
 		staleTime: 5 * 60 * 1000, // 5 minutes
 	});
+
+	const logout = () => {
+		authServices.logout();
+		navigate('/login');
+	};
 
 	return (
 		<SidebarProvider>
@@ -95,7 +102,7 @@ export default function Layout() {
 											</DropdownMenuItem>
 										</Link>
 
-										<DropdownMenuItem>
+										<DropdownMenuItem onClick={logout}>
 											<LogOut />
 											Log out
 										</DropdownMenuItem>
