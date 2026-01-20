@@ -3,8 +3,8 @@ import probeService from '@/features/probes/services/probeService.ts';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import type { SubmitHandler } from 'react-hook-form';
-import type { StoreProbeSchema } from '@/features/probes/hooks/useStoreProbeForm.ts';
 import { useTranslation } from 'react-i18next';
+import type { StoreProbeSchema } from '@/features/probes/hooks/useProbeForm.ts';
 
 export default function useUpdateMonitor(probeId: string) {
 	const { t } = useTranslation();
