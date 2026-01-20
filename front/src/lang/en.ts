@@ -106,8 +106,8 @@ const en = {
 			one_hour_ago: '1 hour ago',
 		},
 		alerts: {
-			create: 'Monitor {{ date }} successfully created',
-			update: 'Monitor {{ date }} successfully updated',
+			create: 'Monitor {{ data }} successfully created',
+			update: 'Monitor {{ data }} successfully updated',
 			remove: 'Monitor successfully removed',
 		},
 	},
