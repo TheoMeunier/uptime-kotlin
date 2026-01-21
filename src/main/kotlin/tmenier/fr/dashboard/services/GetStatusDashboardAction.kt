@@ -15,9 +15,7 @@ import java.util.*
 class StatDashboardService(
     private val em: EntityManager,
 ) {
-    /**
-     * Requête 1 — counts + avg uptime
-     */
+
     fun getMonitorsSummary(): MonitorSummary {
         val jpql =
             """
@@ -25,12 +23,12 @@ class StatDashboardService(
               COUNT(p),
               SUM(CASE WHEN p.status = 0 THEN 1 ELSE 0 END),
               SUM(CASE WHEN p.status = 3 THEN 1 ELSE 0 END),
-              COALESCE(AVG(CASE WHEN p.status = 0 THEN 1.0 ELSE 0.0 END) * 100, 0)
+              COALESCE(ROUND(AVG(CASE WHEN p.status = 0 THEN 1.0 ELSE 0.0 END) * 100, 2), 0)
             FROM ProbesEntity p
             WHERE p.enabled = true
             """.trimIndent()
 
-        val single = em.createQuery(jpql).singleResult as Array<Any?>
+        val single = em.createQuery(jpql).singleResult as Array<*>
 
         return MonitorSummary(
             totalMonitors = (single[0] as Number).toLong(),
@@ -40,9 +38,6 @@ class StatDashboardService(
         )
     }
 
-    /**
-     * Requête 2 — métriques sur les dernières 24h
-     */
     fun get24hResponseMetrics(): ResponseMetrics24h {
         val since: LocalDateTime =
             LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
@@ -62,7 +57,7 @@ class StatDashboardService(
             em
                 .createQuery(jpql)
                 .setParameter("since", since)
-                .singleResult as Array<Any?>
+                .singleResult as Array<*>
 
         return ResponseMetrics24h(
             avgResponseTimeMs = ((single[0] as Number?) ?: 0.0).toDouble(),
@@ -71,9 +66,6 @@ class StatDashboardService(
         )
     }
 
-    /**
-     * Requête 3 — probes down + durée depuis dernier succès
-     */
     fun findDownProbesWithDowntime(): List<DownProbeDto> {
         val jpql =
             """
@@ -84,7 +76,7 @@ class StatDashboardService(
             GROUP BY p.id, p.name, p.createdAt
             """.trimIndent()
 
-        val results = em.createQuery(jpql).resultList as List<Array<Any?>>
+        val results = em.createQuery(jpql).resultList as List<Array<*>>
 
         val now = LocalDateTime.now(ZoneOffset.UTC)
 
