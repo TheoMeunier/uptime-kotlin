@@ -86,7 +86,12 @@ export function ShowProbe() {
 						</CardContent>
 					</Card>
 				) : (
-					<ProbeChart monitors={data!.monitors} lastHour={hours} setLastHour={setHours} />
+					<ProbeChart
+						monitors={data!.monitors}
+						lastHour={hours}
+						setLastHour={setHours}
+						monitorStatus={data!.probe.status}
+					/>
 				)}
 			</section>
 

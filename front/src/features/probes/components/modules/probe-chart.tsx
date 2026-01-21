@@ -12,17 +12,22 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
+import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 
 export default function ProbeChart({
 	monitors,
 	lastHour,
 	setLastHour,
+	monitorStatus,
 }: {
 	monitors: Monitor[];
 	lastHour: number;
 	setLastHour: (value: number) => void;
+	monitorStatus: ProbeStatusEnum;
 }) {
 	const { t } = useTranslation();
+
+	console.log(monitors);
 
 	const chartConfig = {
 		response_time: {
@@ -171,7 +176,13 @@ export default function ProbeChart({
 									/>
 								}
 							/>
-							<Area dataKey="response_time" type="monotone" fill="#dcfce7" stroke="#22c55e" connectNulls={false} />
+							<Area
+								dataKey="response_time"
+								type="monotone"
+								fill={monitorStatus === 'FAILURE' ? '#fee2e2' : '#dcfce7'} // rouge clair / vert clair
+								stroke={monitorStatus === 'FAILURE' ? '#ef4444' : '#22c55e'}
+								connectNulls={false}
+							/>
 							<ChartLegend content={<ChartLegendContent />} />
 						</AreaChart>
 					</ChartContainer>
