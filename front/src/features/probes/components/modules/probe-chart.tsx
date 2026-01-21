@@ -161,7 +161,15 @@ export default function ProbeChart({
 							<YAxis tickLine={false} axisLine={true} tickMargin={8} />
 							<ChartTooltip
 								cursor={false}
-								content={<ChartTooltipContent labelFormatter={(value) => formatTime(Number(value))} indicator="dot" />}
+								content={
+									<ChartTooltipContent
+										labelFormatter={(_, payload) => {
+											const timestamp = payload?.[0]?.payload?.timestamp;
+											return timestamp ? formatTime(timestamp) : '';
+										}}
+										indicator="dot"
+									/>
+								}
 							/>
 							<Area dataKey="response_time" type="monotone" fill="#dcfce7" stroke="#22c55e" connectNulls={false} />
 							<ChartLegend content={<ChartLegendContent />} />
