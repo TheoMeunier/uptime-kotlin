@@ -16,7 +16,13 @@
 A simple, lightweight, and self-hostable uptime monitoring tool, built and optimized for cloud deployment.
 Ideal for monitoring service availability without relying on external solutions.
 
-<img src="doc/images/demo-filesox.png" alt="demo-uptime-kotlin" width="100%" height="auto">
+<table>
+  <tr>
+    <td><img src="docs/images/dashboard.png" alt="dashboard" width="300"></td>
+    <td><img src="docs/images/status_page.png" alt="status page" width="300"></td>
+    <td><img src="docs/images/monitor_page.png" alt="monitor" width="300"></td>
+  </tr>
+</table>
 
 ## Getting Started
 
