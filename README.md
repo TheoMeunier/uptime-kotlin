@@ -1,6 +1,6 @@
 <div align="center">
 <a href="https://github.com/TheoMeunier/uptime-kotlin">
-<img src="doc/images/logo.svg" alt="Logo" width="100" height="100">
+<img src="docs/images/logo.svg" alt="Logo" width="300" height="300">
 </a>
 
 <h2 align="center">Uptime Kotlin</h3>
