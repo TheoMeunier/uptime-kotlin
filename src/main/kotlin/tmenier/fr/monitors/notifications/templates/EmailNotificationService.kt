@@ -23,24 +23,33 @@ class EmailNotificationService(
         result: ProbeResult,
     ) {
         val client = getMailClient(content)
-        val message =
-            MailMessage()
-                .setFrom(content.from)
-                .setTo(content.to)
-                .setSubject("✅ Probe Success: ${probe.name}")
-                .setText(
-                    """
-                    Probe: ${probe.name}
+
+        try {
+            val message =
+                MailMessage()
+                    .setFrom(content.from)
+                    .setTo(content.to)
+                    .setSubject("✅ Monitor Success: ${probe.name}")
+                    .setText(
+                        """
+                    Monitor: ${probe.name}
                     Status: SUCCESS
                     Response Time: ${result.responseTime}ms
                     Timestamp: ${result.runAt}
                     """.trimIndent(),
-                )
+                    )
 
-        client
-            .sendMail(message)
-            .onSuccess { logger.info { "Success send mail: $message" } }
-            .onFailure { logger.error { "Failed to send mail: $message" } }
+            client
+                .sendMail(message)
+                .onSuccess {
+                    logger.info("Success send mail to ${content.to} for probe ${probe.name}")
+                }
+                .onFailure { error ->
+                    logger.error("Failed to send success mail to ${content.to}: ${error.message}", error)
+                }
+        } catch (e: Exception) {
+            logger.error("Exception while sending success mail: ${e.message}", e)
+        }
     }
 
     override fun sendFailure(
@@ -49,24 +58,33 @@ class EmailNotificationService(
         result: ProbeResult,
     ) {
         val client = getMailClient(content)
-        val message =
-            MailMessage()
-                .setFrom(content.from)
-                .setTo(content.to)
-                .setSubject("❌ Probe Failure: ${probe.name}")
-                .setText(
-                    """
-                    Probe: ${probe.name}
+
+        try {
+            val message =
+                MailMessage()
+                    .setFrom(content.from)
+                    .setTo(content.to)
+                    .setSubject("❌ Monitor Failure: ${probe.name}")
+                    .setText(
+                        """
+                    Monitor: ${probe.name}
                     Status: FAILURE
                     Error: ${result.message}
                     Timestamp: ${result.runAt}
                     """.trimIndent(),
-                )
+                    )
 
-        client
-            .sendMail(message)
-            .onSuccess { logger.info { "Success send mail: $message" } }
-            .onFailure { logger.error { "Failed to send mail: $message" } }
+            client
+                .sendMail(message)
+                .onSuccess {
+                    logger.info("Failure notification sent to ${content.to} for probe ${probe.name}")
+                }
+                .onFailure { error ->
+                    logger.error("Failed to send failure mail to ${content.to}: ${error.message}", error)
+                }
+        } catch (e: Exception) {
+            logger.error("Exception while sending failure mail: ${e.message}", e)
+        }
     }
 
     override fun sendTest(content: NotificationContent.Mail) {
@@ -76,27 +94,33 @@ class EmailNotificationService(
                 .setFrom(content.from)
                 .setTo(content.to)
                 .setSubject("Send Mail: Uptime kotlin")
-                .setText(
-                    """Send test mail""".trimIndent(),
-                )
+                .setText("Send test mail")
 
         client
             .sendMail(message)
-            .onSuccess { logger.info { "Success send mail: $message" } }
-            .onFailure { logger.error { "Failed to send mail: $message" } }
+            .onSuccess {
+                logger.info("Test mail sent successfully to ${content.to}")
+            }
+            .onFailure { error ->
+                logger.error("Failed to send test mail to ${content.to}: ${error.message}", error)
+            }
     }
 
     override fun getNotificationType() = NotificationChannelsEnum.MAIL.name
 
     private fun getMailClient(credential: NotificationContent.Mail): MailClient {
+        val password = encryptionService.decrypt(credential.password)
+        val hostname = credential.hostname.removePrefix("https://").removePrefix("http://")
+
         val config =
             MailConfig().apply {
-                hostname = credential.hostname
+                this.hostname = hostname
                 port = credential.port
                 starttls = if (credential.starttls) StartTLSOptions.REQUIRED else StartTLSOptions.DISABLED
                 login = LoginOption.REQUIRED
                 username = credential.username
-                password = encryptionService.decrypt(credential.password)
+                this.password = password
+                authMethods = "LOGIN PLAIN"
             }
 
         return MailClient.createShared(vertx, config)

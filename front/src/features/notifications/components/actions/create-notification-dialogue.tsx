@@ -22,6 +22,12 @@ export default function CreateNotificationDialogue() {
 		? NOTIFICATION_FIELDS_CONFIG[notificationType]
 		: NOTIFICATION_FIELDS_CONFIG[NotificationTypeEnum.DISCORD];
 
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		form.handleSubmit(onSubmit)(e);
+	};
+
 	return (
 		<Dialog open={openDialogue} onOpenChange={setOpenDialogue}>
 			<DialogTrigger asChild>
@@ -32,7 +38,7 @@ export default function CreateNotificationDialogue() {
 			</DialogTrigger>
 
 			<DialogContent className="sm:max-w-xl">
-				<form onSubmit={form.handleSubmit(onSubmit)}>
+				<form onSubmit={handleSubmit} id="create-notification-form">
 					<DialogHeader>
 						<DialogTitle>{t('notifications.title.create')}</DialogTitle>
 					</DialogHeader>
@@ -79,7 +85,7 @@ export default function CreateNotificationDialogue() {
 							Test notification
 						</Button>
 
-						<Button type="submit">
+						<Button type="submit" disabled={isLoading}>
 							{t(isLoading ? 'button.loading' : 'button.create', {
 								entity: 'notification',
 							})}
