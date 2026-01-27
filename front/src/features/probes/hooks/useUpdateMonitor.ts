@@ -18,7 +18,7 @@ export default function useUpdateMonitor(probeId: string) {
 		onSuccess: (_, v) => {
 			queryClient.invalidateQueries({ queryKey: ['probes'] }).then(() => {
 				toast.success(t('monitors.alerts.update', { data: v.name }));
-				navigate('/dashboard');
+				navigate(`/monitors/${probeId}`);
 			});
 		},
 	});
