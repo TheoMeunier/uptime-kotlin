@@ -3,6 +3,7 @@ const en = {
 		label: {
 			email: 'Email',
 			password: 'Password',
+			starttls: 'StartTLS',
 			webhook_url: 'Webhook URL',
 			name: 'Name {{ entity }}',
 			description: 'Description',
@@ -69,7 +70,7 @@ const en = {
 			notification_name: 'Discord bot',
 		},
 		alerts: {
-			create: 'Notification {{ date }} successfully created',
+			create: 'Notification {{ data }} successfully created',
 		},
 	},
 

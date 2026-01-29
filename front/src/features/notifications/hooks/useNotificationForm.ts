@@ -5,7 +5,6 @@ import { z } from 'zod';
 import notificationService from '@/features/notifications/services/notification-service.ts';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { data } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
 const baseStoreNotificationSchema = z.object({
@@ -60,10 +59,10 @@ export default function useNotificationForm() {
 		mutationFn: async (data: StoreNotificationSchema) => {
 			return notificationService.storeNotification(data);
 		},
-		onSuccess: () => {
+		onSuccess: (_, v) => {
 			queryClient.invalidateQueries({ queryKey: ['notifications'] }).then(() => {
 				setOpenDialogue(false);
-				toast.success(t('notifications.alerts.create', { data: data.name }));
+				toast.success(t('notifications.alerts.create', { data: v.name }));
 			});
 		},
 	});
