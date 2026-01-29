@@ -53,7 +53,7 @@ class StoreNotificationAction(
                         NotificationContent.Mail(
                             hostname = payload.hostname,
                             port = payload.port,
-                            starttls = payload.starttls == true,
+                            starttls = payload.starttls ?: false,
                             username = payload.username,
                             password = encryptionService.encrypt(payload.password),
                             from = payload.mailFrom,

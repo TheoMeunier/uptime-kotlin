@@ -31,6 +31,7 @@ const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	port: z.number().min(1).max(65535),
 	username: z.email().min(3).max(255),
 	password: z.string().min(3).max(255),
+	starttls: z.boolean().optional(),
 	mail_from: z.email().min(3).max(255),
 	mail_to: z.email().min(3).max(255),
 });

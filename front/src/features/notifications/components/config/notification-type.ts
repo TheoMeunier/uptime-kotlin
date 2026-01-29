@@ -56,6 +56,11 @@ const NOTIFICATION_FIELDS_CONFIG = {
 			placeholder: '********',
 		},
 		{
+			name: 'starttls',
+			label: i18n.t('form.label.starttls'),
+			input_type: 'switch',
+		},
+		{
 			name: 'mail_from',
 			label: i18n.t('form.label.address_from'),
 			input_type: 'email',
