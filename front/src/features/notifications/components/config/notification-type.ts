@@ -30,6 +30,20 @@ const NOTIFICATION_FIELDS_CONFIG = {
 			placeholder: 'Uptime kotlin',
 		},
 	],
+	[NotificationTypeEnum.SLACK]: [
+		{
+			name: 'url_webhook',
+			label: i18n.t('form.label.webhook_url'),
+			input_type: 'text',
+			placeholder: 'https://hooks.slack.com/services/...',
+		},
+		{
+			name: 'name_reboot',
+			label: 'Name reboot',
+			input_type: 'text',
+			placeholder: 'Uptime kotlin',
+		},
+	],
 	[NotificationTypeEnum.MAIL]: [
 		{
 			name: 'hostname',

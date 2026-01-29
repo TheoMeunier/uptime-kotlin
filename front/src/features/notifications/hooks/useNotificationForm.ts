@@ -24,6 +24,12 @@ const teamsNotificationSchema = baseStoreNotificationSchema.extend({
 	name_reboot: z.string().min(3).max(255),
 });
 
+const slackNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('SLACK'),
+	url_webhook: z.url(),
+	name_reboot: z.string().min(3).max(255),
+});
+
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
 	hostname: z.url(),
@@ -39,6 +45,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	discordNotificationSchema,
 	MailNotificationSchema,
 	teamsNotificationSchema,
+	slackNotificationSchema,
 ]);
 
 export type StoreNotificationSchema = z.infer<typeof storeNotificationSchema>;

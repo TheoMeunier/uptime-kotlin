@@ -15,6 +15,7 @@ import tmenier.fr.monitors.enums.NotificationChannelsEnum
     JsonSubTypes.Type(value = ValidNotificationChannelDiscordRequest::class, name = "DISCORD"),
     JsonSubTypes.Type(value = ValidNotificationChannelTeamsRequest::class, name = "TEAMS"),
     JsonSubTypes.Type(value = ValidNotificationChannelMailRequest::class, name = "MAIL"),
+    JsonSubTypes.Type(value = ValidNotificationChannelSlackRequest::class, name = "SLACK"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -37,6 +38,13 @@ data class ValidNotificationChannelDiscordRequest(
 
 @RegisterForReflection
 data class ValidNotificationChannelTeamsRequest(
+    @field:URL(message = "Invalid URL format")
+    val urlWebhook: String,
+    var nameReboot: String? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelSlackRequest(
     @field:URL(message = "Invalid URL format")
     val urlWebhook: String,
     var nameReboot: String? = null,

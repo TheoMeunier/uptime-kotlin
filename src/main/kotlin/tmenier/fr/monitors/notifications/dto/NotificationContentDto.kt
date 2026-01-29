@@ -11,6 +11,11 @@ sealed interface NotificationContent {
         val username: String?,
     ) : NotificationContent
 
+    data class Slack(
+        val webhookUrl: String,
+        val username: String?,
+    ) : NotificationContent
+
     data class Mail(
         val hostname: String,
         val port: Int,
