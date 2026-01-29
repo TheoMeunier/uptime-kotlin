@@ -194,19 +194,16 @@ class ProbeSchedulerTemplateFactory(
     ): LocalDateTime {
         val lastRun = probe.lastRun
 
-        if (lastRun == null) return from.plusSeconds(5)
+        if (lastRun === null) return from.plusSeconds(5)
 
-        val intervalSeconds = probe.interval.toLong()
-        val nextRun = lastRun.plusSeconds(intervalSeconds)
+        val intervalSeconds = probe.interval
+        var nextRun = lastRun.plusSeconds(intervalSeconds.toLong())
 
-        if (nextRun.isAfter(from)) {
-            return nextRun
+        while (nextRun.isBefore(from)) {
+            nextRun = nextRun.plusSeconds(intervalSeconds.toLong())
         }
 
-        val elapsed = Duration.between(lastRun, from).seconds
-        val missedIntervals = (elapsed / intervalSeconds) + 1
-
-        return lastRun.plusSeconds(missedIntervals * intervalSeconds)
+        return nextRun
     }
 
     @ActivateRequestContext
