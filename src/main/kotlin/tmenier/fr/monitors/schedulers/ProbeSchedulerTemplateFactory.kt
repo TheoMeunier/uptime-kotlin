@@ -28,8 +28,8 @@ class ProbeSchedulerTemplateFactory(
     private val probeScope =
         CoroutineScope(
             Executors.newScheduledThreadPool(4).asCoroutineDispatcher() +
-                CoroutineName("ProbeTask") +
-                SupervisorJob(),
+                    CoroutineName("ProbeTask") +
+                    SupervisorJob(),
         )
 
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
@@ -126,7 +126,7 @@ class ProbeSchedulerTemplateFactory(
 
                 ProbeMonitorLogStatus.WARNING,
                 ProbeMonitorLogStatus.FAILURE,
-                -> {
+                    -> {
                     logger.warn {
                         "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                     }
@@ -194,16 +194,19 @@ class ProbeSchedulerTemplateFactory(
     ): LocalDateTime {
         val lastRun = probe.lastRun
 
-        if (lastRun === null) return from.plusSeconds(5)
+        if (lastRun == null) return from.plusSeconds(5)
 
-        val intervalSeconds = probe.interval
-        var nextRun = lastRun.plusSeconds(intervalSeconds.toLong())
+        val intervalSeconds = probe.interval.toLong()
+        val nextRun = lastRun.plusSeconds(intervalSeconds)
 
-        while (nextRun.isBefore(from)) {
-            nextRun = nextRun.plusSeconds(intervalSeconds.toLong())
+        if (nextRun.isAfter(from)) {
+            return nextRun
         }
 
-        return nextRun
+        val elapsed = Duration.between(lastRun, from).seconds
+        val missedIntervals = (elapsed / intervalSeconds) + 1
+
+        return lastRun.plusSeconds(missedIntervals * intervalSeconds)
     }
 
     @ActivateRequestContext
