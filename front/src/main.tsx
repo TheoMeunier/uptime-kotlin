@@ -13,6 +13,9 @@ import ProbesStatus from '@/pages/probes/probes-status.tsx';
 import './lang/i18n.ts';
 import EditProbe from '@/pages/probes/edit-probe.tsx';
 import Dashboard from '@/pages/dashboard.tsx';
+import SetupPage from '@/pages/setup/setup-page.tsx';
+import { SetupProvider } from '@/features/setup/contexts/setup-context.tsx';
+import { SetupAppProvider } from '@/features/setup/contexts/setup-app-provider.tsx';
 
 export const queryClient = new QueryClient();
 
@@ -20,24 +23,30 @@ createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<ProtectedRouteProvider />}>
-						<Route path="/" element={<Layout />}>
-							<Route path="/dashboard" element={<Dashboard />} />
+				<SetupProvider>
+					<Routes>
+						<Route path="/" element={<SetupAppProvider />}>
+							<Route path="/" element={<ProtectedRouteProvider />}>
+								<Route path="/" element={<Layout />}>
+									<Route path="/dashboard" element={<Dashboard />} />
 
-							<Route path="monitors/new" element={<CreateProbe />} />
-							<Route path="monitors/:probeId/edit" element={<EditProbe />} />
-							<Route path="monitors/:probeId" element={<ShowProbe />} />
+									<Route path="monitors/new" element={<CreateProbe />} />
+									<Route path="monitors/:probeId/edit" element={<EditProbe />} />
+									<Route path="monitors/:probeId" element={<ShowProbe />} />
 
-							<Route path="profile" element={<Profile />} />
+									<Route path="profile" element={<Profile />} />
+								</Route>
+							</Route>
+
+							<Route path="/status" element={<ProbesStatus />} />
+							<Route path="/login" element={<Login />} />
+
+							<Route path="*" element={<Navigate to="/dashboard" replace />} />
 						</Route>
-					</Route>
 
-					<Route path="/status" element={<ProbesStatus />} />
-					<Route path="/login" element={<Login />} />
-
-					<Route path="*" element={<Navigate to="/dashboard" replace />} />
-				</Routes>
+						<Route path="/setup" element={<SetupPage />} />
+					</Routes>
+				</SetupProvider>
 			</BrowserRouter>
 		</QueryClientProvider>
 	</StrictMode>

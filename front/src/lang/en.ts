@@ -1,8 +1,10 @@
 const en = {
 	form: {
 		label: {
+			full_name: 'Full Name',
 			email: 'Email',
 			password: 'Password',
+			confirmation_password: 'Confirmation Password',
 			starttls: 'StartTLS',
 			webhook_url: 'Webhook URL',
 			name: 'Name {{ entity }}',
@@ -20,6 +22,9 @@ const en = {
 			email: 'john.doe@exemple.com',
 			password: '********',
 			mailer_url: 'smtp.exemple.com',
+		},
+		description: {
+			password: 'Must be at least 8 characters long',
 		},
 	},
 
@@ -117,6 +122,7 @@ const en = {
 		title: {
 			update_profile: 'Update profile',
 			update_password: 'Update password',
+			create_first_user: 'Create your account',
 		},
 		tabs: {
 			account: 'Account',
@@ -125,6 +131,7 @@ const en = {
 		description: {
 			update_password: 'Changing your password will log you out of all your sessions. You will need to log in again.',
 			update_profile: 'Manage your personal information to keep your account accurate and secure.',
+			create_first_user: 'Enter your email address to create the first user and initialize the application.',
 		},
 		label: {
 			password: 'Password',
