@@ -1,6 +1,5 @@
 package tmenier.fr.monitors.resources.probes
 
-import io.quarkus.security.Authenticated
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -15,7 +14,6 @@ import tmenier.fr.monitors.entities.mapper.toStatusDto
 @Consumes(MediaType.APPLICATION_JSON)
 class ListingStatusProbes {
     @GET
-    @Authenticated
     fun list(): Response {
         val probes =
             ProbesEntity.getProbesLastHour().map {
