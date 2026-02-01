@@ -14,9 +14,6 @@ jobs:
   vulnerability-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v6
@@ -45,9 +42,6 @@ jobs:
   lint:
     name: Linting & Code Quality
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v6
@@ -87,9 +81,6 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v6
@@ -129,9 +120,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - uses: actions/checkout@v4
