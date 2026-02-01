@@ -1,0 +1,20 @@
+complexity:
+  active: true
+  LongMethod:
+    threshold: 60
+  LongParameterList:
+    functionThreshold: 6
+  ComplexMethod:
+    threshold: 15
+
+style:
+  active: true
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    maxLineLength: 120
+
+naming:
+  active: true
+  FunctionNaming:
+    functionPattern: '[a-z][a-zA-Z0-9]*'
