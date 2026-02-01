@@ -40,6 +40,22 @@ export const ProbeShowSchema = z.object({
 
 export type ProbeShow = z.infer<typeof ProbeShowSchema>;
 
+const ProbeForStatusPageSchema = z.object({
+	id: z.uuid(),
+	name: z.string(),
+	description: z.string().optional(),
+	status: z.enum(ProbeStatusEnum),
+});
+
+export const ProbeStatusShowSchema = z.array(
+	z.object({
+		probe: ProbeForStatusPageSchema,
+		monitors: ProbeMonitorsSchema,
+	})
+);
+
+export type ProbeStatusShowResponse = z.infer<typeof ProbeStatusShowSchema>;
+
 export const GetProbeUpdateResponseSchema = z.object({
 	probe: ProbeResponseSchema,
 	notifications: z.array(z.uuid()),

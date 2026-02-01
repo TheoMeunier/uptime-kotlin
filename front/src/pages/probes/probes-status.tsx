@@ -49,8 +49,8 @@ export default function ProbesStatus() {
 
 			<div className="w-[98rem] mx-auto py-12">
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-					{data.map((probe) => (
-						<Card key={probe.id} className="border-slate-200 bg-white hover:shadow-md transition-all duration-200">
+					{data?.map((item) => (
+						<Card key={item.probe.id} className="border-slate-200 bg-white hover:shadow-md transition-all duration-200">
 							<CardHeader>
 								<div className="flex justify-between items-start">
 									<div className="flex items-center gap-3">
@@ -58,24 +58,24 @@ export default function ProbesStatus() {
 											<Server className="h-5 w-5 text-slate-600" />
 										</div>
 										<div>
-											<CardTitle className="text-lg font-semibold text-slate-900">{probe.probe.name}</CardTitle>
+											<CardTitle className="text-lg font-semibold text-slate-900">{item.probe.name}</CardTitle>
 											<p className="text-sm text-slate-500 mt-0.5">
-												{probe.monitors.length} monitor
-												{probe.monitors.length > 1 ? 's' : ''} actif
-												{probe.monitors.length > 1 ? 's' : ''}
+												{item.monitors.length} monitor
+												{item.monitors.length > 1 ? 's' : ''} actif
+												{item.monitors.length > 1 ? 's' : ''}
 											</p>
 										</div>
 									</div>
-									<ProbeStatus status={probe.probe.status} />
+									<ProbeStatus status={item.probe.status} />
 								</div>
 
-								<ProbeMonitorChartBar monitors={probe.monitors} probeStatus={probe.status} />
+								<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} />
 							</CardHeader>
 						</Card>
 					))}
 				</div>
 
-				{data.length === 0 && (
+				{data?.length === 0 && (
 					<Card className="border-slate-200 bg-white">
 						<CardContent className="text-center py-16">
 							<div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">

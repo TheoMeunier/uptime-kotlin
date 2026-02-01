@@ -1,5 +1,9 @@
 import api from '@/api/kyClient.ts';
-import probeResponseSchema, { type ProbeListItem } from '@/features/probes/schemas/probe-response.schema.ts';
+import probeResponseSchema, {
+	type ProbeListItem,
+	ProbeStatusShowSchema,
+} from '@/features/probes/schemas/probe-response.schema.ts';
+
 import { z } from 'zod';
 import type { StoreProbeSchema } from '@/features/probes/hooks/useProbeForm.ts';
 
@@ -10,7 +14,9 @@ const probeService = {
 	},
 
 	async getProbesStatus() {
-		return await api.get('probes/status').json();
+		const response = await api.get('probes/status').json();
+
+		return ProbeStatusShowSchema.parse(response);
 	},
 
 	async getProbe<T>(id: string, hours: number, schema: z.ZodSchema<T>): Promise<T> {

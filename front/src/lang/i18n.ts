@@ -4,7 +4,6 @@ import i18n from 'i18next';
 
 const resources = {
 	en: { translation: en },
-	en: { translation: en },
 };
 
 i18n.use(initReactI18next).init({
