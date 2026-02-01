@@ -14,11 +14,11 @@ import tmenier.fr.setup.dto.CreateFirstUserRequest
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class CreateFirstUserApplicationResources(
-    private val createFirstUserApplicationAction: CreateFirstUserAction
+    private val createFirstUserApplicationAction: CreateFirstUserAction,
 ) {
     @POST
     fun store(
-        @Valid payload: CreateFirstUserRequest
+        @Valid payload: CreateFirstUserRequest,
     ): Response {
         val result = createFirstUserApplicationAction.execute(payload)
         return Response.ok(result).build()

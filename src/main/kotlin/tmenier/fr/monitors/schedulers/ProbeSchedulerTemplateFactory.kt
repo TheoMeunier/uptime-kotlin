@@ -28,8 +28,8 @@ class ProbeSchedulerTemplateFactory(
     private val probeScope =
         CoroutineScope(
             Executors.newScheduledThreadPool(4).asCoroutineDispatcher() +
-                    CoroutineName("ProbeTask") +
-                    SupervisorJob(),
+                CoroutineName("ProbeTask") +
+                SupervisorJob(),
         )
 
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
@@ -126,7 +126,7 @@ class ProbeSchedulerTemplateFactory(
 
                 ProbeMonitorLogStatus.WARNING,
                 ProbeMonitorLogStatus.FAILURE,
-                    -> {
+                -> {
                     logger.warn {
                         "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                     }

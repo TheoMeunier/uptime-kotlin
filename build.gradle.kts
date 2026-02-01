@@ -6,7 +6,6 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.owasp.dependencycheck") version "12.2.0"
-    jacoco
 }
 
 repositories {
@@ -108,15 +107,4 @@ dependencyCheck {
     failBuildOnCVSS = 7.0f
     suppressionFile = "config/dependency-check/suppressions.xml"
     formats = listOf("HTML", "JSON")
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
-}
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport)
 }

@@ -32,19 +32,18 @@ class EmailNotificationService(
                     .setSubject("✅ Monitor Success: ${probe.name}")
                     .setText(
                         """
-                    Monitor: ${probe.name}
-                    Status: SUCCESS
-                    Response Time: ${result.responseTime}ms
-                    Timestamp: ${result.runAt}
-                    """.trimIndent(),
+                        Monitor: ${probe.name}
+                        Status: SUCCESS
+                        Response Time: ${result.responseTime}ms
+                        Timestamp: ${result.runAt}
+                        """.trimIndent(),
                     )
 
             client
                 .sendMail(message)
                 .onSuccess {
                     logger.info("Success send mail to ${content.to} for probe ${probe.name}")
-                }
-                .onFailure { error ->
+                }.onFailure { error ->
                     logger.error("Failed to send success mail to ${content.to}: ${error.message}", error)
                 }
         } catch (e: Exception) {
@@ -67,19 +66,18 @@ class EmailNotificationService(
                     .setSubject("❌ Monitor Failure: ${probe.name}")
                     .setText(
                         """
-                    Monitor: ${probe.name}
-                    Status: FAILURE
-                    Error: ${result.message}
-                    Timestamp: ${result.runAt}
-                    """.trimIndent(),
+                        Monitor: ${probe.name}
+                        Status: FAILURE
+                        Error: ${result.message}
+                        Timestamp: ${result.runAt}
+                        """.trimIndent(),
                     )
 
             client
                 .sendMail(message)
                 .onSuccess {
                     logger.info("Failure notification sent to ${content.to} for probe ${probe.name}")
-                }
-                .onFailure { error ->
+                }.onFailure { error ->
                     logger.error("Failed to send failure mail to ${content.to}: ${error.message}", error)
                 }
         } catch (e: Exception) {
@@ -100,8 +98,7 @@ class EmailNotificationService(
             .sendMail(message)
             .onSuccess {
                 logger.info("Test mail sent successfully to ${content.to}")
-            }
-            .onFailure { error ->
+            }.onFailure { error ->
                 logger.error("Failed to send test mail to ${content.to}: ${error.message}", error)
             }
     }

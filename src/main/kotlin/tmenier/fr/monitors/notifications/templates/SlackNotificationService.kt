@@ -79,11 +79,12 @@ class SlackNotificationService : TypedNotificationInterfaces<NotificationContent
         val formattedDate = runAt.format(dateFormatter)
 
         // Déterminer l'emoji selon le statut
-        val emoji = when (status) {
-            ProbeMonitorLogStatus.SUCCESS -> ":white_check_mark:"
-            ProbeMonitorLogStatus.FAILURE -> ":x:"
-            else -> ":information_source:"
-        }
+        val emoji =
+            when (status) {
+                ProbeMonitorLogStatus.SUCCESS -> ":white_check_mark:"
+                ProbeMonitorLogStatus.FAILURE -> ":x:"
+                else -> ":information_source:"
+            }
 
         return """
             {

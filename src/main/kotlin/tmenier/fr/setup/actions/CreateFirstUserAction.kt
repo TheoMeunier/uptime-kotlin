@@ -9,7 +9,7 @@ import java.util.*
 
 @ApplicationScoped
 class CreateFirstUserAction(
-    private val bcryptService: BcryptService
+    private val bcryptService: BcryptService,
 ) {
     @Transactional
     fun execute(payload: CreateFirstUserRequest): Boolean {
@@ -21,12 +21,13 @@ class CreateFirstUserAction(
 
         val hashedPassword = bcryptService.hashPassword(payload.password)
 
-        val user = UserEntity().apply {
-            id = UUID.randomUUID()
-            name = payload.name
-            email = payload.email
-            password = hashedPassword
-        }
+        val user =
+            UserEntity().apply {
+                id = UUID.randomUUID()
+                name = payload.name
+                email = payload.email
+                password = hashedPassword
+            }
 
         user.persist()
 

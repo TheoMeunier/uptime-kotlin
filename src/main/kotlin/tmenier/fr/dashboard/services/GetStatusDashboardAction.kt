@@ -15,7 +15,6 @@ import java.util.*
 class StatDashboardService(
     private val em: EntityManager,
 ) {
-
     fun getMonitorsSummary(): MonitorSummary {
         val jpql =
             """

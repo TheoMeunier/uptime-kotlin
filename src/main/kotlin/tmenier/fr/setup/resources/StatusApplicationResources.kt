@@ -12,16 +12,16 @@ import tmenier.fr.setup.actions.GetStatusApplicationAction
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class StatusApplicationResources(
-    private val getStatusApplicationAction: GetStatusApplicationAction
+    private val getStatusApplicationAction: GetStatusApplicationAction,
 ) {
-
     @GET
     fun getStatusApplication(): Response {
         val result = getStatusApplicationAction.execute()
 
-        val status = mapOf(
-            "status" to result
-        )
+        val status =
+            mapOf(
+                "status" to result,
+            )
 
         return Response.ok(status).build()
     }
