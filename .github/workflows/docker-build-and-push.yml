@@ -59,12 +59,13 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build native executable
-        run: ./gradlew build
-          -Dquarkus.package.jar.enabled=false
-          -Dquarkus.native.enabled=true
-          -Dquarkus.native.container-build=true
-          -Dquarkus.native.additional-build-args=--initialize-at-run-time=org.xbill.DNS.config.WindowsResolverConfigProvider\$InnerWindowsResolverConfigProvider
-          --no-daemon
+        run: |
+          ./gradlew build \
+            -Dquarkus.package.jar.enabled=false \
+            -Dquarkus.native.enabled=true \
+            -Dquarkus.native.container-build=true \
+            -Dquarkus.native.additional-build-args=--initialize-at-run-time=org.xbill.DNS \
+            --no-daemon
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
