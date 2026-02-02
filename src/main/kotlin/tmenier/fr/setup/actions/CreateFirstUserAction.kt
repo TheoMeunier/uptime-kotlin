@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional
 import tmenier.fr.auth.entities.UserEntity
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.setup.dto.CreateFirstUserRequest
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class CreateFirstUserAction(

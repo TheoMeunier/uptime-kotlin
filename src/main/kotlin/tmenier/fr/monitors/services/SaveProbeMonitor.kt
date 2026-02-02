@@ -7,7 +7,7 @@ import tmenier.fr.monitors.entities.ProbesMonitorsLogEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class SaveProbeMonitor {
@@ -38,7 +38,7 @@ class SaveProbeMonitor {
         runAt: LocalDateTime,
         status: ProbeMonitorLogStatus,
     ) {
-        if (status in UPDATABLE_STATUSES) {
+        if (status in updateStatus) {
             probe.status = status
         }
 
@@ -46,7 +46,7 @@ class SaveProbeMonitor {
         probe.persist()
     }
 
-    private val UPDATABLE_STATUSES =
+    private val updateStatus =
         setOf(
             ProbeMonitorLogStatus.SUCCESS,
             ProbeMonitorLogStatus.FAILURE,

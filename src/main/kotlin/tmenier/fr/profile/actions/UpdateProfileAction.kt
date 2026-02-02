@@ -5,7 +5,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import tmenier.fr.auth.entities.UserEntity
 import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.profile.dtos.requests.UpdateProfileRequest
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class UpdateProfileAction(

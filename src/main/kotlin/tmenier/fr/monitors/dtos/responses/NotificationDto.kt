@@ -1,6 +1,6 @@
 package tmenier.fr.monitors.dtos.responses
 
-import java.util.*
+import java.util.UUID
 
 data class ListingNotificationsDto(
     val id: UUID,

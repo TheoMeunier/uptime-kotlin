@@ -1,7 +1,11 @@
 package tmenier.fr.monitors.notifications.templates
 
 import io.vertx.core.Vertx
-import io.vertx.ext.mail.*
+import io.vertx.ext.mail.LoginOption
+import io.vertx.ext.mail.MailClient
+import io.vertx.ext.mail.MailConfig
+import io.vertx.ext.mail.MailMessage
+import io.vertx.ext.mail.StartTLSOptions
 import jakarta.enterprise.context.ApplicationScoped
 import org.jboss.logging.Logger
 import tmenier.fr.common.encryption.EncryptionService

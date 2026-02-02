@@ -3,7 +3,7 @@ package tmenier.fr.monitors.dtos.responses
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 data class ProbeListDTO(
     val id: UUID,

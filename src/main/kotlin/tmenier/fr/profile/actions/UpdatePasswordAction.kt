@@ -7,7 +7,7 @@ import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.BadRequestException
 import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.profile.dtos.requests.UpdatePasswordRequest
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class UpdatePasswordAction(

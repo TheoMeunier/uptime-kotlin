@@ -1,7 +1,7 @@
 package tmenier.fr.dashboard.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import java.util.*
+import java.util.UUID
 
 @RegisterForReflection
 data class MonitorSummary(

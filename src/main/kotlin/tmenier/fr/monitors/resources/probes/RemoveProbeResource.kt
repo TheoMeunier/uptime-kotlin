@@ -9,7 +9,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.monitors.entities.ProbesEntity
-import java.util.*
+import java.util.UUID
 
 @Path("/api/probes/{probeId}/remove")
 @Produces(MediaType.APPLICATION_JSON)

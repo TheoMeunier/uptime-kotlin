@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.validation.Valid
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Positive
+import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.IpAddress
 import tmenier.fr.common.validations.UrlOrIp
 import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeProtocol
-import java.util.*
+import java.util.UUID
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "protocol", visible = true)
 @JsonSubTypes(

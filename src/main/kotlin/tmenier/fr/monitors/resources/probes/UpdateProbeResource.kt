@@ -3,12 +3,16 @@ package tmenier.fr.monitors.resources.probes
 import io.quarkus.security.Authenticated
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
-import jakarta.ws.rs.*
+import jakarta.ws.rs.Consumes
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
+import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.monitors.actions.StoreProbeAction
 import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
-import java.util.*
+import java.util.UUID
 
 @Path("/api/probes/{probeId}/update")
 @Produces(MediaType.APPLICATION_JSON)

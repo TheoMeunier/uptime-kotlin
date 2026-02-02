@@ -7,7 +7,7 @@ import tmenier.fr.auth.entities.RefreshTokenEntity
 import tmenier.fr.auth.services.JwtService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class RefreshTokenAction(

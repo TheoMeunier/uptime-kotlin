@@ -10,7 +10,7 @@ import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.common.exceptions.common.NotFoundException
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class LoginAction(
