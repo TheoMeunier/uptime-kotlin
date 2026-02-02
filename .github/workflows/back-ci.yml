@@ -43,14 +43,13 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
-    # Service PostgreSQL pour les tests
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: testdb
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_DB: uptime-kotlin
+          POSTGRES_USER: uptime-kotlin
+          POSTGRES_PASSWORD: uptime-kotlin
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -75,9 +74,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
         env:
-          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/testdb
-          QUARKUS_DATASOURCE_USERNAME: test
-          QUARKUS_DATASOURCE_PASSWORD: test
+          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/uptime-kotlin
+          QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
+          QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -94,9 +93,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: testdb
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_DB: uptime-kotlin
+          POSTGRES_USER: uptime-kotlin
+          POSTGRES_PASSWORD: uptime-kotlin
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -121,9 +120,9 @@ jobs:
       - name: Run tests
         run: ./gradlew test
         env:
-          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/testdb
-          QUARKUS_DATASOURCE_USERNAME: test
-          QUARKUS_DATASOURCE_PASSWORD: test
+          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/uptime-kotlin
+          QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
+          QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
 
       - name: Upload test results
         if: always()
