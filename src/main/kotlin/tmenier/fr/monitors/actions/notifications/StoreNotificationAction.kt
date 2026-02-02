@@ -2,11 +2,15 @@ package tmenier.fr.monitors.actions.notifications
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.encryption.EncryptionService
-import tmenier.fr.monitors.dtos.requests.*
+import tmenier.fr.monitors.dtos.requests.BaseStoreNotificationRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelDiscordRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelMailRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelSlackRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelTeamsRequest
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.notifications.dto.NotificationContent
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class StoreNotificationAction(

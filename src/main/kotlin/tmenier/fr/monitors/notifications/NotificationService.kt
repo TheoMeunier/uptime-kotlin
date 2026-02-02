@@ -10,7 +10,7 @@ import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class NotificationService(

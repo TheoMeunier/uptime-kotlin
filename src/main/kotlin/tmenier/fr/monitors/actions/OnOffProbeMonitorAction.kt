@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.ws.rs.NotFoundException
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import java.util.*
+import java.util.UUID
 
 @ApplicationScoped
 class OnOffProbeMonitorAction {
