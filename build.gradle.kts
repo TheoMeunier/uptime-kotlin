@@ -49,6 +49,7 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured")
 
     implementation("dnsjava:dnsjava:3.5.2")
+    implementation("net.java.dev.jna:jna:5.14.0")
 
     // monitoring
     implementation("io.quarkus:quarkus-smallrye-health")
