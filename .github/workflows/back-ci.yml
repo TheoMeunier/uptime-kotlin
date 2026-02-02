@@ -30,7 +30,6 @@ jobs:
 
       - name: Run ktlint
         run: ./gradlew ktlintCheck
-        continue-on-error: true
 
       - name: Upload ktlint report
         if: always()
