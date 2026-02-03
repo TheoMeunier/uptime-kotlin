@@ -53,7 +53,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'mandrel'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           cache: 'gradle'
 
       - name: Grant execute permission for gradlew
@@ -61,11 +61,7 @@ jobs:
 
       - name: Build native executable
         run: |
-          ./gradlew assemble \
-            -Dquarkus.package.jar.enabled=false \
-            -Dquarkus.native.enabled=true \
-            -Dquarkus.native.container-build=false \
-            --no-daemon --info
+          ./gradlew build -Dquarkus.native.enabled=true -Dquarkus.package.type=native --no-daemon --info
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
