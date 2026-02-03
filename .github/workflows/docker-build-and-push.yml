@@ -64,7 +64,7 @@ jobs:
             -Dquarkus.package.jar.enabled=false \
             -Dquarkus.native.enabled=true \
             -Dquarkus.native.container-build=true \
-            -Dquarkus.native.additional-build-args=--initialize-at-run-time=org.xbill.DNS \
+            "-Dquarkus.native.additional-build-args=--initialize-at-run-time=org.xbill.DNS,--initialize-at-run-time=com.sun.jna" \
             --no-daemon
 
       - name: Upload artifact
