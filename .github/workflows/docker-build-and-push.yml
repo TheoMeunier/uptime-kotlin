@@ -61,7 +61,7 @@ jobs:
 
       - name: Build native executable
         run: |
-          ./gradlew build -Dquarkus.native.enabled=true -Dquarkus.package.type=native --no-daemon --info
+          ./gradlew quarkusBuild -Dquarkus.native.enabled=true -Dquarkus.package.type=native --no-daemon --info
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
