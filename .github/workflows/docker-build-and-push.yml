@@ -60,10 +60,10 @@ jobs:
 
       - name: Build native executable
         run: |
-          ./gradlew build \
+          ./gradlew assemble \
             -Dquarkus.package.jar.enabled=false \
             -Dquarkus.native.enabled=true \
-            -Dquarkus.native.container-build=true \
+            -Dquarkus.native.container-build=false \
             --no-daemon
 
       - name: Upload artifact
