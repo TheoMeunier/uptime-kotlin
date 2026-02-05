@@ -24,40 +24,26 @@ Ideal for monitoring service availability without relying on external solutions.
   </tr>
 </table>
 
+### Key Features
+
+- HTTP/HTTPS, TCP, DNS and ping monitoring
+- Real-time dashboard with historical data
+- Multi-channel notifications (Email, Slack, Discord, Teams, Webhook)
+- Public status pages for your users
+- JWT authentication with encrypted data
+- Docker-ready deployment
+
+### Built With
+
+- [Kotlin](https://kotlinlang.org/)
+- [Quarkus](https://quarkus.io/)
+- [React](https://reactjs.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Docker](https://www.docker.com/)
+
 ## Getting Started
 
-### Prerequisites
-
-* nodejs lts
-* java 21
-* postgres 17.7
-
-### Installation for development
-
-1. Clone the repo
-   ```sh
-   git clone https://github.com/TheoMeunier/uptime-kotlin.git
-   ```
-2. Configuring the `variable environnement` file
-
-3. Build front-end
-   ```sh 
-    cd front
-    npm install
-    npm run dev
-   ```
-4. Build back-end
-   ```sh
-    ./gradlew quarkusDev
-   ```
-5. Run docker compose
-   ```sh
-    docker compose up -d
-   ```
-
-#### Docker
-
-### 1. Create keys for JWT token with `openssl`:
+1. Create keys for JWT token with `openssl`:
 
 ```bash
 mkdir certs/ && cd certs
@@ -73,20 +59,58 @@ chmod 644 privateKey.pem publicKey.pem
 
 ```yml
 services:
-  uptime-kotlin:
-    image: ghcr.io/theomeunier/uptime/api-native:latest
-    container_name: uptime_api
+  uptime-kotlin-app:
+    image: ghcr.io/theomeunier/uptime/app:latest
+    container_name: uptime_kotlin_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - app_network
+
+  uptime-kotlin-api:
+    image: ghcr.io/theomeunier/uptime/api:latest
+    container_name: uptime_kotlin_api
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
       QUARKUS_DATASOURCE_USERNAME: uptime
       QUARKUS_DATASOURCE_PASSWORD: uptime
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database/uptime
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime
+      ENCRYPTION_MASTER_KEY: superKeyMasterSensileData0123456789
       MP_JWT_VERIFY_PUBLICKEY_LOCATION: /certs/publicKey.pem
+      MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
       SMALLRYE_JWT_SIGN_KEY_LOCATION: /certs/privateKey.pem
     volumes:
       - ./certs:/certs
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: uptime_kotlin_reverse_proxy
+    restart: unless-stopped
+    ports:
+      - "8888:80"
+    volumes:
+      - ./docker/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:17.4-alpine
+    container_name: uptime_kotlin_database
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: uptime-kotlin
+      POSTGRES_USER: uptime-kotlin
+      POSTGRES_PASSWORD: uptime-kotlin
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./storage-db:/var/lib/postgresql/data
     networks:
       - app_network
 
@@ -96,39 +120,35 @@ networks:
 
 ```
 
-### 3. Configure the `variable environnement` file
+3. Configure the `variable environnement` file
 
-#### 3.1 PostgreSQL Configuration:
+   3.1 Encrypted variables:
 
-- `QUARKUS_DATASOURCE_USERNAME` : The username of your PostgreSQL database
-- `QUARKUS_DATASOURCE_PASSWORD` : The password of your PostgreSQL database
-- `QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://[host][:port][/database]` : The URL of your PostgreSQL database
+    - `ENCRYPTION_MASTER_KEY` : The master key used to encrypt sensitive data
 
-#### 3.2 JWT Configuration:
+   3.2 PostgreSQL Configuration:
 
-- `MP_JWT_VERIFY_PUBLICKEY_LOCATION` : The location of the public key used to verify the JWT token
-- `SMALLRYE_JWT_SIGN_KEY_LOCATION` : The location of the private key used to sign the JWT token
+    - `QUARKUS_DATASOURCE_USERNAME` : The username of your PostgreSQL database
+    - `QUARKUS_DATASOURCE_PASSWORD` : The password of your PostgreSQL database
+    - `QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://[host][:port][/database]` : The URL of your PostgreSQL database
 
-### 4. Start the application with docker-compose
+   3.3 JWT Configuration:
+
+    - `MP_JWT_VERIFY_PUBLICKEY_LOCATION` : The location of the public key used to verify the JWT token
+    - `MP_JWT_VERIFY_ISSUER` : The issuer of the JWT token
+    - `SMALLRYE_JWT_SIGN_KEY_LOCATION` : The location of the private key used to sign the JWT token
+
+4. Start the application with docker-compose
 
 ```bash
-docker compose up -d
+   docker compose up -d
 ```
 
-### 5. Access the application
+5. Access the application
 
 ```bash
-http://localhost:8888
+   http://localhost:8888
 ```
-
-#### Connect to the application
-
-Your default admin credentials are:
-
-- Email: `admin@uptime-kotlin.com`
-- Password: `adminadmin`
-
-It is strongly recommended that you change this password immediately after your first login for security reasons.
 
 ## Contributing
 
