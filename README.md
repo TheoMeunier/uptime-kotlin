@@ -60,7 +60,7 @@ chmod 644 privateKey.pem publicKey.pem
 ```yml
 services:
   uptime-kotlin-app:
-    image: ghcr.io/theomeunier/uptime/app:latest
+    image: ghcr.io/theomeunier/uptime-kotlin/app:latest
     container_name: uptime_kotlin_app
     restart: unless-stopped
     ports:
@@ -69,15 +69,15 @@ services:
       - app_network
 
   uptime-kotlin-api:
-    image: ghcr.io/theomeunier/uptime/api:latest
+    image: ghcr.io/theomeunier/uptime-kotlin/api:latest
     container_name: uptime_kotlin_api
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
-      QUARKUS_DATASOURCE_USERNAME: uptime
-      QUARKUS_DATASOURCE_PASSWORD: uptime
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime
+      QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
+      QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
       ENCRYPTION_MASTER_KEY: superKeyMasterSensileData0123456789
       MP_JWT_VERIFY_PUBLICKEY_LOCATION: /certs/publicKey.pem
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
@@ -94,7 +94,7 @@ services:
     ports:
       - "8888:80"
     volumes:
-      - ./docker/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
       - app_network
 

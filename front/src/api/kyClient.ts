@@ -2,7 +2,7 @@ import ky from 'ky';
 import authService from '@/features/auth/services/authServices.ts';
 
 const api = ky.extend({
-	prefixUrl: 'http://localhost:8080/api',
+	prefixUrl: '/api',
 	timeout: 30000,
 	headers: {
 		'Content-Type': 'application/json',

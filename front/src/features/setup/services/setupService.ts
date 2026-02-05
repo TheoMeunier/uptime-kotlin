@@ -2,7 +2,7 @@ import type { StoreCreateFirstUserSchemaType } from '@/features/setup/hooks/useF
 
 const profileService = {
 	async getIsFistStartApplication() {
-		const response = await fetch('http://localhost:8080/api/app/status');
+		const response = await fetch('/api/app/status');
 
 		if (!response.ok) {
 			throw Error('Failed to fetch application startup status');
@@ -12,7 +12,7 @@ const profileService = {
 	},
 
 	async createFirstUserApplication(data: StoreCreateFirstUserSchemaType) {
-		const response = await fetch('http://localhost:8080/api/app/setup/first-user', {
+		const response = await fetch('/api/app/setup/first-user', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

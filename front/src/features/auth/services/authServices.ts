@@ -51,9 +51,7 @@ const authService = {
 		}
 
 		try {
-			const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api';
-
-			const res = await fetch(`${baseUrl}/auth/refresh`, {
+			const res = await fetch(`/api/auth/refresh`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ refresh_token: refresh }),
@@ -78,9 +76,7 @@ const authService = {
 	},
 
 	async login(username: string, password: string): Promise<void> {
-		const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api';
-
-		const res = await fetch(`${baseUrl}/auth/login`, {
+		const res = await fetch(`/api/auth/login`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ email: username, password }),
