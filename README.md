@@ -57,6 +57,9 @@ chmod 644 privateKey.pem publicKey.pem
 
 2. Create a `compose.yaml` file
 
+Download the Nginx reverse proxy configuration from
+the [project repository](https://github.com/TheoMeunier/uptime-kotlin/blob/main/docker/nginx.conf).
+
 ```yml
 services:
   uptime-kotlin-app:
