@@ -3,7 +3,6 @@ package tmenier.fr.monitors.dtos.requests
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.quarkus.runtime.annotations.RegisterForReflection
-import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -66,7 +65,6 @@ abstract class BaseStoreProbeRequest {
 data class ValidProbeProtocolHttpRequest(
     val notificationCertificate: Boolean,
     val ignoreCertificateErrors: Boolean,
-    @field:Valid
     @field:Size(min = 1, message = "At least one HTTP code is required")
     val httpCodeAllowed: List<HttpCodeEnum> = emptyList(),
 ) : BaseStoreProbeRequest()
