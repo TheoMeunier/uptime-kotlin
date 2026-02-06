@@ -10,7 +10,9 @@ import jakarta.ws.rs.core.Response
 import tmenier.fr.setup.actions.GetStatusApplicationAction
 
 @RegisterForReflection
-data class StatusResponse(val status: String)
+data class StatusResponse(
+    val status: String,
+)
 
 @Path("/api/app/status")
 @Produces(MediaType.APPLICATION_JSON)

@@ -17,7 +17,6 @@ import tmenier.fr.monitors.enums.NotificationChannelsEnum
     JsonSubTypes.Type(value = ValidNotificationChannelMailRequest::class, name = "MAIL"),
     JsonSubTypes.Type(value = ValidNotificationChannelSlackRequest::class, name = "SLACK"),
 )
-
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
     @field:NotBlank(message = "Name is required")

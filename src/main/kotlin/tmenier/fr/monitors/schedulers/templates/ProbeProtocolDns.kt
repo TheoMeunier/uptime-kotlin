@@ -32,9 +32,7 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
                         message: DnsMessage,
                         address: InetAddress,
                         port: Int,
-                    ): StandardDnsQueryResult? {
-                        return super.query(message, dnsServerAddress, content.dnsPort)
-                    }
+                    ): StandardDnsQueryResult? = super.query(message, dnsServerAddress, content.dnsPort)
                 }
 
             val dnsClient =
