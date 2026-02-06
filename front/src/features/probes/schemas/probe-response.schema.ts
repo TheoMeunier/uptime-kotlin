@@ -43,7 +43,7 @@ export type ProbeShow = z.infer<typeof ProbeShowSchema>;
 const ProbeForStatusPageSchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
-	description: z.string().optional(),
+	description: z.string().nullable(),
 	status: z.enum(ProbeStatusEnum),
 });
 
