@@ -1,11 +1,12 @@
 import { Navigate, Outlet } from 'react-router';
 import useSetup from '@/features/setup/hooks/useSetupApp.ts';
+import LoaderPage from '@/features/setup/components/loader-page.tsx';
 
 export function SetupAppProvider() {
 	const { isSetupComplete, isLoading } = useSetup();
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <LoaderPage />;
 	}
 
 	if (!isSetupComplete) {

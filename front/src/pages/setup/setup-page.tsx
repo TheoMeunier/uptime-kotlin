@@ -1,27 +1,16 @@
 import CreateFirstUserApplicationForm from '@/features/setup/components/create-first-user-application.form.tsx';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import useSetup from '@/features/setup/hooks/useSetupApp.ts';
+import LoaderPage from '@/features/setup/components/loader-page.tsx';
+import { Navigate } from 'react-router';
 
 export default function SetupPage() {
-	const navigate = useNavigate();
-	const [isChecking, setIsChecking] = useState<boolean>(true);
+	const { isSetupComplete, isLoading } = useSetup();
 
-	useEffect(() => {
-		const isSetupComplete = localStorage.getItem('setupCompleted') === 'true';
-		console.log(isSetupComplete);
+	if (isLoading) return <LoaderPage />;
 
-		if (isSetupComplete) {
-			navigate('/dashboard', { replace: true });
-		} else {
-			setIsChecking(false);
-		}
-	}, [navigate]);
-
-	if (isChecking) {
-		return null;
+	if (isSetupComplete) {
+		return <Navigate to="/dashboard" replace />;
 	}
-
-	if (isChecking) return <div>...loading</div>;
 
 	return (
 		<div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">

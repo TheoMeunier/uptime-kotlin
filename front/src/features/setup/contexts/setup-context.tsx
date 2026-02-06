@@ -12,12 +12,11 @@ export default SetupContext;
 
 export function SetupProvider({ children }: { children: ReactNode }) {
 	const [isSetupComplete, setIsSetupComplete] = useState<boolean | null>(() => {
-		const cached = localStorage.getItem('setupCompleted');
+		const cached = sessionStorage.getItem('setupCompleted');
 		return cached !== null ? cached === 'true' : null;
 	});
-
 	const [isLoading, setIsLoading] = useState<boolean>(() => {
-		return localStorage.getItem('setupCompleted') === null;
+		return sessionStorage.getItem('setupCompleted') === null;
 	});
 
 	useEffect(() => {
@@ -28,9 +27,9 @@ export function SetupProvider({ children }: { children: ReactNode }) {
 		setupService
 			.getIsFistStartApplication()
 			.then((data) => {
-				const completed = !data.status;
+				const completed = data.status;
 				setIsSetupComplete(completed);
-				localStorage.setItem('setupCompleted', String(completed));
+				sessionStorage.setItem('setupCompleted', String(completed));
 			})
 			.catch((error) => {
 				console.error('Error checking setup status:', error);
@@ -39,7 +38,7 @@ export function SetupProvider({ children }: { children: ReactNode }) {
 			.finally(() => {
 				setIsLoading(false);
 			});
-	}, []);
+	}, [isSetupComplete]);
 
 	return (
 		<SetupContext.Provider
