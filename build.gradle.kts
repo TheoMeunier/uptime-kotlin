@@ -19,15 +19,13 @@ val quarkusPlatformVersion: String by project
 dependencies {
     implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
 
-    // Quarkus reactive core
-    implementation("io.quarkus:quarkus-rest")
+    // Quarkus core
     implementation("io.quarkus:quarkus-rest-jackson")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
     testImplementation("io.quarkus:quarkus-junit5")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
-    implementation("io.quarkus:quarkus-scheduler:3.25.2")
 
     // Data
     implementation("io.quarkus:quarkus-jdbc-postgresql")

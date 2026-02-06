@@ -23,6 +23,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolDnsRequest::class, name = "DNS"),
     JsonSubTypes.Type(value = ValidProbeProtocolPingRequest::class, name = "PING"),
 )
+
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
     @field:NotBlank(message = "Name is required")
