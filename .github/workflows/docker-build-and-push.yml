@@ -44,20 +44,11 @@ jobs:
   backend-docker-native:
     name: Backend Native Build and Push Docker Image
     runs-on: ubuntu-latest
+    container:
+      image: quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-21
 
     steps:
       - uses: actions/checkout@v6
-
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '21'
-          distribution: 'mandrel'
-          github-token: ${{ secrets.GH_TOKEN }}
-          cache: 'gradle'
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
 
       - name: Build native executable
         run: |
