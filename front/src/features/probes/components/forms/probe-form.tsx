@@ -84,7 +84,7 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 								<FieldError>{errors.interval?.message}</FieldError>
 							</Field>
 							<Field>
-								<FieldLabel htmlFor="interval_retry">{t('monitors.label.internal_retry')}</FieldLabel>
+								<FieldLabel htmlFor="interval_retry">{t('monitors.label.interval_retry')}</FieldLabel>
 								<Input
 									{...form.register('interval_retry', {
 										valueAsNumber: true,
