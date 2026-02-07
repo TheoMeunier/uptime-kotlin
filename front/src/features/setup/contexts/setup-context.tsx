@@ -4,6 +4,7 @@ import setupService from '@/features/setup/services/setupService.ts';
 interface SetupContextType {
 	isSetupComplete: boolean;
 	isLoading: boolean;
+	updateSetupStatus: (status: boolean) => void;
 }
 
 const SetupContext = createContext<SetupContextType | null>(null);
@@ -40,11 +41,17 @@ export function SetupProvider({ children }: { children: ReactNode }) {
 			});
 	}, [isSetupComplete]);
 
+	const updateSetupStatus = (status: boolean) => {
+		setIsSetupComplete(status);
+		sessionStorage.setItem('setupCompleted', String(status));
+	};
+
 	return (
 		<SetupContext.Provider
 			value={{
 				isSetupComplete: isSetupComplete ?? false,
 				isLoading,
+				updateSetupStatus,
 			}}
 		>
 			{children}

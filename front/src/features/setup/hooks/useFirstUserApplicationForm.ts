@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import setupService from '@/features/setup/services/setupService.ts';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
+import useSetup from '@/features/setup/hooks/useSetupApp.ts';
 
 const storeCreateFirstUserSchema = z
 	.object({
@@ -22,6 +23,7 @@ export type StoreCreateFirstUserSchemaType = z.infer<typeof storeCreateFirstUser
 
 export default function useStoreFirstUserApplication() {
 	const navigate = useNavigate();
+	const { updateSetupStatus } = useSetup();
 
 	const form = useForm<StoreCreateFirstUserSchemaType>({
 		resolver: zodResolver(storeCreateFirstUserSchema),
@@ -33,8 +35,8 @@ export default function useStoreFirstUserApplication() {
 		},
 		onSuccess: () => {
 			toast.success('First user created');
-			localStorage.setItem('setupCompleted', 'true');
-			navigate('/dashboard');
+			updateSetupStatus(true);
+			navigate('/login', { replace: true });
 		},
 	});
 
