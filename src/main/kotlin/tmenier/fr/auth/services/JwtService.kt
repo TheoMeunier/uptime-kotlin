@@ -9,7 +9,6 @@ import java.util.UUID
 
 @ApplicationScoped
 class JwtService {
-
     @ConfigProperty(name = "mp.jwt.verify.issuer", defaultValue = "https://uptime-kotlin.theomeunier.fr")
     private lateinit var jwtIssuer: String
 
