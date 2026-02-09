@@ -38,6 +38,7 @@ const en = {
 		remove: 'Remove {{entity}}',
 		saving: 'Saving...',
 		save: 'Save {{entity}}',
+		test: 'Test {{entity}}',
 
 		actions: {
 			remove: 'Remove',
@@ -76,6 +77,10 @@ const en = {
 		},
 		alerts: {
 			create: 'Notification {{ data }} successfully created',
+			testing: {
+				success: 'Notification successfully tested',
+				error: 'Error while testing notification',
+			},
 		},
 	},
 

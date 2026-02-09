@@ -9,6 +9,7 @@ import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.monitors.notifications.dto.NotificationTestingDto
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.util.UUID
 
@@ -72,5 +73,23 @@ class NotificationService(
         }
 
         logger.info { "Probe ${probe.id}: Notifications sent successfully" }
+    }
+
+    fun sendTest(notificationTesting: NotificationTestingDto) {
+        val handler = notificationFactory.getNotification(notificationTesting.type)
+
+        if (handler == null) {
+            logger.warn { "Unknown notification handler type: ${notificationTesting.type}" }
+            return
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val typedHandler = handler as TypedNotificationInterfaces<Any>
+
+        try {
+            typedHandler.sendTest(notificationTesting.content)
+        } catch (e: Exception) {
+            logger.error(e) { "Failed send test notification" }
+        }
     }
 }

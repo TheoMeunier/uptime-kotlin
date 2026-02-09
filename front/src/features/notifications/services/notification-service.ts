@@ -18,6 +18,14 @@ const notificationService = {
 			})
 			.json();
 	},
+
+	async testNotification(data: StoreNotificationSchema) {
+		await api
+			.post('notifications/testing', {
+				body: JSON.stringify(data),
+			})
+			.json();
+	},
 };
 
 export default notificationService;
