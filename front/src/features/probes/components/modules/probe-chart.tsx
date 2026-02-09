@@ -27,8 +27,6 @@ export default function ProbeChart({
 }) {
 	const { t } = useTranslation();
 
-	console.log(monitors);
-
 	const chartConfig = {
 		response_time: {
 			label: 'Response Time (ms)',

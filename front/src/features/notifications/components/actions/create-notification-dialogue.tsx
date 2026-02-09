@@ -12,10 +12,12 @@ import NotificationTypeEnum from '@/features/notifications/enums/notification-ty
 import NOTIFICATION_FIELDS_CONFIG from '@/features/notifications/components/config/notification-type.ts';
 import FormFieldNotification from '@/features/notifications/components/forms/form-field-notification.tsx';
 import { useTranslation } from 'react-i18next';
+import useNotificationTesting from '@/features/notifications/hooks/useNotificationTesting.ts';
 
 export default function CreateNotificationDialogue() {
 	const { t } = useTranslation();
 	const { openDialogue, setOpenDialogue, form, onSubmit, isLoading, errors } = useNotificationForm();
+	const { isTesting, testNotification } = useNotificationTesting();
 	const notificationType = form.watch('notification_type');
 
 	const dynamicFields = notificationType
@@ -26,6 +28,18 @@ export default function CreateNotificationDialogue() {
 		e.preventDefault();
 		e.stopPropagation();
 		form.handleSubmit(onSubmit)(e);
+	};
+
+	const handleTestNotifications = (e: React.FormEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const isValid = form.trigger();
+
+		if (!isValid) return null;
+
+		const formData = form.getValues();
+		testNotification(formData);
 	};
 
 	return (
@@ -81,8 +95,10 @@ export default function CreateNotificationDialogue() {
 					</div>
 
 					<DialogFooter className="flex justify-between items-center gap-4 w-full mt-4">
-						<Button variant="outline" type="button">
-							Test notification
+						<Button variant="outline" type="button" onClick={handleTestNotifications}>
+							{t(isTesting ? 'button.loading' : 'button.test', {
+								entity: 'notification',
+							})}
 						</Button>
 
 						<Button type="submit" disabled={isLoading}>
