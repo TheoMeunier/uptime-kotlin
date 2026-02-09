@@ -6,5 +6,5 @@ import tmenier.fr.monitors.enums.NotificationChannelsEnum
 @RegisterForReflection
 data class NotificationTestingDto(
     val type: NotificationChannelsEnum,
-    val content: NotificationContent
+    val content: NotificationContent,
 )
