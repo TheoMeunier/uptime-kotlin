@@ -78,6 +78,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      TZ: Europe/Paris
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
@@ -98,6 +99,9 @@ services:
       - "8888:80"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - uptime_kotlin_api
+      - uptime_kotlin_app
     networks:
       - app_network
 
@@ -114,6 +118,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./storage-db:/var/lib/postgresql/data
+    depends_on:
+      - uptime_kotlin_api
     networks:
       - app_network
 
