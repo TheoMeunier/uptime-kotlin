@@ -10,6 +10,10 @@ import jakarta.validation.constraints.NotNull
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 
+interface OnCreate
+
+interface OnUpdate
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "notification_type", visible = true)
 @JsonSubTypes(
     JsonSubTypes.Type(value = ValidNotificationChannelDiscordRequest::class, name = "DISCORD"),
@@ -32,22 +36,22 @@ abstract class BaseStoreNotificationRequest {
 @RegisterForReflection
 data class ValidNotificationChannelDiscordRequest(
     @field:URL(message = "Invalid URL format")
-    val urlWebhook: String,
-    var nameReboot: String? = null,
+    val webhookUrl: String,
+    var username: String? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection
 data class ValidNotificationChannelTeamsRequest(
     @field:URL(message = "Invalid URL format")
-    val urlWebhook: String,
-    var nameReboot: String? = null,
+    val webhookUrl: String,
+    var username: String? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection
 data class ValidNotificationChannelSlackRequest(
     @field:URL(message = "Invalid URL format")
-    val urlWebhook: String,
-    var nameReboot: String? = null,
+    val webhookUrl: String,
+    var username: String? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection
@@ -60,12 +64,12 @@ data class ValidNotificationChannelMailRequest(
     var starttls: Boolean? = false,
     @field:NotBlank(message = "Username is required")
     var username: String,
-    @field:NotBlank(message = "Password is required")
-    var password: String,
+    @field:NotBlank(message = "Password is required", groups = [OnCreate::class])
+    var password: String? = null,
     @field:NotBlank(message = "From address is required")
     @field:Email(message = "Invalid email format")
-    var mailFrom: String,
+    var from: String,
     @field:NotBlank(message = "To address is required")
     @field:Email(message = "Invalid email format")
-    var mailTo: String,
+    var to: String,
 ) : BaseStoreNotificationRequest()

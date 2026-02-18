@@ -36,7 +36,7 @@ class NotificationService(
         coroutineScope {
             notifications.forEach { notification ->
                 launch {
-                    val content = NotificationContentMapper.toDTO(notification)
+                    val content = NotificationContentMapper.toDTO(notification, true)
                     val handler = notificationFactory.getNotification(notification.type)
 
                     if (handler == null) {

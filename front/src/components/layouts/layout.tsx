@@ -35,8 +35,10 @@ import { ScrollArea } from '@/components/atoms/scroll-area.tsx';
 import { Separator } from '@/components/atoms/separator.tsx';
 import authServices from '@/features/auth/services/authServices.ts';
 import { getInitials } from '@/lib/utils.ts';
+import { useTranslation } from 'react-i18next';
 
 export default function Layout() {
+	const { t } = useTranslation();
 	const isMobile = useIsMobile();
 	const user = authServices.getUser();
 	const navigate = useNavigate();
@@ -98,13 +100,13 @@ export default function Layout() {
 										<Link to={'/profile'}>
 											<DropdownMenuItem>
 												<BadgeCheck />
-												Account
+												{t('layout.sidebar.settings')}
 											</DropdownMenuItem>
 										</Link>
 
 										<DropdownMenuItem onClick={logout}>
 											<LogOut />
-											Log out
+											{t('layout.sidebar.logout')}
 										</DropdownMenuItem>
 									</DropdownMenuGroup>
 								</DropdownMenuContent>
@@ -117,18 +119,18 @@ export default function Layout() {
 					<SidebarGroupContent>
 						<Button asChild className="w-full flex items-center gap-2 shadow-sm p-3 font-medium">
 							<Link to={'/monitors/new'}>
-								<Plus size={18} /> New monitor
+								<Plus size={18} /> {t('layout.sidebar.new_monitor')}
 							</Link>
 						</Button>
 						<SidebarMenuItem className="mt-6 space-y-2">
 							<SidebarMenuButton asChild>
 								<Link to={'/dashboard'}>
-									<Home size={18} /> Dashboard
+									<Home size={18} /> {t('layout.sidebar.dashboard')}
 								</Link>
 							</SidebarMenuButton>
 							<SidebarMenuButton asChild>
 								<Link to={'/status'}>
-									<Activity size={18} /> Status Page
+									<Activity size={18} /> {t('layout.sidebar.status_page')}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>

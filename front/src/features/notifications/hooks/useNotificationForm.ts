@@ -1,11 +1,6 @@
-import { type SubmitHandler, useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import notificationService from '@/features/notifications/services/notification-service.ts';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
 
 const baseStoreNotificationSchema = z.object({
 	name: z.string().min(3).max(255),
@@ -14,20 +9,20 @@ const baseStoreNotificationSchema = z.object({
 
 const discordNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('DISCORD'),
-	url_webhook: z.url(),
-	name_reboot: z.string().min(3).max(255),
+	webhook_url: z.url(),
+	username: z.string().min(3).max(255),
 });
 
 const teamsNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('TEAMS'),
-	url_webhook: z.url(),
-	name_reboot: z.string().min(3).max(255),
+	webhook_url: z.url(),
+	username: z.string().min(3).max(255),
 });
 
 const slackNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('SLACK'),
-	url_webhook: z.url(),
-	name_reboot: z.string().min(3).max(255),
+	webhook_url: z.url(),
+	username: z.string().min(3).max(255),
 });
 
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
@@ -35,10 +30,10 @@ const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	hostname: z.url(),
 	port: z.number().min(1).max(65535),
 	username: z.email().min(3).max(255),
-	password: z.string().min(3).max(255),
+	password: z.string().min(3).max(255).nullable(),
 	starttls: z.boolean().optional(),
-	mail_from: z.email().min(3).max(255),
-	mail_to: z.email().min(3).max(255),
+	to: z.email().min(3).max(255),
+	from: z.email().min(3).max(255),
 });
 
 export const storeNotificationSchema = z.discriminatedUnion('notification_type', [
@@ -48,42 +43,36 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	slackNotificationSchema,
 ]);
 
+export type NotificationFormMode = 'create' | 'update';
 export type StoreNotificationSchema = z.infer<typeof storeNotificationSchema>;
 
-export default function useNotificationForm() {
-	const { t } = useTranslation();
-	const queryClient = useQueryClient();
-	const [openDialogue, setOpenDialogue] = useState(false);
-
+export default function useNotificationForm(
+	{ defaultValues, mode }: { defaultValues: Partial<StoreNotificationSchema>; mode: NotificationFormMode } = {
+		defaultValues: {},
+		mode: 'create',
+	}
+) {
 	const form = useForm<StoreNotificationSchema>({
-		resolver: zodResolver(storeNotificationSchema),
+		resolver: zodResolver(createNotificationSchema(mode)),
 		defaultValues: {
-			notification_type: 'DISCORD',
+			...defaultValues,
 		},
 	});
-
-	const mutation = useMutation({
-		mutationFn: async (data: StoreNotificationSchema) => {
-			return notificationService.storeNotification(data);
-		},
-		onSuccess: (_, v) => {
-			queryClient.invalidateQueries({ queryKey: ['notifications'] }).then(() => {
-				setOpenDialogue(false);
-				toast.success(t('notifications.alerts.create', { data: v.name }));
-			});
-		},
-	});
-
-	const onSubmit: SubmitHandler<StoreNotificationSchema> = async (data: StoreNotificationSchema) => {
-		mutation.mutate(data);
-	};
 
 	return {
-		openDialogue,
-		setOpenDialogue,
 		form,
-		onSubmit,
-		isLoading: mutation.isPending,
 		errors: form.formState.errors,
 	};
+}
+
+function createNotificationSchema(mode: NotificationFormMode) {
+	return storeNotificationSchema.superRefine((data, ctx) => {
+		if (mode === 'create' && data.notification_type === 'MAIL' && !data.password) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'Password is required',
+				path: ['password'],
+			});
+		}
+	});
 }

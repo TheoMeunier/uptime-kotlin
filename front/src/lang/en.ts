@@ -66,7 +66,13 @@ const en = {
 	notifications: {
 		title: {
 			create: 'Create notification',
+			update: 'Update notification',
+			remove: 'Remove notification',
 			notifications: 'Notifications',
+		},
+		description: {
+			settings: 'Manage your notifications',
+			remove: 'This action is irreversible. All associated data will be permanently deleted',
 		},
 		label: {
 			type_notification: 'Type notification',
@@ -77,6 +83,8 @@ const en = {
 		},
 		alerts: {
 			create: 'Notification {{ data }} successfully created',
+			update: 'Notification {{ data }} successfully updated',
+			remove: 'Notification successfully removed',
 			testing: {
 				success: 'Notification successfully tested',
 				error: 'Error while testing notification',
@@ -132,6 +140,7 @@ const en = {
 		tabs: {
 			account: 'Account',
 			password: 'Password',
+			notifications: 'Notifications',
 		},
 		description: {
 			update_password: 'Changing your password will log you out of all your sessions. You will need to log in again.',
@@ -183,6 +192,16 @@ const en = {
 		last_6_hours: 'Last 6 hours',
 		last_24_hours: 'Last 24 hours',
 		last_7_days: 'Last 7 days',
+	},
+
+	layout: {
+		sidebar: {
+			settings: 'Settings',
+			logout: 'Logout',
+			dashboard: 'Dashboard',
+			status_page: 'Status page',
+			new_monitor: 'New monitor',
+		},
 	},
 };
 
