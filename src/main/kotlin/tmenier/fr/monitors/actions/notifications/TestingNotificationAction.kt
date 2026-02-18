@@ -28,22 +28,22 @@ class TestingNotificationAction(
         when (payload) {
             is ValidNotificationChannelDiscordRequest -> {
                 NotificationContent.Discord(
-                    webhookUrl = payload.urlWebhook,
-                    username = payload.nameReboot,
+                    webhookUrl = payload.webhookUrl,
+                    username = payload.username,
                 )
             }
 
             is ValidNotificationChannelTeamsRequest -> {
                 NotificationContent.Teams(
-                    webhookUrl = payload.urlWebhook,
-                    username = payload.nameReboot,
+                    webhookUrl = payload.webhookUrl,
+                    username = payload.username,
                 )
             }
 
             is ValidNotificationChannelSlackRequest -> {
                 NotificationContent.Slack(
-                    webhookUrl = payload.urlWebhook,
-                    username = payload.nameReboot,
+                    webhookUrl = payload.webhookUrl,
+                    username = payload.username,
                 )
             }
 
@@ -54,8 +54,8 @@ class TestingNotificationAction(
                     starttls = payload.starttls ?: false,
                     username = payload.username,
                     password = payload.password,
-                    from = payload.mailFrom,
-                    to = payload.mailTo,
+                    from = payload.from,
+                    to = payload.to,
                 )
             }
 
