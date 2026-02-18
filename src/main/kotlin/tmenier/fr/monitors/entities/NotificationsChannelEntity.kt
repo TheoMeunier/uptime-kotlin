@@ -49,6 +49,8 @@ class NotificationsChannelEntity : PanacheEntityBase {
     lateinit var updatedAt: LocalDateTime
 
     companion object : PanacheCompanion<NotificationsChannelEntity> {
+        fun findById(id: UUID): NotificationsChannelEntity? = find("id = ?1", id).firstResult()
+
         fun getAll(): List<NotificationsChannelEntity> = findAll().list()
 
         fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> = find("id in ?1 OR isDefault", ids).list()

@@ -2,8 +2,10 @@ package tmenier.fr.monitors.entities.mapper
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.monitors.dtos.responses.ListingNotificationsDto
+import tmenier.fr.monitors.dtos.responses.ShowNotificationsDto
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.notifications.dto.NotificationContent
@@ -11,7 +13,12 @@ import tmenier.fr.monitors.notifications.dto.NotificationContent
 object NotificationContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
 
-    fun toDTO(notification: NotificationsChannelEntity): NotificationContent =
+    fun extractPassword(content: JsonNode): String? = content.get("password")?.asText()
+
+    fun toDTO(
+        notification: NotificationsChannelEntity,
+        isPassword: Boolean = true,
+    ): NotificationContent =
         when (notification.type) {
             NotificationChannelsEnum.DISCORD -> {
                 objectMapper.treeToValue(notification.content, NotificationContent.Discord::class.java)
@@ -26,7 +33,9 @@ object NotificationContentMapper {
             }
 
             NotificationChannelsEnum.MAIL -> {
-                objectMapper.treeToValue(notification.content, NotificationContent.Mail::class.java)
+                val node = notification.content as ObjectNode
+                if (isPassword) node.remove("password")
+                objectMapper.treeToValue(node, NotificationContent.Mail::class.java)
             }
 
             else -> {
@@ -53,4 +62,14 @@ fun NotificationsChannelEntity.toListingsDTO() =
         id = id,
         name = name,
         isDefault = isDefault,
+    )
+
+fun NotificationsChannelEntity.toShowDto() =
+    ShowNotificationsDto(
+        id = id,
+        name = name,
+        notificationType = type,
+        content = NotificationContentMapper.toDTO(this, false),
+        isDefault = isDefault,
+        createdAt = createdAt,
     )

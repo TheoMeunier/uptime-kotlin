@@ -4,13 +4,13 @@ import i18n from '@/lang/i18n.ts';
 const NOTIFICATION_FIELDS_CONFIG = {
 	[NotificationTypeEnum.DISCORD]: [
 		{
-			name: 'url_webhook',
+			name: 'webhook_url',
 			label: i18n.t('form.label.webhook_url'),
 			input_type: 'text',
 			placeholder: 'https://discord.com/api/webhooks/...',
 		},
 		{
-			name: 'name_reboot',
+			name: 'username',
 			label: 'Name reboot',
 			input_type: 'text',
 			placeholder: 'Uptime kotlin',
@@ -18,13 +18,13 @@ const NOTIFICATION_FIELDS_CONFIG = {
 	],
 	[NotificationTypeEnum.TEAMS]: [
 		{
-			name: 'url_webhook',
+			name: 'webhook_url',
 			label: i18n.t('form.label.webhook_url'),
 			input_type: 'text',
 			placeholder: 'https://microsoft-teams.com/api/webhooks/...',
 		},
 		{
-			name: 'name_reboot',
+			name: 'username',
 			label: 'Name reboot',
 			input_type: 'text',
 			placeholder: 'Uptime kotlin',
@@ -32,13 +32,13 @@ const NOTIFICATION_FIELDS_CONFIG = {
 	],
 	[NotificationTypeEnum.SLACK]: [
 		{
-			name: 'url_webhook',
+			name: 'webhook_url',
 			label: i18n.t('form.label.webhook_url'),
 			input_type: 'text',
 			placeholder: 'https://hooks.slack.com/services/...',
 		},
 		{
-			name: 'name_reboot',
+			name: 'username',
 			label: 'Name reboot',
 			input_type: 'text',
 			placeholder: 'Uptime kotlin',
@@ -75,13 +75,13 @@ const NOTIFICATION_FIELDS_CONFIG = {
 			input_type: 'switch',
 		},
 		{
-			name: 'mail_from',
+			name: 'from',
 			label: i18n.t('form.label.address_from'),
 			input_type: 'email',
 			placeholder: 'uptime-kotlin@exemple.com',
 		},
 		{
-			name: 'mail_to',
+			name: 'to',
 			label: i18n.t('form.label.address_to'),
 			input_type: 'email',
 			placeholder: 'uptime-kotlin@exemple.com, uptime-kotlin2@exemple.com',
