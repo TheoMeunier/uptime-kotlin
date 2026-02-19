@@ -61,6 +61,10 @@ const en = {
 				automatic_refresh: 'Auto-refresh',
 			},
 		},
+		login: {
+			title: 'Login to your account',
+			description: 'Please enter your credentials to log in.',
+		},
 	},
 
 	notifications: {

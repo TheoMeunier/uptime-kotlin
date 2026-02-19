@@ -14,8 +14,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 		<div className={cn('flex flex-col gap-6', className)} {...props}>
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-center text-xl">Login to your account</CardTitle>
-					<CardDescription>Enter your email below to login to your account</CardDescription>
+					<CardTitle className="text-center text-xl">{t('pages.login.title')}</CardTitle>
+					<CardDescription className="text-center">{t('pages.login.description')}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form onSubmit={form.handleSubmit(onsubmit)}>
