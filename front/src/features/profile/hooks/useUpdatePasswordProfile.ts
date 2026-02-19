@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import profileService from '@/features/profile/services/profileService.tsx';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const storeUpdatePasswordSchema = z
 	.object({
@@ -17,6 +19,8 @@ const storeUpdatePasswordSchema = z
 export type StoreUpdatePasswordSchemaType = z.infer<typeof storeUpdatePasswordSchema>;
 
 export default function useUpdatePasswordProfile() {
+	const { t } = useTranslation();
+
 	const form = useForm<StoreUpdatePasswordSchemaType>({
 		resolver: zodResolver(storeUpdatePasswordSchema),
 	});
@@ -24,6 +28,10 @@ export default function useUpdatePasswordProfile() {
 	const mutation = useMutation({
 		mutationFn: async (data: StoreUpdatePasswordSchemaType) => {
 			return profileService.updatePasswordProfile(data);
+		},
+		onSuccess: () => {
+			form.reset();
+			toast.success(t('profile.alerts.update_password'));
 		},
 	});
 

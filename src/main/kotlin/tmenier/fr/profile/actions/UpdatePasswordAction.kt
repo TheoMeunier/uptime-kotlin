@@ -18,7 +18,7 @@ class UpdatePasswordAction(
         val userId = UUID.fromString(jwt.name)
         val user = UserEntity.findById(userId) ?: throw NotFoundException("User not found")
 
-        if (payload.password != payload.confirmPassword) {
+        if (payload.password != payload.passwordConfirmation) {
             throw BadRequestException("Passwords do not match")
         }
 
