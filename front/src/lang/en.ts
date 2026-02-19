@@ -155,6 +155,10 @@ const en = {
 			password: 'Password',
 			password_confirm: 'Confirmation Password',
 		},
+		alerts: {
+			update_profile: 'Profile successfully updated',
+			update_password: 'Password successfully updated',
+		},
 	},
 
 	dashboard: {

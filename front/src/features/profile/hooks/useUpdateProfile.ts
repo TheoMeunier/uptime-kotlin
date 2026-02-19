@@ -6,6 +6,7 @@ import profileService from '@/features/profile/services/profileService.tsx';
 import { toast } from 'sonner';
 import authService from '@/features/auth/services/authServices.ts';
 import authServices from '@/features/auth/services/authServices.ts';
+import { useTranslation } from 'react-i18next';
 
 const storeUpdateProfileSchema = z.object({
 	name: z.string().min(3),
@@ -15,6 +16,7 @@ const storeUpdateProfileSchema = z.object({
 export type StoreUpdateProfileSchemaType = z.infer<typeof storeUpdateProfileSchema>;
 
 export default function useUpdateProfile() {
+	const { t } = useTranslation();
 	const user = authService.getUser();
 
 	const form = useForm<StoreUpdateProfileSchemaType>({
@@ -31,7 +33,7 @@ export default function useUpdateProfile() {
 		},
 		onSuccess: (_, data) => {
 			authServices.saveUser(data.email, data.name);
-			toast.success('Profile updated successfully');
+			toast.success(t('profile.alerts.update_profile'));
 		},
 	});
 
