@@ -44,6 +44,7 @@ const ProbeForStatusPageSchema = z.object({
 	id: z.uuid(),
 	name: z.string(),
 	description: z.string().nullable(),
+	url: z.string(),
 	status: z.enum(ProbeStatusEnum),
 });
 

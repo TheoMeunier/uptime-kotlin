@@ -11,6 +11,7 @@ data class ProbeListDTO(
     val id: UUID,
     val name: String,
     val description: String? = null,
+    val url: String? = null,
     val status: ProbeMonitorLogStatus,
 )
 
