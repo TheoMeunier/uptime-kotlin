@@ -54,7 +54,7 @@ const en = {
 
 	pages: {
 		status_page: {
-			title: 'Dashboard',
+			title: 'Health Dashboard',
 			subtitle: 'Real-time infrastructure monitoring',
 			description: {
 				last_update: 'Last update: ',
