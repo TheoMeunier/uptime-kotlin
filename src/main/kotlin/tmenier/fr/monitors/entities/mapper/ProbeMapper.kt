@@ -77,6 +77,14 @@ fun ProbesEntity.toProbeWithNotificationsDTO() =
         notifications = notifications.map { it.id },
     )
 
+fun ProbeContent.toUrl(): String =
+    when (this) {
+        is ProbeContent.Http -> url
+        is ProbeContent.Dns -> hostname
+        is ProbeContent.Tcp -> "$url:$tcpPort"
+        is ProbeContent.Ping -> ip
+    }
+
 fun ProbesEntity.toShowDtp() =
     ProbeShowDTO(
         probe =
@@ -114,6 +122,7 @@ fun ProbesEntity.toStatusDto() =
             ProbeListDTO(
                 id = id,
                 name = name,
+                url = ProbeContentMapper.toDto(this).toUrl(),
                 description = description,
                 status = status,
             ),

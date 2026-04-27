@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-monitor-chart-bar.tsx';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import { Activity, Clock } from 'lucide-react';
@@ -57,6 +57,7 @@ export default function ProbesStatus() {
 										<div className="flex items-center">
 											<div>
 												<CardTitle className="text-lg font-semibold text-slate-900">{item.probe.name}</CardTitle>
+												<CardDescription className="text-gray-500 text-sm">{item.probe.url}</CardDescription>
 											</div>
 										</div>
 										<ProbeStatus status={item.probe.status} size="sm" />
