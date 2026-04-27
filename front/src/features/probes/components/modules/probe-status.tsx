@@ -41,22 +41,41 @@ const defaultConfig: StatusConfig = {
 	label: 'Unhealthy',
 };
 
+const sizeConfig = {
+	sm: {
+		container: 'px-2 py-1 text-xs gap-1.5',
+		dot: 'h-2 w-2',
+	},
+	md: {
+		container: 'px-3 py-1.5 text-sm gap-2',
+		dot: 'h-2.5 w-2.5',
+	},
+	lg: {
+		container: 'px-4 py-2 text-base gap-2.5',
+		dot: 'h-3 w-3',
+	},
+};
+
+type SizeVariant = keyof typeof sizeConfig;
+
 interface ProbeStatusProps {
 	status: ProbeStatusEnum;
-	size?: string;
+	size?: SizeVariant;
 	showLabel?: boolean;
 }
 
-export default function ProbeStatus({ status, size = 'size-2.5', showLabel = true }: ProbeStatusProps) {
-	const config: StatusConfig = statusConfig[status] ?? defaultConfig;
+export default function ProbeStatus({ status, size = 'md', showLabel = true }: ProbeStatusProps) {
+	const config = statusConfig[status] ?? defaultConfig;
+	const sizeStyle = sizeConfig[size];
 
 	return (
-		<div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium ${config.badge}`}>
-			<span className={`relative flex ${size}`}>
+		<div className={`inline-flex items-center rounded-full font-medium ${sizeStyle.container} ${config.badge}`}>
+			<span className={`relative flex ${sizeStyle.dot}`}>
 				<span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${config.ping} opacity-75`} />
-				<span className={`relative inline-flex ${size} rounded-full ${config.dot}`} />
+				<span className={`relative inline-flex rounded-full ${sizeStyle.dot} ${config.dot}`} />
 			</span>
-			{showLabel && config.label}
+
+			{showLabel && <span>{config.label}</span>}
 		</div>
 	);
 }

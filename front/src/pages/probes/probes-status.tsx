@@ -3,7 +3,7 @@ import probeService from '@/features/probes/services/probeService.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-monitor-chart-bar.tsx';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
-import { Activity, Clock, Server } from 'lucide-react';
+import { Activity, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { useTranslation } from 'react-i18next';
@@ -48,29 +48,28 @@ export default function ProbesStatus() {
 			</div>
 
 			<div className="w-[98rem] mx-auto py-12">
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 					{data?.map((item) => (
 						<Card key={item.probe.id} className="border-slate-200 bg-white hover:shadow-md transition-all duration-200">
-							<CardHeader>
-								<div className="flex justify-between items-start">
-									<div className="flex items-center gap-3">
-										<div className="p-2 bg-white rounded-md border border-slate-200">
-											<Server className="h-5 w-5 text-slate-600" />
+							<CardContent>
+								<div>
+									<div className="flex justify-between items-start">
+										<div className="flex items-center">
+											<div>
+												<CardTitle className="text-lg font-semibold text-slate-900">{item.probe.name}</CardTitle>
+											</div>
 										</div>
-										<div>
-											<CardTitle className="text-lg font-semibold text-slate-900">{item.probe.name}</CardTitle>
-											<p className="text-sm text-slate-500 mt-0.5">
-												{item.monitors.length} monitor
-												{item.monitors.length > 1 ? 's' : ''} actif
-												{item.monitors.length > 1 ? 's' : ''}
-											</p>
-										</div>
+										<ProbeStatus status={item.probe.status} size="sm" />
 									</div>
-									<ProbeStatus status={item.probe.status} />
 								</div>
 
 								<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} />
-							</CardHeader>
+
+								<div className="flex justify-between text-xs text-slate-500 mt-1">
+									<span>{t('monitors.description.one_hour_ago')}</span>
+									<span>{t('monitors.description.now')}</span>
+								</div>
+							</CardContent>
 						</Card>
 					))}
 				</div>
