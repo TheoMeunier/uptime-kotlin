@@ -134,7 +134,7 @@ export default function Dashboard() {
 								{data?.down_probes.map((probe) => (
 									<TableRow key={probe.id}>
 										<TableCell className="py-2">
-											<ProbeStatus status={ProbeStatusEnum.FAILURE} size="size-4" />
+											<ProbeStatus status={ProbeStatusEnum.FAILURE} showLabel={false} />
 										</TableCell>
 										<TableCell className="font-medium">{probe.name}</TableCell>
 										<TableCell>{probe.down_duration}</TableCell>
