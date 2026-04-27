@@ -9,6 +9,8 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.monitors.dtos.responses.ProbeListDTO
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
+import tmenier.fr.monitors.entities.mapper.toUrl
 
 @Path("/api/probes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,6 +25,7 @@ class ListingProbesResource {
                     it.id,
                     it.name,
                     it.description,
+                    ProbeContentMapper.toDto(it).toUrl(),
                     it.status,
                 )
             }
