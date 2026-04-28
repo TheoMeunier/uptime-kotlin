@@ -33,9 +33,16 @@ export const ProbeResponseSchema = z.object({
 	updated_at: z.string(),
 });
 
+export const ProbeUptimeSchema = z.object({
+	h24: z.number(),
+	d7: z.number(),
+	d30: z.number(),
+});
+
 export const ProbeShowSchema = z.object({
 	probe: ProbeResponseSchema,
 	monitors: ProbeMonitorsSchema,
+	uptimes: ProbeUptimeSchema,
 });
 
 export type ProbeShow = z.infer<typeof ProbeShowSchema>;

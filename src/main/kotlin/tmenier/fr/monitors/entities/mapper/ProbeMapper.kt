@@ -10,6 +10,7 @@ import tmenier.fr.monitors.dtos.responses.ProbeListDTO
 import tmenier.fr.monitors.dtos.responses.ProbeMonitorDTO
 import tmenier.fr.monitors.dtos.responses.ProbeShowDTO
 import tmenier.fr.monitors.dtos.responses.ProbeStatusDTO
+import tmenier.fr.monitors.dtos.responses.ProbeUptimeDTO
 import tmenier.fr.monitors.dtos.responses.ProbeWithNotificationsDTO
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeProtocol
@@ -85,7 +86,7 @@ fun ProbeContent.toUrl(): String =
         is ProbeContent.Ping -> ip
     }
 
-fun ProbesEntity.toShowDtp() =
+fun ProbesEntity.toShowDtp(uptimes: ProbeUptimeDTO? = null) =
     ProbeShowDTO(
         probe =
             ProbeDTO(
@@ -114,6 +115,7 @@ fun ProbesEntity.toShowDtp() =
                     runAt = it.runAt,
                 )
             },
+        uptimes = uptimes,
     )
 
 fun ProbesEntity.toStatusDto() =

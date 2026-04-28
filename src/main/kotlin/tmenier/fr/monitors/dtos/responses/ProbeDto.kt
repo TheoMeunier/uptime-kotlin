@@ -19,6 +19,7 @@ data class ProbeListDTO(
 data class ProbeShowDTO(
     val probe: ProbeDTO,
     val monitors: List<ProbeMonitorDTO>,
+    val uptimes: ProbeUptimeDTO? = null
 )
 
 @RegisterForReflection
@@ -49,4 +50,11 @@ data class ProbeDTO(
     val content: ProbeContent,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
+)
+
+@RegisterForReflection
+data class ProbeUptimeDTO(
+    val h24: Double,
+    val d7: Double,
+    val d30: Double,
 )
