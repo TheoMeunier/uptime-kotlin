@@ -6,10 +6,7 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/atoms/chart.tsx';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atoms/select.tsx';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
@@ -17,16 +14,12 @@ import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 export default function ProbeChart({
 	monitors,
 	lastHour,
-	setLastHour,
 	monitorStatus,
 }: {
 	monitors: Monitor[];
 	lastHour: number;
-	setLastHour: (value: number) => void;
 	monitorStatus: ProbeStatusEnum;
 }) {
-	const { t } = useTranslation();
-
 	const chartConfig = {
 		response_time: {
 			label: 'Response Time (ms)',
@@ -71,23 +64,6 @@ export default function ProbeChart({
 		return dataWithGaps;
 	}, [monitors, lastHour]);
 
-	const getTimeRangeLabel = () => {
-		switch (lastHour) {
-			case 1:
-				return t('timeRanger.last_1_hour');
-			case 3:
-				return t('timeRanger.last_3_hours');
-			case 6:
-				return t('timeRanger.last_6_hours');
-			case 24:
-				return t('timeRanger.last_24_hours');
-			case 168:
-				return t('timeRanger.last_7_days');
-			default:
-				return '';
-		}
-	};
-
 	const formatTime = (timestamp: number) => {
 		const date = new Date(timestamp);
 
@@ -113,79 +89,49 @@ export default function ProbeChart({
 	const hasData = chartData.some((d) => d.response_time !== null);
 
 	return (
-		<Card className="pt-0">
-			<CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-				<div className="grid flex-1 gap-1">
-					<CardTitle>Probe Response Time</CardTitle>
-					<CardDescription>Showing probe response times for {getTimeRangeLabel()}</CardDescription>
+		<div className="relative">
+			{!hasData ? (
+				<div className="flex h-[250px] w-full items-center justify-center text-muted-foreground">
+					No data available for the selected time range
 				</div>
-				<Select value={lastHour.toString()} onValueChange={(value) => setLastHour(Number(value))}>
-					<SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex" aria-label="Select a value">
-						<SelectValue placeholder="Select time range" />
-					</SelectTrigger>
-					<SelectContent className="rounded-xl">
-						<SelectItem value="1" className="rounded-lg">
-							{t('timeRanger.last_1_hour')}
-						</SelectItem>
-						<SelectItem value="3" className="rounded-lg">
-							{t('timeRanger.last_3_hours')}
-						</SelectItem>
-						<SelectItem value="6" className="rounded-lg">
-							{t('timeRanger.last_6_hours')}
-						</SelectItem>
-						<SelectItem value="24" className="rounded-lg">
-							{t('timeRanger.last_24_hours')}
-						</SelectItem>
-						<SelectItem value="168" className="rounded-lg">
-							{t('timeRanger.last_7_days')}
-						</SelectItem>
-					</SelectContent>
-				</Select>
-			</CardHeader>
-			<CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-				{!hasData ? (
-					<div className="flex h-[250px] w-full items-center justify-center text-muted-foreground">
-						No data available for the selected time range
-					</div>
-				) : (
-					<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
-						<AreaChart data={chartData}>
-							<CartesianGrid vertical={false} strokeDasharray="3 3" />
-							<XAxis
-								dataKey="timestamp"
-								type="number"
-								domain={xAxisDomain}
-								tickLine={false}
-								axisLine={false}
-								tickMargin={8}
-								minTickGap={32}
-								tickFormatter={formatTime}
-							/>
-							<YAxis tickLine={false} axisLine={true} tickMargin={8} />
-							<ChartTooltip
-								cursor={false}
-								content={
-									<ChartTooltipContent
-										labelFormatter={(_, payload) => {
-											const timestamp = payload?.[0]?.payload?.timestamp;
-											return timestamp ? formatTime(timestamp) : '';
-										}}
-										indicator="dot"
-									/>
-								}
-							/>
-							<Area
-								dataKey="response_time"
-								type="monotone"
-								fill={monitorStatus === 'FAILURE' ? '#fee2e2' : '#dcfce7'} // rouge clair / vert clair
-								stroke={monitorStatus === 'FAILURE' ? '#ef4444' : '#22c55e'}
-								connectNulls={false}
-							/>
-							<ChartLegend content={<ChartLegendContent />} />
-						</AreaChart>
-					</ChartContainer>
-				)}
-			</CardContent>
-		</Card>
+			) : (
+				<ChartContainer config={chartConfig} className="h-[250px] w-full">
+					<AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+						<CartesianGrid vertical={false} strokeDasharray="3 3" />
+						<XAxis
+							dataKey="timestamp"
+							type="number"
+							domain={xAxisDomain}
+							tickLine={false}
+							axisLine={false}
+							tickMargin={8}
+							minTickGap={32}
+							tickFormatter={formatTime}
+						/>
+						<YAxis tickLine={false} axisLine={true} tickMargin={8} />
+						<ChartTooltip
+							cursor={false}
+							content={
+								<ChartTooltipContent
+									labelFormatter={(_, payload) => {
+										const timestamp = payload?.[0]?.payload?.timestamp;
+										return timestamp ? formatTime(timestamp) : '';
+									}}
+									indicator="dot"
+								/>
+							}
+						/>
+						<Area
+							dataKey="response_time"
+							type="monotone"
+							fill={monitorStatus === 'FAILURE' ? '#fee2e2' : '#dcfce7'}
+							stroke={monitorStatus === 'FAILURE' ? '#ef4444' : '#22c55e'}
+							connectNulls={false}
+						/>
+						<ChartLegend content={<ChartLegendContent />} />
+					</AreaChart>
+				</ChartContainer>
+			)}
+		</div>
 	);
 }

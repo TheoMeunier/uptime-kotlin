@@ -7,7 +7,6 @@ import { ButtonGroup } from '@/components/atoms/button-group.tsx';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
 import DeleteProbeDialogue from '@/features/probes/components/actions/delete-probe-dialogue.tsx';
 import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-monitor-chart-bar.tsx';
-import ProbeChart from '@/features/probes/components/modules/probe-chart.tsx';
 import ProbeMonitorLog from '@/features/probes/components/modules/probe-monitor-log.tsx';
 import OnOffMonitorProbeDialogue from '@/features/probes/components/actions/on-off-probe-dialogue.tsx';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
@@ -16,6 +15,7 @@ import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { useState } from 'react';
 import { type ProbeShow, ProbeShowSchema } from '@/features/probes/schemas/probe-response.schema.ts';
 import ProbeUptime from '@/features/probes/components/modules/probe-uptime.tsx';
+import ProbeResponseTime from '@/features/probes/components/modules/probe-response-time.tsx';
 
 export function ShowProbe() {
 	const { t } = useTranslation();
@@ -36,7 +36,7 @@ export function ShowProbe() {
 	const isRefetching = isFetching && !isLoading;
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-4">
 			<section className="flex items-center justify-between">
 				<div>
 					<h1 className="text-3xl font-bold mb-4">{data?.probe.name}</h1>
@@ -88,7 +88,7 @@ export function ShowProbe() {
 						</CardContent>
 					</Card>
 				) : (
-					<ProbeChart
+					<ProbeResponseTime
 						monitors={data!.monitors}
 						lastHour={hours}
 						setLastHour={setHours}
