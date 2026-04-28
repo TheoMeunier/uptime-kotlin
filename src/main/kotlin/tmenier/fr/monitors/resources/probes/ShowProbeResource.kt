@@ -11,9 +11,12 @@ import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.exceptions.common.NotFoundException
+import tmenier.fr.monitors.dtos.responses.ProbeUptimeDTO
 import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.monitors.entities.ProbesMonitorsLogEntity
 import tmenier.fr.monitors.entities.mapper.toProbeWithNotificationsDTO
 import tmenier.fr.monitors.entities.mapper.toShowDtp
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Path("/api/probes/{probeId}")
@@ -26,9 +29,11 @@ class ShowProbeResource {
         @PathParam("probeId") probeId: String,
         @QueryParam("hours") hours: Long,
     ): Response {
+        val uuid = UUID.fromString(probeId)
+
         if (hours == 0L) {
             val probeEntity =
-                ProbesEntity.findById(UUID.fromString(probeId)) ?: throw NotFoundException("Probe not found")
+                ProbesEntity.findById(uuid) ?: throw NotFoundException("Probe not found")
 
             return Response.ok(probeEntity.toProbeWithNotificationsDTO()).build()
         }
@@ -39,9 +44,26 @@ class ShowProbeResource {
         }
 
         val probeEntity =
-            ProbesEntity.findByIdWithLogs(UUID.fromString(probeId), hours)
+            ProbesEntity.findByIdWithLogs(uuid, hours)
                 ?: throw NotFoundException("Probe not found")
+        val uptimes = computeUptimes(uuid)
 
-        return Response.ok(probeEntity.toShowDtp()).build()
+        return Response.ok(probeEntity.toShowDtp().copy(uptimes = uptimes)).build()
+    }
+
+    private fun computeUptimes(probeId: UUID): ProbeUptimeDTO {
+        val now = LocalDateTime.now()
+        return ProbeUptimeDTO(
+            h24 = computeUptime(probeId, now.minusHours(24), now),
+            d7 = computeUptime(probeId, now.minusDays(7), now),
+            d30 = computeUptime(probeId, now.minusDays(30), now),
+        )
+    }
+
+    private fun computeUptime(probeId: UUID, from: LocalDateTime, to: LocalDateTime): Double {
+        val total = ProbesMonitorsLogEntity.countByProbeAndPeriod(probeId, from, to)
+        val success = ProbesMonitorsLogEntity.countSuccessByProbeAndPeriod(probeId, from, to)
+        if (total == 0L) return 100.0
+        return (success.toDouble() / total.toDouble()) * 100.0
     }
 }

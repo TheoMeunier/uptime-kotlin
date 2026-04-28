@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { useState } from 'react';
 import { type ProbeShow, ProbeShowSchema } from '@/features/probes/schemas/probe-response.schema.ts';
+import ProbeUptime from '@/features/probes/components/modules/probe-uptime.tsx';
 
 export function ShowProbe() {
 	const { t } = useTranslation();
@@ -68,6 +69,7 @@ export function ShowProbe() {
 							</div>
 							<ProbeStatus status={data!.probe.status} />
 						</div>
+						<ProbeUptime uptimes={data!.uptimes} />
 						<ProbeMonitorChartBar monitors={data!.monitors} probeStatus={data!.probe.status} />
 						<div className="flex justify-between text-xs text-slate-500 mt-1">
 							<span>{t('monitors.description.one_hour_ago')}</span>
