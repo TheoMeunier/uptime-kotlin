@@ -19,7 +19,7 @@ data class ProbeListDTO(
 data class ProbeShowDTO(
     val probe: ProbeDTO,
     val monitors: List<ProbeMonitorDTO>,
-    val uptimes: ProbeUptimeDTO? = null
+    val uptimes: ProbeUptimeDTO? = null,
 )
 
 @RegisterForReflection
