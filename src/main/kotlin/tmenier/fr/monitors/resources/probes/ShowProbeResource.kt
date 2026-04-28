@@ -60,7 +60,11 @@ class ShowProbeResource {
         )
     }
 
-    private fun computeUptime(probeId: UUID, from: LocalDateTime, to: LocalDateTime): Double {
+    private fun computeUptime(
+        probeId: UUID,
+        from: LocalDateTime,
+        to: LocalDateTime,
+    ): Double {
         val total = ProbesMonitorsLogEntity.countByProbeAndPeriod(probeId, from, to)
         val success = ProbesMonitorsLogEntity.countSuccessByProbeAndPeriod(probeId, from, to)
         if (total == 0L) return 100.0
