@@ -29,6 +29,7 @@ export const ProbeResponseSchema = z.object({
 	last_run: z.string().nullable(),
 	status: z.enum(ProbeStatusEnum),
 	content: z.any().nullable(),
+	url: z.string().nullable(),
 	created_at: z.string(),
 	updated_at: z.string(),
 });

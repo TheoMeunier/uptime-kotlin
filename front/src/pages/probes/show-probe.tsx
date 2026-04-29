@@ -39,7 +39,8 @@ export function ShowProbe() {
 		<div className="space-y-4">
 			<section className="flex items-center justify-between">
 				<div>
-					<h1 className="text-3xl font-bold mb-4">{data?.probe.name}</h1>
+					<h1 className="text-3xl font-bold mb-2">{data?.probe.name}</h1>
+					<p className="text-gray-500 mb-4">{data?.probe.url}</p>
 				</div>
 
 				<div>
