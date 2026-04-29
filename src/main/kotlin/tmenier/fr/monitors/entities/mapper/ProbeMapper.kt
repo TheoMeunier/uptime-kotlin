@@ -102,6 +102,7 @@ fun ProbesEntity.toShowDtp(uptimes: ProbeUptimeDTO? = null) =
                 lastRun = lastRun,
                 status = status,
                 content = ProbeContentMapper.toDto(this),
+                url = ProbeContentMapper.toDto(this).toUrl(),
                 createdAt = createdAt,
                 updatedAt = updatedAt,
             ),
