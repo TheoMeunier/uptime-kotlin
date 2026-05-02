@@ -3,33 +3,13 @@ import dashboardService from '@/features/dashboard/services/dashboardService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms/table';
 import { Skeleton } from '@/components/atoms/skeleton';
+import { Button } from '@/components/atoms/button';
 import { Activity, AlertTriangle, CheckCircle2, Timer, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
-
-function StatCard({ title, value, description, icon: Icon, variant = 'neutral' }: any) {
-	const variants: Record<string, string> = {
-		success: 'text-green-500',
-		danger: 'text-red-500',
-		warning: 'text-orange-500',
-		info: 'text-blue-700',
-		neutral: 'text-muted-foreground',
-	};
-
-	return (
-		<Card className={`border ${variants[variant]} shadow-sm`}>
-			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-				<CardTitle className="text-sm font-medium text-foreground">{title}</CardTitle>
-				<Icon className="h-5 w-5" />
-			</CardHeader>
-			<CardContent>
-				<div className="text-2xl font-bold text-foreground">{value}</div>
-				{description && <p className="text-xs opacity-80 mt-1">{description}</p>}
-			</CardContent>
-		</Card>
-	);
-}
+import StatCard from '@/components/molecules/dashboard/stat-card.tsx';
+import StatGraphCard from '@/components/molecules/dashboard/stat-graph-card.tsx';
 
 export default function Dashboard() {
 	const { t } = useTranslation();
@@ -42,21 +22,29 @@ export default function Dashboard() {
 	if (isLoading) {
 		return (
 			<div className="space-y-6">
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+				<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
 					{Array.from({ length: 4 }).map((_, i) => (
-						<Skeleton key={i} className="h-32 rounded-2xl" />
+						<Skeleton key={i} className="h-28 rounded-xl" />
 					))}
 				</div>
-				<Skeleton className="h-40 rounded-2xl" />
-				<Skeleton className="h-64 rounded-2xl" />
+				<div className="grid gap-3 md:grid-cols-3">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<Skeleton key={i} className="h-36 rounded-xl" />
+					))}
+				</div>
+				<Skeleton className="h-56 rounded-xl" />
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-10">
-			<section className="space-y-4">
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+		<div className="space-y-6">
+			<div className="flex items-center justify-between">
+				<h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+			</div>
+
+			<section>
+				<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
 					<StatCard
 						title={t('dashboard.title.monitors')}
 						value={data?.summary.total_monitors}
@@ -64,7 +52,6 @@ export default function Dashboard() {
 						icon={Activity}
 						variant="info"
 					/>
-
 					<StatCard
 						title={t('dashboard.title.monitors_up')}
 						value={data?.summary.total_monitors_success}
@@ -72,7 +59,6 @@ export default function Dashboard() {
 						icon={CheckCircle2}
 						variant="success"
 					/>
-
 					<StatCard
 						title={t('dashboard.title.monitors_down')}
 						value={data?.summary.total_monitors_failures}
@@ -80,7 +66,6 @@ export default function Dashboard() {
 						icon={XCircle}
 						variant="danger"
 					/>
-
 					<StatCard
 						title={t('dashboard.title.uptime')}
 						value={`${data?.summary.avg_uptime_percent}%`}
@@ -91,58 +76,81 @@ export default function Dashboard() {
 				</div>
 			</section>
 
-			<section className="space-y-4">
-				<h2 className="text-xl font-semibold">{t('dashboard.title.last_24_hours')}</h2>
-				<div className="grid gap-4 md:grid-cols-3">
-					<StatCard
+			{/* Metric cards with sparklines */}
+			<section>
+				<div className="grid gap-3 md:grid-cols-3">
+					<StatGraphCard
 						title={t('dashboard.title.response_time_average')}
 						value={`${Math.round(data!.metrics_last_days.avg_response_time_ms)} ms`}
 						description={t('dashboard.description.latency_average')}
 						icon={Timer}
+						sparklineColor="#378ADD"
+						sparklineType="line"
+						sparklineData={data?.latency_spark_line ?? []}
 					/>
-					<StatCard
+					<StatGraphCard
 						title={t('dashboard.title.incidents')}
 						value={data?.metrics_last_days.count_incidents24h}
 						description={t('dashboard.description.on_24_hours')}
 						icon={AlertTriangle}
+						sparklineColor="#EF9F27"
+						sparklineType="bar"
+						sparklineData={data?.incident_bar?.map((b) => ({ value: b.down_count })) ?? []}
 					/>
-					<StatCard
+					<StatGraphCard
 						title={t('dashboard.title.checks_executed')}
 						value={data?.metrics_last_days.count_checks24h}
 						description={t('dashboard.description.executing')}
 						icon={Activity}
+						sparklineColor="#22c55e"
+						sparklineType="line"
+						sparklineData={data?.check_spark_line ?? []}
 					/>
 				</div>
 			</section>
 
-			<section className="space-y-4">
-				<Card>
-					<CardHeader>
-						<CardTitle>{t('dashboard.title.monitors_down')}</CardTitle>
-						<CardDescription>{t('dashboard.description.currently_incidents')}</CardDescription>
+			{/* Down probes table */}
+			<section>
+				<Card className="shadow-none">
+					<CardHeader className="pb-3">
+						<div className="flex items-center justify-between">
+							<div>
+								<CardTitle className="text-sm font-medium">{t('dashboard.title.monitors_down')}</CardTitle>
+								<CardDescription className="text-xs mt-0.5">
+									{t('dashboard.description.currently_incidents')}
+								</CardDescription>
+							</div>
+							<Button variant="outline" size="sm" className="text-xs h-7">
+								Voir tous les incidents
+							</Button>
+						</div>
 					</CardHeader>
 					<CardContent>
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead>{t('dashboard.table.status')}</TableHead>
-									<TableHead>{t('dashboard.table.services')}</TableHead>
-									<TableHead>{t('dashboard.table.times')}</TableHead>
+									<TableHead className="text-xs w-24">{t('dashboard.table.status')}</TableHead>
+									<TableHead className="text-xs">{t('dashboard.table.services')}</TableHead>
+									<TableHead className="text-xs">{t('dashboard.table.times')}</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{data?.down_probes.map((probe) => (
 									<TableRow key={probe.id}>
-										<TableCell className="py-2">
+										<TableCell className="py-3">
 											<ProbeStatus status={ProbeStatusEnum.FAILURE} showLabel={false} />
 										</TableCell>
-										<TableCell className="font-medium">{probe.name}</TableCell>
-										<TableCell>{probe.down_duration}</TableCell>
+										<TableCell className="py-3">
+											<div className="font-medium text-sm">{probe.name}</div>
+										</TableCell>
+										<TableCell className="py-3">
+											<DurationBadge duration={probe.down_duration} />
+										</TableCell>
 									</TableRow>
 								))}
 								{data?.down_probes.length === 0 && (
 									<TableRow>
-										<TableCell colSpan={3} className="text-center text-muted-foreground">
+										<TableCell colSpan={4} className="text-center text-muted-foreground text-sm py-8">
 											{t('dashboard.table.empty')}
 										</TableCell>
 									</TableRow>
@@ -153,5 +161,18 @@ export default function Dashboard() {
 				</Card>
 			</section>
 		</div>
+	);
+}
+
+function DurationBadge({ duration }: { duration: string }) {
+	const days = parseInt(duration);
+	const isCritical = days > 30;
+	return (
+		<span
+			className="inline-flex items-center text-xs font-medium px-2 py-1 rounded-md"
+			style={isCritical ? { background: '#FCEBEB', color: '#A32D2D' } : { background: '#FAEEDA', color: '#854F0B' }}
+		>
+			{duration}
+		</span>
 	);
 }
