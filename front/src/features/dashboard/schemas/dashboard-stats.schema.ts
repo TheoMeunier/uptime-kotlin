@@ -19,10 +19,24 @@ const down_probes = z.object({
 	down_duration: z.string(),
 });
 
+const incident_bar = z.object({
+	hour: z.coerce.date(),
+	up_count: z.number(),
+	down_count: z.number(),
+});
+
+const spark_line_point = z.object({
+	bucket: z.coerce.date(),
+	value: z.number(),
+});
+
 const DashboardStatsSchema = z.object({
 	summary: summary,
 	metrics_last_days: metrics_last_days,
 	down_probes: z.array(down_probes),
+	latency_spark_line: z.array(spark_line_point),
+	incident_bar: z.array(incident_bar),
+	check_spark_line: z.array(spark_line_point),
 });
 
 export type DashboardStats = z.infer<typeof DashboardStatsSchema>;

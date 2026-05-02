@@ -3,8 +3,10 @@ package tmenier.fr.dashboard.services
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import tmenier.fr.dashboard.dtos.DownProbeDto
+import tmenier.fr.dashboard.dtos.IncidentBar
 import tmenier.fr.dashboard.dtos.MonitorSummary
 import tmenier.fr.dashboard.dtos.ResponseMetrics24h
+import tmenier.fr.dashboard.dtos.SparklinePoint
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -18,7 +20,7 @@ class StatDashboardService(
     fun getMonitorsSummary(): MonitorSummary {
         val jpql =
             """
-            SELECT 
+            SELECT
               COUNT(p),
               SUM(CASE WHEN p.status = 0 THEN 1 ELSE 0 END),
               SUM(CASE WHEN p.status = 3 THEN 1 ELSE 0 END),
@@ -43,7 +45,7 @@ class StatDashboardService(
 
         val jpql =
             """
-            SELECT 
+            SELECT
               COALESCE(AVG(pml.responseTime), 0),
               SUM(CASE WHEN pml.status = 3 THEN 1 ELSE 0 END),
               COUNT(pml)
@@ -92,6 +94,86 @@ class StatDashboardService(
                 id = id,
                 name = name,
                 downDuration = duration.toHumanReadable(),
+            )
+        }
+    }
+
+    fun getLatencySparkline(): List<SparklinePoint> {
+        val since = LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+
+        val jpql = """
+        SELECT
+            function('date_trunc', 'hour', pml.runAt),
+            COALESCE(AVG(pml.responseTime), 0)
+        FROM ProbesMonitorsLogEntity pml
+        JOIN pml.probe p
+        WHERE pml.runAt > :since AND p.enabled = true
+        GROUP BY function('date_trunc', 'hour', pml.runAt)
+        ORDER BY function('date_trunc', 'hour', pml.runAt)
+    """.trimIndent()
+
+        val results = em.createQuery(jpql)
+            .setParameter("since", since)
+            .resultList as List<Array<*>>
+
+        return results.map { row ->
+            SparklinePoint(
+                bucket = row[0] as LocalDateTime,
+                value = (row[1] as Number).toDouble()
+            )
+        }
+    }
+
+    fun getIncidentBars(): List<IncidentBar> {
+        val since = LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+
+        val jpql = """
+         SELECT
+            function('date_trunc', 'hour', pml.runAt),
+            SUM(CASE WHEN pml.status = 0 THEN 1 ELSE 0 END),
+            SUM(CASE WHEN pml.status = 3 THEN 1 ELSE 0 END)
+        FROM ProbesMonitorsLogEntity pml
+        JOIN pml.probe p
+        WHERE pml.runAt > :since AND p.enabled = true
+        GROUP BY function('date_trunc', 'hour', pml.runAt)
+        ORDER BY function('date_trunc', 'hour', pml.runAt)
+    """.trimIndent()
+
+        val results = em.createQuery(jpql)
+            .setParameter("since", since)
+            .resultList as List<Array<*>>
+
+        return results.map { row ->
+            IncidentBar(
+                hour = row[0] as LocalDateTime,
+                upCount = (row[1] as Number).toLong(),
+                downCount = (row[2] as Number).toLong()
+            )
+        }
+    }
+
+    fun getChecksSparkline(): List<SparklinePoint> {
+        val since = LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+
+        val jpql = """
+        SELECT
+            function('date_trunc', 'hour', pml.runAt),
+            COUNT(pml)
+        FROM ProbesMonitorsLogEntity pml
+        JOIN pml.probe p
+        WHERE pml.runAt > :since AND p.enabled = true
+        GROUP BY function('date_trunc', 'hour', pml.runAt)
+        ORDER BY function('date_trunc', 'hour', pml.runAt)
+    """.trimIndent()
+
+        val results = em.createQuery(jpql)
+            .setParameter("since", since)
+            .resultList as List<Array<*>>
+
+        return results.map { row ->
+            SparklinePoint(
+                bucket = row[0] as LocalDateTime,
+                value = (row[1] as Number).toDouble()
             )
         }
     }

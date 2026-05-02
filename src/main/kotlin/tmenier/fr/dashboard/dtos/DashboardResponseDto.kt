@@ -1,6 +1,7 @@
 package tmenier.fr.dashboard.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
+import java.time.LocalDateTime
 import java.util.UUID
 
 @RegisterForReflection
@@ -24,3 +25,9 @@ data class DownProbeDto(
     val name: String,
     val downDuration: String,
 )
+
+@RegisterForReflection
+data class SparklinePoint(val bucket: LocalDateTime, val value: Double)
+
+@RegisterForReflection
+data class IncidentBar(val hour: LocalDateTime, val upCount: Long, val downCount: Long)
