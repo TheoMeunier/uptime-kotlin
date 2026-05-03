@@ -3,7 +3,6 @@ package tmenier.fr.monitors.entities.mapper
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.dtos.responses.ProbeDTO
 import tmenier.fr.monitors.dtos.responses.ProbeListDTO
@@ -36,9 +35,6 @@ object ProbeContentMapper {
                 objectMapper.treeToValue(probe.content, ProbeContent.Ping::class.java)
             }
 
-            else -> {
-                logger.error { "Unknown protocol ${probe.protocol}" }
-            }
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
