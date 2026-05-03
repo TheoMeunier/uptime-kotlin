@@ -4,12 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms/table';
 import { Skeleton } from '@/components/atoms/skeleton';
 import { Button } from '@/components/atoms/button';
-import { Activity, AlertTriangle, CheckCircle2, Timer, XCircle } from 'lucide-react';
+import { Activity, CheckCircle2, Timer, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import StatCard from '@/components/molecules/dashboard/stat-card.tsx';
 import StatGraphCard from '@/components/molecules/dashboard/stat-graph-card.tsx';
+import IncidentBarCard from '@/components/molecules/dashboard/stat-graph-bar-card.tsx';
 
 export default function Dashboard() {
 	const { t } = useTranslation();
@@ -88,15 +89,7 @@ export default function Dashboard() {
 						sparklineType="line"
 						sparklineData={data?.latency_spark_line ?? []}
 					/>
-					<StatGraphCard
-						title={t('dashboard.title.incidents')}
-						value={data?.metrics_last_days.count_incidents24h}
-						description={t('dashboard.description.on_24_hours')}
-						icon={AlertTriangle}
-						sparklineColor="#EF9F27"
-						sparklineType="bar"
-						sparklineData={data?.incident_bar?.map((b) => ({ value: b.down_count })) ?? []}
-					/>
+					<IncidentBarCard data={data?.incident_bar ?? []} description="Sur 24 heures" />
 					<StatGraphCard
 						title={t('dashboard.title.checks_executed')}
 						value={data?.metrics_last_days.count_checks24h}
