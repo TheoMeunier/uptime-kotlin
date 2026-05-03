@@ -2,6 +2,7 @@ package tmenier.fr.dashboard.services
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
+import jakarta.persistence.Tuple
 import tmenier.fr.dashboard.dtos.DownProbeDto
 import tmenier.fr.dashboard.dtos.IncidentBar
 import tmenier.fr.dashboard.dtos.MonitorSummary
@@ -77,7 +78,7 @@ class StatDashboardService(
             GROUP BY p.id, p.name, p.createdAt
             """.trimIndent()
 
-        val results = em.createQuery(jpql).resultList as List<Array<*>>
+        val results = em.createQuery(jpql, Tuple::class.java).resultList
 
         val now = LocalDateTime.now(ZoneOffset.UTC)
 
@@ -112,9 +113,9 @@ class StatDashboardService(
         ORDER BY function('date_trunc', 'hour', pml.runAt)
     """.trimIndent()
 
-        val results = em.createQuery(jpql)
+        val results = em.createQuery(jpql, Tuple::class.java)
             .setParameter("since", since)
-            .resultList as List<Array<*>>
+            .resultList
 
         return results.map { row ->
             SparklinePoint(
@@ -139,9 +140,9 @@ class StatDashboardService(
         ORDER BY function('date_trunc', 'hour', pml.runAt)
     """.trimIndent()
 
-        val results = em.createQuery(jpql)
+        val results = em.createQuery(jpql, Tuple::class.java)
             .setParameter("since", since)
-            .resultList as List<Array<*>>
+            .resultList
 
         return results.map { row ->
             IncidentBar(
@@ -166,9 +167,9 @@ class StatDashboardService(
         ORDER BY function('date_trunc', 'hour', pml.runAt)
     """.trimIndent()
 
-        val results = em.createQuery(jpql)
+        val results = em.createQuery(jpql, Tuple::class.java)
             .setParameter("since", since)
-            .resultList as List<Array<*>>
+            .resultList
 
         return results.map { row ->
             SparklinePoint(
