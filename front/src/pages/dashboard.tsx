@@ -10,7 +10,7 @@ import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import StatCard from '@/components/molecules/dashboard/stat-card.tsx';
 import StatGraphCard from '@/components/molecules/dashboard/stat-graph-card.tsx';
-import IncidentBarCard from '@/components/molecules/dashboard/stat-graph-bar-card.tsx';
+import IncidentBarCard from '@/components/molecules/dashboard/incident-bar-card.tsx';
 
 export default function Dashboard() {
 	const { t } = useTranslation();
