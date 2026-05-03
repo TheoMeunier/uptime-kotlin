@@ -34,7 +34,6 @@ object ProbeContentMapper {
             ProbeProtocol.PING -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Ping::class.java)
             }
-
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {

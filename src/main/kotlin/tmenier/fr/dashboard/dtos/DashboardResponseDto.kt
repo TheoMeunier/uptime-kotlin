@@ -27,7 +27,14 @@ data class DownProbeDto(
 )
 
 @RegisterForReflection
-data class SparklinePoint(val bucket: LocalDateTime, val value: Double)
+data class SparklinePoint(
+    val bucket: LocalDateTime,
+    val value: Double,
+)
 
 @RegisterForReflection
-data class IncidentBar(val hour: LocalDateTime, val upCount: Long, val downCount: Long)
+data class IncidentBar(
+    val hour: LocalDateTime,
+    val upCount: Long,
+    val downCount: Long,
+)
