@@ -29,7 +29,7 @@ sealed interface NotificationContent {
         val port: Int,
         val starttls: Boolean,
         val username: String,
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        @field:JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         val password: String? = null,
         val from: String,
         val to: String,
