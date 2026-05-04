@@ -125,40 +125,48 @@ export function ShowProbe() {
 
 function ShowProbeSkeleton() {
 	return (
-		<div className="space-y-8">
+		<div className="space-y-4">
 			<section className="flex items-center justify-between">
-				<div>
-					<Skeleton className="h-9 w-[300px] mb-4" />
-					<Skeleton className="h-5 w-[400px]" />
+				<div className="flex flex-col gap-2.5">
+					<Skeleton className="h-8 w-64 rounded-lg" />
+					<Skeleton className="h-4 w-80" />
 				</div>
-
-				<div className="flex gap-2">
-					<Skeleton className="h-10 w-[120px]" />
-					<Skeleton className="h-10 w-[100px]" />
-					<Skeleton className="h-10 w-[100px]" />
+				<div className="flex">
+					<Skeleton className="h-9 w-28 rounded-l-lg rounded-r-none" />
+					<Skeleton className="h-9 w-24 rounded-none ml-px" />
+					<Skeleton className="h-9 w-24 rounded-r-lg rounded-l-none ml-px" />
 				</div>
 			</section>
 
 			<section>
 				<Card>
 					<CardContent>
-						<div className="flex items-center justify-between mb-6">
-							<div>
-								<Skeleton className="h-6 w-[180px] mb-2" />
-								<Skeleton className="h-4 w-[250px]" />
+						<div className="flex items-center justify-between mb-5">
+							<div className="flex flex-col gap-2">
+								<Skeleton className="h-5 w-44" />
+								<Skeleton className="h-3.5 w-60" />
 							</div>
-							<Skeleton className="h-8 w-[100px] rounded-full" />
+							<Skeleton className="h-7 w-24 rounded-full" />
 						</div>
 
-						<div className="flex gap-1 h-16 items-end">
-							{[...Array(60)].map((_, index) => (
-								<Skeleton key={index} className="flex-1 rounded-t" style={{ height: `${20 * 60 + 20}%` }} />
+						<div className="flex gap-1 mb-3.5">
+							<Skeleton className="flex-1 h-7 rounded" />
+							<Skeleton className="flex-1 h-7 rounded" />
+							<Skeleton className="flex-1 h-7 rounded" />
+						</div>
+
+						<div className="flex items-end gap-0.5 h-16">
+							{[
+								30, 75, 55, 90, 40, 65, 85, 50, 70, 35, 60, 95, 45, 80, 25, 70, 55, 88, 42, 67, 33, 78, 52, 92, 48, 63,
+								38, 82, 58, 100,
+							].map((h, i) => (
+								<Skeleton key={i} className="flex-1 rounded-t-sm rounded-b-none" style={{ height: `${h}%` }} />
 							))}
 						</div>
 
-						<div className="flex justify-between mt-1">
-							<Skeleton className="h-3 w-[100px]" />
-							<Skeleton className="h-3 w-[80px]" />
+						<div className="flex justify-between mt-1.5">
+							<Skeleton className="h-2.5 w-20" />
+							<Skeleton className="h-2.5 w-14" />
 						</div>
 					</CardContent>
 				</Card>
@@ -167,8 +175,15 @@ function ShowProbeSkeleton() {
 			<section>
 				<Card>
 					<CardContent>
-						<Skeleton className="h-6 w-[200px] mb-4" />
-						<Skeleton className="h-[300px] w-full" />
+						<div className="flex items-center justify-between mb-4">
+							<Skeleton className="h-5 w-48" />
+							<div className="flex">
+								<Skeleton className="h-8 w-11 rounded-l-md rounded-r-none" />
+								<Skeleton className="h-8 w-11 rounded-none ml-px" />
+								<Skeleton className="h-8 w-11 rounded-r-md rounded-l-none ml-px" />
+							</div>
+						</div>
+						<Skeleton className="h-[300px] w-full rounded-lg" />
 					</CardContent>
 				</Card>
 			</section>
@@ -176,14 +191,14 @@ function ShowProbeSkeleton() {
 			<section>
 				<Card>
 					<CardContent>
-						<Skeleton className="h-6 w-[180px] mb-4" />
-						<div className="space-y-3">
-							{[...Array(8)].map((_, index) => (
-								<div key={index} className="flex items-center gap-4 p-3 border rounded-lg">
-									<Skeleton className="h-4 w-4 rounded-full" />
-									<Skeleton className="h-4 w-[150px]" />
-									<Skeleton className="h-4 w-[100px]" />
-									<Skeleton className="h-4 flex-1" />
+						<Skeleton className="h-5 w-40 mb-4" />
+						<div className="space-y-2.5">
+							{[130, 110, 145, 120, 100, 135, 115, 125].map((w, i) => (
+								<div key={i} className="flex items-center gap-3 p-3 border rounded-lg">
+									<Skeleton className="h-4 w-4 rounded-full shrink-0" />
+									<Skeleton className={`h-3.5 w-[${w}px]`} />
+									<Skeleton className="h-3.5 w-20" />
+									<Skeleton className="h-3.5 flex-1" />
 								</div>
 							))}
 						</div>
