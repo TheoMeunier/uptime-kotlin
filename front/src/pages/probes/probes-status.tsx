@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
 import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-monitor-chart-bar.tsx';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import { Activity, Clock } from 'lucide-react';
@@ -92,36 +92,57 @@ export default function ProbesStatus() {
 }
 
 function ProbesStatusSkeleton() {
+	const BAR_HEIGHTS = [
+		[40, 75, 55, 90, 35, 65, 85, 50, 70, 45, 60, 95, 30, 80, 58, 100],
+		[60, 30, 85, 45, 70, 55, 100, 40, 78, 52, 35, 90, 65, 48, 82, 25],
+		[50, 88, 42, 67, 33, 78, 95, 58, 72, 38, 62, 46, 85, 28, 75, 55],
+		[70, 45, 90, 30, 65, 80, 50, 38, 95, 60, 75, 42, 55, 100, 33, 68],
+		[35, 82, 58, 72, 44, 96, 28, 63, 87, 51, 40, 76, 32, 92, 67, 48],
+		[80, 55, 38, 92, 48, 63, 28, 75, 100, 42, 70, 35, 88, 57, 44, 78],
+	];
+
 	return (
 		<div className="min-h-screen bg-slate-50">
-			<div className="border-b bg-white">
-				<div className="container mx-auto px-6 py-8">
-					<Skeleton className="h-8 w-48 mb-2" />
-					<Skeleton className="h-4 w-96" />
+			<div className="border-b bg-white shadow-sm">
+				<div className="container mx-auto py-8">
+					<div className="flex items-center gap-3 mb-3">
+						<Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+						<div className="flex flex-col gap-2">
+							<Skeleton className="h-7 w-56" />
+							<Skeleton className="h-3.5 w-72" />
+						</div>
+					</div>
+					<div className="flex items-center gap-2">
+						<Skeleton className="h-4 w-4 rounded" />
+						<Skeleton className="h-3 w-44" />
+						<Skeleton className="h-6 w-28 rounded-full ml-2" />
+					</div>
 				</div>
 			</div>
 
-			<div className="container mx-auto px-6 py-8">
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-					{[1, 2, 3, 4].map((i) => (
-						<Card key={i}>
-							<CardContent className="p-6">
-								<Skeleton className="h-16 w-full" />
-							</CardContent>
-						</Card>
-					))}
-				</div>
-			</div>
-
-			<div className="container mx-auto px-6 pb-12">
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-					{[1, 2, 3, 4].map((i) => (
-						<Card key={i}>
-							<CardHeader>
-								<Skeleton className="h-6 w-32" />
-							</CardHeader>
+			<div className="w-[98rem] mx-auto py-12">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+					{BAR_HEIGHTS.map((heights, i) => (
+						<Card key={i} className="border-slate-200 bg-white">
 							<CardContent>
-								<Skeleton className="h-32 w-full" />
+								<div className="flex justify-between items-start mb-3.5">
+									<div className="flex flex-col gap-1.5">
+										<Skeleton className="h-4 w-32" />
+										<Skeleton className="h-3 w-48" />
+									</div>
+									<Skeleton className="h-6 w-16 rounded-full" />
+								</div>
+
+								<div className="flex items-end gap-0.5 h-12">
+									{heights.map((h, j) => (
+										<Skeleton key={j} className="flex-1 rounded-t-sm rounded-b-none" style={{ height: `${h}%` }} />
+									))}
+								</div>
+
+								<div className="flex justify-between mt-1.5">
+									<Skeleton className="h-2.5 w-16" />
+									<Skeleton className="h-2.5 w-12" />
+								</div>
 							</CardContent>
 						</Card>
 					))}
