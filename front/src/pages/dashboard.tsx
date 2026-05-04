@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import dashboardService from '@/features/dashboard/services/dashboardService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms/table';
-import { Skeleton } from '@/components/atoms/skeleton';
 import { Button } from '@/components/atoms/button';
 import { Activity, CheckCircle2, Timer, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +10,7 @@ import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import StatCard from '@/components/molecules/dashboard/stat-card.tsx';
 import StatGraphCard from '@/components/molecules/dashboard/stat-graph-card.tsx';
 import IncidentBarCard from '@/components/molecules/dashboard/incident-bar-card.tsx';
+import DashboardSkeleton from '@/components/molecules/dashboard/dashboard-skeleton.tsx';
 
 export default function Dashboard() {
 	const { t } = useTranslation();
@@ -20,23 +20,7 @@ export default function Dashboard() {
 		queryFn: async () => await dashboardService.getStats(),
 	});
 
-	if (isLoading) {
-		return (
-			<div className="space-y-6">
-				<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-					{Array.from({ length: 4 }).map((_, i) => (
-						<Skeleton key={i} className="h-28 rounded-xl" />
-					))}
-				</div>
-				<div className="grid gap-3 md:grid-cols-3">
-					{Array.from({ length: 3 }).map((_, i) => (
-						<Skeleton key={i} className="h-36 rounded-xl" />
-					))}
-				</div>
-				<Skeleton className="h-56 rounded-xl" />
-			</div>
-		);
-	}
+	if (isLoading) return <DashboardSkeleton />;
 
 	return (
 		<div className="space-y-6">
