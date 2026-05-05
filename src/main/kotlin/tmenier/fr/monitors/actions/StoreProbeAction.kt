@@ -67,7 +67,7 @@ class StoreProbeAction {
                 val (jsonNode, _) =
                     ProbeContentMapper.toEntity(
                         ProbeContent.Dns(
-                            hostname = payload.url,
+                            hostname = payload.hostname,
                             dnsPort = payload.dnsPort,
                             dnsServer = payload.dnsServer,
                             recordType = payload.recordType,
@@ -81,7 +81,7 @@ class StoreProbeAction {
                 val (jsonNode, _) =
                     ProbeContentMapper.toEntity(
                         ProbeContent.Ping(
-                            ip = payload.url,
+                            ip = payload.ip,
                             pingMaxPacket = payload.pingMaxPacket,
                             pingSize = payload.pingSize,
                             pingDelay = payload.pingDelay,

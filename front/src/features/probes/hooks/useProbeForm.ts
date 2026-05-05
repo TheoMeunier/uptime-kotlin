@@ -8,7 +8,6 @@ const baseStoreProbeSchema = z.object({
 	interval: z.number().min(10).max(3600),
 	retry: z.number().min(1).max(10).optional(),
 	interval_retry: z.number().min(0).max(3600).optional(),
-	//timeout: z.number().min(10).max(3600).optional(),
 	enabled: z.boolean().optional(),
 	description: z
 		.string()
@@ -33,7 +32,7 @@ const tcpProbeSchema = baseStoreProbeSchema.extend({
 
 const pingProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('PING'),
-	url: z.url(),
+	ip: z.url(),
 	ping_heartbeat_interval: z.number().min(1).max(60),
 	ping_max_packet: z.number().min(1).max(10),
 	ping_size: z.number().min(32).max(65500),
@@ -43,7 +42,7 @@ const pingProbeSchema = baseStoreProbeSchema.extend({
 
 const dnsProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('DNS'),
-	url: z.url(),
+	hostname: z.url(),
 	dns_server: z.ipv4(),
 	dns_port: z.number().min(1).max(65535).optional(),
 	record_type: z.enum(['A', 'AAAA', 'CNAME', 'MX', 'TXT']).optional(),

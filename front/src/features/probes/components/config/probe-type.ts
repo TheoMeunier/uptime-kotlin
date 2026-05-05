@@ -54,7 +54,7 @@ const PROBE_FIELDS_CONFIG = {
 	[ProbeProtocol.DNS]: {
 		fields: [
 			{
-				name: 'url',
+				name: 'hostname',
 				label: i18n.t('form.label.url'),
 				input_type: 'text',
 			},
@@ -85,7 +85,7 @@ const PROBE_FIELDS_CONFIG = {
 	[ProbeProtocol.PING]: {
 		fields: [
 			{
-				name: 'url',
+				name: 'ip',
 				label: i18n.t('form.label.url'),
 				input_type: 'text',
 			},
