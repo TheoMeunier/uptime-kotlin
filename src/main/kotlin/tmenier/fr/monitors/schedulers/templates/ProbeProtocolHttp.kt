@@ -3,31 +3,27 @@ package tmenier.fr.monitors.schedulers.templates
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
 import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
+import tmenier.fr.monitors.services.SslCertificateService
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
 import java.time.Duration
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 @ApplicationScoped
-class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
+class ProbeProtocolHttp(
+    private val sslCertificateService: SslCertificateService,
+) : ProbeProtocolAbstract<ProbeContent.Http>() {
     override fun execute(
         probe: ProbesEntity,
         content: ProbeContent.Http,
         isLastAttempt: Boolean,
     ): ProbeResult {
         val start = now()
-        val probeContent = ProbeContentMapper.toDto(probe)
 
         return try {
             val clientBuilder =
@@ -37,7 +33,7 @@ class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
 
             // skip error certificate
             if (content.ignoreCertificateErrors) {
-                clientBuilder.sslContext(createInsecureSSLContext())
+                clientBuilder.sslContext(sslCertificateService.createInsecureSSLContext())
             }
 
             val client = clientBuilder.build()
@@ -53,10 +49,26 @@ class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
             val success = checkIfStatusCodeIsValid(content.httpCodeAllowed, response.statusCode())
 
+            // check ssl certificate
+            val sslInfo =
+                if (content.url.startsWith("https://") && content.notificationCertified && !content.ignoreCertificateErrors) {
+                    sslCertificateService.checkSslCertificate(content.url)
+                } else {
+                    null
+                }
+
+            val sslWarning = sslInfo?.let { sslCertificateService.buildSslWarningMessage(it) }
+            val finalSuccess = success && (sslInfo == null || !sslInfo.isExpiringSoon)
+            val message =
+                buildString {
+                    append("HTTP Status: ${response.statusCode()} in ${getResponseTime(start)} ms")
+                    if (sslWarning != null) append(" - $sslWarning")
+                }
+
             ProbeResult(
-                status = getStatus(success, isLastAttempt, probe),
+                status = getStatus(finalSuccess, isLastAttempt, probe),
                 responseTime = getResponseTime(start),
-                message = "HTTP Status: ${response.statusCode()} in ${getResponseTime(start)} ms",
+                message = message,
                 runAt = getRunAt(start),
             )
         } catch (e: Exception) {
@@ -66,31 +78,6 @@ class ProbeProtocolHttp : ProbeProtocolAbstract<ProbeContent.Http>() {
                 message = "HTTP request failed: ${e.message}",
                 runAt = getRunAt(start),
             )
-        }
-    }
-
-    private fun createInsecureSSLContext(): SSLContext {
-        val trustAllCerts =
-            arrayOf<TrustManager>(
-                object : X509TrustManager {
-                    override fun checkClientTrusted(
-                        chain: Array<X509Certificate>,
-                        authType: String,
-                    ) {
-                    }
-
-                    override fun checkServerTrusted(
-                        chain: Array<X509Certificate>,
-                        authType: String,
-                    ) {
-                    }
-
-                    override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-                },
-            )
-
-        return SSLContext.getInstance("TLS").apply {
-            init(null, trustAllCerts, SecureRandom())
         }
     }
 
