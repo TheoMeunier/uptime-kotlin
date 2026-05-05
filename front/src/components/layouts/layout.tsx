@@ -48,7 +48,10 @@ export default function Layout() {
 		queryFn: async () => {
 			return probeService.getProbes();
 		},
-		staleTime: 5 * 60 * 1000, // 5 minutes
+		staleTime: 5 * 1000,
+		refetchInterval: 60 * 1000,
+		refetchOnWindowFocus: true,
+		refetchIntervalInBackground: true,
 	});
 
 	const logout = () => {
