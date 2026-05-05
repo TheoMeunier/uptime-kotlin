@@ -3,6 +3,7 @@ import { Input } from '@/components/atoms/input.tsx';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/atoms/field.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import FormMultiSelect from '@/components/molecules/forms/form-select-multiple.tsx';
+import FormSelect from '@/components/molecules/forms/form-select.tsx';
 
 interface FormFieldNotificationProps {
 	key: string;
@@ -58,6 +59,17 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 				searchable={field.searchable}
 				closeOnSelect={field.closeOnSelect}
 			/>
+		);
+	}
+
+	if (field.input_type === 'select') {
+		return (
+			<Field>
+				<FieldLabel className="block text-sm font-medium text-gray-700">{field.label}</FieldLabel>
+				<FormSelect form={form} name={field.name} options={field.options as string[]} />
+				{field.description && <FieldDescription>{field.description}</FieldDescription>}
+				<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
+			</Field>
 		);
 	}
 	return (

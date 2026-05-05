@@ -46,6 +46,7 @@ const dnsProbeSchema = baseStoreProbeSchema.extend({
 	url: z.url(),
 	dns_server: z.ipv4(),
 	dns_port: z.number().min(1).max(65535).optional(),
+	record_type: z.enum(['A', 'AAAA', 'CNAME', 'MX', 'TXT']).optional(),
 });
 
 export const storeProbeSchema = z.discriminatedUnion('protocol', [

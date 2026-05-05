@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.IpAddress
 import tmenier.fr.common.validations.UrlOrIp
 import tmenier.fr.monitors.enums.HttpCodeEnum
 import tmenier.fr.monitors.enums.ProbeProtocol
+import tmenier.fr.monitors.enums.RecordDnsEnum
 import java.util.UUID
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "protocol", visible = true)
@@ -82,6 +83,7 @@ data class ValidProbeProtocolDnsRequest(
     val dnsPort: Int,
     @field:IpAddress()
     val dnsServer: String,
+    val recordType: RecordDnsEnum,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
