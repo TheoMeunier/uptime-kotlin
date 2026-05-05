@@ -53,16 +53,15 @@ abstract class BaseStoreProbeRequest {
     @field:Size(min = 10, message = "Description must be at least 10 characters long")
     var description: String? = null
 
-    @field:NotBlank(message = "Url is required")
-    @field:UrlOrIp(message = "Invalid URL or IP format")
-    lateinit var url: String
-
     @field:Size(min = 1, message = "At least one notification is required")
     val notifications: List<UUID> = emptyList()
 }
 
 @RegisterForReflection
 data class ValidProbeProtocolHttpRequest(
+    @field:NotBlank(message = "Url is required")
+    @field:UrlOrIp(message = "Invalid URL or IP format")
+    var url: String,
     val notificationCertificate: Boolean,
     val ignoreCertificateErrors: Boolean,
     @field:Size(min = 1, message = "At least one HTTP code is required")
@@ -71,6 +70,9 @@ data class ValidProbeProtocolHttpRequest(
 
 @RegisterForReflection
 data class ValidProbeProtocolTcpRequest(
+    @field:NotBlank(message = "Url is required")
+    @field:UrlOrIp(message = "Invalid URL or IP format")
+    var url: String,
     @field:Min(1)
     @field:Max(65535)
     val tcpPort: Int,
@@ -78,6 +80,9 @@ data class ValidProbeProtocolTcpRequest(
 
 @RegisterForReflection
 data class ValidProbeProtocolDnsRequest(
+    @field:NotBlank(message = "Url is required")
+    @field:UrlOrIp(message = "Invalid URL or IP format")
+    var hostname: String,
     @field:Min(1)
     @field:Max(65535)
     val dnsPort: Int,
@@ -88,6 +93,9 @@ data class ValidProbeProtocolDnsRequest(
 
 @RegisterForReflection
 data class ValidProbeProtocolPingRequest(
+    @field:NotBlank(message = "Url is required")
+    @field:UrlOrIp(message = "Invalid URL or IP format")
+    var ip: String,
     @field:Min(1)
     @field:Max(60)
     val pingHeartbeatInterval: Int,
