@@ -2,6 +2,7 @@ package tmenier.fr.monitors.schedulers.dto
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import java.time.Instant
 import java.time.LocalDateTime
 
 @RegisterForReflection
@@ -12,4 +13,11 @@ data class ProbeResult(
     val runAt: LocalDateTime,
     val statusCode: Int? = null,
     val responseBody: String? = null,
+)
+
+@RegisterForReflection
+data class SslCertificateInfo(
+    val daysUntilExpiration: Long,
+    val expirationDate: Instant,
+    val isExpiringSoon: Boolean,
 )
