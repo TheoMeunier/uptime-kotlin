@@ -50,11 +50,12 @@ export default function IncidentBarCard({ data, description = 'Sur 24 heures' }:
 								title={`${fmt(d.hour)} — up: ${d.up_count} · down: ${d.down_count}`}
 							>
 								<div
-									className="rounded-t-sm bg-red-400 group-hover:bg-red-500 transition-colors"
+									className="rounded-t-sm bg-green-400 group-hover:bg-green-500 transition-colors"
 									style={{ height: upH }}
 								/>
+
 								{downH > 0 && (
-									<div className="bg-green-400 group-hover:bg-green-500 transition-colors" style={{ height: downH }} />
+									<div className="bg-red-400 group-hover:bg-red-500 transition-colors" style={{ height: downH }} />
 								)}
 							</div>
 						);
@@ -73,11 +74,12 @@ export default function IncidentBarCard({ data, description = 'Sur 24 heures' }:
 
 				<div className="flex gap-2.5 mt-1.5">
 					<div className="flex items-center gap-1">
-						<div className="w-1.5 h-1.5 rounded-sm bg-red-400" />
+						<div className="w-1.5 h-1.5 rounded-sm bg-green-400" />
 						<span className="text-[10px] text-muted-foreground">Up</span>
 					</div>
+
 					<div className="flex items-center gap-1">
-						<div className="w-1.5 h-1.5 rounded-sm bg-green-400" />
+						<div className="w-1.5 h-1.5 rounded-sm bg-red-400" />
 						<span className="text-[10px] text-muted-foreground">Down</span>
 					</div>
 				</div>
