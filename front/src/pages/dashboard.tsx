@@ -22,6 +22,8 @@ export default function Dashboard() {
 
 	if (isLoading) return <DashboardSkeleton />;
 
+	console.log(data);
+
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
