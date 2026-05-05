@@ -70,6 +70,7 @@ class StoreProbeAction {
                             hostname = payload.url,
                             dnsPort = payload.dnsPort,
                             dnsServer = payload.dnsServer,
+                            recordType = payload.recordType,
                         ),
                     )
 

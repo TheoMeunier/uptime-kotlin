@@ -2,6 +2,7 @@ package tmenier.fr.monitors.dtos.propbes
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.monitors.enums.HttpCodeEnum
+import tmenier.fr.monitors.enums.RecordDnsEnum
 
 @RegisterForReflection
 sealed interface ProbeContent {
@@ -18,6 +19,7 @@ sealed interface ProbeContent {
         val hostname: String,
         val dnsPort: Int,
         val dnsServer: String,
+        val recordType: RecordDnsEnum? = null,
     ) : ProbeContent
 
     @RegisterForReflection

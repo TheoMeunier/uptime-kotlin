@@ -1,18 +1,25 @@
 package tmenier.fr.monitors.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
-import org.minidns.DnsClient
 import org.minidns.dnsmessage.DnsMessage
+import org.minidns.dnsmessage.Question
 import org.minidns.dnsqueryresult.StandardDnsQueryResult
 import org.minidns.record.A
+import org.minidns.record.AAAA
+import org.minidns.record.CNAME
+import org.minidns.record.Data
+import org.minidns.record.MX
 import org.minidns.record.Record
+import org.minidns.record.TXT
 import org.minidns.source.NetworkDataSource
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
+import tmenier.fr.monitors.enums.RecordDnsEnum
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.net.InetAddress
+import java.net.URI
 
 @ApplicationScoped
 class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
@@ -24,10 +31,10 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
         val start = now()
 
         return try {
+            val dnsServerAddress = InetAddress.getByName(content.dnsServer)
+
             val customDataSource =
                 object : NetworkDataSource() {
-                    private val dnsServerAddress = InetAddress.getByName(content.dnsServer)
-
                     override fun query(
                         message: DnsMessage,
                         address: InetAddress,
@@ -35,27 +42,51 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
                     ): StandardDnsQueryResult? = super.query(message, dnsServerAddress, content.dnsPort)
                 }
 
-            val dnsClient =
-                DnsClient().apply {
-                    setDataSource(customDataSource)
+            val recordType =
+                when (content.recordType ?: RecordDnsEnum.A) {
+                    RecordDnsEnum.A -> Record.TYPE.A
+                    RecordDnsEnum.AAAA -> Record.TYPE.AAAA
+                    RecordDnsEnum.CNAME -> Record.TYPE.CNAME
+                    RecordDnsEnum.MX -> Record.TYPE.MX
+                    RecordDnsEnum.TXT -> Record.TYPE.TXT
                 }
 
-            val result = dnsClient.query(content.hostname, Record.TYPE.A)
+            val hostname =
+                try {
+                    URI(content.hostname).host ?: content.hostname
+                } catch (e: Exception) {
+                    content.hostname
+                        .removePrefix("https://")
+                        .removePrefix("http://")
+                        .trimEnd('/')
+                }
 
-            if (!result.wasSuccessful()) {
-                throw Exception("DNS query failed: ${result.response.responseCode}")
+            val question = Question(hostname, recordType)
+            val rawMessage =
+                DnsMessage
+                    .builder()
+                    .setQuestion(question)
+                    .setRecursionDesired(true)
+                    .build()
+
+            val result =
+                customDataSource.query(rawMessage, dnsServerAddress, content.dnsPort)
+                    ?: throw Exception("No response from DNS server")
+
+            val answerRecords =
+                result.response.answerSection
+                    .filter { it.type == recordType }
+
+            if (answerRecords.isEmpty()) {
+                throw Exception("No ${content.recordType} record found for ${content.hostname}")
             }
 
-            val aRecords = result.response.answerSection.filterIsInstance<Record<A>>()
-
-            if (aRecords.isEmpty()) {
-                throw Exception("No A record found for ${content.hostname}")
-            }
+            val description = buildRecordDescription(content.recordType ?: RecordDnsEnum.A, answerRecords)
 
             ProbeResult(
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = getResponseTime(start),
-                message = "DNS lookup successful: ${aRecords.size} A record(s) found in ${getResponseTime(start)} ms",
+                message = "DNS lookup successful: $description in ${getResponseTime(start)} ms",
                 runAt = getRunAt(start),
             )
         } catch (e: Exception) {
@@ -67,6 +98,52 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
             )
         }
     }
+
+    private fun buildRecordDescription(
+        recordType: RecordDnsEnum,
+        records: List<Record<out Data>>,
+    ): String =
+        when (recordType) {
+            RecordDnsEnum.A -> {
+                val aRecords = records.filter { it.type == Record.TYPE.A }
+                if (aRecords.isEmpty()) throw Exception("No A record found")
+                "${aRecords.size} A record(s): ${aRecords.joinToString { (it.payloadData as A).toString() }}"
+            }
+
+            RecordDnsEnum.AAAA -> {
+                val aaaaRecords = records.filter { it.type == Record.TYPE.AAAA }
+                if (aaaaRecords.isEmpty()) throw Exception("No AAAA record found")
+                "${aaaaRecords.size} AAAA record(s): ${aaaaRecords.joinToString { (it.payloadData as AAAA).toString() }}"
+            }
+
+            RecordDnsEnum.CNAME -> {
+                val cnameRecords = records.filter { it.type == Record.TYPE.CNAME }
+                if (cnameRecords.isEmpty()) throw Exception("No CNAME record found — l'apex domain (ex: example.com) ne peut pas avoir de CNAME")
+                "${cnameRecords.size} CNAME record(s): ${cnameRecords.joinToString { (it.payloadData as CNAME).target.toString() }}"
+            }
+
+            RecordDnsEnum.MX -> {
+                val mxRecords = records.filter { it.type == Record.TYPE.MX }
+                if (mxRecords.isEmpty()) throw Exception("No MX record found")
+                val sorted = mxRecords.sortedBy { (it.payloadData as MX).priority }
+                "${sorted.size} MX record(s): ${
+                    sorted.joinToString {
+                        val mx = it.payloadData as MX
+                        "${mx.target} (priority: ${mx.priority})"
+                    }
+                }"
+            }
+
+            RecordDnsEnum.TXT -> {
+                val txtRecords = records.filter { it.type == Record.TYPE.TXT }
+                if (txtRecords.isEmpty()) throw Exception("No TXT record found")
+                "${txtRecords.size} TXT record(s): ${
+                    txtRecords.joinToString {
+                        "\"${(it.payloadData as TXT).text}\""
+                    }
+                }"
+            }
+        }
 
     override fun getProtocolType() = ProbeProtocol.DNS.name
 

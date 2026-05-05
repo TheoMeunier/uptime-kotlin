@@ -1,6 +1,7 @@
 import ProbeProtocol from '@/features/probes/enums/probe-enum.ts';
 import HttpStatusCode from '@/features/probes/enums/http-status-code.ts';
 import i18n from '@/lang/i18n.ts';
+import DNSRecord from '@/features/probes/enums/dns-record.ts';
 
 const PROBE_FIELDS_CONFIG = {
 	[ProbeProtocol.HTTP]: {
@@ -70,6 +71,13 @@ const PROBE_FIELDS_CONFIG = {
 				input_type: 'number',
 				default_value: 53,
 				description: i18n.t('monitors.description.dns_port'),
+			},
+			{
+				name: 'record_type',
+				label: i18n.t('monitors.label.dns_record'),
+				input_type: 'select',
+				options: Object.values(DNSRecord),
+				default_value: false,
 			},
 		],
 		advanced_fields: [],
