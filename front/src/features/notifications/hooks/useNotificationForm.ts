@@ -25,6 +25,12 @@ const slackNotificationSchema = baseStoreNotificationSchema.extend({
 	username: z.string().min(3).max(255),
 });
 
+const webhookNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('WEBHOOK'),
+	url: z.url(),
+	method: z.enum(['POST', 'GET']),
+});
+
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
 	hostname: z.url(),
@@ -41,6 +47,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	MailNotificationSchema,
 	teamsNotificationSchema,
 	slackNotificationSchema,
+	webhookNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';

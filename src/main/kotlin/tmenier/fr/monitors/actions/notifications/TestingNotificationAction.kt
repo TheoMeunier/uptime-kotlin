@@ -6,6 +6,7 @@ import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelTeamsRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelWebhookRequest
 import tmenier.fr.monitors.notifications.NotificationService
 import tmenier.fr.monitors.notifications.dto.NotificationContent
 import tmenier.fr.monitors.notifications.dto.NotificationTestingDto
@@ -44,6 +45,13 @@ class TestingNotificationAction(
                 NotificationContent.Slack(
                     webhookUrl = payload.webhookUrl,
                     username = payload.username,
+                )
+            }
+
+            is ValidNotificationChannelWebhookRequest -> {
+                NotificationContent.Webhook(
+                    url = payload.url,
+                    method = payload.method,
                 )
             }
 

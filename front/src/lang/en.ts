@@ -17,6 +17,7 @@ const en = {
 			host: 'Host',
 			url: 'Url',
 			enabled: 'Enabled',
+			method: 'Method',
 		},
 		placeholder: {
 			email: 'john.doe@exemple.com',

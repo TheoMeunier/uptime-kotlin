@@ -38,11 +38,19 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 		e.stopPropagation();
 
 		const isValid = form.trigger();
-
 		if (!isValid) return null;
 
 		const formData = form.getValues();
-		testNotification(formData);
+		const currentFieldNames = dynamicFields?.map((f) => f.name) ?? [];
+
+		const filteredData = {
+			notification_type: formData.notification_type,
+			name: formData.name,
+			is_default: formData.is_default,
+			...Object.fromEntries(Object.entries(formData).filter(([key]) => currentFieldNames.includes(key))),
+		} as StoreNotificationSchema;
+
+		testNotification(filteredData);
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {

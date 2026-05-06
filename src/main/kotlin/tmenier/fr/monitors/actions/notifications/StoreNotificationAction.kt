@@ -9,6 +9,7 @@ import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelTeamsRequest
+import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelWebhookRequest
 import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.notifications.dto.NotificationContent
@@ -27,7 +28,7 @@ class StoreNotificationAction(
 
         val notification =
             if (isUpdate) {
-                NotificationsChannelEntity.findById(notificationId!!)
+                NotificationsChannelEntity.findById(notificationId)
                     ?: throw NotFoundException("Notification with id $notificationId not found")
             } else {
                 NotificationsChannelEntity().apply { id = UUID.randomUUID() }
@@ -68,6 +69,18 @@ class StoreNotificationAction(
                         NotificationContent.Slack(
                             webhookUrl = payload.webhookUrl,
                             username = payload.username,
+                        ),
+                    )
+
+                notification.content = jsonNode
+            }
+
+            is ValidNotificationChannelWebhookRequest -> {
+                val (jsonNode, _) =
+                    NotificationContentMapper.toEntity(
+                        NotificationContent.Webhook(
+                            url = payload.url,
+                            method = payload.method,
                         ),
                     )
 

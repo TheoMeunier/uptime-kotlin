@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.hibernate.validator.constraints.URL
+import tmenier.fr.monitors.enums.HttpMethodEnum
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 
 interface OnCreate
@@ -20,6 +21,7 @@ interface OnUpdate
     JsonSubTypes.Type(value = ValidNotificationChannelTeamsRequest::class, name = "TEAMS"),
     JsonSubTypes.Type(value = ValidNotificationChannelMailRequest::class, name = "MAIL"),
     JsonSubTypes.Type(value = ValidNotificationChannelSlackRequest::class, name = "SLACK"),
+    JsonSubTypes.Type(value = ValidNotificationChannelWebhookRequest::class, name = "WEBHOOK"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -45,6 +47,13 @@ data class ValidNotificationChannelTeamsRequest(
     @field:URL(message = "Invalid URL format")
     val webhookUrl: String,
     var username: String? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelWebhookRequest(
+    @field:URL(message = "Invalid URL format")
+    val url: String,
+    val method: HttpMethodEnum
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

@@ -38,6 +38,10 @@ object NotificationContentMapper {
                 objectMapper.treeToValue(node, NotificationContent.Mail::class.java)
             }
 
+            NotificationChannelsEnum.WEBHOOK -> {
+                objectMapper.treeToValue(notification.content, NotificationContent.Webhook::class.java)
+            }
+
             else -> {
                 // TODO: create default notification content
             }
@@ -50,6 +54,7 @@ object NotificationContentMapper {
                 is NotificationContent.Teams -> NotificationChannelsEnum.TEAMS
                 is NotificationContent.Slack -> NotificationChannelsEnum.SLACK
                 is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
+                is NotificationContent.Webhook -> NotificationChannelsEnum.WEBHOOK
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 
