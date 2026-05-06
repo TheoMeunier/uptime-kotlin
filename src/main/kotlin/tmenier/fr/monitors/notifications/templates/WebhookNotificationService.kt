@@ -62,27 +62,29 @@ class WebhookNotificationService : TypedNotificationInterfaces<NotificationConte
                 "message": "$escapedMessage",
                 "runAt": "$runAt"
             }
-        """.trimIndent()
+            """.trimIndent()
     }
 
     private fun sendWebhook(
         content: NotificationContent.Webhook,
         jsonPayload: String,
-    ): WebhookResponse {
-        return try {
+    ): WebhookResponse =
+        try {
             logger.info { "Sending Webhook notification to: ${content.url.take(50)}... [${content.method}]" }
             logger.debug { "Payload: $jsonPayload" }
 
-            val bodyPublisher = when (content.method) {
-                HttpMethodEnum.GET -> HttpRequest.BodyPublishers.noBody()
-                else -> HttpRequest.BodyPublishers.ofString(jsonPayload)
-            }
+            val bodyPublisher =
+                when (content.method) {
+                    HttpMethodEnum.GET -> HttpRequest.BodyPublishers.noBody()
+                    else -> HttpRequest.BodyPublishers.ofString(jsonPayload)
+                }
 
-            val requestBuilder = HttpRequest
-                .newBuilder()
-                .uri(URI.create(content.url))
-                .header("Content-Type", "application/json")
-                .method(content.method.toString().uppercase(), bodyPublisher)
+            val requestBuilder =
+                HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(content.url))
+                    .header("Content-Type", "application/json")
+                    .method(content.method.toString().uppercase(), bodyPublisher)
 
             val response = client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString())
 
@@ -109,7 +111,6 @@ class WebhookNotificationService : TypedNotificationInterfaces<NotificationConte
                 error = e.message,
             )
         }
-    }
 }
 
 data class WebhookResponse(
