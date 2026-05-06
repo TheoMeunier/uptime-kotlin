@@ -53,7 +53,7 @@ data class ValidNotificationChannelTeamsRequest(
 data class ValidNotificationChannelWebhookRequest(
     @field:URL(message = "Invalid URL format")
     val url: String,
-    val method: HttpMethodEnum
+    val method: HttpMethodEnum,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection
