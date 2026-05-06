@@ -16,7 +16,7 @@ export default function useNotificationTesting() {
 			toast.success(t('notifications.alerts.testing.success'));
 		},
 		onError: () => {
-			toast.success(t('notifications.alerts.testing.error'));
+			toast.error(t('notifications.alerts.testing.error'));
 		},
 	});
 

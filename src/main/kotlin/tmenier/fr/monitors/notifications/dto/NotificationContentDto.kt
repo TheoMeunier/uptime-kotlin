@@ -2,6 +2,7 @@ package tmenier.fr.monitors.notifications.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.quarkus.runtime.annotations.RegisterForReflection
+import tmenier.fr.monitors.enums.HttpMethodEnum
 
 @RegisterForReflection
 sealed interface NotificationContent {
@@ -9,6 +10,12 @@ sealed interface NotificationContent {
     data class Discord(
         val webhookUrl: String,
         val username: String?,
+    ) : NotificationContent
+
+    @RegisterForReflection
+    data class Webhook(
+        val method: HttpMethodEnum,
+        val url: String,
     ) : NotificationContent
 
     @RegisterForReflection

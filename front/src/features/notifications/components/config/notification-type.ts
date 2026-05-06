@@ -44,6 +44,20 @@ const NOTIFICATION_FIELDS_CONFIG = {
 			placeholder: 'Uptime kotlin',
 		},
 	],
+	[NotificationTypeEnum.WEBHOOK]: [
+		{
+			name: 'url',
+			label: i18n.t('form.label.url'),
+			input_type: 'text',
+			placeholder: 'https://example.com/webhook',
+		},
+		{
+			name: 'method',
+			label: i18n.t('form.label.method'),
+			input_type: 'select',
+			options: ['POST', 'GET'],
+		},
+	],
 	[NotificationTypeEnum.MAIL]: [
 		{
 			name: 'hostname',
