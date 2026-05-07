@@ -1,4 +1,4 @@
-name: Front CI
+name: App CI
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: front
+        working-directory: apps/app
 
     steps:
       - uses: actions/checkout@v4
