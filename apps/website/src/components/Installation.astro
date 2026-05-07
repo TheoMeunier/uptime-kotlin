@@ -1,0 +1,95 @@
+---
+// components/Installation.astro
+---
+
+<section id="installation" class="mx-auto max-w-7xl px-6 py-24">
+    <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">Get Started in Minutes</h2>
+        <p class="text-lg text-gray-600">
+            Deploy Uptime Kotlin with a single command.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Requirements */}
+        <div class="rounded-xl border border-gray-200 p-8">
+            <h3 class="text-xl font-bold mb-6">Requirements</h3>
+
+            <ul class="space-y-4">
+                <li class="flex items-start gap-3">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <div>
+                        <p class="font-semibold text-gray-900">Docker & Docker Compose</p>
+                        <p class="text-sm text-gray-600">For containerized deployment</p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <div>
+                        <p class="font-semibold text-gray-900">OpenSSL</p>
+                        <p class="text-sm text-gray-600">To generate JWT keys</p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-green-500 font-bold">✓</span>
+                    <div>
+                        <p class="font-semibold text-gray-900">PostgreSQL 17+</p>
+                        <p class="text-sm text-gray-600">Included in docker-compose</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        {/* Quick Start */}
+        <div class="rounded-xl border border-gray-200 p-8">
+            <h3 class="text-xl font-bold mb-6">Quick Start</h3>
+
+            <div class="space-y-4">
+                <div class="space-y-4">
+
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700 mb-2">1. Generate JWT keys <code
+                                class="bg-gray-100 px-2 py-1 rounded text-sm">copy past this command in your
+                            terminal</code></p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700 mb-2">2. Configuration env file
+                            <code class="bg-gray-100 px-2 py-1 rounded text-sm">nano .env</code>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700 mb-2">3. Start the stack <code
+                                class="bg-gray-100 px-2 py-1 rounded text-sm">docker compose up -d</code></p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700 mb-2">4. Access the app <span
+                                class="text-gray-600">
+                            Open <code class="bg-gray-100 px-2 py-1 rounded text-sm">localhost:8888</code>
+                        </span></p>
+                    </div>
+                </div>
+            </div>
+
+            <a
+                    href="https://github.com/TheoMeunier/uptime-kotlin#getting-started"
+                    target="_blank"
+                    class="inline-block mt-6 text-green-500 font-semibold hover:underline"
+            >
+                Full Setup Guide →
+            </a>
+        </div>
+    </div>
+
+    {/* CTA */}
+    <div class="text-center mt-12">
+        <a
+                href="https://github.com/TheoMeunier/uptime-kotlin"
+                target="_blank"
+                class="inline-block px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition"
+        >
+            ⭐ View on GitHub
+        </a>
+    </div>
+</section>

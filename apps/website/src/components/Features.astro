@@ -1,0 +1,78 @@
+---
+import {
+    Activity,
+    Bell,
+    Gauge,
+    ShieldCheck,
+    Server,
+    Workflow,
+    User2,
+} from "lucide-astro";
+
+const features = [
+    {
+        icon: Activity,
+        title: "Real-time monitoring",
+        description: "Monitor PING, TCP, DNS, HTTP and more with instant live status updates. Catch issues before your users do.",
+    },
+    {
+        icon: Bell,
+        title: "Multi-channel alerts",
+        description: "Get notified via Email, Slack, Discord, Teams, Webhook and more. Choose your channels, stay informed.",
+    },
+    {
+        icon: Gauge,
+        title: "Deep performance insights",
+        description: "Track latency, response times, uptime, and historical trends across all protocols. Data-driven decisions.",
+    },
+    {
+        icon: ShieldCheck,
+        title: "Built for reliability",
+        description: "Engineered in Kotlin from the ground up for production stability. 99.9% uptime SLA backed by robust architecture.",
+    },
+    {
+        icon: Workflow,
+        title: "Developer-first API",
+        description: "Simple REST API, webhooks, and integrations. Seamlessly embed monitoring into your CI/CD and workflows.",
+    },
+    {
+        icon: Server,
+        title: "Self-hosted & clusterable",
+        description: "Deploy with Docker today, scale with cluster mode (coming soon). Full control, zero vendor lock-in.",
+    },
+];
+---
+
+<section id="features" class="mx-auto max-w-7xl px-6 py-32">
+    <div class="mx-auto max-w-3xl text-center">
+        <h2 class="text-4xl font-black md:text-5xl">
+            Everything you need to monitor your stack
+        </h2>
+
+        <p class="mt-6 text-lg text-zinc-400">
+            A modern monitoring platform focused on developers and reliability.
+        </p>
+    </div>
+
+    <div class="mt-20 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {
+            features.map((feature) => {
+                const Icon = feature.icon;
+
+                return (
+                        <div class="card p-8 transition duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:bg-white/[0.07]">
+                            <div class="mb-6 inline-flex rounded-2xl bg-emerald-500/10 p-4 text-emerald-400">
+                                <Icon size={28}/>
+                            </div>
+
+                            <h3 class="text-2xl font-bold">{feature.title}</h3>
+
+                            <p class="mt-4 leading-relaxed text-zinc-400">
+                                {feature.description}
+                            </p>
+                        </div>
+                );
+            })
+        }
+    </div>
+</section>
