@@ -19,8 +19,8 @@ Ideal for monitoring service availability without relying on external solutions.
 <table>
   <tr>
     <td><img src="docs/images/dashboard.png" alt="dashboard" width="300"></td>
-    <td><img src="docs/images/status_page.png" alt="status page" width="300"></td>
-    <td><img src="docs/images/monitor_page.png" alt="monitor" width="300"></td>
+    <td><img src="docs/images/status-page.png" alt="status page" width="300"></td>
+    <td><img src="docs/images/monitor-page.png" alt="monitor" width="300"></td>
   </tr>
 </table>
 
