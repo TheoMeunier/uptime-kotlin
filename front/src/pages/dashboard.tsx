@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import dashboardService from '@/features/dashboard/services/dashboardService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms/table';
-import { Button } from '@/components/atoms/button';
 import { Activity, CheckCircle2, Timer, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
@@ -99,9 +98,6 @@ export default function Dashboard() {
 									{t('dashboard.description.currently_incidents')}
 								</CardDescription>
 							</div>
-							<Button variant="outline" size="sm" className="text-xs h-7">
-								Voir tous les incidents
-							</Button>
 						</div>
 					</CardHeader>
 					<CardContent>
