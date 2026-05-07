@@ -55,10 +55,6 @@ jobs:
       - name: Run Prettier
         run: npm run format:check
 
-      #- name: Run ESLint (if you have it)
-      #  run: npm run lint
-      #  continue-on-error: false
-
   build:
     name: Build
     runs-on: ubuntu-latest
