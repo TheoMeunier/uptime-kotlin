@@ -1,22 +1,22 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-    color-scheme: dark;
+	color-scheme: dark;
 }
 
 html {
-    scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 body {
-    @apply bg-white text-zinc-900 antialiased;
-    font-family: Inter, system-ui, sans-serif;
+	@apply bg-white text-zinc-900 antialiased;
+	font-family: Inter, system-ui, sans-serif;
 }
 
 .gradient-text {
-    @apply bg-gradient-to-r from-emerald-500 via-green-500 to-lime-500 bg-clip-text text-transparent;
+	@apply bg-gradient-to-r from-emerald-500 via-green-500 to-lime-500 bg-clip-text text-transparent;
 }
 
 .card {
-    @apply border border-gray-500/10 bg-white/5 backdrop-blur-xl rounded-2xl;
+	@apply border border-gray-500/10 bg-white/5 backdrop-blur-xl rounded-2xl;
 }
