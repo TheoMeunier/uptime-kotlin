@@ -1,3 +1,8 @@
+---
+import Image from "astro/components/Image.astro";
+import monitorPage from '/public/imgs/monitor-page.png';
+---
+
 <section class="relative overflow-hidden">
     <div class="mx-auto flex min-h-[95vh] max-w-7xl flex-col items-center justify-center px-6 py-24 text-center">
         <h1 class="max-w-6xl text-5xl font-black leading-[0.95] tracking-tight text-zinc-900 md:text-7xl xl:text-8xl">
@@ -74,13 +79,13 @@
                     </div>
                 </div>
 
-                <img
-                        src="/imgs/monitor-page.png"
-                        alt="Uptime Kotlin dashboard - Real-time monitoring interface"
-                        class="w-full block"
-                        loading="eager"
-                        draggable="false"
-                />
+							<Image
+								src={monitorPage}
+		            alt="Uptime Kotlin dashboard - Real-time monitoring interface"
+		            class="w-full block"
+		            loading="eager"
+		            draggable={false}
+							/>
             </div>
         </div>
     </div>
