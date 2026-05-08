@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uptime-kotlin.com/sitemap.xml
