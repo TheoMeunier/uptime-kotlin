@@ -1,4 +1,4 @@
-package tmenier.fr.auth.entities
+package tmenier.fr.databases.entities
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase

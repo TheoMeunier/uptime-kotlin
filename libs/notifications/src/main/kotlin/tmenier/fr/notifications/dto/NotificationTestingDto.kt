@@ -1,7 +1,7 @@
 package tmenier.fr.notifications.dto
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import tmenier.fr.monitors.enums.NotificationChannelsEnum
+import tmenier.fr.notifications.enums.NotificationChannelsEnum
 
 @RegisterForReflection
 data class NotificationTestingDto(

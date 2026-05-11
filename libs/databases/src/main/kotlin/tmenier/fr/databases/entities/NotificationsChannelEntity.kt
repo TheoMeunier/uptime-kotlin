@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.entities
+package tmenier.fr.databases.entities
 
 import com.fasterxml.jackson.databind.JsonNode
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion

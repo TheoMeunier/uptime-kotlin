@@ -4,14 +4,14 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.exceptions.common.NotFoundException
+import tmenier.fr.databases.entities.NotificationsChannelEntity
+import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.monitors.dtos.requests.BaseStoreNotificationRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelTeamsRequest
 import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelWebhookRequest
-import tmenier.fr.monitors.entities.NotificationsChannelEntity
-import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
 import tmenier.fr.monitors.notifications.dto.NotificationContent
 import java.util.UUID
 

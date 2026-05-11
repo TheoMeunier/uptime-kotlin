@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.entities.converts
+package tmenier.fr.databases.converts
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Convert

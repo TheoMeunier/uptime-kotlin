@@ -1,12 +1,14 @@
 package tmenier.fr.setup.actions
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.auth.entities.UserEntity
+import tmenier.fr.databases.repositories.UserRepository
 
 @ApplicationScoped
-class GetStatusApplicationAction {
+class GetStatusApplicationAction(
+    private val userRepository: UserRepository,
+) {
     fun execute(): Boolean {
-        val totalUser = UserEntity.count()
+        val totalUser = userRepository.count()
 
         return totalUser.toInt() > 0
     }

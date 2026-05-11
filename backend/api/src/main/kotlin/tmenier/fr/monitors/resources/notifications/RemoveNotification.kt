@@ -10,7 +10,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.utils.logger
-import tmenier.fr.monitors.entities.NotificationsChannelEntity
+import tmenier.fr.databases.entities.NotificationsChannelEntity
 import java.util.UUID
 
 @Path("/api/notifications/{id}/remove")
