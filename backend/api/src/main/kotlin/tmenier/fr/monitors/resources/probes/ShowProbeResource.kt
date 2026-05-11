@@ -11,11 +11,11 @@ import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.exceptions.common.NotFoundException
+import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
+import tmenier.fr.databases.mappers.toProbeWithNotificationsDTO
+import tmenier.fr.databases.mappers.toShowDtp
 import tmenier.fr.monitors.dtos.responses.ProbeUptimeDTO
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.entities.ProbesMonitorsLogEntity
-import tmenier.fr.monitors.entities.mapper.toProbeWithNotificationsDTO
-import tmenier.fr.monitors.entities.mapper.toShowDtp
 import java.time.LocalDateTime
 import java.util.UUID
 

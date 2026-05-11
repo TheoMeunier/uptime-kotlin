@@ -27,5 +27,5 @@ class JwtService {
             .claim("email", email)
             .sign()
 
-    fun generateRefreshToken(): String = UUID.randomUUID().toString()
+    fun generateRefreshToken(): UUID = UUID.randomUUID()
 }

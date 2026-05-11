@@ -1,12 +1,12 @@
-package tmenier.fr.monitors.entities.mapper
+package tmenier.fr.databases.mappers
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.databases.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.dtos.responses.ListingNotificationsDto
 import tmenier.fr.monitors.dtos.responses.ShowNotificationsDto
-import tmenier.fr.monitors.entities.NotificationsChannelEntity
 import tmenier.fr.monitors.notifications.dto.NotificationContent
 
 object NotificationContentMapper {

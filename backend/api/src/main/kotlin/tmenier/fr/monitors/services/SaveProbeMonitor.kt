@@ -2,8 +2,8 @@ package tmenier.fr.monitors.services
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.entities.ProbesMonitorsLogEntity
+import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.time.LocalDateTime

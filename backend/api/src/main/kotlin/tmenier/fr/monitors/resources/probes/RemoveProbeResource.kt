@@ -8,7 +8,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.databases.entities.ProbesEntity
 import java.util.UUID
 
 @Path("/api/probes/{probeId}/remove")

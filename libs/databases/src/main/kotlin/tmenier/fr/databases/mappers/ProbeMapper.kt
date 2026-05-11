@@ -1,8 +1,9 @@
-package tmenier.fr.monitors.entities.mapper
+package tmenier.fr.databases.mappers
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.dtos.responses.ProbeDTO
 import tmenier.fr.monitors.dtos.responses.ProbeListDTO
@@ -11,7 +12,6 @@ import tmenier.fr.monitors.dtos.responses.ProbeShowDTO
 import tmenier.fr.monitors.dtos.responses.ProbeStatusDTO
 import tmenier.fr.monitors.dtos.responses.ProbeUptimeDTO
 import tmenier.fr.monitors.dtos.responses.ProbeWithNotificationsDTO
-import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeProtocol
 
 object ProbeContentMapper {

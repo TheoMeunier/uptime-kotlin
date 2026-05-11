@@ -3,39 +3,29 @@ package tmenier.fr.auth.actions
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.auth.dtos.requests.LoginRequest
 import tmenier.fr.auth.dtos.responses.LoginResponse
-import tmenier.fr.auth.entities.RefreshTokenEntity
-import tmenier.fr.auth.entities.UserEntity
 import tmenier.fr.auth.services.JwtService
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
-import tmenier.fr.common.exceptions.common.NotFoundException
-import java.time.LocalDateTime
-import java.util.UUID
+import tmenier.fr.databases.repositories.RefreshTokenRepository
+import tmenier.fr.databases.repositories.UserRepository
 
 @ApplicationScoped
 class LoginAction(
+    val userRepository: UserRepository,
+    val refreshTokenRepository: RefreshTokenRepository,
     val passwordService: BcryptService,
     val jwtService: JwtService,
 ) {
     fun execute(payload: LoginRequest): LoginResponse {
-        val user =
-            UserEntity.findByEmail(payload.email)
-                ?: throw NotFoundException("User not found with email: ${payload.email}")
+        val user = userRepository.findByEmail(payload.email)
 
         if (passwordService.verifyPassword(
                 payload.password,
                 user.password,
             )
         ) {
-            val refreshToken = UUID.randomUUID()
-
-            RefreshTokenEntity()
-                .apply {
-                    id = UUID.randomUUID()
-                    this.user = user
-                    this.refreshToken = refreshToken
-                    expiredAt = LocalDateTime.now().plusDays(3)
-                }.persist()
+            val refreshToken = jwtService.generateRefreshToken()
+            refreshTokenRepository.storeRefreshToken(refreshToken, user)
 
             return LoginResponse(
                 token = jwtService.generateJwt(user.id, user.name, user.email),

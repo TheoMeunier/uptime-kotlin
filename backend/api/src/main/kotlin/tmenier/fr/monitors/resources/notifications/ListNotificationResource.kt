@@ -7,8 +7,8 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.monitors.entities.NotificationsChannelEntity
-import tmenier.fr.monitors.entities.mapper.toListingsDTO
+import tmenier.fr.databases.entities.NotificationsChannelEntity
+import tmenier.fr.databases.mappers.toListingsDTO
 
 @Path("/api/notifications")
 @Produces(MediaType.APPLICATION_JSON)
