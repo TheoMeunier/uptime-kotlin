@@ -1,0 +1,17 @@
+package tmenier.fr.schedulers
+
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Instance
+import tmenier.fr.monitors.enums.ProbeProtocol
+
+@ApplicationScoped
+class ProbeSchedulerFactory(
+    private val probeProtocols: Instance<ProbeSchedulerInterface>,
+) {
+    fun getProtocol(protocolType: ProbeProtocol): ProbeSchedulerInterface? =
+        probeProtocols
+            .stream()
+            .filter { it.getProtocolType() == protocolType.name }
+            .findFirst()
+            .orElse(null)
+}
