@@ -1,21 +1,25 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
-import jakarta.ws.rs.NotFoundException
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
-import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.dtos.ProbeOnOffDto
+import tmenier.fr.databases.repositories.ProbeRepository
 import java.util.UUID
 
 @ApplicationScoped
-class OnOffProbeMonitorAction {
+class OnOffProbeMonitorAction(
+    val probeRepository: ProbeRepository
+) {
     fun execute(
         probeId: UUID,
         enabled: Boolean,
     ) {
-        val probe = ProbesEntity.findById(probeId) ?: throw NotFoundException("Probe not found")
+        val dto = ProbeOnOffDto(
+            id = probeId,
+            enabled = enabled,
+            status = if (enabled) ProbeMonitorLogStatus.SUCCESS else ProbeMonitorLogStatus.PAUSE,
+        )
 
-        probe.enabled = enabled
-        probe.status = if (enabled) ProbeMonitorLogStatus.SUCCESS else ProbeMonitorLogStatus.PAUSE
-        probe.persist()
+        probeRepository.onOff(dto)
     }
 }

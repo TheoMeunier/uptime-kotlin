@@ -12,9 +12,9 @@ import java.util.UUID
 @ApplicationScoped
 class StoreNotificationAction(
     private val notificationChanelRepository: NotificationRepository,
-    private val getNotificationContentService: ResolveNotificationContentService,
+    private val getNotificationContentService: ResolveNotificationContentService
+) {
 
-    ) {
     @Transactional
     fun execute(
         payload: BaseStoreNotificationRequest,

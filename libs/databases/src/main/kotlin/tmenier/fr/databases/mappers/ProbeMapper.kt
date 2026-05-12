@@ -12,6 +12,7 @@ import tmenier.fr.databases.dtos.ProbeShowDTO
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
+import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
 
 object ProbeContentMapper {
@@ -60,6 +61,18 @@ object ProbeContentMapper {
 }
 
 object ProbeMapper {
+
+    fun toEntity(dto: StoreProbeDto): ProbesEntity = ProbesEntity().apply {
+        id = dto.id
+        name = dto.name
+        interval = dto.interval
+        retry = dto.retry
+        intervalRetry = dto.intervalRetry
+        enabled = dto.enabled
+        protocol = dto.protocol
+        description = dto.description
+        content = ProbeContentMapper.toEntity(dto.content).first
+    }
 
     fun toProbeListDto(entity: ProbesEntity): ProbeListDTO {
         val content = ProbeContentMapper.toDto(entity)

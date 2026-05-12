@@ -1,106 +1,39 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.databases.dtos.ProbeContent
-import tmenier.fr.databases.entities.ProbesEntity
-import tmenier.fr.databases.mappers.ProbeContentMapper
-import tmenier.fr.databases.repositories.NotificationRepository
+import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
-import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
-import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
-import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
-import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
+import tmenier.fr.monitors.services.ResolveMonitorContentService
 import java.util.UUID
 
 @ApplicationScoped
 class StoreProbeAction(
-    private val notificationRepository: NotificationRepository,
-    private val probeRepository: ProbeRepository
+    private val probeRepository: ProbeRepository,
+    private val getProbeContentService: ResolveMonitorContentService
 ) {
     fun execute(
         payload: BaseStoreProbeRequest,
         probeId: UUID? = null,
     ) {
-        val probe =
-            probeId?.let {
-                probeRepository.findById(it)
-            } ?: ProbesEntity().apply { id = UUID.randomUUID() }
+        val isUpdate = probeId != null
 
-        probe.name = payload.name
-        probe.interval = payload.interval!!
-        probe.intervalRetry = payload.intervalRetry!!
-        probe.retry = payload.retry!!
-        probe.protocol = payload.protocol
-        probe.enabled = payload.enabled == true
-        probe.description = payload.description
+        val dto = StoreProbeDto(
+            id = probeId ?: UUID.randomUUID(),
+            name = payload.name,
+            interval = payload.interval!!,
+            intervalRetry = payload.intervalRetry!!,
+            retry = payload.retry!!,
+            protocol = payload.protocol,
+            enabled = payload.enabled == true,
+            description = payload.description,
+            content = getProbeContentService.resolve(payload)
+        )
 
-        // save notification
-        val notificationFromDb = notificationRepository.findByIds(payload.notifications)
-        probeRepository.attach(notificationFromDb, probe)
-
-
-        when (payload) {
-            is ValidProbeProtocolHttpRequest -> {
-                val (jsonNode, _) =
-                    ProbeContentMapper.toEntity(
-                        ProbeContent.Http(
-                            url = payload.url,
-                            notificationCertified = payload.notificationCertificate,
-                            ignoreCertificateErrors = payload.ignoreCertificateErrors,
-                            httpCodeAllowed = payload.httpCodeAllowed,
-                        ),
-                    )
-
-                probe.content = jsonNode
-            }
-
-            is ValidProbeProtocolTcpRequest -> {
-                val (jsonNode, _) =
-                    ProbeContentMapper.toEntity(
-                        ProbeContent.Tcp(
-                            url = payload.url,
-                            tcpPort = payload.tcpPort,
-                        ),
-                    )
-
-                probe.content = jsonNode
-            }
-
-            is ValidProbeProtocolDnsRequest -> {
-                val (jsonNode, _) =
-                    ProbeContentMapper.toEntity(
-                        ProbeContent.Dns(
-                            hostname = payload.hostname,
-                            dnsPort = payload.dnsPort,
-                            dnsServer = payload.dnsServer,
-                            recordType = payload.recordType,
-                        ),
-                    )
-
-                probe.content = jsonNode
-            }
-
-            is ValidProbeProtocolPingRequest -> {
-                val (jsonNode, _) =
-                    ProbeContentMapper.toEntity(
-                        ProbeContent.Ping(
-                            ip = payload.ip,
-                            pingMaxPacket = payload.pingMaxPacket,
-                            pingSize = payload.pingSize,
-                            pingDelay = payload.pingDelay,
-                            pingNumericOutput = payload.pingNumericOutput,
-                        ),
-                    )
-
-                probe.content = jsonNode
-            }
-
-            else -> {
-                throw IllegalArgumentException("Invalid probe protocol: ${payload.protocol}")
-            }
+        if (isUpdate) {
+            probeRepository.update(dto, payload.notifications)
+        } else {
+            probeRepository.save(dto, payload.notifications)
         }
-
-        probe.persist()
     }
 }
