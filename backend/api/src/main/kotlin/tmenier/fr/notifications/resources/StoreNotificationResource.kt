@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources.notifications
+package tmenier.fr.notifications.resources
 
 import io.quarkus.security.Authenticated
 import jakarta.validation.Valid
@@ -9,9 +9,9 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.monitors.actions.notifications.StoreNotificationAction
-import tmenier.fr.monitors.dtos.requests.BaseStoreNotificationRequest
-import tmenier.fr.monitors.dtos.requests.OnCreate
+import tmenier.fr.notifications.actions.StoreNotificationAction
+import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
+import tmenier.fr.notifications.requests.OnCreate
 
 @Path("/api/notifications/new")
 @Produces(MediaType.APPLICATION_JSON)

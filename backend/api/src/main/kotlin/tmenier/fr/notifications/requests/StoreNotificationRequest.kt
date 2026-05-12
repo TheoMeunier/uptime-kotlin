@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.dtos.requests
+package tmenier.fr.notifications.requests
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

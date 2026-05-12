@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.dtos.requests
+package tmenier.fr.monitors.requests
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.validation.constraints.NotNull
