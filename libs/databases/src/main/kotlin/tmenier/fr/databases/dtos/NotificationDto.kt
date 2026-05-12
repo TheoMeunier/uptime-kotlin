@@ -1,7 +1,8 @@
-package tmenier.fr.monitors.dtos.responses
+package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import tmenier.fr.monitors.notifications.dto.NotificationContent
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
+import tmenier.fr.notifications.dto.NotificationContent
 import java.time.LocalDateTime
 import java.util.UUID
 

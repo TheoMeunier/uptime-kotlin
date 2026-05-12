@@ -10,19 +10,20 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.common.exceptions.common.NotFoundException
-import tmenier.fr.databases.entities.ProbesEntity
-import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
-import tmenier.fr.databases.mappers.toProbeWithNotificationsDTO
-import tmenier.fr.databases.mappers.toShowDtp
-import tmenier.fr.monitors.dtos.responses.ProbeUptimeDTO
+import tmenier.fr.databases.dtos.ProbeUptimeDTO
+import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.ProbeMonitorRepository
+import tmenier.fr.databases.repositories.ProbeRepository
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Path("/api/probes/{probeId}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ShowProbeResource {
+class ShowProbeResource(
+    private val probeRepository: ProbeRepository,
+    private val probeMonitorRepository: ProbeMonitorRepository,
+) {
     @GET
     @Authenticated
     fun show(
@@ -32,10 +33,8 @@ class ShowProbeResource {
         val uuid = UUID.fromString(probeId)
 
         if (hours == 0L) {
-            val probeEntity =
-                ProbesEntity.findById(uuid) ?: throw NotFoundException("Probe not found")
-
-            return Response.ok(probeEntity.toProbeWithNotificationsDTO()).build()
+            val probeEntity = probeRepository.findById(uuid)
+            return Response.ok(ProbeMapper.toProbeWithNotificationsDto(probeEntity)).build()
         }
 
         val validHours = setOf(1L, 3L, 6L, 24L, 168L)
@@ -43,12 +42,10 @@ class ShowProbeResource {
             throw BadRequestException("hours must be one of: 1, 3, 6, 24, 168")
         }
 
-        val probeEntity =
-            ProbesEntity.findByIdWithLogs(uuid, hours)
-                ?: throw NotFoundException("Probe not found")
+        val probeEntity = probeRepository.findByIdWithLogs(uuid, hours)
         val uptimes = computeUptimes(uuid)
 
-        return Response.ok(probeEntity.toShowDtp().copy(uptimes = uptimes)).build()
+        return Response.ok(ProbeMapper.toShowDto(probeEntity, uptimes)).build()
     }
 
     private fun computeUptimes(probeId: UUID): ProbeUptimeDTO {
@@ -65,8 +62,8 @@ class ShowProbeResource {
         from: LocalDateTime,
         to: LocalDateTime,
     ): Double {
-        val total = ProbesMonitorsLogEntity.countByProbeAndPeriod(probeId, from, to)
-        val success = ProbesMonitorsLogEntity.countSuccessByProbeAndPeriod(probeId, from, to)
+        val total = probeMonitorRepository.countByProbeAndPeriod(probeId, from, to)
+        val success = probeMonitorRepository.countSuccessByProbeAndPeriod(probeId, from, to)
         if (total == 0L) return 100.0
         return (success.toDouble() / total.toDouble()) * 100.0
     }

@@ -18,8 +18,8 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UpdateTimestamp
 import org.hibernate.type.SqlTypes
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import tmenier.fr.monitors.enums.ProbeProtocol
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.monitors.ProbeProtocol
 import java.time.LocalDateTime
 import java.util.UUID
 

@@ -1,8 +1,8 @@
-package tmenier.fr.monitors.dtos.propbes
+package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import tmenier.fr.monitors.enums.HttpCodeEnum
-import tmenier.fr.monitors.enums.RecordDnsEnum
+import tmenier.fr.common.enums.monitors.HttpCodeEnum
+import tmenier.fr.common.enums.monitors.RecordDnsEnum
 
 @RegisterForReflection
 sealed interface ProbeContent {

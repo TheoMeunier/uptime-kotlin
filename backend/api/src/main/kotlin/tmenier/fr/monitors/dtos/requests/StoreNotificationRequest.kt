@@ -8,7 +8,8 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.hibernate.validator.constraints.URL
-import tmenier.fr.monitors.enums.HttpMethodEnum
+import tmenier.fr.common.enums.monitors.HttpMethodEnum
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 
 interface OnCreate
 

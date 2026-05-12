@@ -1,7 +1,7 @@
 package tmenier.fr.schedulers.dto
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import java.time.Instant
 import java.time.LocalDateTime
 

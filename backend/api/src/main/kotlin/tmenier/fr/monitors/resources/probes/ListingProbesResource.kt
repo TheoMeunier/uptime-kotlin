@@ -7,28 +7,20 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.databases.entities.ProbesEntity
-import tmenier.fr.databases.mappers.ProbeContentMapper
-import tmenier.fr.databases.mappers.toUrl
-import tmenier.fr.monitors.dtos.responses.ProbeListDTO
+import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.ProbeRepository
 
 @Path("/api/probes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ListingProbesResource {
+class ListingProbesResource(
+    private val probeRepository: ProbeRepository,
+) {
+
     @GET
     @Authenticated
     fun list(): Response {
-        val probes =
-            ProbesEntity.getAllProbes().map {
-                ProbeListDTO(
-                    it.id,
-                    it.name,
-                    it.description,
-                    ProbeContentMapper.toDto(it).toUrl(),
-                    it.status,
-                )
-            }
+        val probes = probeRepository.getAll().map { ProbeMapper.toProbeListDto(it) }
 
         return Response.ok(probes).build()
     }

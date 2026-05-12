@@ -2,7 +2,7 @@ package tmenier.fr.notifications
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.inject.Instance
-import tmenier.fr.notifications.enums.NotificationChannelsEnum
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 
 @ApplicationScoped
 class NotificationFactory(

@@ -1,11 +1,11 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.common.exceptions.common.NotFoundException
-import tmenier.fr.databases.entities.NotificationsChannelEntity
+import tmenier.fr.databases.dtos.ProbeContent
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
-import tmenier.fr.monitors.dtos.propbes.ProbeContent
+import tmenier.fr.databases.repositories.NotificationRepository
+import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolDnsRequest
 import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolHttpRequest
@@ -14,14 +14,17 @@ import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolTcpRequest
 import java.util.UUID
 
 @ApplicationScoped
-class StoreProbeAction {
+class StoreProbeAction(
+    private val notificationRepository: NotificationRepository,
+    private val probeRepository: ProbeRepository
+) {
     fun execute(
         payload: BaseStoreProbeRequest,
         probeId: UUID? = null,
     ) {
         val probe =
             probeId?.let {
-                ProbesEntity.findById(it) ?: throw NotFoundException("Probe with id $probeId not found")
+                probeRepository.findById(it)
             } ?: ProbesEntity().apply { id = UUID.randomUUID() }
 
         probe.name = payload.name
@@ -33,8 +36,9 @@ class StoreProbeAction {
         probe.description = payload.description
 
         // save notification
-        val notificationFromDb = NotificationsChannelEntity.findByIds(payload.notifications)
-        probe.notifications.addAll(notificationFromDb)
+        val notificationFromDb = notificationRepository.findByIds(payload.notifications)
+        probeRepository.attach(notificationFromDb, probe)
+
 
         when (payload) {
             is ValidProbeProtocolHttpRequest -> {

@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.enums
+package tmenier.fr.common.enums.monitors
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue

@@ -1,4 +1,4 @@
-package tmenier.fr.notifications.enums
+package tmenier.fr.common.enums.notifications
 
 enum class NotificationChannelsEnum {
     DISCORD,
