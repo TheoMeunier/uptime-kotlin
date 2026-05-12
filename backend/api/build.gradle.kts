@@ -7,12 +7,13 @@ dependencies {
     implementation(project(":libs:databases"))
     implementation(project(":libs:scheduler"))
     implementation(project(":libs:notifications"))
-    
+
     // Quarkus core
     implementation("io.quarkus:quarkus-resteasy-jackson")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
+    implementation("io.quarkus:quarkus-hibernate-validator")
 
     // Monitoring
     implementation("io.quarkus:quarkus-smallrye-health")
