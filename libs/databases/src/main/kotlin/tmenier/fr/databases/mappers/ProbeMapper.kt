@@ -3,16 +3,16 @@ package tmenier.fr.databases.mappers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.databases.dtos.ProbeContent
+import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.databases.dtos.ProbeListDTO
+import tmenier.fr.databases.dtos.ProbeMonitorDTO
+import tmenier.fr.databases.dtos.ProbeShowDTO
+import tmenier.fr.databases.dtos.ProbeStatusDTO
+import tmenier.fr.databases.dtos.ProbeUptimeDTO
+import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
 import tmenier.fr.databases.entities.ProbesEntity
-import tmenier.fr.monitors.dtos.propbes.ProbeContent
-import tmenier.fr.monitors.dtos.responses.ProbeDTO
-import tmenier.fr.monitors.dtos.responses.ProbeListDTO
-import tmenier.fr.monitors.dtos.responses.ProbeMonitorDTO
-import tmenier.fr.monitors.dtos.responses.ProbeShowDTO
-import tmenier.fr.monitors.dtos.responses.ProbeStatusDTO
-import tmenier.fr.monitors.dtos.responses.ProbeUptimeDTO
-import tmenier.fr.monitors.dtos.responses.ProbeWithNotificationsDTO
-import tmenier.fr.monitors.enums.ProbeProtocol
 
 object ProbeContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
@@ -49,89 +49,114 @@ object ProbeContentMapper {
 
         return jsonNode to type
     }
+
+    fun toUrl(content: ProbeContent): String =
+        when (content) {
+            is ProbeContent.Http -> content.url
+            is ProbeContent.Dns -> content.hostname
+            is ProbeContent.Tcp -> "${content.url}:${content.tcpPort}"
+            is ProbeContent.Ping -> content.ip
+        }
 }
 
-fun ProbesEntity.toProbeWithNotificationsDTO() =
-    ProbeWithNotificationsDTO(
-        probe =
-            ProbeDTO(
-                id = id,
-                name = name,
-                interval = interval,
-                timeout = timeout,
-                retry = retry,
-                intervalRetry = intervalRetry,
-                enabled = enabled,
-                protocol = protocol.name,
-                description = description,
-                lastRun = lastRun,
-                status = status,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-                content = ProbeContentMapper.toDto(this),
-            ),
-        notifications = notifications.map { it.id },
-    )
+object ProbeMapper {
 
-fun ProbeContent.toUrl(): String =
-    when (this) {
-        is ProbeContent.Http -> url
-        is ProbeContent.Dns -> hostname
-        is ProbeContent.Tcp -> "$url:$tcpPort"
-        is ProbeContent.Ping -> ip
+    fun toProbeListDto(entity: ProbesEntity): ProbeListDTO {
+        val content = ProbeContentMapper.toDto(entity)
+
+        return ProbeListDTO(
+            id = entity.id,
+            name = entity.name,
+            url = ProbeContentMapper.toUrl(content),
+            description = entity.description,
+            status = entity.status,
+        )
     }
 
-fun ProbesEntity.toShowDtp(uptimes: ProbeUptimeDTO? = null) =
-    ProbeShowDTO(
-        probe =
-            ProbeDTO(
-                id = id,
-                name = name,
-                interval = interval,
-                timeout = timeout,
-                retry = retry,
-                intervalRetry = intervalRetry,
-                enabled = enabled,
-                protocol = protocol.name,
-                description = description,
-                lastRun = lastRun,
-                status = status,
-                content = ProbeContentMapper.toDto(this),
-                url = ProbeContentMapper.toDto(this).toUrl(),
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-            ),
-        monitors =
-            probesMonitorLogs.map {
-                ProbeMonitorDTO(
-                    id = it.id,
-                    status = it.status,
-                    responseTime = it.responseTime,
-                    message = it.message,
-                    runAt = it.runAt,
-                )
-            },
-        uptimes = uptimes,
-    )
+    fun toProbeWithNotificationsDto(entity: ProbesEntity): ProbeWithNotificationsDTO {
+        val content = ProbeContentMapper.toDto(entity)
 
-fun ProbesEntity.toStatusDto() =
-    ProbeStatusDTO(
-        probe =
-            ProbeListDTO(
-                id = id,
-                name = name,
-                url = ProbeContentMapper.toDto(this).toUrl(),
-                description = description,
-                status = status,
-            ),
-        monitors =
-            probesMonitorLogs.map {
-                ProbeMonitorDTO(
-                    id = it.id,
-                    status = it.status,
-                    responseTime = it.responseTime,
-                    message = it.message,
-                    runAt = it.runAt,
-                )
-            },
-    )
+        return ProbeWithNotificationsDTO(
+            probe =
+                ProbeDTO(
+                    id = entity.id,
+                    name = entity.name,
+                    interval = entity.interval,
+                    timeout = entity.timeout,
+                    retry = entity.retry,
+                    intervalRetry = entity.intervalRetry,
+                    enabled = entity.enabled,
+                    protocol = entity.protocol.name,
+                    description = entity.description,
+                    lastRun = entity.lastRun,
+                    status = entity.status,
+                    createdAt = entity.createdAt,
+                    updatedAt = entity.updatedAt,
+                    content = ProbeContentMapper.toDto(entity),
+                ),
+            notifications = entity.notifications.map { it.id },
+        )
+    }
+
+    fun toShowDto(entity: ProbesEntity, uptimes: ProbeUptimeDTO? = null): ProbeShowDTO {
+        val content = ProbeContentMapper.toDto(entity)
+
+        return ProbeShowDTO(
+            probe =
+                ProbeDTO(
+                    id = entity.id,
+                    name = entity.name,
+                    interval = entity.interval,
+                    timeout = entity.timeout,
+                    retry = entity.retry,
+                    intervalRetry = entity.intervalRetry,
+                    enabled = entity.enabled,
+                    protocol = entity.protocol.name,
+                    description = entity.description,
+                    lastRun = entity.lastRun,
+                    status = entity.status,
+                    content = ProbeContentMapper.toDto(entity),
+                    url = ProbeContentMapper.toUrl(content),
+                    createdAt = entity.createdAt,
+                    updatedAt = entity.updatedAt,
+                ),
+            monitors =
+                entity.probesMonitorLogs.map {
+                    ProbeMonitorDTO(
+                        id = it.id,
+                        status = it.status,
+                        responseTime = it.responseTime,
+                        message = it.message,
+                        runAt = it.runAt,
+                    )
+                },
+            uptimes = uptimes,
+        )
+    }
+
+    fun toStatusDto(entity: ProbesEntity): ProbeStatusDTO {
+        val content = ProbeContentMapper.toDto(entity)
+
+        return ProbeStatusDTO(
+            probe =
+                ProbeListDTO(
+                    id = entity.id,
+                    name = entity.name,
+                    url = ProbeContentMapper.toUrl(content),
+                    description = entity.description,
+                    status = entity.status,
+                ),
+            monitors =
+                entity.probesMonitorLogs.map {
+                    ProbeMonitorDTO(
+                        id = it.id,
+                        status = it.status,
+                        responseTime = it.responseTime,
+                        message = it.message,
+                        runAt = it.runAt,
+                    )
+                },
+        )
+    }
+}
+

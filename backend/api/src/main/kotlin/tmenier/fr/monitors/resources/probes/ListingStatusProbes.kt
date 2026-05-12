@@ -6,19 +6,17 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.databases.entities.ProbesEntity
-import tmenier.fr.databases.mappers.toStatusDto
+import tmenier.fr.databases.repositories.ProbeRepository
 
 @Path("/api/probes/status")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ListingStatusProbes {
+class ListingStatusProbes(
+    private val probeRepository: ProbeRepository
+) {
     @GET
     fun list(): Response {
-        val probes =
-            ProbesEntity.getProbesLastHour().map {
-                it.toStatusDto()
-            }
+        val probes = probeRepository.getProbesLastHour()
 
         return Response.ok(probes).build()
     }

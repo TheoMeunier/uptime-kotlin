@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.enums
+package tmenier.fr.common.enums.monitors
 
 enum class HttpMethodEnum {
     GET,

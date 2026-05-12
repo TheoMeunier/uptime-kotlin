@@ -1,8 +1,7 @@
-package tmenier.fr.monitors.dtos.responses
+package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import tmenier.fr.monitors.dtos.propbes.ProbeContent
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import java.time.LocalDateTime
 import java.util.UUID
 

@@ -5,6 +5,8 @@ plugins {
 dependencies {
     testImplementation(kotlin("test"))
 
+    implementation(project(":libs:common"))
+
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
     implementation("io.quarkus:quarkus-hibernate-validator")

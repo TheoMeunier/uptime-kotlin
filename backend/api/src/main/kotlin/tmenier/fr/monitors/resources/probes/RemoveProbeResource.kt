@@ -8,19 +8,22 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.repositories.ProbeRepository
 import java.util.UUID
 
 @Path("/api/probes/{probeId}/remove")
 @Produces(MediaType.APPLICATION_JSON)
-class RemoveProbeResource {
+class RemoveProbeResource(
+    private val probeRepository: ProbeRepository,
+) {
     @POST
     @Authenticated
     @Transactional
     fun removeProbe(
         @PathParam("probeId") probeId: String,
     ): Response {
-        ProbesEntity.delete(UUID.fromString(probeId))
+        probeRepository.delete(UUID.fromString(probeId))
+
         return Response.noContent().build()
     }
 }
