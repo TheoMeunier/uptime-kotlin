@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources.notifications
+package tmenier.fr.notifications.resources
 
 import io.quarkus.security.Authenticated
 import jakarta.ws.rs.Consumes
@@ -8,18 +8,18 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.databases.entities.NotificationsChannelEntity
-import tmenier.fr.databases.mappers.toListingsDTO
+import tmenier.fr.databases.mappers.toShowDto
 
-@Path("/api/notifications")
+@Path("/api/notifications/settings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ListNotificationResource {
+class ListSettingNotificationResource {
     @GET
     @Authenticated
-    fun list(): Response {
+    fun listSettings(): Response {
         val notifications =
             NotificationsChannelEntity.getAll().map {
-                it.toListingsDTO()
+                it.toShowDto()
             }
 
         return Response.ok(notifications).build()

@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources.probes
+package tmenier.fr.notifications.resources
 
 import io.quarkus.security.Authenticated
 import jakarta.transaction.Transactional
@@ -9,22 +9,22 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.monitors.actions.StoreProbeAction
-import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
+import tmenier.fr.notifications.actions.TestingNotificationAction
+import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 
-@Path("/api/probes/new")
+@Path("/api/notifications/testing")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class CreateProbeResource(
-    private val storeProbeAction: StoreProbeAction,
+class TestingNotificationResource(
+    private val testingNotificationAction: TestingNotificationAction,
 ) {
     @POST
     @Authenticated
     @Transactional
     fun store(
-        @Valid payload: BaseStoreProbeRequest,
+        @Valid payload: BaseStoreNotificationRequest,
     ): Response {
-        storeProbeAction.execute(payload)
+        testingNotificationAction.execute(payload)
 
         return Response.ok().build()
     }

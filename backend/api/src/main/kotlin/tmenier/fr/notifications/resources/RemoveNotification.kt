@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources.notifications
+package tmenier.fr.notifications.resources
 
 import io.quarkus.security.Authenticated
 import jakarta.transaction.Transactional

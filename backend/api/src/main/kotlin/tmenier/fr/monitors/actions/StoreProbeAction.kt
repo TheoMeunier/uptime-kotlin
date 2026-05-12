@@ -6,11 +6,11 @@ import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.repositories.NotificationRepository
 import tmenier.fr.databases.repositories.ProbeRepository
-import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolDnsRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolHttpRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolPingRequest
-import tmenier.fr.monitors.dtos.requests.ValidProbeProtocolTcpRequest
+import tmenier.fr.monitors.requests.BaseStoreProbeRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
 import java.util.UUID
 
 @ApplicationScoped

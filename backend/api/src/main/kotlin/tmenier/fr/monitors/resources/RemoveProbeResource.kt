@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources.probes
+package tmenier.fr.monitors.resources
 
 import io.quarkus.security.Authenticated
 import jakarta.transaction.Transactional

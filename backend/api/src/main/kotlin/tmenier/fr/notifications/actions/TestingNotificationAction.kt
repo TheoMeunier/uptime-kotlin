@@ -1,15 +1,15 @@
-package tmenier.fr.monitors.actions.notifications
+package tmenier.fr.notifications.actions
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.monitors.dtos.requests.BaseStoreNotificationRequest
-import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelDiscordRequest
-import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelMailRequest
-import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelSlackRequest
-import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelTeamsRequest
-import tmenier.fr.monitors.dtos.requests.ValidNotificationChannelWebhookRequest
 import tmenier.fr.monitors.notifications.NotificationService
 import tmenier.fr.monitors.notifications.dto.NotificationContent
 import tmenier.fr.monitors.notifications.dto.NotificationTestingDto
+import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelTeamsRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelWebhookRequest
 
 @ApplicationScoped
 class TestingNotificationAction(

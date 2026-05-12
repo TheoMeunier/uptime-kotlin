@@ -1,4 +1,4 @@
-package tmenier.fr.monitors.resources.probes
+package tmenier.fr.monitors.resources
 
 import io.quarkus.security.Authenticated
 import jakarta.transaction.Transactional
@@ -10,24 +10,25 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.monitors.actions.StoreProbeAction
-import tmenier.fr.monitors.dtos.requests.BaseStoreProbeRequest
+import tmenier.fr.monitors.actions.OnOffProbeMonitorAction
+import tmenier.fr.monitors.requests.OnOffRequest
 import java.util.UUID
 
-@Path("/api/probes/{probeId}/update")
+@Path("/api/probes/{probeId}/update-on-off")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class UpdateProbeResource(
-    private val storeProbeAction: StoreProbeAction,
+class OnOffMonitorProbeResource(
+    private val onOffProbeMonitorAction: OnOffProbeMonitorAction,
 ) {
     @POST
     @Authenticated
     @Transactional
-    fun store(
-        @PathParam("probeId") probeId: UUID,
-        @Valid payload: BaseStoreProbeRequest,
+    fun onOffProbeMonitor(
+        @PathParam("probeId") probeId: String,
+        @Valid payload: OnOffRequest,
     ): Response {
-        storeProbeAction.execute(payload, probeId)
+        onOffProbeMonitorAction.execute(UUID.fromString(probeId), payload.enabled)
+
         return Response.ok().build()
     }
 }
