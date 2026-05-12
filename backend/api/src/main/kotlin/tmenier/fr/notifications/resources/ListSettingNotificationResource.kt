@@ -7,20 +7,19 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.databases.entities.NotificationsChannelEntity
-import tmenier.fr.databases.mappers.toShowDto
+import tmenier.fr.databases.mappers.NotificationMapper
+import tmenier.fr.databases.repositories.NotificationRepository
 
 @Path("/api/notifications/settings")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class ListSettingNotificationResource {
+class ListSettingNotificationResource(
+    private val notificationRepository: NotificationRepository
+) {
     @GET
     @Authenticated
     fun listSettings(): Response {
-        val notifications =
-            NotificationsChannelEntity.getAll().map {
-                it.toShowDto()
-            }
+        val notifications = notificationRepository.getAll().map { NotificationMapper.toShowDto(it) }
 
         return Response.ok(notifications).build()
     }

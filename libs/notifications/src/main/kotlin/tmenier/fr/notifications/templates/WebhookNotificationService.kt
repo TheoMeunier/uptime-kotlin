@@ -2,12 +2,12 @@ package tmenier.fr.notifications.templates
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
+import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.HttpMethodEnum
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
-import tmenier.fr.notifications.dto.NotificationContent
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

@@ -54,5 +54,7 @@ class NotificationsChannelEntity : PanacheEntityBase {
         fun getAll(): List<NotificationsChannelEntity> = findAll().list()
 
         fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> = find("id in ?1 OR isDefault", ids).list()
+
+        fun delete(id: UUID) = delete("id = ?1", id)
     }
 }

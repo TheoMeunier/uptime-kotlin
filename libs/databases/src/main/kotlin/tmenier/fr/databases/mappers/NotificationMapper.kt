@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
+import tmenier.fr.databases.dtos.ListingNotificationsDto
+import tmenier.fr.databases.dtos.NotificationContent
+import tmenier.fr.databases.dtos.NotificationDto
+import tmenier.fr.databases.dtos.ShowNotificationsDto
 import tmenier.fr.databases.entities.NotificationsChannelEntity
-import tmenier.fr.monitors.dtos.responses.ListingNotificationsDto
-import tmenier.fr.monitors.dtos.responses.ShowNotificationsDto
-import tmenier.fr.notifications.dto.NotificationContent
 
 object NotificationContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
@@ -41,10 +42,6 @@ object NotificationContentMapper {
             NotificationChannelsEnum.WEBHOOK -> {
                 objectMapper.treeToValue(notification.content, NotificationContent.Webhook::class.java)
             }
-
-            else -> {
-                // TODO: create default notification content
-            }
         } as NotificationContent
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
@@ -62,19 +59,44 @@ object NotificationContentMapper {
     }
 }
 
-fun NotificationsChannelEntity.toListingsDTO() =
-    ListingNotificationsDto(
-        id = id,
-        name = name,
-        isDefault = isDefault,
-    )
+object NotificationMapper {
 
-fun NotificationsChannelEntity.toShowDto() =
-    ShowNotificationsDto(
-        id = id,
-        name = name,
-        notificationType = type,
-        content = NotificationContentMapper.toDTO(this, false),
-        isDefault = isDefault,
-        createdAt = createdAt,
-    )
+    fun toEntity(dto: NotificationDto): NotificationsChannelEntity {
+        return NotificationsChannelEntity().apply {
+            id = dto.id
+            name = dto.name
+            type = dto.type
+            isDefault = dto.isDefault
+            content = NotificationContentMapper.toEntity(dto.content).first
+        }
+    }
+
+    fun toDto(entity: NotificationsChannelEntity): NotificationDto {
+        return NotificationDto(
+            id = entity.id,
+            name = entity.name,
+            type = entity.type,
+            isDefault = entity.isDefault,
+            content = NotificationContentMapper.toDTO(entity),
+        )
+    }
+
+    fun toSmallDto(entity: NotificationsChannelEntity): ListingNotificationsDto {
+        return ListingNotificationsDto(
+            id = entity.id,
+            name = entity.name,
+            isDefault = entity.isDefault,
+        )
+    }
+
+    fun toShowDto(entity: NotificationsChannelEntity): ShowNotificationsDto {
+        return ShowNotificationsDto(
+            id = entity.id,
+            name = entity.name,
+            notificationType = entity.type,
+            content = NotificationContentMapper.toDTO(entity, false),
+            isDefault = entity.isDefault,
+            createdAt = entity.createdAt,
+        )
+    }
+}

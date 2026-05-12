@@ -9,10 +9,10 @@ import io.vertx.ext.mail.StartTLSOptions
 import jakarta.enterprise.context.ApplicationScoped
 import org.jboss.logging.Logger
 import tmenier.fr.common.encryption.EncryptionService
+import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.NotificationChannelsEnum
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
-import tmenier.fr.notifications.dto.NotificationContent
 
 @ApplicationScoped
 class EmailNotificationService(

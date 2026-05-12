@@ -1,8 +1,8 @@
-package tmenier.fr.notifications.dto
+package tmenier.fr.databases.dtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.quarkus.runtime.annotations.RegisterForReflection
-import tmenier.fr.monitors.enums.HttpMethodEnum
+import tmenier.fr.common.enums.monitors.HttpMethodEnum
 
 @RegisterForReflection
 sealed interface NotificationContent {
