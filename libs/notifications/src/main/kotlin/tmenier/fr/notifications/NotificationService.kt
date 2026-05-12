@@ -4,11 +4,11 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.common.utils.logger
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.entities.mapper.NotificationContentMapper
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.monitors.schedulers.dto.ProbeResult
 import java.util.UUID
 

@@ -10,13 +10,15 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.utils.logger
-import tmenier.fr.databases.entities.NotificationsChannelEntity
+import tmenier.fr.databases.repositories.NotificationRepository
 import java.util.UUID
 
 @Path("/api/notifications/{id}/remove")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class RemoveNotification {
+class RemoveNotification(
+    private val notificationRepository: NotificationRepository,
+) {
     @POST
     @Authenticated
     @Transactional
@@ -24,9 +26,7 @@ class RemoveNotification {
         @PathParam("id") id: UUID,
     ): Response {
         try {
-            NotificationsChannelEntity.findById(id).let {
-                it?.delete()
-            }
+            notificationRepository.delete(id)
 
             return Response.status(Response.Status.NO_CONTENT).build()
         } catch (e: Exception) {

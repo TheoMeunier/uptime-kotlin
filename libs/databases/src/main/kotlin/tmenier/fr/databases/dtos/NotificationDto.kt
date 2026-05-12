@@ -2,9 +2,17 @@ package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
-import tmenier.fr.notifications.dto.NotificationContent
 import java.time.LocalDateTime
 import java.util.UUID
+
+@RegisterForReflection
+data class NotificationDto(
+    val id: UUID,
+    val name: String,
+    val type: NotificationChannelsEnum,
+    val isDefault: Boolean,
+    val content: NotificationContent,
+)
 
 @RegisterForReflection
 data class ListingNotificationsDto(
