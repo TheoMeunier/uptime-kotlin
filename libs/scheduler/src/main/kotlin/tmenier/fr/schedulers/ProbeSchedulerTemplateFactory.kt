@@ -1,5 +1,6 @@
 package tmenier.fr.schedulers
 
+import io.quarkus.arc.lookup.LookupIfProperty
 import io.quarkus.scheduler.Scheduled
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
@@ -16,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.utils.logger
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.time.Duration.Companion.milliseconds
 
+@LookupIfProperty(name = "quarkus.scheduler.strategy", stringValue = "db-lock")
 @ApplicationScoped
 class ProbeSchedulerTemplateFactory(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
@@ -48,8 +51,14 @@ class ProbeSchedulerTemplateFactory(
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
 
+    @ConfigProperty(name = "probe.scheduler.strategy", defaultValue = "none")
+    private lateinit var  strategy: String
+
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
-    fun runScheduledProbes() {
+    fun runScheduledProbes()
+    {
+        if (strategy != "db-lock") return
+
         val probes = probeRepository.getActiveProbes()
         val activeProbeIds = probes.filter { it.enabled }.map { it.id }.toSet()
 
