@@ -1,6 +1,5 @@
 package tmenier.fr.schedulers
 
-import io.quarkus.narayana.jta.QuarkusTransaction
 import io.quarkus.scheduler.Scheduled
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
@@ -16,17 +15,15 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeDTO
-import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
-import tmenier.fr.monitors.notifications.NotificationService
-import tmenier.fr.monitors.services.SaveProbeMonitor
+import tmenier.fr.notifications.NotificationService
+import tmenier.fr.schedulers.services.SaveProbeMonitor
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
@@ -89,7 +86,7 @@ class ProbeSchedulerTemplateFactory(
                     val delayMs = Duration.between(now, nextRun).toMillis()
 
                     if (delayMs > 0) {
-                        delay(delayMs)
+                        delay(delayMs.milliseconds)
                     }
 
                     if (!runningProbes.add(probeId)) {
@@ -135,7 +132,7 @@ class ProbeSchedulerTemplateFactory(
                     logger.info {
                         "Probe ${probe.id} succeeded after ${attempt + 1} attempt(s)"
                     }
-                    saveAndNotify(probe.id, now, result)
+                    saveAndNotify(probe.id, now, result, probe.status)
                     return
                 }
 
@@ -151,11 +148,12 @@ class ProbeSchedulerTemplateFactory(
                             probe.id,
                             now,
                             result.copy(status = ProbeMonitorLogStatus.FAILURE),
+                            probe.status,
                         )
                         return
                     }
 
-                    saveOnly(probe.id, now, result)
+                    saveProbeMonitorLog.saveProbeMonitorLog(probe.id, now, result)
                 }
 
                 else -> {}
@@ -165,26 +163,17 @@ class ProbeSchedulerTemplateFactory(
         }
     }
 
-    private suspend fun saveOnly(
-        probeId: UUID,
-        now: LocalDateTime,
-        result: ProbeResult,
-    ) = withTransaction {
-        ProbesEntity.findById(probeId)?.let {
-            saveProbeMonitorLog.saveProbeMonitorLog(it, now, result)
-        }
-    }
-
     private suspend fun saveAndNotify(
         probeId: UUID,
         now: LocalDateTime,
         result: ProbeResult,
-    ) = withTransaction {
-        ProbesEntity.findById(probeId)?.let {
-            val previousStatus = it.status
-            saveProbeMonitorLog.saveProbeMonitorLog(it, now, result)
-            notificationService.sendNotification(it.id, result, previousStatus)
+        status: ProbeMonitorLogStatus,
+    ) {
+        withContext(Dispatchers.IO) {
+            saveProbeMonitorLog.saveProbeMonitorLog(probeId, now, result)
         }
+
+        notificationService.sendNotification(probeId, result, status)
     }
 
     private suspend fun loadProbe(probeId: UUID): ProbeDTO =
@@ -193,15 +182,6 @@ class ProbeSchedulerTemplateFactory(
                 ProbeMapper.toDto(probeRepository.findById(probeId))
             } as ProbeDTO
         }
-
-    suspend fun <T> withTransaction(block: suspend () -> T): T =
-        withContext(Dispatchers.IO) {
-            withRequestContext {
-                QuarkusTransaction.requiringNew().call {
-                    runBlocking { block() }
-                }
-            }
-        } as T
 
     private fun calculateNextRun(
         probe: ProbeDTO,
@@ -222,7 +202,7 @@ class ProbeSchedulerTemplateFactory(
     }
 
     @ActivateRequestContext
-    fun <T> withRequestContext(block: () -> T): ProbeDTO? = block()
+    fun <T> withRequestContext(block: () -> T): ProbeDTO? = block() as ProbeDTO?
 
     @PreDestroy
     fun cleanup() = probeScope.cancel()

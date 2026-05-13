@@ -11,29 +11,26 @@ import org.minidns.record.Data
 import org.minidns.record.MX
 import org.minidns.record.TXT
 import org.minidns.source.NetworkDataSource
+import org.minidns.record.Record
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
 import tmenier.fr.databases.dtos.ProbeContent
-import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.dtos.ProbeDTO
 import java.net.InetAddress
 import java.net.URI
 import kotlin.collections.List
 import kotlin.collections.filter
-import kotlin.collections.isEmpty
 import kotlin.collections.joinToString
 import kotlin.collections.sortedBy
-import kotlin.sequences.joinToString
-import kotlin.sequences.sortedBy
-import kotlin.text.isEmpty
 import kotlin.text.removePrefix
 import kotlin.text.trimEnd
 
 @ApplicationScoped
 class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
     override fun execute(
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         content: ProbeContent.Dns,
         isLastAttempt: Boolean,
     ): ProbeResult {
@@ -110,29 +107,29 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
 
     private fun buildRecordDescription(
         recordType: RecordDnsEnum,
-        records: List<java.lang.Record<out Data>>,
+        records: List<Record<out Data>>,
     ): String =
         when (recordType) {
             RecordDnsEnum.A -> {
-                val aRecords = records.filter { it.type == java.lang.Record.TYPE.A }
+                val aRecords = records.filter { it.type == Record.TYPE.A }
                 if (aRecords.isEmpty()) throw Exception("No A record found")
                 "${aRecords.size} A record(s): ${aRecords.joinToString { (it.payloadData as A).toString() }}"
             }
 
             RecordDnsEnum.AAAA -> {
-                val aaaaRecords = records.filter { it.type == java.lang.Record.TYPE.AAAA }
+                val aaaaRecords = records.filter { it.type == Record.TYPE.AAAA }
                 if (aaaaRecords.isEmpty()) throw Exception("No AAAA record found")
                 "${aaaaRecords.size} AAAA record(s): ${aaaaRecords.joinToString { (it.payloadData as AAAA).toString() }}"
             }
 
             RecordDnsEnum.CNAME -> {
-                val cnameRecords = records.filter { it.type == java.lang.Record.TYPE.CNAME }
+                val cnameRecords = records.filter { it.type == Record.TYPE.CNAME }
                 if (cnameRecords.isEmpty()) throw Exception("No CNAME record found — l'apex domain (ex: example.com) ne peut pas avoir de CNAME")
                 "${cnameRecords.size} CNAME record(s): ${cnameRecords.joinToString { (it.payloadData as CNAME).target.toString() }}"
             }
 
             RecordDnsEnum.MX -> {
-                val mxRecords = records.filter { it.type == java.lang.Record.TYPE.MX }
+                val mxRecords = records.filter { it.type == Record.TYPE.MX }
                 if (mxRecords.isEmpty()) throw Exception("No MX record found")
                 val sorted = mxRecords.sortedBy { (it.payloadData as MX).priority }
                 "${sorted.size} MX record(s): ${
@@ -144,7 +141,7 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
             }
 
             RecordDnsEnum.TXT -> {
-                val txtRecords = records.filter { it.type == java.lang.Record.TYPE.TXT }
+                val txtRecords = records.filter { it.type == Record.TYPE.TXT }
                 if (txtRecords.isEmpty()) throw Exception("No TXT record found")
                 "${txtRecords.size} TXT record(s): ${
                     txtRecords.joinToString {
@@ -158,7 +155,7 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
 
     private fun getStatus(
         isLastAttempt: Boolean,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
     ): ProbeMonitorLogStatus =
         when {
             isLastAttempt -> ProbeMonitorLogStatus.FAILURE

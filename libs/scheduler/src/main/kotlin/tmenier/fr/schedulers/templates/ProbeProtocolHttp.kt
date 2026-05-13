@@ -6,6 +6,7 @@ import tmenier.fr.common.enums.monitors.HttpCodeEnum
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeContent
+import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.schedulers.services.SslCertificateService
 import java.net.URI
 import java.net.http.HttpClient
@@ -18,7 +19,7 @@ class ProbeProtocolHttp(
     private val sslCertificateService: SslCertificateService,
 ) : ProbeProtocolAbstract<ProbeContent.Http>() {
     override fun execute(
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         content: ProbeContent.Http,
         isLastAttempt: Boolean,
     ): ProbeResult {
@@ -100,7 +101,7 @@ class ProbeProtocolHttp(
     private fun getStatus(
         isSuccess: Boolean,
         isLastAttempt: Boolean,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
     ): ProbeMonitorLogStatus {
         if (isSuccess) {
             return ProbeMonitorLogStatus.SUCCESS

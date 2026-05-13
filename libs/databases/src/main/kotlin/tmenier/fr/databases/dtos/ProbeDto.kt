@@ -67,6 +67,13 @@ data class StoreProbeDto(
 )
 
 @RegisterForReflection
+data class UpdateLastRunDto(
+    val id: UUID,
+    val status: ProbeMonitorLogStatus?,
+    val lastRun: LocalDateTime,
+)
+
+@RegisterForReflection
 data class ProbeOnOffDto(
     val id: UUID,
     val enabled: Boolean,

@@ -5,6 +5,7 @@ import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
+import tmenier.fr.databases.dtos.UpdateLastRunDto
 import tmenier.fr.databases.entities.NotificationsChannelEntity
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
@@ -51,6 +52,13 @@ class ProbeRepository {
         entity.notifications.clear()
         attach(notifications, entity)
 
+        entity.persist()
+    }
+
+    fun updateLastRun(dto: UpdateLastRunDto) {
+        val entity = findById(dto.id)
+        if (dto.status != null) { entity.status = dto.status }
+        entity.lastRun = dto.lastRun
         entity.persist()
     }
 

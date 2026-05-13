@@ -13,3 +13,12 @@ data class ProbeMonitorDTO(
     val message: String,
     val runAt: LocalDateTime,
 )
+
+@RegisterForReflection
+data class StoreProbeMonitorLogDto(
+    val runAt: LocalDateTime,
+    val message: String,
+    val status: ProbeMonitorLogStatus,
+    val responseTime: Long,
+    val probe: ProbeDTO
+)
