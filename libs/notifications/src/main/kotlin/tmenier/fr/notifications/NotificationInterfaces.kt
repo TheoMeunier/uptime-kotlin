@@ -1,7 +1,7 @@
 package tmenier.fr.notifications
 
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.schedulers.dto.ProbeResult
+import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.databases.dtos.ProbeDTO
 
 interface NotificationInterfaces {
     fun getNotificationType(): String
@@ -10,13 +10,13 @@ interface NotificationInterfaces {
 interface TypedNotificationInterfaces<T> : NotificationInterfaces {
     fun sendSuccess(
         content: T,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     )
 
     fun sendFailure(
         content: T,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     )
 

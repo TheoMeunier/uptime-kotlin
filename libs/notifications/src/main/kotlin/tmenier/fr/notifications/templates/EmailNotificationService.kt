@@ -8,11 +8,11 @@ import io.vertx.ext.mail.MailMessage
 import io.vertx.ext.mail.StartTLSOptions
 import jakarta.enterprise.context.ApplicationScoped
 import org.jboss.logging.Logger
+import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.encryption.EncryptionService
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.databases.dtos.NotificationContent
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.enums.NotificationChannelsEnum
-import tmenier.fr.monitors.schedulers.dto.ProbeResult
+import tmenier.fr.databases.dtos.ProbeDTO
 
 @ApplicationScoped
 class EmailNotificationService(
@@ -20,9 +20,10 @@ class EmailNotificationService(
     private val logger: Logger,
     private val encryptionService: EncryptionService,
 ) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Mail> {
+
     override fun sendSuccess(
         content: NotificationContent.Mail,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     ) {
         val client = getMailClient(content)
@@ -56,7 +57,7 @@ class EmailNotificationService(
 
     override fun sendFailure(
         content: NotificationContent.Mail,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     ) {
         val client = getMailClient(content)

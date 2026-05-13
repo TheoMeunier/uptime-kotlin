@@ -1,7 +1,7 @@
 package tmenier.fr.schedulers.services
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.schedulers.dto.SslCertificateInfo
+import tmenier.fr.common.dtos.SslCertificateInfo
 import java.net.InetSocketAddress
 import java.net.URI
 import java.security.SecureRandom

@@ -11,12 +11,12 @@ import org.minidns.record.Data
 import org.minidns.record.MX
 import org.minidns.record.TXT
 import org.minidns.source.NetworkDataSource
+import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
 import tmenier.fr.monitors.enums.RecordDnsEnum
-import tmenier.fr.schedulers.dto.ProbeResult
 import java.net.InetAddress
 import java.net.URI
 

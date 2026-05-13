@@ -18,13 +18,13 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.utils.logger
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.notifications.NotificationService
 import tmenier.fr.monitors.services.SaveProbeMonitor
-import tmenier.fr.schedulers.dto.ProbeResult
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
