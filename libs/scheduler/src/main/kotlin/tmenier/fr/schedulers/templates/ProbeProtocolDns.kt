@@ -12,13 +12,23 @@ import org.minidns.record.MX
 import org.minidns.record.TXT
 import org.minidns.source.NetworkDataSource
 import tmenier.fr.common.dtos.ProbeResult
-import tmenier.fr.monitors.dtos.propbes.ProbeContent
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import tmenier.fr.monitors.enums.ProbeProtocol
-import tmenier.fr.monitors.enums.RecordDnsEnum
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.enums.monitors.RecordDnsEnum
+import tmenier.fr.databases.dtos.ProbeContent
+import tmenier.fr.databases.entities.ProbesEntity
 import java.net.InetAddress
 import java.net.URI
+import kotlin.collections.List
+import kotlin.collections.filter
+import kotlin.collections.isEmpty
+import kotlin.collections.joinToString
+import kotlin.collections.sortedBy
+import kotlin.sequences.joinToString
+import kotlin.sequences.sortedBy
+import kotlin.text.isEmpty
+import kotlin.text.removePrefix
+import kotlin.text.trimEnd
 
 @ApplicationScoped
 class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
@@ -43,11 +53,11 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
 
             val recordType =
                 when (content.recordType ?: RecordDnsEnum.A) {
-                    RecordDnsEnum.A -> java.lang.Record.TYPE.A
-                    RecordDnsEnum.AAAA -> java.lang.Record.TYPE.AAAA
-                    RecordDnsEnum.CNAME -> java.lang.Record.TYPE.CNAME
-                    RecordDnsEnum.MX -> java.lang.Record.TYPE.MX
-                    RecordDnsEnum.TXT -> java.lang.Record.TYPE.TXT
+                    RecordDnsEnum.A -> Record.TYPE.A
+                    RecordDnsEnum.AAAA -> Record.TYPE.AAAA
+                    RecordDnsEnum.CNAME -> Record.TYPE.CNAME
+                    RecordDnsEnum.MX -> Record.TYPE.MX
+                    RecordDnsEnum.TXT -> Record.TYPE.TXT
                 }
 
             val hostname =

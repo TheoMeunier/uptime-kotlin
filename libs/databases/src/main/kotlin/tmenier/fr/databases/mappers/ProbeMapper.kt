@@ -74,6 +74,24 @@ object ProbeMapper {
         content = ProbeContentMapper.toEntity(dto.content).first
     }
 
+    fun toDto(entity: ProbesEntity): ProbeDTO = ProbeDTO(
+        id = entity.id,
+        name = entity.name,
+        interval = entity.interval,
+        timeout = entity.timeout,
+        retry = entity.retry,
+        intervalRetry = entity.intervalRetry,
+        enabled = entity.enabled,
+        protocol = entity.protocol.name,
+        description = entity.description,
+        lastRun = entity.lastRun,
+        status = entity.status,
+        content = ProbeContentMapper.toDto(entity),
+        url = ProbeContentMapper.toUrl(ProbeContentMapper.toDto(entity)),
+        createdAt = entity.createdAt,
+        updatedAt = entity.updatedAt,
+    )
+
     fun toProbeListDto(entity: ProbesEntity): ProbeListDTO {
         val content = ProbeContentMapper.toDto(entity)
 
