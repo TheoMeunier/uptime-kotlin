@@ -2,12 +2,11 @@ package tmenier.fr.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeResult
-import tmenier.fr.monitors.dtos.propbes.ProbeContent
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.enums.HttpCodeEnum
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import tmenier.fr.monitors.enums.ProbeProtocol
-import tmenier.fr.monitors.services.SslCertificateService
+import tmenier.fr.common.enums.monitors.HttpCodeEnum
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.databases.dtos.ProbeContent
+import tmenier.fr.schedulers.services.SslCertificateService
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

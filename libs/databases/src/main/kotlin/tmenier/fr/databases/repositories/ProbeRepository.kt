@@ -1,6 +1,7 @@
 package tmenier.fr.databases.repositories
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
@@ -18,6 +19,8 @@ class ProbeRepository {
     fun findByIdWithLogs(probeId: UUID, hour: Long = 1) = ProbesEntity.findByIdWithLogs(probeId, hour) ?: throw IllegalArgumentException("Probe not found")
 
     fun getProbesLastHour(): List<ProbeStatusDTO> = ProbesEntity.getProbesLastHour().map { ProbeMapper.toStatusDto(it) }
+
+    fun getActiveProbes(): List<ProbeDTO> = ProbesEntity.getActiveProbes().map { ProbeMapper.toDto(it) }
 
     fun getAll(): List<ProbesEntity> = ProbesEntity.getAllProbes()
 

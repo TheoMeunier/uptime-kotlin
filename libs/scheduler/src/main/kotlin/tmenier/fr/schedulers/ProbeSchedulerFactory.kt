@@ -2,7 +2,7 @@ package tmenier.fr.schedulers
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.inject.Instance
-import tmenier.fr.monitors.enums.ProbeProtocol
+import tmenier.fr.common.enums.monitors.ProbeProtocol
 
 @ApplicationScoped
 class ProbeSchedulerFactory(

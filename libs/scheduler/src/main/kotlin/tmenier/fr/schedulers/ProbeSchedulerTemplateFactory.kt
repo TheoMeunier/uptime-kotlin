@@ -19,10 +19,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.utils.logger
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.entities.mapper.ProbeContentMapper
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
+import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.monitors.notifications.NotificationService
 import tmenier.fr.monitors.services.SaveProbeMonitor
 import java.time.Duration
@@ -30,12 +32,14 @@ import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import kotlin.time.Duration.Companion.milliseconds
 
 @ApplicationScoped
 class ProbeSchedulerTemplateFactory(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val notificationService: NotificationService,
+    private val probeRepository: ProbeRepository,
 ) {
     private val probeScope =
         CoroutineScope(
@@ -49,7 +53,7 @@ class ProbeSchedulerTemplateFactory(
 
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun runScheduledProbes() {
-        val probes = ProbesEntity.getActiveProbes()
+        val probes = probeRepository.getActiveProbes()
         val activeProbeIds = probes.filter { it.enabled }.map { it.id }.toSet()
 
         scheduledProbes.keys.forEach { probeId ->
@@ -107,8 +111,7 @@ class ProbeSchedulerTemplateFactory(
         scheduledProbes[probeId] = job
     }
 
-    private suspend fun executeWithRetry(probe: ProbesEntity) {
-        val content = ProbeContentMapper.toDto(probe)
+    private suspend fun executeWithRetry(probe: ProbeDTO) {
         val handler =
             probeSchedulerFactory.getProtocol(probe.protocol)
                 ?: run {
@@ -125,7 +128,7 @@ class ProbeSchedulerTemplateFactory(
             val now = LocalDateTime.now()
             val isLastAttempt = attempt == maxAttempts - 1
 
-            val result = typeHandler.execute(probe, content, isLastAttempt)
+            val result = typeHandler.execute(probe, probe.content, isLastAttempt)
 
             when (result.status) {
                 ProbeMonitorLogStatus.SUCCESS -> {
@@ -158,7 +161,7 @@ class ProbeSchedulerTemplateFactory(
                 else -> {}
             }
 
-            delay(probe.interval * 1000L)
+            delay((probe.interval * 1000L).milliseconds)
         }
     }
 
@@ -184,11 +187,11 @@ class ProbeSchedulerTemplateFactory(
         }
     }
 
-    private suspend fun loadProbe(probeId: UUID): ProbesEntity? =
+    private suspend fun loadProbe(probeId: UUID): ProbeDTO =
         withContext(Dispatchers.IO) {
             withRequestContext {
-                ProbesEntity.findById(probeId)
-            }
+                ProbeMapper.toDto(probeRepository.findById(probeId))
+            } as ProbeDTO
         }
 
     suspend fun <T> withTransaction(block: suspend () -> T): T =
@@ -201,7 +204,7 @@ class ProbeSchedulerTemplateFactory(
         } as T
 
     private fun calculateNextRun(
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         from: LocalDateTime,
     ): LocalDateTime {
         val lastRun = probe.lastRun
@@ -219,7 +222,7 @@ class ProbeSchedulerTemplateFactory(
     }
 
     @ActivateRequestContext
-    fun <T> withRequestContext(block: () -> T): T = block()
+    fun <T> withRequestContext(block: () -> T): ProbeDTO? = block()
 
     @PreDestroy
     fun cleanup() = probeScope.cancel()

@@ -43,7 +43,7 @@ data class ProbeDTO(
     val retry: Int,
     val intervalRetry: Int,
     val enabled: Boolean,
-    val protocol: String,
+    val protocol: ProbeProtocol,
     val description: String?,
     val lastRun: LocalDateTime?,
     val status: ProbeMonitorLogStatus,
