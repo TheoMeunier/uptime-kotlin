@@ -5,14 +5,14 @@ import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeContent
-import tmenier.fr.monitors.entities.ProbesEntity
+import tmenier.fr.databases.dtos.ProbeDTO
 import java.net.InetSocketAddress
 import java.net.Socket
 
 @ApplicationScoped
 class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
     override fun execute(
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         content: ProbeContent.Tcp,
         isLastAttempt: Boolean,
     ): ProbeResult {
@@ -48,7 +48,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
 
     private fun getStatus(
         isLastAttempt: Boolean,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
     ): ProbeMonitorLogStatus {
         if (isLastAttempt) return ProbeMonitorLogStatus.FAILURE
 

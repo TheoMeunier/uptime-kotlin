@@ -6,6 +6,7 @@ import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeContent
+import tmenier.fr.databases.dtos.ProbeDTO
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit
 @ApplicationScoped
 class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
     override fun execute(
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         content: ProbeContent.Ping,
         isLastAttempt: Boolean,
     ): ProbeResult {
