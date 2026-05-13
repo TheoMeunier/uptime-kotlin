@@ -87,8 +87,6 @@ object ProbeMapper {
     }
 
     fun toProbeWithNotificationsDto(entity: ProbesEntity): ProbeWithNotificationsDTO {
-        val content = ProbeContentMapper.toDto(entity)
-
         return ProbeWithNotificationsDTO(
             probe =
                 ProbeDTO(
@@ -107,7 +105,7 @@ object ProbeMapper {
                     updatedAt = entity.updatedAt,
                     content = ProbeContentMapper.toDto(entity),
                 ),
-            notifications = entity.notifications.map { it.id },
+            notifications = entity.notifications.map { NotificationMapper.toDto(it) },
         )
     }
 

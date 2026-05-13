@@ -1,12 +1,12 @@
 package tmenier.fr.notifications.templates
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.enums.NotificationChannelsEnum
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import tmenier.fr.monitors.schedulers.dto.ProbeResult
+import tmenier.fr.databases.dtos.ProbeDTO
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -21,7 +21,7 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
 
     override fun sendSuccess(
         content: NotificationContent.Slack,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     ) {
         val jsonPayload =
@@ -37,7 +37,7 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
 
     override fun sendFailure(
         content: NotificationContent.Slack,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     ) {
         val jsonPayload =

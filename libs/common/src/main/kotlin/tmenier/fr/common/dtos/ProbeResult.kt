@@ -1,4 +1,4 @@
-package tmenier.fr.schedulers.dto
+package tmenier.fr.common.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus

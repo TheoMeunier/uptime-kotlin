@@ -1,13 +1,13 @@
 package tmenier.fr.notifications.templates
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.enums.monitors.HttpMethodEnum
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
-import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.monitors.enums.HttpMethodEnum
-import tmenier.fr.monitors.enums.NotificationChannelsEnum
-import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
-import tmenier.fr.monitors.schedulers.dto.ProbeResult
+import tmenier.fr.databases.dtos.ProbeDTO
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -20,7 +20,7 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
 
     override fun sendSuccess(
         content: NotificationContent.Webhook,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     ) {
         val payload = buildPayload(probe.name, result.message, result.runAt, result.status)
@@ -29,7 +29,7 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
 
     override fun sendFailure(
         content: NotificationContent.Webhook,
-        probe: ProbesEntity,
+        probe: ProbeDTO,
         result: ProbeResult,
     ) {
         val payload = buildPayload(probe.name, result.message, result.runAt, result.status)

@@ -1,5 +1,6 @@
 package tmenier.fr.common.utils
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 
-val logger = KotlinLogging.logger { "uptime-kotlin" }
+
+val logger = KotlinLogging.logger("uptime-kotlin")

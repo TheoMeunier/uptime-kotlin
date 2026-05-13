@@ -1,7 +1,7 @@
 package tmenier.fr.schedulers
 
+import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.monitors.entities.ProbesEntity
-import tmenier.fr.schedulers.dto.ProbeResult
 
 interface ProbeSchedulerInterface {
     fun getProtocolType(): String

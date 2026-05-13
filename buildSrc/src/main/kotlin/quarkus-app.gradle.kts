@@ -26,6 +26,7 @@ dependencies {
     implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-arc")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.02")
     testImplementation("io.quarkus:quarkus-junit5")
 }
 

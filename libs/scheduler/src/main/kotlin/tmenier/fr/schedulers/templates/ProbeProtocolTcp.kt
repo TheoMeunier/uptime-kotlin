@@ -1,11 +1,11 @@
 package tmenier.fr.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.monitors.dtos.propbes.ProbeContent
 import tmenier.fr.monitors.entities.ProbesEntity
 import tmenier.fr.monitors.enums.ProbeMonitorLogStatus
 import tmenier.fr.monitors.enums.ProbeProtocol
-import tmenier.fr.schedulers.dto.ProbeResult
 import java.net.InetSocketAddress
 import java.net.Socket
 
