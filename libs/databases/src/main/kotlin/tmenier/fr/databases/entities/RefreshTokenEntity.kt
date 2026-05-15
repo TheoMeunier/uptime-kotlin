@@ -21,7 +21,7 @@ class RefreshTokenEntity : PanacheEntityBase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    open lateinit var user: UserEntity
+    lateinit var user: UserEntity
 
     @Column(name = "refresh_token", nullable = false)
     lateinit var refreshToken: UUID

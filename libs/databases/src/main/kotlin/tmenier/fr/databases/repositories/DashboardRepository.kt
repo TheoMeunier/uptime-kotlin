@@ -1,13 +1,13 @@
-package tmenier.fr.dashboard.services
+package tmenier.fr.databases.repositories
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
-import tmenier.fr.dashboard.dtos.DownProbeDto
-import tmenier.fr.dashboard.dtos.IncidentBar
-import tmenier.fr.dashboard.dtos.MonitorSummary
-import tmenier.fr.dashboard.dtos.ResponseMetrics24h
-import tmenier.fr.dashboard.dtos.SparklinePoint
+import tmenier.fr.databases.dtos.DownProbeDto
+import tmenier.fr.databases.dtos.IncidentBar
+import tmenier.fr.databases.dtos.MonitorSummary
+import tmenier.fr.databases.dtos.ResponseMetrics24h
+import tmenier.fr.databases.dtos.SparklinePoint
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -15,9 +15,10 @@ import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @ApplicationScoped
-class StatDashboardService(
-    private val em: EntityManager,
+class DashboardRepository(
+    private val em: EntityManager
 ) {
+
     fun getMonitorsSummary(): MonitorSummary {
         val jpql =
             """
@@ -187,20 +188,20 @@ class StatDashboardService(
             )
         }
     }
-}
 
-fun Duration.toHumanReadable(): String {
-    val totalSeconds = this.seconds
+    private fun Duration.toHumanReadable(): String {
+        val totalSeconds = this.seconds
 
-    val days = totalSeconds / 86_400
-    val hours = (totalSeconds % 86_400) / 3_600
-    val minutes = (totalSeconds % 3_600) / 60
-    val seconds = totalSeconds % 60
+        val days = totalSeconds / 86_400
+        val hours = (totalSeconds % 86_400) / 3_600
+        val minutes = (totalSeconds % 3_600) / 60
+        val seconds = totalSeconds % 60
 
-    return buildString {
-        if (days > 0) append("${days}j ")
-        if (hours > 0) append("${hours}h ")
-        if (minutes > 0) append("${minutes}m ")
-        if (days == 0L && seconds > 0) append("${seconds}s")
-    }.trim()
+        return buildString {
+            if (days > 0) append("${days}j ")
+            if (hours > 0) append("${hours}h ")
+            if (minutes > 0) append("${minutes}m ")
+            if (days == 0L && seconds > 0) append("${seconds}s")
+        }.trim()
+    }
 }

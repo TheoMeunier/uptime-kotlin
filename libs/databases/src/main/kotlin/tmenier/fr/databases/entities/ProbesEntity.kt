@@ -79,7 +79,8 @@ class ProbesEntity : PanacheEntityBase {
         joinColumns = [JoinColumn("probe_id")],
         inverseJoinColumns = [JoinColumn("notification_channel_id")],
     )
-    open var notifications: MutableSet<NotificationsChannelEntity> = mutableSetOf()
+
+    var notifications: MutableSet<NotificationsChannelEntity> = mutableSetOf()
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -90,7 +91,7 @@ class ProbesEntity : PanacheEntityBase {
     lateinit var updatedAt: LocalDateTime
 
     @OneToMany(mappedBy = "probe", cascade = [CascadeType.REMOVE])
-    open var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()
+    var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()
 
     companion object : PanacheCompanion<ProbesEntity> {
         fun findById(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()

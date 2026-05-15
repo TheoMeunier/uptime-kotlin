@@ -51,12 +51,12 @@ class ProbeSchedulerTemplateFactory(
     private val scheduledProbes = ConcurrentHashMap<UUID, Job>()
     private val runningProbes = ConcurrentHashMap.newKeySet<UUID>()
 
-    @ConfigProperty(name = "probe.scheduler.strategy", defaultValue = "none")
-    private lateinit var  strategy: String
+    @ConfigProperty(name = "quarkus.scheduler.strategy", defaultValue = "none")
+    private lateinit var strategy: String
 
     @Scheduled(every = "5s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
-    fun runScheduledProbes()
-    {
+    fun runScheduledProbes() {
+        logger.debug { "Running scheduled probes with strategy: $strategy" }
         if (strategy != "db-lock") return
 
         val probes = probeRepository.getActiveProbes()
