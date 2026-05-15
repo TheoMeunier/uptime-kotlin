@@ -1,6 +1,5 @@
 package tmenier.fr.databases.entities
 
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -28,8 +27,4 @@ class RefreshTokenEntity : PanacheEntityBase {
 
     @Column(name = "expired_at", nullable = false, updatable = false)
     lateinit var expiredAt: LocalDateTime
-
-    companion object : PanacheCompanion<RefreshTokenEntity> {
-        fun findByRefreshToken(refreshToken: UUID): RefreshTokenEntity? = find("refreshToken = ?1", refreshToken).firstResult()
-    }
 }

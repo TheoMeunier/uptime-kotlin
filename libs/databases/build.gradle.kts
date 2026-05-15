@@ -1,16 +1,12 @@
-plugins {
-    id("kotlin-lib")
-}
-
 dependencies {
-    testImplementation(kotlin("test"))
-
     implementation(project(":libs:common"))
 
-    implementation("io.quarkus:quarkus-jdbc-postgresql")
-    implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
-    implementation("io.quarkus:quarkus-hibernate-validator")
-    implementation("io.quarkus:quarkus-flyway")
-    implementation("org.flywaydb:flyway-database-postgresql")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
+    api(libs.quarkus.hibernate.orm.panache.kotlin)
+    api(libs.quarkus.jdbc.postgresql)
+    implementation(libs.quarkus.hibernate.validator)
+    implementation(libs.quarkus.flyway)
+    implementation(libs.flyway.database.postgresql)
+    implementation(libs.jackson.module.kotlin)
+    implementation(rootProject.libs.quarkus.arc)
+
 }

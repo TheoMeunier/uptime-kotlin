@@ -1,17 +1,12 @@
-plugins {
-    id("kotlin-lib")
-}
-
 dependencies {
     implementation(project(":libs:common"))
     implementation(project(":libs:databases"))
     implementation(project(":libs:notifications"))
     implementation(project(":libs:scheduler-cluster"))
 
-    implementation("io.quarkus:quarkus-scheduler")
+    implementation(libs.quarkus.scheduler)
+    implementation(libs.quarkus.redis)
+    implementation(libs.quarkus.rabbitmq)
 
-    implementation("io.quarkus:quarkus-messaging-rabbitmq")
-    implementation("io.quarkus:quarkus-redis-client")
-
-    testImplementation(kotlin("test"))
+    implementation(rootProject.libs.quarkus.arc)
 }

@@ -8,7 +8,7 @@ class GetStatusApplicationAction(
     private val userRepository: UserRepository,
 ) {
     fun execute(): Boolean {
-        val totalUser = userRepository.count()
+        val totalUser = userRepository.countAll()
 
         return totalUser.toInt() > 0
     }

@@ -1,9 +1,7 @@
 package tmenier.fr.databases.entities
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
-import io.quarkus.panache.common.Sort
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -92,42 +90,4 @@ class ProbesEntity : PanacheEntityBase {
 
     @OneToMany(mappedBy = "probe", cascade = [CascadeType.REMOVE])
     var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()
-
-    companion object : PanacheCompanion<ProbesEntity> {
-        fun findById(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
-
-        fun findByIdWithLogs(
-            id: UUID,
-            hour: Long = 1,
-        ): ProbesEntity? =
-            find(
-                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2 ORDER BY pml.runAt ASC",
-                id,
-                LocalDateTime.now().minusHours(hour),
-            ).firstResult()
-
-        fun getActiveProbes(): List<ProbesEntity> = find("enabled = ?1 ORDER BY name ASC", true).list()
-
-        fun getAllProbes(): List<ProbesEntity> = findAll(Sort.by("name")).list()
-
-        fun findDueProbes(now: LocalDateTime): List<ProbesEntity> =
-            find(
-                """
-                enabled = true
-                AND (nextCheckAt IS NULL OR nextCheckAt <= ?1)
-                AND (lockedBy IS NULL OR lockedAt < ?2)
-                ORDER BY nextCheckAt ASC NULLS FIRST
-            """,
-                now,
-                now.minusSeconds(30)
-            ).list()
-
-        fun getProbesLastHour(): List<ProbesEntity> =
-            find(
-                "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ORDER BY p.name ASC",
-                LocalDateTime.now().minusHours(1),
-            ).list().sortedBy { it.name.lowercase() }
-
-        fun delete(id: UUID): Long = delete("id = ?1", id)
-    }
 }

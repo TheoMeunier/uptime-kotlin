@@ -1,7 +1,3 @@
-plugins {
-    id("quarkus-app")
-}
-
 dependencies {
     implementation(project(":libs:common"))
     implementation(project(":libs:databases"))
@@ -9,25 +5,18 @@ dependencies {
     implementation(project(":libs:notifications"))
 
     // Quarkus core
-    implementation("io.quarkus:quarkus-resteasy-jackson")
-    implementation("io.quarkus:quarkus-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("io.quarkus:quarkus-arc")
-    implementation("io.quarkus:quarkus-hibernate-validator")
+    implementation(libs.quarkus.rest.jackson)
+    implementation(libs.quarkus.hibernate.validator)
 
     // Monitoring
-    implementation("io.quarkus:quarkus-smallrye-health")
+    implementation(libs.quarkus.smallrye.health)
 
     // Auth
-    implementation("io.quarkus:quarkus-smallrye-jwt")
-    implementation("io.quarkus:quarkus-smallrye-jwt-build")
+    implementation(libs.quarkus.smallrye.jwt)
+    implementation(libs.quarkus.smallrye.jwt.build)
 
     // Tests
-    testImplementation("io.quarkus:quarkus-junit5")
-    testImplementation("io.rest-assured:rest-assured")
+    testImplementation(libs.quarkus.junit5)
+    testImplementation(libs.rest.assured)
 }
 
-tasks.withType<Test> {
-    systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
-}

@@ -1,5 +1,6 @@
 package tmenier.fr.databases.repositories
 
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepository
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.ws.rs.NotFoundException
 import tmenier.fr.databases.entities.UserEntity
@@ -8,20 +9,19 @@ import tmenier.fr.databases.mappers.UserMapper
 import java.util.UUID
 
 @ApplicationScoped
-class UserRepository {
+class UserRepository : PanacheRepository<UserEntity> {
 
-    fun findById(id: UUID): UserDto {
-        val user = UserEntity.findById(id) ?: throw NotFoundException("User not found with id")
-        return UserMapper.fromEntity(user)
+    fun findById(id: UUID): UserEntity {
+        return find("id = ?1", id).firstResult() ?: throw NotFoundException("User not found with id")
     }
 
     fun findByEmail(email: String): UserDto {
-        val user = UserEntity.findByEmail(email) ?: throw NotFoundException("User not found with email: $email")
+        val user = find("email = ?1", email).firstResult() ?: throw NotFoundException("User not found with email: $email")
 
         return UserMapper.fromEntity(user)
     }
 
-    fun count() = UserEntity.count()
+    fun countAll() = count()
 
     fun store(dto: UserDto) {
         UserEntity().apply {
@@ -33,7 +33,7 @@ class UserRepository {
     }
 
     fun update(userDto: UserDto) {
-        val user = UserEntity.findById(userDto.id) ?: throw NotFoundException("User not found with id: ${userDto.id}")
+        val user = find("id = ?1", userDto.id).firstResult() ?: throw NotFoundException("User not found with id: ${userDto.id}")
 
         user.name = userDto.name
         user.email = userDto.email
@@ -42,7 +42,7 @@ class UserRepository {
     }
 
     fun updatePassword(userId: UUID, password: String) {
-        val userEntity = UserEntity.findById(userId) ?: throw NotFoundException("User not found with id")
+        val userEntity = find("id = ?1", userId).firstResult() ?: throw NotFoundException("User not found with id")
 
         userEntity.password = password
         userEntity.persist()

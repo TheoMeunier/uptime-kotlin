@@ -1,5 +1,6 @@
 package tmenier.fr.databases.repositories
 
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.databases.entities.RefreshTokenEntity
@@ -11,10 +12,10 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @ApplicationScoped
-class RefreshTokenRepository {
+class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
 
     fun findByRefreshToken(refreshToken: UUID): RefreshTokenDto {
-        val rt = RefreshTokenEntity.findByRefreshToken(refreshToken) ?: throw InvalidCredentialsException()
+        val rt = find("refreshToken = ?1", refreshToken).firstResult() ?: throw InvalidCredentialsException()
 
         return RefreshTokenMapper.fromEntity(rt)
     }

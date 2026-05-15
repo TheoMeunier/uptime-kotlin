@@ -1,12 +1,13 @@
 package tmenier.fr.databases.repositories
 
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.dtos.UpdateLastRunDto
-import tmenier.fr.databases.entities.NotificationsChannelEntity
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
@@ -14,26 +15,46 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @ApplicationScoped
-class ProbeRepository {
+class ProbeRepository(
+    private val notificationRepository: NotificationRepository
+) : PanacheRepositoryBase<ProbesEntity, UUID> {
 
-    fun findById(probeId: UUID): ProbesEntity = ProbesEntity.findById(probeId) ?: throw IllegalArgumentException("Probe not found")
+    override fun findById(probeId: UUID): ProbesEntity = find("id = ?1", probeId).firstResult() ?: throw IllegalArgumentException("Probe not found")
 
-    fun findByIdWithLogs(probeId: UUID, hour: Long = 1) = ProbesEntity.findByIdWithLogs(probeId, hour) ?: throw IllegalArgumentException("Probe not found")
+    fun findByIdWithLogs(probeId: UUID, hour: Long = 1) = find(
+        "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2 ORDER BY pml.runAt ASC",
+        probeId,
+        LocalDateTime.now().minusHours(hour),
+    ).firstResult() ?: throw IllegalArgumentException("Probe not found")
 
-    fun findDueProbes(now: LocalDateTime) = ProbesEntity.findDueProbes(now)
+    fun findDueProbes(now: LocalDateTime) = find(
+        """
+                enabled = true
+                AND (nextCheckAt IS NULL OR nextCheckAt <= ?1)
+                AND (lockedBy IS NULL OR lockedAt < ?2)
+                ORDER BY nextCheckAt ASC NULLS FIRST
+            """,
+        now,
+        now.minusSeconds(30)
+    ).list()
 
-    fun getProbesLastHour(): List<ProbeStatusDTO> = ProbesEntity.getProbesLastHour().map { ProbeMapper.toStatusDto(it) }
+    fun getProbesLastHour(): List<ProbeStatusDTO> = find(
+        "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ORDER BY p.name ASC",
+        LocalDateTime.now().minusHours(1),
+    ).list().sortedBy { it.name.lowercase() }.map { ProbeMapper.toStatusDto(it) }
 
-    fun getActiveProbes(): List<ProbeDTO> = ProbesEntity.getActiveProbes().map { ProbeMapper.toDto(it) }
+    fun getActiveProbes(): List<ProbeDTO> {
+        return find("enabled = ?1 ORDER BY name ASC", true).list().map { ProbeMapper.toDto(it) }
+    }
 
-    fun getAll(): List<ProbesEntity> = ProbesEntity.getAllProbes()
+    fun getAll(): List<ProbesEntity> = findAll(Sort.by("name")).list()
 
     fun attach(notifications: List<UUID>, probe: ProbesEntity) {
-        val notificationsEntities = NotificationsChannelEntity.findByIds(notifications)
+        val notificationsEntities = notificationRepository.findByIds(notifications)
         probe.notifications.addAll(notificationsEntities)
     }
 
-    fun delete(probeId: UUID) = ProbesEntity.delete(probeId)
+    fun delete(probeId: UUID) = delete("id = ?1", probeId)
 
     fun save(dto: StoreProbeDto, notifications: List<UUID>) {
         val entity = ProbeMapper.toEntity(dto)
