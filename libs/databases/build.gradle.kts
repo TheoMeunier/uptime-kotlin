@@ -1,5 +1,5 @@
 plugins {
-    id("quarkus-app")
+    id("kotlin-lib")
 }
 
 dependencies {

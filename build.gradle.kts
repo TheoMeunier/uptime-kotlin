@@ -5,6 +5,10 @@ plugins {
 group = "tmenier.fr"
 version = "1.0-SNAPSHOT"
 
+subprojects {
+    group = "tmenier.fr"
+}
+
 allprojects {
     repositories {
         mavenCentral()

@@ -31,7 +31,7 @@ class ProbesMonitorsLogEntity : PanacheEntityBase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "probe_id", nullable = false)
-    open lateinit var probe: ProbesEntity
+    lateinit var probe: ProbesEntity
 
     @Column(name = "run_at", nullable = false, updatable = false)
     lateinit var runAt: LocalDateTime

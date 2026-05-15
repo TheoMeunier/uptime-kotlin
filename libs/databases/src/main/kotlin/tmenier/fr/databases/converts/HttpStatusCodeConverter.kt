@@ -2,7 +2,7 @@ package tmenier.fr.databases.converts
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Convert
-import tmenier.fr.monitors.enums.HttpCodeEnum
+import tmenier.fr.common.enums.monitors.HttpCodeEnum
 
 @Convert
 class HttpStatusCodeConverter : AttributeConverter<List<HttpCodeEnum>, String> {

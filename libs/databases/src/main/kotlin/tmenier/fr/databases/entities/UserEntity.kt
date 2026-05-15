@@ -33,7 +33,7 @@ class UserEntity : PanacheEntityBase {
     lateinit var createdAt: LocalDateTime
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
-    open var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()
+    var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()
 
     companion object : PanacheCompanion<UserEntity> {
         fun findByEmail(email: String): UserEntity? = find("email", email).firstResult()

@@ -7,23 +7,23 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
-import tmenier.fr.dashboard.services.StatDashboardService
+import tmenier.fr.databases.repositories.DashboardRepository
 
 @Path("/api/dashboard/stats")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class DashboardResource(
-    private val dashboardService: StatDashboardService,
+    private val dashboardRepository: DashboardRepository,
 ) {
     @GET
     @Authenticated
     fun stats(): Response {
-        val summary = dashboardService.getMonitorsSummary()
-        val metricsLastDay = dashboardService.get24hResponseMetrics()
-        val downProbes = dashboardService.findDownProbesWithDowntime()
-        val getLatencySparkline = dashboardService.getLatencySparkline()
-        val getIncidentBar = dashboardService.getIncidentBars()
-        val getCheckSparkLine = dashboardService.getChecksSparkline()
+        val summary = dashboardRepository.getMonitorsSummary()
+        val metricsLastDay = dashboardRepository.get24hResponseMetrics()
+        val downProbes = dashboardRepository.findDownProbesWithDowntime()
+        val getLatencySparkline = dashboardRepository.getLatencySparkline()
+        val getIncidentBar = dashboardRepository.getIncidentBars()
+        val getCheckSparkLine = dashboardRepository.getChecksSparkline()
 
         val result =
             mapOf(
