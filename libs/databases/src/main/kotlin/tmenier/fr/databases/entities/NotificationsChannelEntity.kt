@@ -1,7 +1,6 @@
 package tmenier.fr.databases.entities
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -47,14 +46,4 @@ class NotificationsChannelEntity : PanacheEntityBase {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     lateinit var updatedAt: LocalDateTime
-
-    companion object : PanacheCompanion<NotificationsChannelEntity> {
-        fun findById(id: UUID): NotificationsChannelEntity? = find("id = ?1", id).firstResult()
-
-        fun getAll(): List<NotificationsChannelEntity> = findAll().list()
-
-        fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> = find("id in ?1 OR isDefault", ids).list()
-
-        fun delete(id: UUID) = delete("id = ?1", id)
-    }
 }

@@ -1,5 +1,6 @@
 package tmenier.fr.databases.repositories
 
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.databases.dtos.NotificationDto
@@ -9,13 +10,13 @@ import tmenier.fr.databases.mappers.NotificationMapper
 import java.util.UUID
 
 @ApplicationScoped
-class NotificationRepository {
-    fun findById(id: UUID): NotificationsChannelEntity =
-        NotificationsChannelEntity.findById(id) ?: throw NotFoundException("Notification channel not found: $id")
+class NotificationRepository : PanacheRepositoryBase<NotificationsChannelEntity, UUID> {
+    override fun findById(id: UUID): NotificationsChannelEntity =
+        find("id = ?1", id).firstResult() ?: throw NotFoundException("Notification channel not found: $id")
 
-    fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> = NotificationsChannelEntity.findByIds(ids)
+    fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> = find("id in ?1 OR isDefault", ids).list()
 
-    fun getAll(): List<NotificationsChannelEntity> = NotificationsChannelEntity.getAll()
+    fun getAll(): List<NotificationsChannelEntity> = findAll().list()
 
     fun save(dto: NotificationDto) {
         val entity = NotificationMapper.toEntity(dto)
@@ -31,5 +32,5 @@ class NotificationRepository {
         entity.persist()
     }
 
-    fun delete(id: UUID) = NotificationsChannelEntity.delete(id)
+    fun delete(id: UUID) = delete("id = ?1", id)
 }

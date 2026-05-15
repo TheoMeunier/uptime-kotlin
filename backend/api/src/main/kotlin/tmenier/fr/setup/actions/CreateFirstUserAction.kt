@@ -15,7 +15,7 @@ class CreateFirstUserAction(
 ) {
     @Transactional
     fun execute(payload: CreateFirstUserRequest): Boolean {
-        val totalUser = userRepository.count()
+        val totalUser = userRepository.countAll()
 
         if (totalUser.toInt() > 0) return false
 

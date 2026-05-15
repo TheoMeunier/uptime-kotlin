@@ -1,6 +1,5 @@
 package tmenier.fr.databases.entities
 
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheCompanion
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -34,10 +33,4 @@ class UserEntity : PanacheEntityBase {
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
     var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()
-
-    companion object : PanacheCompanion<UserEntity> {
-        fun findByEmail(email: String): UserEntity? = find("email", email).firstResult()
-
-        fun findById(id: UUID): UserEntity? = find("id = ?1", id).firstResult()
-    }
 }
