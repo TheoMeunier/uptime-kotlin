@@ -64,6 +64,15 @@ class ProbesEntity : PanacheEntityBase {
     @JdbcTypeCode(SqlTypes.JSON)
     var content: JsonNode? = null
 
+    @Column(name = "next_check_at")
+    var nextCheckAt: LocalDateTime? = null
+
+    @Column(name = "locked_by")
+    var lockedBy: String? = null
+
+    @Column(name = "locked_at")
+    var lockedAt: LocalDateTime? = null
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @JoinTable(
         name = "probes_notifications_channels",
@@ -99,6 +108,18 @@ class ProbesEntity : PanacheEntityBase {
         fun getActiveProbes(): List<ProbesEntity> = find("enabled = ?1 ORDER BY name ASC", true).list()
 
         fun getAllProbes(): List<ProbesEntity> = findAll(Sort.by("name")).list()
+
+        fun findDueProbes(now: LocalDateTime): List<ProbesEntity> =
+            find(
+                """
+                enabled = true
+                AND (nextCheckAt IS NULL OR nextCheckAt <= ?1)
+                AND (lockedBy IS NULL OR lockedAt < ?2)
+                ORDER BY nextCheckAt ASC NULLS FIRST
+            """,
+                now,
+                now.minusSeconds(30)
+            ).list()
 
         fun getProbesLastHour(): List<ProbesEntity> =
             find(

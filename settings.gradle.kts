@@ -17,6 +17,7 @@ rootProject.name = "uptime-kotlin"
 include(":libs:common")
 include(":libs:notifications")
 include(":libs:scheduler")
+include(":libs:scheduler-cluster")
 include(":libs:databases")
 
 // applications
