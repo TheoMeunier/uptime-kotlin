@@ -6,9 +6,12 @@ dependencies {
     implementation(project(":libs:common"))
     implementation(project(":libs:databases"))
     implementation(project(":libs:notifications"))
+    implementation(project(":libs:scheduler-cluster"))
 
     implementation("io.quarkus:quarkus-scheduler")
-    implementation("org.minidns:minidns-hla:1.1.1")
+
+    implementation("io.quarkus:quarkus-messaging-rabbitmq")
+    implementation("io.quarkus:quarkus-redis-client")
 
     testImplementation(kotlin("test"))
 }

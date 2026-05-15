@@ -10,6 +10,7 @@ import tmenier.fr.databases.entities.NotificationsChannelEntity
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
+import java.time.LocalDateTime
 import java.util.UUID
 
 @ApplicationScoped
@@ -18,6 +19,8 @@ class ProbeRepository {
     fun findById(probeId: UUID): ProbesEntity = ProbesEntity.findById(probeId) ?: throw IllegalArgumentException("Probe not found")
 
     fun findByIdWithLogs(probeId: UUID, hour: Long = 1) = ProbesEntity.findByIdWithLogs(probeId, hour) ?: throw IllegalArgumentException("Probe not found")
+
+    fun findDueProbes(now: LocalDateTime) = ProbesEntity.findDueProbes(now)
 
     fun getProbesLastHour(): List<ProbeStatusDTO> = ProbesEntity.getProbesLastHour().map { ProbeMapper.toStatusDto(it) }
 
@@ -57,8 +60,16 @@ class ProbeRepository {
 
     fun updateLastRun(dto: UpdateLastRunDto) {
         val entity = findById(dto.id)
-        if (dto.status != null) { entity.status = dto.status }
+        if (dto.status != null) {
+            entity.status = dto.status
+        }
         entity.lastRun = dto.lastRun
+        entity.persist()
+    }
+
+    fun updateNextCheckAt(probeId: UUID, nextCheckAt: LocalDateTime) {
+        val entity = findById(probeId)
+        entity.nextCheckAt = nextCheckAt
         entity.persist()
     }
 
