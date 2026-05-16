@@ -34,7 +34,7 @@ class ShowProbeResource(
 
         if (hours == 0L) {
             val probeEntity = probeRepository.findById(uuid)
-            return Response.ok(ProbeMapper.toProbeWithNotificationsDto(probeEntity)).build()
+            return Response.ok(ProbeMapper.toProbeWithNotificationsIdsDto(probeEntity)).build()
         }
 
         val validHours = setOf(1L, 3L, 6L, 24L, 168L)
