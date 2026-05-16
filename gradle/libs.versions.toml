@@ -29,7 +29,6 @@ quarkus-bom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
 quarkus-credentials = { module = "io.quarkus:quarkus-credentials", version.ref = "quarkus" }
 
 ## rest
-quarkus-resteasy-reactive = { module = "io.quarkus:quarkus-resteasy-reactive", version.ref = "quarkus" }
 quarkus-rest-jackson = { module = "io.quarkus:quarkus-rest-jackson", version.ref = "quarkus" }
 
 ## databases
