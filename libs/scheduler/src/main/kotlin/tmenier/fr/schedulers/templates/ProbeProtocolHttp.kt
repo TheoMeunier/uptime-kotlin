@@ -1,11 +1,11 @@
 package tmenier.fr.schedulers.templates
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.HttpCodeEnum
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
-import tmenier.fr.databases.dtos.ProbeContent
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.schedulers.services.SslCertificateService
 import java.net.URI

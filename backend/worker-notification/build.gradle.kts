@@ -2,5 +2,6 @@ dependencies {
     implementation(project(":libs:common"))
     implementation(project(":libs:notifications"))
 
-    implementation(libs.quarkus.rabbitmq)
+    api(libs.quarkus.rabbitmq)
+    api(libs.quarkus.redis)
 }

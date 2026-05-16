@@ -3,8 +3,8 @@ package tmenier.fr.databases.mappers
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
-import tmenier.fr.databases.dtos.ProbeContent
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
 import tmenier.fr.databases.dtos.ProbeMonitorDTO

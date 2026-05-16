@@ -3,14 +3,15 @@ package tmenier.fr.cluster.election
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
+import jakarta.transaction.Transactional
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
 import tmenier.fr.common.dtos.ProbeJob
 import tmenier.fr.common.utils.logger
-import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 @ApplicationScoped
 class ProbeSchedulerLeader(
@@ -19,41 +20,41 @@ class ProbeSchedulerLeader(
     @Channel("probe-jobs-out")
     private val probeEmitter: Emitter<ProbeJob>,
 ) {
-    @ConfigProperty(name = "probe.scheduler.strategy", defaultValue = "none")
+    @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
 
-    @Scheduled(every = "1s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
+    @Scheduled(every = "1s", delay = 5, delayUnit = TimeUnit.SECONDS, concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     @ActivateRequestContext
+    @Transactional
     fun publishDueProbes() {
         if (strategy != "rabbitmq") return
         if (!leaderElection.isLeader()) return
 
+        logger.info { "Publishing due probes" }
+
         val now = LocalDateTime.now()
+        val probes = probeRepository.findDueProbes(now)
 
-        probeRepository.findDueProbes(now).forEach {
-            val probe = ProbeMapper.toDto(it)
+        logger.info { "Found ${probes.size} due probes at $now" }
 
+        probes.forEach {
             val job = ProbeJob(
-                probeId = probe.id,
+                probeId = it.id,
                 scheduledAt = now,
-                protocol = probe.protocol,
-                interval = probe.interval,
-                retry = probe.retry,
-                content = probe.content,
             )
 
             probeEmitter.send(job)
                 .whenComplete { _, err ->
                     if (err != null) {
-                        logger.error(err) { "Failed to publish probe job ${probe.id}" }
+                        logger.error(err) { "Failed to publish probe job ${it.id}" }
                     } else {
-                        logger.debug { "Published probe job ${probe.id} scheduled at $now" }
+                        logger.info { "Published probe job ${it.id} scheduled at $now" }
                     }
                 }
 
             probeRepository.updateNextCheckAt(
-                probeId = probe.id,
-                nextCheckAt = now.plusSeconds(probe.interval.toLong())
+                probeId = it.id,
+                nextCheckAt = now.plusSeconds(it.interval.toLong())
             )
         }
     }

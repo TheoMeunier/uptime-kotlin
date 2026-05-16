@@ -1,6 +1,7 @@
 package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
+import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import java.time.LocalDateTime

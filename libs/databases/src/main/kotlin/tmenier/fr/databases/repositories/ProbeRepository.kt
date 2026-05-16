@@ -3,6 +3,7 @@ package tmenier.fr.databases.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.transaction.Transactional
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
@@ -19,6 +20,7 @@ class ProbeRepository(
     private val notificationRepository: NotificationRepository
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
 
+    @Transactional
     override fun findById(probeId: UUID): ProbesEntity = find("id = ?1", probeId).firstResult() ?: throw IllegalArgumentException("Probe not found")
 
     fun findByIdWithLogs(probeId: UUID, hour: Long = 1) = find(
