@@ -4,5 +4,5 @@ dependencies {
     implementation(project(":libs:scheduler-cluster"))
     implementation(project(":libs:scheduler"))
 
-    implementation(libs.quarkus.rabbitmq)
+    implementation(libs.jackson.module.kotlin)
 }

@@ -1,5 +1,7 @@
 package tmenier.fr
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
 import jakarta.inject.Inject
@@ -15,6 +17,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.eclipse.microprofile.reactive.messaging.Incoming
+import org.eclipse.microprofile.reactive.messaging.Message
 import tmenier.fr.common.dtos.NotificationJob
 import tmenier.fr.common.dtos.ProbeJob
 import tmenier.fr.common.dtos.ProbeResult
@@ -25,6 +28,7 @@ import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import tmenier.fr.schedulers.services.SaveProbeMonitor
+import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
@@ -34,8 +38,9 @@ class ProbeWorker(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val probeRepository: ProbeRepository,
+    private val objectMapper: ObjectMapper
 ) {
-    @ConfigProperty(name = "probe.scheduler.strategy", defaultValue = "none")
+    @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
 
     @Inject
@@ -50,17 +55,32 @@ class ProbeWorker(
 
     @Incoming("probe-jobs-in")
     @ActivateRequestContext
-    fun handleProbeJob(job: ProbeJob) {
-        if (strategy != "rabbitmq") return
+    fun handleProbeJob(message: Message<JsonObject>): CompletionStage<Void> {
+        if (strategy != "rabbitmq") {
+            return message.ack()
+        }
 
-        workerScope.launch {
-            try {
-                executeWithRetry(job)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                logger.error(e) { "Unexpected error executing probe ${job.probeId}" }
+        return try {
+            val rawJson = message.payload.encode()
+            val job = objectMapper.readValue(rawJson, ProbeJob::class.java)
+
+            workerScope.launch {
+                try {
+                    executeWithRetry(job)
+                    message.ack()
+                } catch (e: CancellationException) {
+                    message.ack()
+                    throw e
+                } catch (e: Exception) {
+                    logger.error(e) { "Unexpected error executing probe ${job.probeId}" }
+                    message.nack(e)
+                }
             }
+
+            message.ack()
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to deserialize probe job" }
+            message.ack()
         }
     }
 
@@ -69,20 +89,20 @@ class ProbeWorker(
             ProbeMapper.toDto(probeRepository.findById(job.probeId))
         }
 
-        val handler = probeSchedulerFactory.getProtocol(job.protocol)
+        val handler = probeSchedulerFactory.getProtocol(probe.protocol)
             ?: run {
-                logger.warn { "Unknown protocol ${job.protocol}" }
+                logger.warn { "Unknown protocol ${probe.protocol}" }
                 return
             }
 
         @Suppress("UNCHECKED_CAST")
         val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
 
-        val maxAttempts = job.retry + 1
+        val maxAttempts = probe.retry + 1
 
         repeat(maxAttempts) { attempt ->
             val isLastAttempt = attempt == maxAttempts - 1
-            val result = typeHandler.execute(probe, job.content, isLastAttempt)
+            val result = typeHandler.execute(probe, probe.content, isLastAttempt)
 
             when (result.status) {
                 ProbeMonitorLogStatus.SUCCESS -> {

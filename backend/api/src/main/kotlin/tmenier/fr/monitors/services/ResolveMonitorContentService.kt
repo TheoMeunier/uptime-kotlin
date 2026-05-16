@@ -1,7 +1,7 @@
 package tmenier.fr.monitors.services
 
 import jakarta.enterprise.context.ApplicationScoped
-import tmenier.fr.databases.dtos.ProbeContent
+import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest

@@ -9,23 +9,17 @@ import org.minidns.record.AAAA
 import org.minidns.record.CNAME
 import org.minidns.record.Data
 import org.minidns.record.MX
+import org.minidns.record.Record
 import org.minidns.record.TXT
 import org.minidns.source.NetworkDataSource
-import org.minidns.record.Record
+import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
-import tmenier.fr.databases.dtos.ProbeContent
 import tmenier.fr.databases.dtos.ProbeDTO
 import java.net.InetAddress
 import java.net.URI
-import kotlin.collections.List
-import kotlin.collections.filter
-import kotlin.collections.joinToString
-import kotlin.collections.sortedBy
-import kotlin.text.removePrefix
-import kotlin.text.trimEnd
 
 @ApplicationScoped
 class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {

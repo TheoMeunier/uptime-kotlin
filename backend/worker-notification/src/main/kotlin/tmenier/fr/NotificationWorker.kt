@@ -12,7 +12,7 @@ import tmenier.fr.notifications.NotificationService
 class NotificationWorker(
     private val notificationService: NotificationService,
 ) {
-    @ConfigProperty(name = "probe.scheduler.strategy", defaultValue = "none")
+    @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
 
     @Incoming("notification-jobs-in")

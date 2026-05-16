@@ -1,4 +1,4 @@
-package tmenier.fr.databases.dtos
+package tmenier.fr.common.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.monitors.HttpCodeEnum
