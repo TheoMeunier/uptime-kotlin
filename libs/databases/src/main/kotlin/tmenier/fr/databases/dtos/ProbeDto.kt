@@ -35,6 +35,12 @@ data class ProbeWithNotificationsDTO(
 )
 
 @RegisterForReflection
+data class ProbeWithNotificationsIdsDTO(
+    val probe: ProbeDTO,
+    val notifications: List<UUID>,
+)
+
+@RegisterForReflection
 data class ProbeDTO(
     val id: UUID,
     val name: String,

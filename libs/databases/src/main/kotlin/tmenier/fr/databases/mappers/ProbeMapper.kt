@@ -12,6 +12,7 @@ import tmenier.fr.databases.dtos.ProbeShowDTO
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
+import tmenier.fr.databases.dtos.ProbeWithNotificationsIdsDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
 
@@ -124,6 +125,29 @@ object ProbeMapper {
                     content = ProbeContentMapper.toDto(entity),
                 ),
             notifications = entity.notifications.map { NotificationMapper.toDto(it) },
+        )
+    }
+
+    fun toProbeWithNotificationsIdsDto(entity: ProbesEntity): ProbeWithNotificationsIdsDTO {
+        return ProbeWithNotificationsIdsDTO(
+            probe =
+                ProbeDTO(
+                    id = entity.id,
+                    name = entity.name,
+                    interval = entity.interval,
+                    timeout = entity.timeout,
+                    retry = entity.retry,
+                    intervalRetry = entity.intervalRetry,
+                    enabled = entity.enabled,
+                    protocol = entity.protocol,
+                    description = entity.description,
+                    lastRun = entity.lastRun,
+                    status = entity.status,
+                    createdAt = entity.createdAt,
+                    updatedAt = entity.updatedAt,
+                    content = ProbeContentMapper.toDto(entity),
+                ),
+            notifications = entity.notifications.map { it.id },
         )
     }
 
