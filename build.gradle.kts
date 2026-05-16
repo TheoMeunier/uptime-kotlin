@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.allopen)
-    alias(libs.plugins.quarkus)
+    alias(libs.plugins.quarkus) apply false
     id("org.kordamp.gradle.jandex") version "2.1.0" apply false
 }
 
@@ -11,12 +11,10 @@ version = "1.0.0-SNAPSHOT"
 subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
-    apply(plugin = "io.quarkus")
     apply(plugin = "org.kordamp.gradle.jandex")
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
     dependencies {
-        implementation(rootProject.libs.kotlin.stdlib)
         implementation(rootProject.libs.quarkus.kotlin)
         implementation(enforcedPlatform(rootProject.libs.quarkus.bom))
         implementation(rootProject.libs.kotlin.logging)
@@ -34,10 +32,14 @@ subprojects {
         }
     }
 
-    plugins.withId("io.quarkus") {
-        tasks.named("quarkusDependenciesBuild") {
-            dependsOn(tasks.named("jandex"))
-        }
+
+}
+
+configure(subprojects.filter { it.path.startsWith(":backend") }) {
+    apply(plugin = "io.quarkus")
+
+    tasks.named("quarkusDependenciesBuild") {
+        dependsOn(tasks.named("jandex"))
     }
 }
 
