@@ -2,8 +2,10 @@ package tmenier.fr.notifications
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.utils.logger
@@ -22,7 +24,9 @@ class NotificationService(
         result: ProbeResult,
         previousStatus: ProbeMonitorLogStatus,
     ) {
-        val dto = ProbeMapper.toProbeWithNotificationsDto(probeRepository.findById(probeId))
+        val dto = ProbeMapper.toProbeWithNotificationsDto(withContext(Dispatchers.IO) {
+            probeRepository.findById(probeId)
+        })
         val notifications = dto.notifications
 
         if (previousStatus == result.status) {

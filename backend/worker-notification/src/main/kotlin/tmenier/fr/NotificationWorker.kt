@@ -21,6 +21,8 @@ class NotificationWorker(
         if (strategy != "rabbitmq") return
 
         try {
+            logger.info { "Sending notification for probe ${job.probeId}" }
+
             notificationService.sendNotification(
                 job.probeId,
                 job.result,

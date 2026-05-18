@@ -4,11 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
-import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
-import tmenier.fr.databases.dtos.UpdateLastRunDto
 import tmenier.fr.databases.entities.ProbesEntity
-import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
@@ -26,34 +23,36 @@ class SaveProbeMonitor(
         runAt: LocalDateTime,
         result: ProbeResult,
     ) {
-        val manageProbe = ProbeMapper.toDto(probeRepository.findById(probeId))
+        val probe = probeRepository.findById(probeId)
 
-        setLastRun(manageProbe, runAt, result.status)
+        setLastRun(probe, runAt, result.status)
 
         val dto = StoreProbeMonitorLogDto(
             runAt = runAt,
             message = result.message,
             status = result.status,
             responseTime = result.responseTime,
-            probe = manageProbe,
+            probe = ProbeMapper.toDto(probe),
         )
 
         probeMonitorRepository.store(dto)
     }
 
     private fun setLastRun(
-        probe: ProbeDTO,
+        probe: ProbesEntity,
         runAt: LocalDateTime,
         status: ProbeMonitorLogStatus,
     ) {
-        val updateStatus = setOf(ProbeMonitorLogStatus.SUCCESS, ProbeMonitorLogStatus.FAILURE)
+        if (status in updateStatus) {
+            probe.status = status
+        }
 
-        val dto = UpdateLastRunDto(
-            id = probe.id,
-            status = if (probe.status in updateStatus) status else null,
-            lastRun = runAt,
-        )
-
-        probeRepository.updateLastRun(dto)
+        probe.lastRun = runAt
+        probe.persist()
     }
+
+    private val updateStatus = setOf(
+        ProbeMonitorLogStatus.SUCCESS,
+        ProbeMonitorLogStatus.FAILURE,
+    )
 }
