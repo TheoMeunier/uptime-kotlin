@@ -169,12 +169,19 @@ class ProbeWorker(
             )
         }
 
-        notificationEmitter.send(
-            NotificationJob(
-                probeId = job.probeId,
-                result = result,
-                previousStatus = previousStatus,
+        try {
+            notificationEmitter.send(
+                NotificationJob(
+                    probeId = job.probeId,
+                    result = result,
+                    previousStatus = previousStatus,
+                )
             )
-        )
+
+            logger.info { "Probe ${job.probeId} notification sent" }
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to save probe monitor log" }
+            throw e
+        }
     }
 }
