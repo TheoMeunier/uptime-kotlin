@@ -1,5 +1,6 @@
 package tmenier.fr.cluster.election
 
+import io.quarkus.redis.datasource.ReactiveRedisDataSource
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
@@ -19,6 +20,7 @@ class ProbeSchedulerLeader(
     private val leaderElection: LeaderElection,
     @Channel("probe-jobs-out")
     private val probeEmitter: Emitter<ProbeJob>,
+    private val redis: ReactiveRedisDataSource
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
@@ -38,6 +40,17 @@ class ProbeSchedulerLeader(
         logger.info { "Found ${probes.size} due probes at $now" }
 
         probes.forEach {
+            val lockKey = "probe:running:${it.id}"
+
+            val isAlreadyRunning = redis.value(String::class.java)
+                .get(lockKey)
+                .await().indefinitely() != null
+
+            if (isAlreadyRunning) {
+                logger.info { "Probe ${it.id} is already running" }
+                return@forEach
+            }
+
             val job = ProbeJob(
                 probeId = it.id,
                 scheduledAt = now,

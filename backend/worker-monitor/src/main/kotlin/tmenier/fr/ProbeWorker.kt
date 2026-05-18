@@ -1,6 +1,8 @@
 package tmenier.fr
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.redis.datasource.ReactiveRedisDataSource
+import io.quarkus.redis.datasource.value.SetArgs
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
@@ -10,7 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.microprofile.config.inject.ConfigProperty
@@ -28,17 +29,18 @@ import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import tmenier.fr.schedulers.services.SaveProbeMonitor
+import java.time.Duration
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration.Companion.milliseconds
 
 @ApplicationScoped
 class ProbeWorker(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val probeRepository: ProbeRepository,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val redis: ReactiveRedisDataSource
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
@@ -89,54 +91,68 @@ class ProbeWorker(
             ProbeMapper.toDto(probeRepository.findById(job.probeId))
         }
 
-        val handler = probeSchedulerFactory.getProtocol(probe.protocol)
-            ?: run {
-                logger.warn { "Unknown protocol ${probe.protocol}" }
-                return
-            }
+        val lockKey = "probe:running:${job.probeId}"
+        val lockTtl = Duration.ofSeconds((probe.interval + 60).toLong())
 
-        @Suppress("UNCHECKED_CAST")
-        val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
+        withContext(Dispatchers.IO) {
+            redis.value(String::class.java)
+                .set(lockKey, "1", SetArgs().ex(lockTtl))
+                .await().indefinitely()
+        }
 
-        val maxAttempts = probe.retry + 1
-
-        repeat(maxAttempts) { attempt ->
-            val isLastAttempt = attempt == maxAttempts - 1
-            val result = typeHandler.execute(probe, probe.content, isLastAttempt)
-
-            when (result.status) {
-                ProbeMonitorLogStatus.SUCCESS -> {
-                    logger.info { "Probe ${job.probeId} succeeded after ${attempt + 1} attempt(s)" }
-                    saveAndPublishNotification(job, result, probe.status)
+        try {
+            val handler = probeSchedulerFactory.getProtocol(probe.protocol)
+                ?: run {
+                    logger.warn { "Unknown protocol ${probe.protocol}" }
                     return
                 }
 
-                ProbeMonitorLogStatus.WARNING,
-                ProbeMonitorLogStatus.FAILURE -> {
-                    logger.warn { "Probe ${job.probeId} ${result.status} on attempt ${attempt + 1}/$maxAttempts" }
+            @Suppress("UNCHECKED_CAST")
+            val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
 
-                    if (isLastAttempt) {
-                        saveAndPublishNotification(
-                            job,
-                            result.copy(status = ProbeMonitorLogStatus.FAILURE),
-                            probe.status,
-                        )
+            val maxAttempts = if (probe.status == ProbeMonitorLogStatus.FAILURE) 1 else probe.retry + 1
+
+            repeat(maxAttempts) { attempt ->
+                val isLastAttempt = attempt == maxAttempts - 1
+                val result = typeHandler.execute(probe, probe.content, isLastAttempt)
+
+                when (result.status) {
+                    ProbeMonitorLogStatus.SUCCESS -> {
+                        logger.info { "Probe ${job.probeId} ${result.status} after ${attempt + 1} attempt(s)" }
+                        saveAndPublishNotification(job, result, probe.status)
                         return
                     }
 
-                    withContext(Dispatchers.IO) {
-                        saveProbeMonitorLog.saveProbeMonitorLog(
-                            job.probeId,
-                            job.scheduledAt,
-                            result,
-                        )
-                    }
-                }
+                    ProbeMonitorLogStatus.WARNING,
+                    ProbeMonitorLogStatus.FAILURE,
+                        -> {
+                        logger.warn {
+                            "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
+                        }
 
-                else -> {}
+                        if (isLastAttempt) {
+                            saveAndPublishNotification(
+                                job,
+                                result.copy(status = ProbeMonitorLogStatus.FAILURE),
+                                probe.status,
+                            )
+                            return
+                        }
+
+                        saveProbeMonitorLog.saveProbeMonitorLog(probe.id, job.scheduledAt, result)
+                    }
+
+                    else -> {}
+                }
+            }
+        } finally {
+            withContext(Dispatchers.IO) {
+                redis.value(String::class.java)
+                    .getdel(lockKey)
+                    .await().indefinitely()
             }
 
-            delay((probe.retry * 1000L).milliseconds)
+            logger.debug { "Released lock for probe ${job.probeId}" }
         }
     }
 
