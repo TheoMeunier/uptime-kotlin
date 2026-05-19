@@ -1,0 +1,17 @@
+name: App Docker build and push
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    paths: [ 'apps/app/**' ]
+
+defaults:
+  run:
+    working-directory: ./apps/app
+
+jobs:
+  app-build-docker:
+    uses: ./.github/workflows/templates/build-push-docker.yml
+    with:
+      name: App
+      image-name: app

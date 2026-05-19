@@ -1,0 +1,47 @@
+name: build-push-docker-jvm.yml
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        type: string
+        required: true
+      docker-image:
+        type: string
+        required: true
+      project-path-build:
+        type: string
+        required: true
+      dockerfile-path:
+        type: string
+        required: true
+
+jobs:
+  build-push-docker-native:
+    name: ${{ inputs.name }} JVM Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install GraalVM
+        uses: ./.github/workflows/actions/install-gradle.yml
+        with:
+          java-version: '21'
+
+      - name: Build native executable
+        run: ./gradlew ${{ inputs.project-path-build }}:quarkusBuild
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.name }}-jvm
+          path: ./backend/${{ inputs.name }}/build/quarkus-app/quarkus-run.jar
+
+      - name: Build Docker Image Native
+        uses: ./.github/workflows/actions/build-push-docker.yml
+        with:
+          name: ${{ inputs.name }}
+          image-name: ${{ env.IMAGE_NAME }}
+          context: .
+          docker-path-file: ${{ inputs.dockerfile-path }}
