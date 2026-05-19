@@ -1,0 +1,61 @@
+name: api-docker-build-and-push
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_API: ${{ env.REGISTRY }}/${{ github.repository }}/api
+  IMAGE_NAME_WORKER_MONITOR: ${{ env.REGISTRY }}/${{ github.repository }}/worker-monitor
+  IMAGE_NAME_WORKER_NOTIFICATION: ${{ env.REGISTRY }}/${{ github.repository }}/worker-notification
+
+jobs:
+  build-docker-api-native:
+    uses: ./.github/workflows/templates/backend/build-push-docker-native.yml
+    with:
+      name: api
+      docker-image: ${{ env.IMAGE_NAME_API }}
+      dockerfile-path: ./backend/api/src/main/docker/Dockerfile.native
+      project-path-build: :backend:api
+
+  build-docker-api-jvm:
+    uses: ./.github/workflows/templates/backend/build-push-docker-jvm.yml
+    with:
+      name: api
+      docker-image: ${{ env.IMAGE_NAME_API }}
+      dockerfile-path: ./backend/api/src/main/docker/Dockerfile.jvm
+      project-path-build: :backend:api
+
+  build-docker-worker-notification-native:
+    uses: ./.github/workflows/templates/backend/build-push-docker-native.yml
+    with:
+      name: worker notification
+      docker-image: ${{ env.IMAGE_NAME_WORKER_NOTIFICATION }}
+      dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.native
+      project-path-build: :backend:worker-notification
+
+  build-docker-worker-notification-jvm:
+    uses: ./.github/workflows/templates/backend/build-push-docker-jvm.yml
+    with:
+      name: worker notification
+      docker-image: ${{ env.IMAGE_NAME_WORKER_NOTIFICATION }}
+      dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.jvm
+      project-path-build: :backend:worker-notification
+
+  build-docker-worker-monitor-native:
+    uses: ./.github/workflows/templates/backend/build-push-docker-native.yml
+    with:
+      name: worker monitor
+      docker-image: ${{ env.IMAGE_NAME_WORKER_MONITOR }}
+      dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.native
+      project-path-build: :backend:worker-monitor
+
+  build-docker-worker-monitor-jvm:
+    uses: ./.github/workflows/templates/backend/build-push-docker-jvm.yml
+    with:
+      name: worker monitor
+      docker-image: ${{ env.IMAGE_NAME_WORKER_MONITOR }}
+      dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.jvm
+      project-path-build: :backend:worker-monitor

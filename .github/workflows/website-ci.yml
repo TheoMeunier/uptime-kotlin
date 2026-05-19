@@ -2,82 +2,31 @@ name: Website CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
+    paths: [ 'apps/website/**', '.github/workflows/website-ci.yml' ]
+
+env:
+  WORKING_DIRECTORY: apps/website
+  CACHE_PATH: apps/website/package-lock.json
 
 jobs:
   vulnerability-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/website
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: apps/website/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run npm audit
-        run: npm audit --omit=dev --audit-level=high
+    uses: ./.github/workflows/templates/front/front_security.yml
+    with:
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      cache-path: ${{ env.CACHE_PATH }}
 
   lint:
-    name: Linting
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/website
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: apps/website/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Prettier
-        run: npm run format:check
+    uses: ./.github/workflows/templates/front/front_lint.yml
+    with:
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      cache-path: ${{ env.CACHE_PATH }}
 
   build:
-    name: Build
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/website
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: apps/website/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: apps/website/dist
-          retention-days: 7
+    uses: ./.github/workflows/templates/front/front_build.yml
+    with:
+      working-directory: ${{ env.WORKING_DIRECTORY }}
+      cache-path: apps/app/package-lock.json
+      artifact-path: ${{ env.CACHE_PATH }}

@@ -1,0 +1,61 @@
+name: build-push-docker.yml
+
+inputs:
+  name:
+    type: string
+    required: true
+  image-name:
+    type: string
+    required: true
+  context:
+    type: string
+    default: .
+  docker-path-file:
+    type: string
+    required: false
+    default: ''
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ inputs.image-name }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v6
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GH_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=tag
+          type=sha
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push
+      if: ${{ inputs.docker-path-file != '' }}
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.docker-path-file }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Build and push
+      if: ${{ inputs.docker-path-file == '' }}
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.context }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}

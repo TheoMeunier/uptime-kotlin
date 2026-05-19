@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.quarkus) apply false
     id("org.kordamp.gradle.jandex") version "2.1.0" apply false
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0" apply false
 }
 
 group = "tmenier.fr"
@@ -13,6 +14,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
     apply(plugin = "org.kordamp.gradle.jandex")
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     dependencies {
         implementation(rootProject.libs.quarkus.kotlin)

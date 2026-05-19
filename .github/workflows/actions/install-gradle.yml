@@ -1,0 +1,21 @@
+name: install-gradle.yml
+
+inputs:
+  java-version:
+    type: string
+    default: '21'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup Java with GraalVM
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'graalvm'
+        java-version: ${{ inputs.java-version }}
+        cache: 'gradle'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
