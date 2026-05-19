@@ -10,7 +10,7 @@ import java.util.UUID
 @ApplicationScoped
 class StoreProbeAction(
     private val probeRepository: ProbeRepository,
-    private val getProbeContentService: ResolveMonitorContentService
+    private val getProbeContentService: ResolveMonitorContentService,
 ) {
     fun execute(
         payload: BaseStoreProbeRequest,
@@ -18,17 +18,18 @@ class StoreProbeAction(
     ) {
         val isUpdate = probeId != null
 
-        val dto = StoreProbeDto(
-            id = probeId ?: UUID.randomUUID(),
-            name = payload.name,
-            interval = payload.interval!!,
-            intervalRetry = payload.intervalRetry!!,
-            retry = payload.retry!!,
-            protocol = payload.protocol,
-            enabled = payload.enabled == true,
-            description = payload.description,
-            content = getProbeContentService.resolve(payload)
-        )
+        val dto =
+            StoreProbeDto(
+                id = probeId ?: UUID.randomUUID(),
+                name = payload.name,
+                interval = payload.interval!!,
+                intervalRetry = payload.intervalRetry!!,
+                retry = payload.retry!!,
+                protocol = payload.protocol,
+                enabled = payload.enabled == true,
+                description = payload.description,
+                content = getProbeContentService.resolve(payload),
+            )
 
         if (isUpdate) {
             probeRepository.update(dto, payload.notifications)

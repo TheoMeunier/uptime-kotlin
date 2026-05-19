@@ -19,9 +19,10 @@ class ListNotificationResource(
     @GET
     @Authenticated
     fun list(): Response {
-        val notifications = notificationsChannelRepository.getAll().map {
-            NotificationMapper.toSmallDto(it)
-        }
+        val notifications =
+            notificationsChannelRepository.getAll().map {
+                NotificationMapper.toSmallDto(it)
+            }
 
         return Response.ok(notifications).build()
     }

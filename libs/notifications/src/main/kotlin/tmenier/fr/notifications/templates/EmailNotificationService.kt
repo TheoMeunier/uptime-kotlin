@@ -20,7 +20,6 @@ class EmailNotificationService(
     private val logger: Logger,
     private val encryptionService: EncryptionService,
 ) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Mail> {
-
     override fun sendSuccess(
         content: NotificationContent.Mail,
         probe: ProbeDTO,

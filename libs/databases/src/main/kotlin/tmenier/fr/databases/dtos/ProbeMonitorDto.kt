@@ -20,5 +20,5 @@ data class StoreProbeMonitorLogDto(
     val message: String,
     val status: ProbeMonitorLogStatus,
     val responseTime: Long,
-    val probe: ProbeDTO
+    val probe: ProbeDTO,
 )

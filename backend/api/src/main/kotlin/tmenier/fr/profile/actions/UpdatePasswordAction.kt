@@ -12,7 +12,7 @@ import java.util.UUID
 class UpdatePasswordAction(
     private val jwt: JsonWebToken,
     private val passwordService: BcryptService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     fun execute(payload: UpdatePasswordRequest) {
         val userId = UUID.fromString(jwt.name)

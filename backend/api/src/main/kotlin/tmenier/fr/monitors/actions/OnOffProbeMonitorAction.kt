@@ -8,17 +8,18 @@ import java.util.UUID
 
 @ApplicationScoped
 class OnOffProbeMonitorAction(
-    val probeRepository: ProbeRepository
+    val probeRepository: ProbeRepository,
 ) {
     fun execute(
         probeId: UUID,
         enabled: Boolean,
     ) {
-        val dto = ProbeOnOffDto(
-            id = probeId,
-            enabled = enabled,
-            status = if (enabled) ProbeMonitorLogStatus.SUCCESS else ProbeMonitorLogStatus.PAUSE,
-        )
+        val dto =
+            ProbeOnOffDto(
+                id = probeId,
+                enabled = enabled,
+                status = if (enabled) ProbeMonitorLogStatus.SUCCESS else ProbeMonitorLogStatus.PAUSE,
+            )
 
         probeRepository.onOff(dto)
     }

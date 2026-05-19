@@ -14,24 +14,19 @@ data class RefreshTokenDto(
 )
 
 object RefreshTokenMapper {
-
-    fun fromEntity(refreshTokenEntity: RefreshTokenEntity): RefreshTokenDto {
-        return RefreshTokenDto(
+    fun fromEntity(refreshTokenEntity: RefreshTokenEntity): RefreshTokenDto =
+        RefreshTokenDto(
             id = refreshTokenEntity.id,
             token = refreshTokenEntity.refreshToken,
             expiredAt = refreshTokenEntity.expiredAt,
             user = refreshTokenEntity.user.let { UserMapper.fromEntity(it) },
         )
-    }
 
-    fun toEntity(refreshTokenDto: RefreshTokenDto): RefreshTokenEntity {
-        return RefreshTokenEntity().apply {
+    fun toEntity(refreshTokenDto: RefreshTokenDto): RefreshTokenEntity =
+        RefreshTokenEntity().apply {
             id = refreshTokenDto.id
             refreshToken = refreshTokenDto.token
             expiredAt = refreshTokenDto.expiredAt
             user = refreshTokenDto.user.let { UserMapper.toEntity(it) }
         }
-    }
-
 }
-

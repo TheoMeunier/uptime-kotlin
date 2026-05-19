@@ -13,14 +13,16 @@ import java.util.UUID
 
 @ApplicationScoped
 class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
-
     fun findByRefreshToken(refreshToken: UUID): RefreshTokenDto {
         val rt = find("refreshToken = ?1", refreshToken).firstResult() ?: throw InvalidCredentialsException()
 
         return RefreshTokenMapper.fromEntity(rt)
     }
 
-    fun storeRefreshToken(refreshToken: UUID, userDto: UserDto) {
+    fun storeRefreshToken(
+        refreshToken: UUID,
+        userDto: UserDto,
+    ) {
         RefreshTokenEntity()
             .apply {
                 id = UUID.randomUUID()
@@ -32,5 +34,3 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
 
     fun delete(rt: RefreshTokenDto) = RefreshTokenMapper.toEntity(rt).delete()
 }
-
-

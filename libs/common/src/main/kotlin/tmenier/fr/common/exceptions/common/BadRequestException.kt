@@ -6,7 +6,7 @@ import tmenier.fr.common.exceptions.core.ApiException
 class BadRequestException(
     message: String?,
 ) : ApiException(
-    "BAD_REQUEST",
-    message ?: "Bad request.",
-    Response.Status.BAD_REQUEST,
-)
+        "BAD_REQUEST",
+        message ?: "Bad request.",
+        Response.Status.BAD_REQUEST,
+    )

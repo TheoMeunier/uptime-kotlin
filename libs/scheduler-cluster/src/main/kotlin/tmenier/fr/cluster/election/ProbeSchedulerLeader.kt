@@ -20,7 +20,7 @@ class ProbeSchedulerLeader(
     private val leaderElection: LeaderElection,
     @Channel("probe-jobs-out")
     private val probeEmitter: Emitter<ProbeJob>,
-    private val redis: ReactiveRedisDataSource
+    private val redis: ReactiveRedisDataSource,
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
@@ -42,21 +42,26 @@ class ProbeSchedulerLeader(
         probes.forEach {
             val lockKey = "probe:running:${it.id}"
 
-            val isAlreadyRunning = redis.value(String::class.java)
-                .get(lockKey)
-                .await().indefinitely() != null
+            val isAlreadyRunning =
+                redis
+                    .value(String::class.java)
+                    .get(lockKey)
+                    .await()
+                    .indefinitely() != null
 
             if (isAlreadyRunning) {
                 logger.info { "Probe ${it.id} is already running" }
                 return@forEach
             }
 
-            val job = ProbeJob(
-                probeId = it.id,
-                scheduledAt = now,
-            )
+            val job =
+                ProbeJob(
+                    probeId = it.id,
+                    scheduledAt = now,
+                )
 
-            probeEmitter.send(job)
+            probeEmitter
+                .send(job)
                 .whenComplete { _, err ->
                     if (err != null) {
                         logger.error(err) { "Failed to publish probe job ${it.id}" }
@@ -67,9 +72,8 @@ class ProbeSchedulerLeader(
 
             probeRepository.updateNextCheckAt(
                 probeId = it.id,
-                nextCheckAt = now.plusSeconds(it.interval.toLong())
+                nextCheckAt = now.plusSeconds(it.interval.toLong()),
             )
         }
     }
 }
-

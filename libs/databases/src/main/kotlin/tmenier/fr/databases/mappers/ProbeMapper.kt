@@ -62,36 +62,37 @@ object ProbeContentMapper {
 }
 
 object ProbeMapper {
+    fun toEntity(dto: StoreProbeDto): ProbesEntity =
+        ProbesEntity().apply {
+            id = dto.id
+            name = dto.name
+            interval = dto.interval
+            retry = dto.retry
+            intervalRetry = dto.intervalRetry
+            enabled = dto.enabled
+            protocol = dto.protocol
+            description = dto.description
+            content = ProbeContentMapper.toEntity(dto.content).first
+        }
 
-    fun toEntity(dto: StoreProbeDto): ProbesEntity = ProbesEntity().apply {
-        id = dto.id
-        name = dto.name
-        interval = dto.interval
-        retry = dto.retry
-        intervalRetry = dto.intervalRetry
-        enabled = dto.enabled
-        protocol = dto.protocol
-        description = dto.description
-        content = ProbeContentMapper.toEntity(dto.content).first
-    }
-
-    fun toDto(entity: ProbesEntity): ProbeDTO = ProbeDTO(
-        id = entity.id,
-        name = entity.name,
-        interval = entity.interval,
-        timeout = entity.timeout,
-        retry = entity.retry,
-        intervalRetry = entity.intervalRetry,
-        enabled = entity.enabled,
-        protocol = entity.protocol,
-        description = entity.description,
-        lastRun = entity.lastRun,
-        status = entity.status,
-        content = ProbeContentMapper.toDto(entity),
-        url = ProbeContentMapper.toUrl(ProbeContentMapper.toDto(entity)),
-        createdAt = entity.createdAt,
-        updatedAt = entity.updatedAt,
-    )
+    fun toDto(entity: ProbesEntity): ProbeDTO =
+        ProbeDTO(
+            id = entity.id,
+            name = entity.name,
+            interval = entity.interval,
+            timeout = entity.timeout,
+            retry = entity.retry,
+            intervalRetry = entity.intervalRetry,
+            enabled = entity.enabled,
+            protocol = entity.protocol,
+            description = entity.description,
+            lastRun = entity.lastRun,
+            status = entity.status,
+            content = ProbeContentMapper.toDto(entity),
+            url = ProbeContentMapper.toUrl(ProbeContentMapper.toDto(entity)),
+            createdAt = entity.createdAt,
+            updatedAt = entity.updatedAt,
+        )
 
     fun toProbeListDto(entity: ProbesEntity): ProbeListDTO {
         val content = ProbeContentMapper.toDto(entity)
@@ -105,8 +106,8 @@ object ProbeMapper {
         )
     }
 
-    fun toProbeWithNotificationsDto(entity: ProbesEntity): ProbeWithNotificationsDTO {
-        return ProbeWithNotificationsDTO(
+    fun toProbeWithNotificationsDto(entity: ProbesEntity): ProbeWithNotificationsDTO =
+        ProbeWithNotificationsDTO(
             probe =
                 ProbeDTO(
                     id = entity.id,
@@ -126,10 +127,9 @@ object ProbeMapper {
                 ),
             notifications = entity.notifications.map { NotificationMapper.toDto(it) },
         )
-    }
 
-    fun toProbeWithNotificationsIdsDto(entity: ProbesEntity): ProbeWithNotificationsIdsDTO {
-        return ProbeWithNotificationsIdsDTO(
+    fun toProbeWithNotificationsIdsDto(entity: ProbesEntity): ProbeWithNotificationsIdsDTO =
+        ProbeWithNotificationsIdsDTO(
             probe =
                 ProbeDTO(
                     id = entity.id,
@@ -149,9 +149,11 @@ object ProbeMapper {
                 ),
             notifications = entity.notifications.map { it.id },
         )
-    }
 
-    fun toShowDto(entity: ProbesEntity, uptimes: ProbeUptimeDTO? = null): ProbeShowDTO {
+    fun toShowDto(
+        entity: ProbesEntity,
+        uptimes: ProbeUptimeDTO? = null,
+    ): ProbeShowDTO {
         val content = ProbeContentMapper.toDto(entity)
 
         return ProbeShowDTO(
@@ -212,4 +214,3 @@ object ProbeMapper {
         )
     }
 }
-

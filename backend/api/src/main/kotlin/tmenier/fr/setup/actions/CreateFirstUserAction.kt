@@ -11,7 +11,7 @@ import java.util.UUID
 @ApplicationScoped
 class CreateFirstUserAction(
     private val bcryptService: BcryptService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     @Transactional
     fun execute(payload: CreateFirstUserRequest): Boolean {
@@ -21,12 +21,13 @@ class CreateFirstUserAction(
 
         if (payload.password != payload.passwordConfirmation) return false
 
-        val userDto = UserDto(
-            id = UUID.randomUUID(),
-            name = payload.name,
-            email = payload.email,
-            password = bcryptService.hashPassword(payload.password),
-        )
+        val userDto =
+            UserDto(
+                id = UUID.randomUUID(),
+                name = payload.name,
+                email = payload.email,
+                password = bcryptService.hashPassword(payload.password),
+            )
 
         userRepository.store(userDto)
 

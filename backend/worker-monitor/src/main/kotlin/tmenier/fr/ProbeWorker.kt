@@ -40,7 +40,7 @@ class ProbeWorker(
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val probeRepository: ProbeRepository,
     private val objectMapper: ObjectMapper,
-    private val redis: ReactiveRedisDataSource
+    private val redis: ReactiveRedisDataSource,
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
@@ -49,11 +49,12 @@ class ProbeWorker(
     @Channel("notification-jobs-out")
     private lateinit var notificationEmitter: Emitter<NotificationJob>
 
-    private val workerScope = CoroutineScope(
-        Executors.newScheduledThreadPool(4).asCoroutineDispatcher() +
-            CoroutineName("ProbeWorker") +
-            SupervisorJob()
-    )
+    private val workerScope =
+        CoroutineScope(
+            Executors.newScheduledThreadPool(4).asCoroutineDispatcher() +
+                CoroutineName("ProbeWorker") +
+                SupervisorJob(),
+        )
 
     @Incoming("probe-jobs-in")
     @ActivateRequestContext
@@ -87,25 +88,29 @@ class ProbeWorker(
     }
 
     private suspend fun executeWithRetry(job: ProbeJob) {
-        val probe = withContext(Dispatchers.IO) {
-            ProbeMapper.toDto(probeRepository.findById(job.probeId))
-        }
+        val probe =
+            withContext(Dispatchers.IO) {
+                ProbeMapper.toDto(probeRepository.findById(job.probeId))
+            }
 
         val lockKey = "probe:running:${job.probeId}"
         val lockTtl = Duration.ofSeconds((probe.interval + 60).toLong())
 
         withContext(Dispatchers.IO) {
-            redis.value(String::class.java)
+            redis
+                .value(String::class.java)
                 .set(lockKey, "1", SetArgs().ex(lockTtl))
-                .await().indefinitely()
+                .await()
+                .indefinitely()
         }
 
         try {
-            val handler = probeSchedulerFactory.getProtocol(probe.protocol)
-                ?: run {
-                    logger.warn { "Unknown protocol ${probe.protocol}" }
-                    return
-                }
+            val handler =
+                probeSchedulerFactory.getProtocol(probe.protocol)
+                    ?: run {
+                        logger.warn { "Unknown protocol ${probe.protocol}" }
+                        return
+                    }
 
             @Suppress("UNCHECKED_CAST")
             val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
@@ -125,7 +130,7 @@ class ProbeWorker(
 
                     ProbeMonitorLogStatus.WARNING,
                     ProbeMonitorLogStatus.FAILURE,
-                        -> {
+                    -> {
                         logger.warn {
                             "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                         }
@@ -147,9 +152,11 @@ class ProbeWorker(
             }
         } finally {
             withContext(Dispatchers.IO) {
-                redis.value(String::class.java)
+                redis
+                    .value(String::class.java)
                     .getdel(lockKey)
-                    .await().indefinitely()
+                    .await()
+                    .indefinitely()
             }
 
             logger.debug { "Released lock for probe ${job.probeId}" }
@@ -175,7 +182,7 @@ class ProbeWorker(
                     probeId = job.probeId,
                     result = result,
                     previousStatus = previousStatus,
-                )
+                ),
             )
 
             logger.info { "Probe ${job.probeId} notification sent" }

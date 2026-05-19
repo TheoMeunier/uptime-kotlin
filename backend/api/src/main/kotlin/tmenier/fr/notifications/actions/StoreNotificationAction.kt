@@ -12,28 +12,29 @@ import java.util.UUID
 @ApplicationScoped
 class StoreNotificationAction(
     private val notificationChanelRepository: NotificationRepository,
-    private val getNotificationContentService: ResolveNotificationContentService
+    private val getNotificationContentService: ResolveNotificationContentService,
 ) {
-
     @Transactional
     fun execute(
         payload: BaseStoreNotificationRequest,
         notificationId: UUID? = null,
     ) {
         val isUpdate = notificationId != null
-        val existingNotification = if (isUpdate) {
-            NotificationMapper.toDto(notificationChanelRepository.findById(notificationId))
-        } else {
-            null
-        }
+        val existingNotification =
+            if (isUpdate) {
+                NotificationMapper.toDto(notificationChanelRepository.findById(notificationId))
+            } else {
+                null
+            }
 
-        val dto = NotificationDto(
-            id = notificationId ?: UUID.randomUUID(),
-            name = payload.name,
-            type = payload.notificationType,
-            isDefault = payload.isDefault ?: false,
-            content = getNotificationContentService.resolve(payload, isUpdate, existingNotification),
-        )
+        val dto =
+            NotificationDto(
+                id = notificationId ?: UUID.randomUUID(),
+                name = payload.name,
+                type = payload.notificationType,
+                isDefault = payload.isDefault ?: false,
+                content = getNotificationContentService.resolve(payload, isUpdate, existingNotification),
+            )
 
         if (isUpdate) {
             notificationChanelRepository.update(dto)

@@ -26,9 +26,10 @@ class NotificationWorker(
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
 
-    private val workerScope = CoroutineScope(
-        Dispatchers.IO + SupervisorJob()
-    )
+    private val workerScope =
+        CoroutineScope(
+            Dispatchers.IO + SupervisorJob(),
+        )
 
     @Incoming("notification-jobs-in")
     @ActivateRequestContext

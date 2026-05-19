@@ -77,7 +77,6 @@ class ProbesEntity : PanacheEntityBase {
         joinColumns = [JoinColumn("probe_id")],
         inverseJoinColumns = [JoinColumn("notification_channel_id")],
     )
-
     var notifications: MutableSet<NotificationsChannelEntity> = mutableSetOf()
 
     @CreationTimestamp

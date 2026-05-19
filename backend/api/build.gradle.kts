@@ -19,4 +19,3 @@ dependencies {
     testImplementation(libs.quarkus.junit5)
     testImplementation(libs.rest.assured)
 }
-
