@@ -15,24 +15,21 @@ data class UserDto(
 )
 
 object UserMapper {
-
-    fun fromEntity(userEntity: UserEntity): UserDto {
-        return UserDto(
+    fun fromEntity(userEntity: UserEntity): UserDto =
+        UserDto(
             id = userEntity.id,
             name = userEntity.name,
             email = userEntity.email,
             password = userEntity.password,
             createdAt = userEntity.createdAt,
         )
-    }
 
-    fun toEntity(userDto: UserDto): UserEntity {
-        return UserEntity().apply {
+    fun toEntity(userDto: UserDto): UserEntity =
+        UserEntity().apply {
             id = userDto.id
             name = userDto.name
             email = userDto.email
             password = userDto.password
             createdAt = userDto.createdAt ?: LocalDateTime.now()
         }
-    }
 }

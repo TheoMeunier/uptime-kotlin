@@ -15,7 +15,7 @@ import java.util.UUID
 @ApplicationScoped
 class SaveProbeMonitor(
     private val probeRepository: ProbeRepository,
-    private val probeMonitorRepository: ProbeMonitorRepository
+    private val probeMonitorRepository: ProbeMonitorRepository,
 ) {
     @Transactional
     fun saveProbeMonitorLog(
@@ -27,13 +27,14 @@ class SaveProbeMonitor(
 
         setLastRun(probe, runAt, result.status)
 
-        val dto = StoreProbeMonitorLogDto(
-            runAt = runAt,
-            message = result.message,
-            status = result.status,
-            responseTime = result.responseTime,
-            probe = ProbeMapper.toDto(probe),
-        )
+        val dto =
+            StoreProbeMonitorLogDto(
+                runAt = runAt,
+                message = result.message,
+                status = result.status,
+                responseTime = result.responseTime,
+                probe = ProbeMapper.toDto(probe),
+            )
 
         probeMonitorRepository.store(dto)
     }
@@ -51,8 +52,9 @@ class SaveProbeMonitor(
         probe.persist()
     }
 
-    private val updateStatus = setOf(
-        ProbeMonitorLogStatus.SUCCESS,
-        ProbeMonitorLogStatus.FAILURE,
-    )
+    private val updateStatus =
+        setOf(
+            ProbeMonitorLogStatus.SUCCESS,
+            ProbeMonitorLogStatus.FAILURE,
+        )
 }

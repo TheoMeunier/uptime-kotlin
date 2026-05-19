@@ -12,7 +12,7 @@ import tmenier.fr.databases.repositories.ProbeRepository
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class ListingStatusProbes(
-    private val probeRepository: ProbeRepository
+    private val probeRepository: ProbeRepository,
 ) {
     @GET
     fun list(): Response {

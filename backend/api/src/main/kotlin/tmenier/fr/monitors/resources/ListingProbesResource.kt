@@ -16,7 +16,6 @@ import tmenier.fr.databases.repositories.ProbeRepository
 class ListingProbesResource(
     private val probeRepository: ProbeRepository,
 ) {
-
     @GET
     @Authenticated
     fun list(): Response {

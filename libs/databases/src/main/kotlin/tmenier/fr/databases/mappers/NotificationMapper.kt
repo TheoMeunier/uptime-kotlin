@@ -60,37 +60,33 @@ object NotificationContentMapper {
 }
 
 object NotificationMapper {
-
-    fun toEntity(dto: NotificationDto): NotificationsChannelEntity {
-        return NotificationsChannelEntity().apply {
+    fun toEntity(dto: NotificationDto): NotificationsChannelEntity =
+        NotificationsChannelEntity().apply {
             id = dto.id
             name = dto.name
             type = dto.type
             isDefault = dto.isDefault
             content = NotificationContentMapper.toEntity(dto.content).first
         }
-    }
 
-    fun toDto(entity: NotificationsChannelEntity): NotificationDto {
-        return NotificationDto(
+    fun toDto(entity: NotificationsChannelEntity): NotificationDto =
+        NotificationDto(
             id = entity.id,
             name = entity.name,
             type = entity.type,
             isDefault = entity.isDefault,
             content = NotificationContentMapper.toDTO(entity),
         )
-    }
 
-    fun toSmallDto(entity: NotificationsChannelEntity): ListingNotificationsDto {
-        return ListingNotificationsDto(
+    fun toSmallDto(entity: NotificationsChannelEntity): ListingNotificationsDto =
+        ListingNotificationsDto(
             id = entity.id,
             name = entity.name,
             isDefault = entity.isDefault,
         )
-    }
 
-    fun toShowDto(entity: NotificationsChannelEntity): ShowNotificationsDto {
-        return ShowNotificationsDto(
+    fun toShowDto(entity: NotificationsChannelEntity): ShowNotificationsDto =
+        ShowNotificationsDto(
             id = entity.id,
             name = entity.name,
             notificationType = entity.type,
@@ -98,5 +94,4 @@ object NotificationMapper {
             isDefault = entity.isDefault,
             createdAt = entity.createdAt,
         )
-    }
 }

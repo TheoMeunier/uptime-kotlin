@@ -16,7 +16,7 @@ import java.util.UUID
 @ApplicationScoped
 class NotificationService(
     val notificationFactory: NotificationFactory,
-    val probeRepository: ProbeRepository
+    val probeRepository: ProbeRepository,
 ) {
     @Transactional
     suspend fun sendNotification(
@@ -24,9 +24,12 @@ class NotificationService(
         result: ProbeResult,
         previousStatus: ProbeMonitorLogStatus,
     ) {
-        val dto = ProbeMapper.toProbeWithNotificationsDto(withContext(Dispatchers.IO) {
-            probeRepository.findById(probeId)
-        })
+        val dto =
+            ProbeMapper.toProbeWithNotificationsDto(
+                withContext(Dispatchers.IO) {
+                    probeRepository.findById(probeId)
+                },
+            )
         val notifications = dto.notifications
 
         if (previousStatus == result.status) {

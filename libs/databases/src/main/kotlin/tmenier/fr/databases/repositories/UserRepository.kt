@@ -10,10 +10,7 @@ import java.util.UUID
 
 @ApplicationScoped
 class UserRepository : PanacheRepository<UserEntity> {
-
-    fun findById(id: UUID): UserEntity {
-        return find("id = ?1", id).firstResult() ?: throw NotFoundException("User not found with id")
-    }
+    fun findById(id: UUID): UserEntity = find("id = ?1", id).firstResult() ?: throw NotFoundException("User not found with id")
 
     fun findByEmail(email: String): UserDto {
         val user = find("email = ?1", email).firstResult() ?: throw NotFoundException("User not found with email: $email")
@@ -24,12 +21,13 @@ class UserRepository : PanacheRepository<UserEntity> {
     fun countAll() = count()
 
     fun store(dto: UserDto) {
-        UserEntity().apply {
-            id = UUID.randomUUID()
-            name = dto.name
-            email = dto.email
-            password = dto.password
-        }.persist()
+        UserEntity()
+            .apply {
+                id = UUID.randomUUID()
+                name = dto.name
+                email = dto.email
+                password = dto.password
+            }.persist()
     }
 
     fun update(userDto: UserDto) {
@@ -41,11 +39,13 @@ class UserRepository : PanacheRepository<UserEntity> {
         user.persist()
     }
 
-    fun updatePassword(userId: UUID, password: String) {
+    fun updatePassword(
+        userId: UUID,
+        password: String,
+    ) {
         val userEntity = find("id = ?1", userId).firstResult() ?: throw NotFoundException("User not found with id")
 
         userEntity.password = password
         userEntity.persist()
     }
 }
-

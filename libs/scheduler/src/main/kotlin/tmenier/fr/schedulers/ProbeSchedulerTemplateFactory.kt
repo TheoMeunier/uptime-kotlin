@@ -146,7 +146,7 @@ class ProbeSchedulerTemplateFactory(
 
                 ProbeMonitorLogStatus.WARNING,
                 ProbeMonitorLogStatus.FAILURE,
-                    -> {
+                -> {
                     logger.warn {
                         "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                     }

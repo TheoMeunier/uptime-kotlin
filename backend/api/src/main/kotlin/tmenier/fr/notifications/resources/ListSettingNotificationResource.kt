@@ -14,7 +14,7 @@ import tmenier.fr.databases.repositories.NotificationRepository
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class ListSettingNotificationResource(
-    private val notificationRepository: NotificationRepository
+    private val notificationRepository: NotificationRepository,
 ) {
     @GET
     @Authenticated

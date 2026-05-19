@@ -19,7 +19,6 @@ class ResolveNotificationContentService(
     private val encryptionService: EncryptionService,
     private val objectMapper: ObjectMapper,
 ) {
-
     fun resolveForTesting(request: BaseStoreNotificationRequest): NotificationContent =
         resolve(request, isUpdate = false, existingNotification = null, isTesting = true)
 
@@ -28,43 +27,50 @@ class ResolveNotificationContentService(
         isUpdate: Boolean,
         existingNotification: NotificationDto?,
         isTesting: Boolean = false,
-    ): NotificationContent = when (request) {
-        is ValidNotificationChannelDiscordRequest -> NotificationContent.Discord(
-            webhookUrl = request.webhookUrl,
-            username = request.username,
-        )
+    ): NotificationContent =
+        when (request) {
+            is ValidNotificationChannelDiscordRequest ->
+                NotificationContent.Discord(
+                    webhookUrl = request.webhookUrl,
+                    username = request.username,
+                )
 
-        is ValidNotificationChannelSlackRequest -> NotificationContent.Slack(
-            webhookUrl = request.webhookUrl,
-            username = request.username,
-        )
+            is ValidNotificationChannelSlackRequest ->
+                NotificationContent.Slack(
+                    webhookUrl = request.webhookUrl,
+                    username = request.username,
+                )
 
-        is ValidNotificationChannelTeamsRequest -> NotificationContent.Teams(
-            webhookUrl = request.webhookUrl,
-            username = request.username,
-        )
+            is ValidNotificationChannelTeamsRequest ->
+                NotificationContent.Teams(
+                    webhookUrl = request.webhookUrl,
+                    username = request.username,
+                )
 
-        is ValidNotificationChannelWebhookRequest -> NotificationContent.Webhook(
-            url = request.url,
-            method = request.method,
-        )
+            is ValidNotificationChannelWebhookRequest ->
+                NotificationContent.Webhook(
+                    url = request.url,
+                    method = request.method,
+                )
 
-        is ValidNotificationChannelMailRequest -> NotificationContent.Mail(
-            hostname = request.hostname,
-            port = request.port,
-            starttls = request.starttls ?: false,
-            username = request.username,
-            password = if (isTesting) {
-                requireNotNull(request.password) { "Password is required for testing" }
-            } else {
-                resolvePassword(request.password, isUpdate, existingNotification)
-            },
-            from = request.from,
-            to = request.to,
-        )
+            is ValidNotificationChannelMailRequest ->
+                NotificationContent.Mail(
+                    hostname = request.hostname,
+                    port = request.port,
+                    starttls = request.starttls ?: false,
+                    username = request.username,
+                    password =
+                        if (isTesting) {
+                            requireNotNull(request.password) { "Password is required for testing" }
+                        } else {
+                            resolvePassword(request.password, isUpdate, existingNotification)
+                        },
+                    from = request.from,
+                    to = request.to,
+                )
 
-        else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
-    }
+            else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
+        }
 
     private fun resolvePassword(
         incomingPassword: String?,
@@ -79,9 +85,10 @@ class ResolveNotificationContentService(
         return if (incomingPassword != null) {
             encryptionService.encrypt(incomingPassword)
         } else {
-            val content = requireNotNull(existingNotification) {
-                "Existing notification not found for update"
-            }.content
+            val content =
+                requireNotNull(existingNotification) {
+                    "Existing notification not found for update"
+                }.content
 
             val contentAsJsonNode = objectMapper.valueToTree<JsonNode>(content)
 

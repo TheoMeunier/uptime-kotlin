@@ -16,9 +16,8 @@ import java.util.UUID
 
 @ApplicationScoped
 class DashboardRepository(
-    private val em: EntityManager
+    private val em: EntityManager,
 ) {
-
     fun getMonitorsSummary(): MonitorSummary {
         val jpql =
             """
