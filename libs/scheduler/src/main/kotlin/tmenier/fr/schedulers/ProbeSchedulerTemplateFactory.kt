@@ -83,7 +83,6 @@ class ProbeSchedulerTemplateFactory(
                 while (isActive) {
                     val probe =
                         loadProbe(probeId)
-                            ?: break
 
                     if (!probe.enabled) {
                         logger.info { "Probe $probeId disabled, stopping job" }

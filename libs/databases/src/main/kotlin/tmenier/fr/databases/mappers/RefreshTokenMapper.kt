@@ -29,7 +29,7 @@ object RefreshTokenMapper {
             id = refreshTokenDto.id
             refreshToken = refreshTokenDto.token
             expiredAt = refreshTokenDto.expiredAt
-            user = refreshTokenDto.user?.let { UserMapper.toEntity(it) } ?: throw IllegalArgumentException("User cannot be null")
+            user = refreshTokenDto.user.let { UserMapper.toEntity(it) }
         }
     }
 

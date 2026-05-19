@@ -21,7 +21,7 @@ class ProbeRepository(
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
 
     @Transactional
-    override fun findById(probeId: UUID): ProbesEntity = find("id = ?1", probeId).firstResult() ?: throw IllegalArgumentException("Probe not found")
+    override fun findById(id: UUID): ProbesEntity = find("id = ?1", id).firstResult() ?: throw IllegalArgumentException("Probe not found")
 
     fun findByIdWithLogs(probeId: UUID, hour: Long = 1) = find(
         "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2 ORDER BY pml.runAt ASC",
