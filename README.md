@@ -13,8 +13,8 @@
 
 ## About The Project
 
-A simple, lightweight, and self-hostable uptime monitoring tool, built and optimized for cloud deployment.
-Ideal for monitoring service availability without relying on external solutions.
+A simple, lightweight, and self-hostable uptime monitoring tool, built and optimized for cloud deployment. Ideal for
+monitoring service availability without relying on external solutions.
 
 <table>
   <tr>
@@ -159,14 +159,87 @@ networks:
    http://localhost:8888
 ```
 
+### Cluster mode
+
+The cluster mode allows you to run multiple API/Workers instances in parallel, distributing monitoring checks and
+notifications across them. Redis is used for shared state and distributed locking (preventing duplicate checks), while
+RabbitMQ handles task queuing between instances.
+
+#### Prerequisites
+
+- [Redis](https://redis.io/)
+- [Rabbitmq](https://www.rabbitmq.com/)
+
+#### Add Services (Worker monitors and notifications)
+
+```yaml
+uptime-kotlin-worker-notification:
+  image: ghcr.io/theomeunier/uptime-kotlin/worker-notification:latest
+  container_name: uptime_kotlin_worker_notification
+  restart: unless-stopped
+  ports:
+    - "8081:8080"
+  environment:
+    TZ: Europe/Paris
+    SCHEDULER_STRATEGY: rabbitmq
+    QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
+    QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
+    QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
+    RABBITMQ_HOST: localhost
+    RABBITMQ_PORT: 5672
+    RABBITMQ_USERNAME: uptime_kotlin_rabbitmq_username
+    RABBITMQ_PASSWORD: uptime_kotlin_rabbitmq_password
+  depends_on:
+    - uptime_kotlin_rabbitmq
+  networks:
+    - app_network
+
+uptime-kotlin-worker-monitor:
+  image: ghcr.io/theomeunier/uptime-kotlin/worker-monitor:latest
+  container_name: uptime_kotlin_worker_monitor
+  restart: unless-stopped
+  ports:
+    - "8082:8080"
+  environment:
+    TZ: Europe/Paris
+    SCHEDULER_STRATEGY: rabbitmq
+    QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
+    QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
+    QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
+    QUARKUS_REDIS_HOSTS: redis://username:password@host:port/database
+    RABBITMQ_HOST: localhost
+    RABBITMQ_PORT: 5672
+    RABBITMQ_USERNAME: uptime_kotlin_rabbitmq_username
+    RABBITMQ_PASSWORD: uptime_kotlin_rabbitmq_password
+  depends_on:
+    - uptime_kotlin_rabbitmq
+    - uptime_kotlin_redis
+  networks:
+    - app_network
+
+```
+
+#### Configure the` variable environnement` file
+
+1. Cluster mode
+    - `SCHEDULER_STRATEGY`: Application and worker mode
+
+2. Redis
+    - `QUARKUS_REDIS_HOSTS=redis://[username:password@][host][:port][/database]`: The URL of your Redis database
+
+3. Rabbitmq
+    - `RABBITMQ_HOST`: The host your rabbitmq
+    - `RABBITMQ_PORT`: The port of your rabbitmq
+    - `RABBITMQ_USERNAME`: The username of your rabbitmq
+    - `RABBITMQ_USERNAME`: The password of your rabbitmq
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
 contributions you make are **greatly appreciated**.
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
-simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
