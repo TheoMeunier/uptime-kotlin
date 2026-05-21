@@ -6,10 +6,9 @@ on:
       - 'v*.*.*'
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME_API: ${{ env.REGISTRY }}/${{ github.repository }}/api
-  IMAGE_NAME_WORKER_MONITOR: ${{ env.REGISTRY }}/${{ github.repository }}/worker-monitor
-  IMAGE_NAME_WORKER_NOTIFICATION: ${{ env.REGISTRY }}/${{ github.repository }}/worker-notification
+  IMAGE_NAME_API: ghcr.io/${{ github.repository }}/api
+  IMAGE_NAME_WORKER_MONITOR: ghcr.io/${{ github.repository }}/worker-monitor
+  IMAGE_NAME_WORKER_NOTIFICATION: ghcr.io/${{ github.repository }}/worker-notification
 
 jobs:
   build-docker-api-native:
