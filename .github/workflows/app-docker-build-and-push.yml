@@ -21,4 +21,5 @@ jobs:
         with:
           name: App
           image-name: app
+          context: ./apps/app
           registry-token: ${{ secrets.GH_TOKEN }}
