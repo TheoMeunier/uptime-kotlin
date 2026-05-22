@@ -40,7 +40,7 @@ runs:
       uses: ./.github/actions/build-push-docker
       with:
         name: ${{ inputs.name }}
-        image-name: ${{ env.IMAGE_NAME }}
+        image-name: ${{ inputs.IMAGE_NAME }}
         context: .
         docker-path-file: ${{ inputs.dockerfile-path }}
         registry-token: ${{ inputs.registry-token }}
