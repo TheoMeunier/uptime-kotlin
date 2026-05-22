@@ -20,7 +20,8 @@ env:
   IMAGE_NAME: ${{ inputs.image-name }}
 
 runs:
-  using: composite
+  using: 'composite'
+
   steps:
     - uses: actions/checkout@v6
 

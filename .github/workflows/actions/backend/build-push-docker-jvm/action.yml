@@ -14,14 +14,16 @@ inputs:
     type: string
     required: true
 
-run:
+runs:
+  using: 'composite'
   steps:
     - name: Install GraalVM
-      uses: ./.github/workflows/actions/install-gradle.yml
+      uses: ./.github/workflows/actions/install-gradle
       with:
         java-version: '21'
 
     - name: Build native executable
+      shell: bash
       run: ./gradlew ${{ inputs.project-path-build }}:quarkusBuild
 
     - name: Upload artifact
@@ -31,7 +33,7 @@ run:
         path: ./backend/${{ inputs.name }}/build/quarkus-app/quarkus-run.jar
 
     - name: Build Docker Image Native
-      uses: ./.github/workflows/actions/build-push-docker.yml
+      uses: ./.github/workflows/actions/build-push-docker
       with:
         name: ${{ inputs.name }}
         image-name: ${{ env.IMAGE_NAME }}
