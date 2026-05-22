@@ -5,56 +5,58 @@ on:
     tags:
       - 'v*.*.*'
 
-env:
-  IMAGE_NAME_API: ghcr.io/${{ github.repository }}/api
-  IMAGE_NAME_WORKER_MONITOR: ghcr.io/${{ github.repository }}/worker-monitor
-  IMAGE_NAME_WORKER_NOTIFICATION: ghcr.io/${{ github.repository }}/worker-notification
-
 jobs:
   build-docker-api-native:
-    uses: ./.github/workflows/templates/backend/build-push-docker-native.yml
-    with:
-      name: api
-      docker-image: ${{ env.IMAGE_NAME_API }}
-      dockerfile-path: ./backend/api/src/main/docker/Dockerfile.native
-      project-path-build: :backend:api
+    name: Backend build and push docker image
+    runs-on: ubuntu-latest
 
-  build-docker-api-jvm:
-    uses: ./.github/workflows/templates/backend/build-push-docker-jvm.yml
-    with:
-      name: api
-      docker-image: ${{ env.IMAGE_NAME_API }}
-      dockerfile-path: ./backend/api/src/main/docker/Dockerfile.jvm
-      project-path-build: :backend:api
+    steps:
+      - uses: actions/checkout@v6
 
-  build-docker-worker-notification-native:
-    uses: ./.github/workflows/templates/backend/build-push-docker-native.yml
-    with:
-      name: worker notification
-      docker-image: ${{ env.IMAGE_NAME_WORKER_NOTIFICATION }}
-      dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.native
-      project-path-build: :backend:worker-notification
+      - name: API native build
+        uses: ./.github/workflows/actions/backend/build-push-docker-native.yml
+        with:
+          name: api
+          docker-image: ghcr.io/${{ github.repository }}/api
+          dockerfile-path: ./backend/api/src/main/docker/Dockerfile.native
+          project-path-build: :backend:api
 
-  build-docker-worker-notification-jvm:
-    uses: ./.github/workflows/templates/backend/build-push-docker-jvm.yml
-    with:
-      name: worker notification
-      docker-image: ${{ env.IMAGE_NAME_WORKER_NOTIFICATION }}
-      dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.jvm
-      project-path-build: :backend:worker-notification
+      - name: API jvm build
+        uses: ./.github/workflows/actions/backend/build-push-docker-jvm.yml
+        with:
+          name: api
+          docker-image: ghcr.io/${{ github.repository }}/api-jvm
+          dockerfile-path: ./backend/api/src/main/docker/Dockerfile.jvm
+          project-path-build: :backend:api
 
-  build-docker-worker-monitor-native:
-    uses: ./.github/workflows/templates/backend/build-push-docker-native.yml
-    with:
-      name: worker monitor
-      docker-image: ${{ env.IMAGE_NAME_WORKER_MONITOR }}
-      dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.native
-      project-path-build: :backend:worker-monitor
+      - name: Worker monitor native build
+        uses: ./.github/workflows/actions/backend/build-push-docker-native.yml
+        with:
+          name: worker-monitor
+          docker-image: ghcr.io/${{ github.repository }}/worker-monitor
+          dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.native
+          project-path-build: :backend:worker-monitor
 
-  build-docker-worker-monitor-jvm:
-    uses: ./.github/workflows/templates/backend/build-push-docker-jvm.yml
-    with:
-      name: worker monitor
-      docker-image: ${{ env.IMAGE_NAME_WORKER_MONITOR }}
-      dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.jvm
-      project-path-build: :backend:worker-monitor
+      - name: Worker monitor jvm build
+        uses: ./.github/workflows/actions/backend/build-push-docker-jvm.yml
+        with:
+          name: worker-monitor
+          docker-image: ghcr.io/${{ github.repository }}/worker-monitor-jvm
+          dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.jvm
+          project-path-build: :backend:worker-monitor
+
+      - name: Worker notification native build
+        uses: ./.github/workflows/actions/backend/build-push-docker-native.yml
+        with:
+          name: worker-notification
+          docker-image: ghcr.io/${{ github.repository }}/worker-notification
+          dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.native
+          project-path-build: :backend:worker-notification
+
+      - name: Worker notification jvm build
+        uses: ./.github/workflows/actions/backend/build-push-docker-jvm.yml
+        with:
+          name: worker-notification
+          docker-image: ghcr.io/${{ github.repository }}/worker-notification-jvm
+          dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.jvm
+          project-path-build: :backend:worker-notification

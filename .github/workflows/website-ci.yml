@@ -13,19 +13,19 @@ env:
 
 jobs:
   vulnerability-scan:
-    uses: ./.github/workflows/templates/front/front_security.yml
+    uses: ./.github/workflows/actions/frontend/front_security.yml
     with:
       working-directory: ${{ env.WORKING_DIRECTORY }}
       cache-path: ${{ env.CACHE_PATH }}
 
   lint:
-    uses: ./.github/workflows/templates/front/front_lint.yml
+    uses: ./.github/workflows/actions/frontend/front_lint.yml
     with:
       working-directory: ${{ env.WORKING_DIRECTORY }}
       cache-path: ${{ env.CACHE_PATH }}
 
   build:
-    uses: ./.github/workflows/templates/front/front_build.yml
+    uses: ./.github/workflows/actions/frontend/front_build.yml
     with:
       working-directory: ${{ env.WORKING_DIRECTORY }}
       cache-path: apps/app/package-lock.json
