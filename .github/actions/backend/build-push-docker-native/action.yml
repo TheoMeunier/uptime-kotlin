@@ -19,7 +19,7 @@ runs:
 
   steps:
     - name: Install GraalVM
-      uses: ./.github/workflows/actions/install-gradle
+      uses: ./.github/actions/install-gradle
       with:
         java-version: '21'
 
@@ -34,7 +34,7 @@ runs:
         path: ./build/${{ inputs.name }}/*-runner
 
     - name: Build Docker Image Native
-      uses: ./.github/workflows/actions/build-push-docker
+      uses: ./.github/actions/build-push-docker
       with:
         name: ${{ inputs.name }}
         image-name: ${{ env.IMAGE_NAME }}
