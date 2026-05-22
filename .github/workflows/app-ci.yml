@@ -7,26 +7,22 @@ on:
     branches: [ main ]
     paths: [ 'apps/app/**', '.github/workflows/app-ci.yml' ]
 
-env:
-  WORKING_DIRECTORY: apps/app
-  CACHE_PATH: apps/app/package-lock.json
-
 jobs:
   vulnerability-scan:
-    uses: ./.github/workflows/templates/front/front_security.yml
+    uses: ./.github/workflows/actions/frontend/front_security.yml
     with:
-      working-directory: ${{ env.WORKING_DIRECTORY }}
-      cache-path: ${{ env.CACHE_PATH }}
+      working-directory: apps/app
+      cache-path: apps/app/package-lock.json
 
   lint:
-    uses: ./.github/workflows/templates/front/front_lint.yml
+    uses: ./.github/workflows/actions/frontend/front_lint.yml
     with:
-      working-directory: ${{ env.WORKING_DIRECTORY }}
-      cache-path: ${{ env.CACHE_PATH }}
+      working-directory: apps/app
+      cache-path: apps/app/package-lock.json
 
   build:
-    uses: ./.github/workflows/templates/front/front_build.yml
+    uses: ./.github/workflows/actions/frontend/front_build.yml
     with:
-      working-directory: ${{ env.WORKING_DIRECTORY }}
-      cache-path: ${{ env.CACHE_PATH }}
+      working-directory: apps/app
+      cache-path: apps/app/package-lock.json
       artifact-path: apps/app/dist

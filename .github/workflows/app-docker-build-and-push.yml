@@ -9,8 +9,15 @@ defaults:
     working-directory: ./apps/app
 
 jobs:
-  app-build-docker:
-    uses: ./.github/workflows/templates/build-push-docker.yml
-    with:
-      name: App
-      image-name: app
+  app-build-and-push:
+    name: App build and push docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: build and push
+        uses: ./.github/workflows/actions/build-push-docker.yml
+        with:
+          name: App
+          image-name: app
