@@ -7,22 +7,35 @@ on:
     branches: [ main ]
     paths: [ 'apps/app/**', '.github/workflows/app-ci.yml' ]
 
+
 jobs:
   vulnerability-scan:
-    uses: ./.github/workflows/actions/frontend/front_security.yml
-    with:
-      working-directory: apps/app
-      cache-path: apps/app/package-lock.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/frontend/front-security
+        with:
+          working-directory: apps/app
+          cache-path: apps/app/package-lock.json
 
   lint:
-    uses: ./.github/workflows/actions/frontend/front_lint.yml
-    with:
-      working-directory: apps/app
-      cache-path: apps/app/package-lock.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/frontend/front-lint
+        with:
+          working-directory: apps/app
+          cache-path: apps/app/package-lock.json
 
   build:
-    uses: ./.github/workflows/actions/frontend/front_build.yml
-    with:
-      working-directory: apps/app
-      cache-path: apps/app/package-lock.json
-      artifact-path: apps/app/dist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/frontend/front-build
+        with:
+          working-directory: apps/app
+          cache-path: apps/app/package-lock.json
+          artifact-path: apps/app/dist
