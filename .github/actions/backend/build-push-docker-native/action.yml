@@ -16,6 +16,9 @@ inputs:
   registry-token:
     required: true
     description: "registry token"
+  context:
+    required: true
+    description: 'context application'
 
 runs:
   using: 'composite'
@@ -40,7 +43,7 @@ runs:
       uses: ./.github/actions/build-push-docker
       with:
         name: ${{ inputs.name }}
-        image-name: ${{ inputs.IMAGE_NAME }}
-        context: .
+        image-name: ${{ inputs.docker-image }}
+        context: ${{ inputs.context }}
         docker-path-file: ${{ inputs.dockerfile-path }}
         registry-token: ${{ inputs.registry-token }}

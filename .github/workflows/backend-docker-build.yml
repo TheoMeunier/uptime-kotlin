@@ -21,6 +21,7 @@ jobs:
           dockerfile-path: ./backend/api/src/main/docker/Dockerfile.native
           project-path-build: :backend:api
           registry-token: ${{ secrets.GH_TOKEN }}
+          context: ./backend/api
 
   api-build-jvm:
     name: api jvm build and push docker image
@@ -37,6 +38,7 @@ jobs:
           dockerfile-path: ./backend/api/src/main/docker/Dockerfile.jvm
           project-path-build: :backend:api
           registry-token: ${{ secrets.GH_TOKEN }}
+          context: ./backend/api
 
   worker-monitor-build-native:
     name: worker monitor native build and push docker image
@@ -53,6 +55,7 @@ jobs:
           dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.native
           project-path-build: :backend:worker-monitor
           registry-token: ${{ secrets.GH_TOKEN }}
+          context: ./backend/worker-monitor
 
   worker-monitor-build-jvm:
     name: worker monitor jvm build and push docker image
@@ -69,6 +72,7 @@ jobs:
           dockerfile-path: ./backend/worker-monitor/src/main/docker/Dockerfile.jvm
           project-path-build: :backend:worker-monitor
           registry-token: ${{ secrets.GH_TOKEN }}
+          context: ./backend/worker-monitor
 
   worker-notification-build-native:
     name: worker notification native build and push docker image
@@ -85,9 +89,10 @@ jobs:
           dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.native
           project-path-build: :backend:worker-notification
           registry-token: ${{ secrets.GH_TOKEN }}
+          context: ./backend/worker-notification
 
   worker-notification-build-jvm:
-    name: worker monitor jvm build and push docker image
+    name: worker notification jvm build and push docker image
     runs-on: ubuntu-latest
 
     steps:
@@ -101,3 +106,4 @@ jobs:
           dockerfile-path: ./backend/worker-notification/src/main/docker/Dockerfile.jvm
           project-path-build: :backend:worker-notification
           registry-token: ${{ secrets.GH_TOKEN }}
+          context: ./backend/worker-notification
