@@ -23,3 +23,4 @@ jobs:
           image-name: ${{ env.REGISTRY }}/${{ github.repository }}/website
           name: website
           registry-token: ${{ secrets.GH_TOKEN }}
+

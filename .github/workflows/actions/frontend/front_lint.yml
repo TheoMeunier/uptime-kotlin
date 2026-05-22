@@ -1,0 +1,26 @@
+name: front_security.yml
+
+inputs:
+  node-version:
+    type: string
+    default: '24'
+  cache-path:
+    type: string
+    required: true
+  working-directory:
+    type: string
+    required: true
+
+run:
+  steps:
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ${{ inputs.cache-path }}
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Prettier
+      run: npm run format:check

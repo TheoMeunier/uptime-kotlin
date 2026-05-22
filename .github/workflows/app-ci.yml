@@ -7,7 +7,6 @@ on:
     branches: [ "*" ]
     paths: [ 'apps/app/**', '.github/workflows/app-ci.yml' ]
 
-
 jobs:
   vulnerability-scan:
     runs-on: ubuntu-latest
@@ -39,3 +38,4 @@ jobs:
           working-directory: apps/app
           cache-path: apps/app/package-lock.json
           artifact-path: apps/app/dist
+
