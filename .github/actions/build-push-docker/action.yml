@@ -14,6 +14,9 @@ inputs:
     type: string
     required: false
     default: ''
+  registry-token:
+    required: true
+    description: "registry token"
 
 runs:
   using: 'composite'
@@ -26,7 +29,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GH_TOKEN }}
+        password: ${{ inputs.registry-token }}
 
     - name: Extract metadata
       id: meta

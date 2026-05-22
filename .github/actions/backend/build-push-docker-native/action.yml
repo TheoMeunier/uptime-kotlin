@@ -13,6 +13,9 @@ inputs:
   dockerfile-path:
     type: string
     required: true
+  registry-token:
+    required: true
+    description: "registry token"
 
 runs:
   using: 'composite'
@@ -40,3 +43,4 @@ runs:
         image-name: ${{ env.IMAGE_NAME }}
         context: .
         docker-path-file: ${{ inputs.dockerfile-path }}
+        registry-token: ${{ inputs.registry-token }}
