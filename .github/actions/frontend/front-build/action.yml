@@ -15,7 +15,7 @@ inputs:
     required: true
 
 runs:
-  using: composite
+  using: 'composite'
 
   steps:
     - uses: actions/setup-node@v6
@@ -25,9 +25,11 @@ runs:
         cache-dependency-path: ${{ inputs.cache-path }}
 
     - name: Install dependencies
+      shell: bash
       run: npm ci
 
     - name: Build project
+      shell: bash
       run: npm run build
 
     - name: Upload build artifacts

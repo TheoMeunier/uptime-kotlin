@@ -12,7 +12,9 @@ inputs:
     type: string
     required: true
 
-run:
+runs:
+  using: 'composite'
+
   steps:
     - uses: actions/setup-node@v6
       with:
@@ -21,7 +23,9 @@ run:
         cache-dependency-path: ${{ inputs.cache-path }}
 
     - name: Install dependencies
+      shell: bash
       run: npm ci
 
     - name: Run npm audit
       run: npm audit --omit=dev --audit-level=high
+      shell: bash

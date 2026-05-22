@@ -11,10 +11,10 @@ inputs:
     type: string
     required: true
 
-run:
-  steps:
-    - uses: actions/ch
+runs:
+  using: 'composite'
 
+  steps:
     - uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
@@ -22,7 +22,9 @@ run:
         cache-dependency-path: ${{ inputs.cache-path }}
 
     - name: Install dependencies
+      shell: bash
       run: npm ci
 
     - name: Run Prettier
+      shell: bash
       run: npm run format:check
