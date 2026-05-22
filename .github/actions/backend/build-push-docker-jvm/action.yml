@@ -1,0 +1,48 @@
+name: build-push-docker-jvm.yml
+
+inputs:
+  name:
+    type: string
+    required: true
+  docker-image:
+    type: string
+    required: true
+  project-path-build:
+    type: string
+    required: true
+  dockerfile-path:
+    type: string
+    required: true
+  registry-token:
+    required: true
+    description: 'registry token'
+  context:
+    required: true
+    description: 'context application'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install GraalVM
+      uses: ./.github/actions/install-gradle
+      with:
+        java-version: '21'
+
+    - name: Build native executable
+      shell: bash
+      run: ./gradlew ${{ inputs.project-path-build }}:quarkusBuild
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+        path: ./backend/${{ inputs.name }}/build/quarkus-app/quarkus-run.jar
+
+    - name: Build Docker Image Native
+      uses: ./.github/actions/build-push-docker
+      with:
+        name: ${{ inputs.name }}
+        image-name: ${{ inputs.docker-image }}
+        context: ${{ inputs.context }}
+        docker-path-file: ${{ inputs.dockerfile-path }}
+        registry-token: ${{ inputs.registry-token }}

@@ -14,28 +14,26 @@ inputs:
     type: string
     required: false
     default: ''
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ inputs.image-name }}
+  registry-token:
+    required: true
+    description: "registry token"
 
 runs:
-  using: composite
-  steps:
-    - uses: actions/checkout@v6
+  using: 'composite'
 
+  steps:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v4
       with:
-        registry: ${{ env.REGISTRY }}
+        registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GH_TOKEN }}
+        password: ${{ inputs.registry-token }}
 
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+        images: ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
         tags: |
           type=ref,event=tag
           type=sha
