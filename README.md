@@ -79,6 +79,7 @@ services:
       - "8080:8080"
     environment:
       TZ: Europe/Paris
+      SCHEDULER_STRATEGY: db-lock
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
