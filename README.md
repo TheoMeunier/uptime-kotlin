@@ -40,6 +40,8 @@ monitoring service availability without relying on external solutions.
 - [React](https://reactjs.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Docker](https://www.docker.com/)
+- [Redis](https://redis.io/)
+- [RabbitMQ](https://www.rabbitmq.com/)
 
 ## Getting Started
 
@@ -79,7 +81,7 @@ services:
       - "8080:8080"
     environment:
       TZ: Europe/Paris
-      SCHEDULER_STRATEGY: db-lock
+      QUARKUS_SCHEDULER_STRATEGY: db-lock
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
@@ -148,6 +150,12 @@ networks:
     - `MP_JWT_VERIFY_ISSUER` : The issuer of the JWT token
     - `SMALLRYE_JWT_SIGN_KEY_LOCATION` : The location of the private key used to sign the JWT token
 
+   3.4 Schedulers Configuration:
+
+    - `QUARKUS_SCHEDULER_STRATEGY` : The strategy used for scheduling tasks (db-lock or rabbitmq) or none if you don't
+      want to use the scheduler for cluster mode.
+
+
 4. Start the application with docker-compose
 
 ```bash
@@ -182,7 +190,7 @@ uptime-kotlin-worker-notification:
     - "8081:8080"
   environment:
     TZ: Europe/Paris
-    SCHEDULER_STRATEGY: rabbitmq
+    QUARKUS_SCHEDULER_STRATEGY: rabbitmq
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
@@ -203,7 +211,7 @@ uptime-kotlin-worker-monitor:
     - "8082:8080"
   environment:
     TZ: Europe/Paris
-    SCHEDULER_STRATEGY: rabbitmq
+    QUARKUS_SCHEDULER_STRATEGY: rabbitmq
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
@@ -223,7 +231,7 @@ uptime-kotlin-worker-monitor:
 #### Configure the` variable environnement` file
 
 1. Cluster mode
-    - `SCHEDULER_STRATEGY`: Application and worker mode
+    - `QUARKUS_SCHEDULER_STRATEGY`: Application and worker mode if `db-lock` or `rabbitmq`
 
 2. Redis
     - `QUARKUS_REDIS_HOSTS=redis://[username:password@][host][:port][/database]`: The URL of your Redis database
@@ -232,7 +240,7 @@ uptime-kotlin-worker-monitor:
     - `RABBITMQ_HOST`: The host your rabbitmq
     - `RABBITMQ_PORT`: The port of your rabbitmq
     - `RABBITMQ_USERNAME`: The username of your rabbitmq
-    - `RABBITMQ_USERNAME`: The password of your rabbitmq
+    - `RABBITMQ_PASSWORD`: The password of your rabbitmq
 
 ## Contributing
 
