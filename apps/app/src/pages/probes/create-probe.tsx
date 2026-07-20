@@ -13,6 +13,12 @@ export default function CreateProbe() {
 		timeout: 30,
 		enabled: true,
 		notifications: [],
+		method: 'GET' as const,
+		headers: {},
+		assertions: [],
+		steps: [],
+		follow_redirects: true,
+		tls_expiry_warning_days: 30 as const,
 	};
 
 	return (
