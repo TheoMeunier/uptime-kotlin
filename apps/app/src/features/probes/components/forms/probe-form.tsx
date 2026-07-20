@@ -21,6 +21,7 @@ import CreateNotificationDialogue from '@/features/notifications/components/acti
 import { Button } from '@/components/atoms/button.tsx';
 import PROBE_FIELDS_CONFIG from '@/features/probes/components/config/probe-type.ts';
 import { Link } from 'react-router';
+import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
 
 type ProbeFormMode = 'create' | 'edit';
 
@@ -135,6 +136,8 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 							<CreateNotificationDialogue />
 						</FieldGroup>
 					</FieldSet>
+
+					{protocol === ProbeProtocol.HTTP && <HttpAdvancedFieldsForm form={form} />}
 				</FieldGroup>
 			</div>
 

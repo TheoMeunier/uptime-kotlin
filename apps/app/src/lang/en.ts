@@ -102,8 +102,18 @@ const en = {
 			create: 'Create monitor',
 			remove: 'Remove monitor',
 			final_hour: 'Final hour',
+			http_request_assertions: 'HTTP request and assertions',
 		},
 		label: {
+			http_method: 'HTTP method',
+			follow_redirects: 'Follow redirects',
+			max_latency_ms: 'Maximum latency (ms)',
+			tls_expiry_warning_days: 'TLS expiry warning threshold (days)',
+			request_body: 'Request body',
+			request_headers_json: 'Request headers (JSON object)',
+			authentication: 'Authentication',
+			assertions_json: 'Assertions (JSON array)',
+			scenario_steps_json: 'Scenario steps (JSON array, optional)',
 			tcp_host: 'TCP host',
 			tcp_port: 'TCP port',
 			dns_server: 'DNS server',
@@ -122,6 +132,7 @@ const en = {
 			interval_retry: 'Retry interval',
 		},
 		description: {
+			authentication_optional: 'Optional. Select Basic or Bearer only when required.',
 			remove: 'This action is irreversible. All All associated data will be permanently deleted',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
@@ -129,6 +140,19 @@ const en = {
 			check_interval: 'Check every {{ interval }} secondes',
 			now: 'Now',
 			one_hour_ago: '1 hour ago',
+		},
+		option: {
+			no_authentication: 'No authentication',
+			basic_authentication: 'Basic authentication',
+			bearer_token: 'Bearer token',
+		},
+		placeholder: {
+			username: 'Username',
+			password: 'Password',
+			bearer_token: 'Bearer token',
+		},
+		error: {
+			invalid_json: 'Invalid JSON',
 		},
 		alerts: {
 			create: 'Monitor {{ data }} successfully created',

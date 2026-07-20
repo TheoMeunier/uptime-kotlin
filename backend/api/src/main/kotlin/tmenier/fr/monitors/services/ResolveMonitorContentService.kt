@@ -18,6 +18,15 @@ class ResolveMonitorContentService {
                     notificationCertified = request.notificationCertificate,
                     ignoreCertificateErrors = request.ignoreCertificateErrors,
                     httpCodeAllowed = request.httpCodeAllowed,
+                    method = request.method,
+                    headers = request.headers,
+                    body = request.body,
+                    authentication = request.authentication,
+                    assertions = request.assertions,
+                    followRedirects = request.followRedirects,
+                    maxLatencyMs = request.maxLatencyMs,
+                    tlsExpiryWarningDays = request.tlsExpiryWarningDays,
+                    steps = request.steps,
                 )
 
             is ValidProbeProtocolTcpRequest ->
