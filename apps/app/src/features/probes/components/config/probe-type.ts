@@ -12,32 +12,8 @@ const PROBE_FIELDS_CONFIG = {
 				input_type: 'text',
 				placeholder: 'https://',
 			},
-			{
-				name: 'method',
-				label: i18n.t('monitors.label.http_method'),
-				input_type: 'select',
-				options: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-				default_value: 'GET',
-			},
 		],
 		advanced_fields: [
-			{
-				name: 'follow_redirects',
-				label: i18n.t('monitors.label.follow_redirects'),
-				input_type: 'switch',
-				default_value: true,
-			},
-			{
-				name: 'max_latency_ms',
-				label: i18n.t('monitors.label.max_latency_ms'),
-				input_type: 'number',
-			},
-			{
-				name: 'tls_expiry_warning_days',
-				label: i18n.t('monitors.label.tls_expiry_warning_days'),
-				input_type: 'number',
-				default_value: 30,
-			},
 			{
 				name: 'notification_certificate',
 				label: i18n.t('monitors.label.notification_certificate'),

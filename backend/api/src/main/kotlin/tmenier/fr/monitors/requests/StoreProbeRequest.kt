@@ -1,10 +1,8 @@
 package tmenier.fr.monitors.requests
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.quarkus.runtime.annotations.RegisterForReflection
-import jakarta.validation.constraints.AssertTrue
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
@@ -12,9 +10,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.IpAddress
-import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.HttpCodeEnum
-import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
 import tmenier.fr.common.validations.UrlOrIp
@@ -70,23 +66,7 @@ data class ValidProbeProtocolHttpRequest(
     val ignoreCertificateErrors: Boolean,
     @field:Size(min = 1, message = "At least one HTTP code is required")
     val httpCodeAllowed: List<HttpCodeEnum> = emptyList(),
-    val method: HttpMethodEnum = HttpMethodEnum.GET,
-    val headers: Map<String, String> = emptyMap(),
-    val body: String? = null,
-    val authentication: ProbeContent.HttpAuthentication? = null,
-    val assertions: List<ProbeContent.HttpAssertion> = emptyList(),
-    val followRedirects: Boolean = true,
-    @field:Positive(message = "Maximum latency must be greater than 0")
-    val maxLatencyMs: Long? = null,
-    @field:Min(7)
-    @field:Max(30)
-    val tlsExpiryWarningDays: Int = 30,
-    val steps: List<ProbeContent.HttpStep> = emptyList(),
-) : BaseStoreProbeRequest() {
-    @AssertTrue(message = "TLS expiry warning must be 30, 15, or 7 days")
-    @JsonIgnore
-    fun isTlsExpiryWarningValid(): Boolean = tlsExpiryWarningDays in setOf(30, 15, 7)
-}
+) : BaseStoreProbeRequest()
 
 @RegisterForReflection
 data class ValidProbeProtocolTcpRequest(

@@ -22,32 +22,6 @@ const httpProbeSchema = baseStoreProbeSchema.extend({
 	ignore_certificate_errors: z.boolean(),
 	http_code_allowed: z.enum(HttpStatusCode).array(),
 	url: z.url(),
-	method: z.enum(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']).optional(),
-	headers: z.record(z.string(), z.string()).optional(),
-	body: z.string().nullable().optional(),
-	authentication: z
-		.object({
-			type: z.enum(['BASIC', 'BEARER']),
-			username: z.string().optional(),
-			password: z.string().optional(),
-			token: z.string().optional(),
-		})
-		.nullable()
-		.optional(),
-	assertions: z
-		.array(
-			z.object({
-				type: z.enum(['TEXT_CONTAINS', 'JSON_EQUALS', 'RESPONSE_HEADER_EQUALS']),
-				expected: z.string(),
-				path: z.string().optional(),
-				header: z.string().optional(),
-			})
-		)
-		.optional(),
-	follow_redirects: z.boolean().optional(),
-	max_latency_ms: z.number().positive().optional(),
-	tls_expiry_warning_days: z.union([z.literal(7), z.literal(15), z.literal(30)]).optional(),
-	steps: z.array(z.record(z.string(), z.unknown())).optional(),
 });
 
 const tcpProbeSchema = baseStoreProbeSchema.extend({
