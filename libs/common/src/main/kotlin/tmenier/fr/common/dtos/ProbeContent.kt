@@ -2,6 +2,7 @@ package tmenier.fr.common.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.monitors.HttpCodeEnum
+import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
 
 @RegisterForReflection
@@ -12,7 +13,50 @@ sealed interface ProbeContent {
         val notificationCertified: Boolean,
         val ignoreCertificateErrors: Boolean,
         val httpCodeAllowed: List<HttpCodeEnum>,
+        val method: HttpMethodEnum = HttpMethodEnum.GET,
+        val headers: Map<String, String> = emptyMap(),
+        val body: String? = null,
+        val authentication: HttpAuthentication? = null,
+        val assertions: List<HttpAssertion> = emptyList(),
+        val followRedirects: Boolean = true,
+        val maxLatencyMs: Long? = null,
+        val tlsExpiryWarningDays: Int = 30,
+        val steps: List<HttpStep> = emptyList(),
     ) : ProbeContent
+
+    @RegisterForReflection
+    data class HttpStep(
+        val name: String,
+        val url: String,
+        val method: HttpMethodEnum = HttpMethodEnum.GET,
+        val headers: Map<String, String> = emptyMap(),
+        val body: String? = null,
+        val authentication: HttpAuthentication? = null,
+        val httpCodeAllowed: List<HttpCodeEnum> = emptyList(),
+        val assertions: List<HttpAssertion> = emptyList(),
+        val followRedirects: Boolean? = null,
+        val maxLatencyMs: Long? = null,
+    )
+
+    @RegisterForReflection
+    data class HttpAuthentication(
+        val type: HttpAuthenticationType,
+        val username: String? = null,
+        val password: String? = null,
+        val token: String? = null,
+    )
+
+    enum class HttpAuthenticationType { BASIC, BEARER }
+
+    @RegisterForReflection
+    data class HttpAssertion(
+        val type: HttpAssertionType,
+        val expected: String,
+        val path: String? = null,
+        val header: String? = null,
+    )
+
+    enum class HttpAssertionType { TEXT_CONTAINS, JSON_EQUALS, RESPONSE_HEADER_EQUALS }
 
     @RegisterForReflection
     data class Dns(
