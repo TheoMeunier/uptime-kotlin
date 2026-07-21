@@ -49,8 +49,6 @@ quarkus-mailer = { module = "io.quarkus:quarkus-mailer", version.ref = "quarkus"
 quarkus-smallrye-health = { module = "io.quarkus:quarkus-smallrye-health", version.ref = "quarkus" }
 bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 minidns = { module = "org.minidns:minidns-hla", version.ref = "minidns" }
-quarkus-redis = { module = "io.quarkus:quarkus-redis-client", version.ref = "quarkus" }
-quarkus-rabbitmq = { module = "io.quarkus:quarkus-messaging-rabbitmq", version.ref = "quarkus" }
 
 ## test
 junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }

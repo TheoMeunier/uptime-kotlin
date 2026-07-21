@@ -29,7 +29,7 @@ class ProbeSchedulerLeader(
     @ActivateRequestContext
     @Transactional
     fun publishDueProbes() {
-        if (strategy != "rabbitmq") return
+        if (strategy != "database") return
         if (!leaderElection.isLeader()) return
 
         logger.info { "Publishing due probes" }

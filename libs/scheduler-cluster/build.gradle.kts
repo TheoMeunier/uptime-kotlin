@@ -4,6 +4,4 @@ dependencies {
     implementation(project(":libs:notifications"))
 
     implementation(libs.quarkus.scheduler)
-    api(libs.quarkus.redis)
-    api(libs.quarkus.rabbitmq)
 }

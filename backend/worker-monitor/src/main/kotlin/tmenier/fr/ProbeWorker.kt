@@ -1,12 +1,9 @@
 package tmenier.fr
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.quarkus.redis.datasource.ReactiveRedisDataSource
-import io.quarkus.redis.datasource.value.SetArgs
-import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
-import jakarta.inject.Inject
+import jakarta.json.JsonObject
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,10 +12,6 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.microprofile.config.inject.ConfigProperty
-import org.eclipse.microprofile.reactive.messaging.Channel
-import org.eclipse.microprofile.reactive.messaging.Emitter
-import org.eclipse.microprofile.reactive.messaging.Incoming
-import org.eclipse.microprofile.reactive.messaging.Message
 import tmenier.fr.common.dtos.NotificationJob
 import tmenier.fr.common.dtos.ProbeJob
 import tmenier.fr.common.dtos.ProbeResult
@@ -40,14 +33,9 @@ class ProbeWorker(
     private val saveProbeMonitorLog: SaveProbeMonitor,
     private val probeRepository: ProbeRepository,
     private val objectMapper: ObjectMapper,
-    private val redis: ReactiveRedisDataSource,
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
-
-    @Inject
-    @Channel("notification-jobs-out")
-    private lateinit var notificationEmitter: Emitter<NotificationJob>
 
     private val workerScope =
         CoroutineScope(
@@ -56,10 +44,10 @@ class ProbeWorker(
                 SupervisorJob(),
         )
 
-    @Incoming("probe-jobs-in")
     @ActivateRequestContext
     fun handleProbeJob(message: Message<JsonObject>): CompletionStage<Void> {
-        if (strategy != "rabbitmq") {
+        if (strategy != "database") {
+            logger.warn { "Ignoring probe job because strategy is not database" }
             return message.ack()
         }
 
@@ -130,7 +118,7 @@ class ProbeWorker(
 
                     ProbeMonitorLogStatus.WARNING,
                     ProbeMonitorLogStatus.FAILURE,
-                    -> {
+                        -> {
                         logger.warn {
                             "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                         }

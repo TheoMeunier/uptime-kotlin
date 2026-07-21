@@ -26,30 +26,6 @@ services:
     networks:
       - app_network
 
-  redis:
-    image: redis:alpine
-    container_name: uptime_kotlin_cache
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:6379:6379"
-    environment:
-      REDIS_PASSWORD: uptime-redis
-    networks:
-      - app_network
-
-  rabbitmq:
-    image: rabbitmq:4.3-management-alpine
-    container_name: uptime_kotlin_queue
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:5672:5672"
-      - "127.0.0.1:15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: uptime-rabbitmq
-      RABBITMQ_DEFAULT_PASS: uptime-rabbitmq
-    networks:
-      - app_network
-
 networks:
   app_network:
     driver: bridge
