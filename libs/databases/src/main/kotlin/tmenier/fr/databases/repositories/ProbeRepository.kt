@@ -3,12 +3,13 @@ package tmenier.fr.databases.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
-import tmenier.fr.databases.dtos.UpdateLastRunDto
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
@@ -18,9 +19,12 @@ import java.util.UUID
 @ApplicationScoped
 class ProbeRepository(
     private val notificationRepository: NotificationRepository,
+    private val em: EntityManager
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
     @Transactional
     override fun findById(id: UUID): ProbesEntity = find("id = ?1", id).firstResult() ?: throw IllegalArgumentException("Probe not found")
+
+    fun findByIds(ids: List<UUID>): List<ProbesEntity> = find("id in ?1", ids).list()
 
     fun findByIdWithLogs(
         probeId: UUID,
@@ -52,6 +56,19 @@ class ProbeRepository(
     fun getActiveProbes(): List<ProbeDTO> = find("enabled = ?1 ORDER BY name ASC", true).list().map { ProbeMapper.toDto(it) }
 
     fun getAll(): List<ProbesEntity> = findAll(Sort.by("name")).list()
+
+    fun claimDueMonitors(): List<UUID> {
+        @Suppress("UNCHECKED_CAST")
+        return em.createNativeQuery(
+            """
+        SELECT id FROM probes
+        WHERE next_check_at <= now()
+        ORDER BY next_check_at
+        FOR UPDATE SKIP LOCKED
+        LIMIT 50
+        """
+        ).resultList as List<UUID>
+    }
 
     fun attach(
         notifications: List<UUID>,
@@ -92,21 +109,10 @@ class ProbeRepository(
         entity.persist()
     }
 
-    fun updateLastRun(dto: UpdateLastRunDto) {
-        val entity = findById(dto.id)
-        if (dto.status != null) {
-            entity.status = dto.status
-        }
-        entity.lastRun = dto.lastRun
-        entity.persist()
-    }
-
-    fun updateNextCheckAt(
-        probeId: UUID,
-        nextCheckAt: LocalDateTime,
-    ) {
+    fun updateStatus(probeId: UUID, status: ProbeMonitorLogStatus) {
         val entity = findById(probeId)
-        entity.nextCheckAt = nextCheckAt
+        entity.status = status
+        entity.updatedAt = LocalDateTime.now()
         entity.persist()
     }
 

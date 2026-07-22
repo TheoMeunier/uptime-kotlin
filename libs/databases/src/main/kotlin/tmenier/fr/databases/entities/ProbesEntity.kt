@@ -62,6 +62,10 @@ class ProbesEntity : PanacheEntityBase {
     @JdbcTypeCode(SqlTypes.JSON)
     var content: JsonNode? = null
 
+    @Column(name = "regions_order", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    var regionsOrder: JsonNode? = null
+
     @Column(name = "next_check_at")
     var nextCheckAt: LocalDateTime? = null
 

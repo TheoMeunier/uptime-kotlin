@@ -1,9 +1,7 @@
 package tmenier.fr
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
-import jakarta.enterprise.context.control.ActivateRequestContext
-import jakarta.json.JsonObject
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,30 +10,29 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.microprofile.config.inject.ConfigProperty
-import tmenier.fr.common.dtos.NotificationJob
-import tmenier.fr.common.dtos.ProbeJob
-import tmenier.fr.common.dtos.ProbeResult
-import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
-import tmenier.fr.schedulers.services.SaveProbeMonitor
-import java.time.Duration
-import java.util.concurrent.CompletionStage
+import java.net.InetAddress
 import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
 
 @ApplicationScoped
 class ProbeWorker(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
-    private val saveProbeMonitorLog: SaveProbeMonitor,
     private val probeRepository: ProbeRepository,
-    private val objectMapper: ObjectMapper,
+    private val probeCheckTaskRepository: ProbeCheckTaskRepository,
+    private val probeWorkerService: ProbeWorkerService,
+    private val workerRegistry: WorkerRegistry
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     private lateinit var strategy: String
+
+    @ConfigProperty(name = "scheduler.worker.name", defaultValue = "true")
+    private lateinit var myRegion: String
 
     private val workerScope =
         CoroutineScope(
@@ -44,139 +41,56 @@ class ProbeWorker(
                 SupervisorJob(),
         )
 
-    @ActivateRequestContext
-    fun handleProbeJob(message: Message<JsonObject>): CompletionStage<Void> {
+    @Scheduled(every = "2s")
+    fun execute() {
         if (strategy != "database") {
             logger.warn { "Ignoring probe job because strategy is not database" }
-            return message.ack()
+            return
         }
 
-        return try {
-            val rawJson = message.payload.encode()
-            val job = objectMapper.readValue(rawJson, ProbeJob::class.java)
+        val tasks = try {
+            val workerId = "${myRegion}-${InetAddress.getLocalHost().hostName}"
+            probeCheckTaskRepository.claimPendingTasks(myRegion, workerId)
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to claim pending probe tasks" }
+            return
+        }
 
+        logger.info { "Claimed ${tasks?.size ?: 0} pending probe tasks for region $myRegion" }
+
+        tasks?.forEach { task ->
             workerScope.launch {
                 try {
-                    executeWithRetry(job)
-                    message.ack()
+                    val probe =
+                        withContext(Dispatchers.IO) {
+                            ProbeMapper.toDto(probeRepository.findById(task.probeId))
+                        }
+
+                    try {
+                        val handler =
+                            probeSchedulerFactory.getProtocol(probe.protocol)
+                                ?: run {
+                                    logger.warn { "Unknown protocol ${probe.protocol}" }
+                                    return@launch
+                                }
+
+                        @Suppress("UNCHECKED_CAST")
+                        val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
+
+                        if (workerRegistry.activeWorkerCount() > 1) {
+                            probeWorkerService.executeSingleAttemptWithCascade(task, probe, typeHandler, myRegion)
+                        } else {
+                            probeWorkerService.executeLocalRetryLoop(task, probe, typeHandler)
+                        }
+                    } finally {
+                        logger.debug { "Released lock for probe ${task.probeId}" }
+                    }
                 } catch (e: CancellationException) {
-                    message.ack()
                     throw e
                 } catch (e: Exception) {
-                    logger.error(e) { "Unexpected error executing probe ${job.probeId}" }
-                    message.nack(e)
+                    logger.error(e) { "Unexpected error executing probe ${task.id}" }
                 }
             }
-
-            message.ack()
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to deserialize probe job" }
-            message.ack()
-        }
-    }
-
-    private suspend fun executeWithRetry(job: ProbeJob) {
-        val probe =
-            withContext(Dispatchers.IO) {
-                ProbeMapper.toDto(probeRepository.findById(job.probeId))
-            }
-
-        val lockKey = "probe:running:${job.probeId}"
-        val lockTtl = Duration.ofSeconds((probe.interval + 60).toLong())
-
-        withContext(Dispatchers.IO) {
-            redis
-                .value(String::class.java)
-                .set(lockKey, "1", SetArgs().ex(lockTtl))
-                .await()
-                .indefinitely()
-        }
-
-        try {
-            val handler =
-                probeSchedulerFactory.getProtocol(probe.protocol)
-                    ?: run {
-                        logger.warn { "Unknown protocol ${probe.protocol}" }
-                        return
-                    }
-
-            @Suppress("UNCHECKED_CAST")
-            val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
-
-            val maxAttempts = if (probe.status == ProbeMonitorLogStatus.FAILURE) 1 else probe.retry + 1
-
-            repeat(maxAttempts) { attempt ->
-                val isLastAttempt = attempt == maxAttempts - 1
-                val result = typeHandler.execute(probe, probe.content, isLastAttempt)
-
-                when (result.status) {
-                    ProbeMonitorLogStatus.SUCCESS -> {
-                        logger.info { "Probe ${job.probeId} ${result.status} after ${attempt + 1} attempt(s)" }
-                        saveAndPublishNotification(job, result, probe.status)
-                        return
-                    }
-
-                    ProbeMonitorLogStatus.WARNING,
-                    ProbeMonitorLogStatus.FAILURE,
-                        -> {
-                        logger.warn {
-                            "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
-                        }
-
-                        if (isLastAttempt) {
-                            saveAndPublishNotification(
-                                job,
-                                result.copy(status = ProbeMonitorLogStatus.FAILURE),
-                                probe.status,
-                            )
-                            return
-                        }
-
-                        saveProbeMonitorLog.saveProbeMonitorLog(probe.id, job.scheduledAt, result)
-                    }
-
-                    else -> {}
-                }
-            }
-        } finally {
-            withContext(Dispatchers.IO) {
-                redis
-                    .value(String::class.java)
-                    .getdel(lockKey)
-                    .await()
-                    .indefinitely()
-            }
-
-            logger.debug { "Released lock for probe ${job.probeId}" }
-        }
-    }
-
-    private suspend fun saveAndPublishNotification(
-        job: ProbeJob,
-        result: ProbeResult,
-        previousStatus: ProbeMonitorLogStatus,
-    ) {
-        withContext(Dispatchers.IO) {
-            saveProbeMonitorLog.saveProbeMonitorLog(
-                job.probeId,
-                job.scheduledAt,
-                result,
-            )
-        }
-
-        try {
-            notificationEmitter.send(
-                NotificationJob(
-                    probeId = job.probeId,
-                    result = result,
-                    previousStatus = previousStatus,
-                ),
-            )
-
-            logger.info { "Probe ${job.probeId} notification sent" }
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to save probe monitor log" }
-            throw e
         }
     }
 }

@@ -13,7 +13,6 @@ include(
     ":libs:common",
     ":libs:notifications",
     ":libs:scheduler",
-    ":libs:scheduler-cluster",
     ":libs:databases",
 )
 
