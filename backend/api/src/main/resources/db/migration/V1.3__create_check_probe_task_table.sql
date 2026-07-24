@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS probe_check_tasks (
     probe_id      UUID NOT NULL REFERENCES probes(id) ON DELETE CASCADE,
     region          VARCHAR(50) NOT NULL,
     attempt_number  INT NOT NULL,
-    status          VARCHAR(20) NOT NULL DEFAULT 'pending', -- pending / running / success / failed / cancelled
+    status          VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING / RUNNING / SUCCESS / FAILED / CANCELLED
     scheduled_at    TIMESTAMPTZ NOT NULL,
     claimed_by      VARCHAR(100),
     claimed_at      TIMESTAMPTZ,
@@ -20,11 +20,7 @@ CREATE TABLE IF NOT EXISTS probe_check_tasks (
 -- Index critical for pulling tasks by region and status.
 CREATE INDEX IF NOT EXISTS idx_probe_check_tasks_pull
     ON probe_check_tasks (region, status, scheduled_at)
-    WHERE status = 'pending';
-
-CREATE UNIQUE INDEX IF NOT EXISTS uq_probe_check_tasks_active_per_probe
-    ON probe_check_tasks (probe_id)
-    WHERE status IN ('pending', 'running');
+    WHERE status = 'PENDING';
 
 -- Notification native Postgres.
 CREATE OR REPLACE FUNCTION notify_probe_check_task() RETURNS trigger AS $$

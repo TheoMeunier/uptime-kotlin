@@ -11,6 +11,7 @@ import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.StoreProbeCheckTaskDto
 import tmenier.fr.databases.entities.ProbeCheckTaskEntity
 import tmenier.fr.databases.mappers.ProbeCheckTaskMapper
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
@@ -23,7 +24,7 @@ class ProbeCheckTaskRepository(
 
     @Transactional
     fun claimPendingTasks(region: String, workerId: String, limit: Int = 10): List<ProbeCheckTaskDto>? {
-        val ids = em.createNativeQuery(
+        val candidateIds = em.createNativeQuery(
             """
         SELECT id FROM (
             SELECT DISTINCT ON (probe_id) id, probe_id, scheduled_at
@@ -40,15 +41,25 @@ class ProbeCheckTaskRepository(
         ) t
         ORDER BY scheduled_at
         LIMIT :limit
-        FOR UPDATE SKIP LOCKED
         """
         ).setParameter("region", region)
             .setParameter("limit", limit)
             .resultList as List<*>
 
-        if (ids.isEmpty()) return null
+        if (candidateIds.isEmpty()) return null
 
-        val tasks = find("id in ?1", ids).list()
+        val lockedIds = em.createNativeQuery(
+            """
+        SELECT id FROM probe_check_tasks
+        WHERE id IN (:ids)
+        FOR UPDATE SKIP LOCKED
+        """
+        ).setParameter("ids", candidateIds)
+            .resultList as List<*>
+
+        if (lockedIds.isEmpty()) return null
+
+        val tasks = find("id in ?1", lockedIds).list()
 
         tasks.forEach {
             it.status = ProbeCheckTaskStatusEnum.RUNNING
@@ -112,5 +123,18 @@ class ProbeCheckTaskRepository(
         entity.scheduledAt = probeCheckTask.scheduleAt
         entity.persist()
         return entity
+    }
+
+    @Transactional
+    fun releaseStale(maxRunningDuration: Duration) {
+        em.createNativeQuery(
+            """
+        UPDATE probe_check_tasks
+        SET status = 'FAILED', result_message = 'Auto-reset: stale running task (worker likely crashed or restarted)'
+        WHERE status = 'RUNNING'
+          AND claimed_at < now() - make_interval(secs => :seconds)
+        """
+        ).setParameter("seconds", maxRunningDuration.seconds)
+            .executeUpdate()
     }
 }

@@ -104,10 +104,16 @@ class ProbeWorkerService(
                             result.copy(status = ProbeMonitorLogStatus.FAILURE),
                             probe.status,
                         )
+
+                        withContext(Dispatchers.IO) {
+                            probeCheckTaskRepository.markFailedAndMaybeCascade(probeCheckTask, result.message, probe)
+                        }
+
                         return
                     }
 
                     withContext(Dispatchers.IO) {
+                        probeCheckTaskRepository.markFailedAndMaybeCascade(probeCheckTask, result.message, probe)
                         saveProbeMonitorLog.saveProbeMonitorLog(probe.id, probeCheckTask.scheduledAt, result)
                     }
 

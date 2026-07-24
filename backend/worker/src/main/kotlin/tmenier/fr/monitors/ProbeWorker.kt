@@ -18,6 +18,7 @@ import tmenier.fr.monitors.ProbeWorkerService
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import java.net.InetAddress
+import java.time.Duration
 import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -93,5 +94,11 @@ class ProbeWorker(
                 }
             }
         }
+    }
+
+    @Scheduled(every = "1m")
+    fun releaseStaleRunningTasks() {
+        if (strategy != "database") return
+        probeCheckTaskRepository.releaseStale(Duration.ofMinutes(2))
     }
 }
