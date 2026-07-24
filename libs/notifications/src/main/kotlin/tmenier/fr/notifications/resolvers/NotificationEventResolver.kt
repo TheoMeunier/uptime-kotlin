@@ -11,6 +11,7 @@ class NotificationEventResolver {
         previousStatus: ProbeMonitorLogStatus,
         newStatus: ProbeMonitorLogStatus,
     ): NotificationEvent = when {
+        previousStatus == newStatus -> NotificationEvent.NONE
         previousStatus != ProbeMonitorLogStatus.FAILURE && newStatus == ProbeMonitorLogStatus.FAILURE -> NotificationEvent.FAILURE
         previousStatus == ProbeMonitorLogStatus.FAILURE && newStatus == ProbeMonitorLogStatus.SUCCESS -> NotificationEvent.RECOVERY
         else -> NotificationEvent.NONE

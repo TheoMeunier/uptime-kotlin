@@ -77,7 +77,7 @@ class ProbeWorkerService(
         probe: ProbeDTO,
         typeHandler: ProbeSchedulerInterfaceType<Any>,
     ) {
-        val maxAttempts = if (probe.status == ProbeMonitorLogStatus.FAILURE) 1 else probe.retry + 1
+        val maxAttempts = probe.retry + 1
 
         repeat(maxAttempts) { attempt ->
             val isLastAttempt = attempt == maxAttempts - 1
@@ -117,11 +117,12 @@ class ProbeWorkerService(
                         saveProbeMonitorLog.saveProbeMonitorLog(probe.id, probeCheckTask.scheduledAt, result)
                     }
 
-                    delay((probe.interval * 1000L).milliseconds)
                 }
 
                 else -> logger.warn { "Probe ${probe.id} ${result.status}" }
             }
+
+            delay((probe.interval * 1000L).milliseconds)
         }
     }
 

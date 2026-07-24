@@ -24,42 +24,23 @@ class ProbeCheckTaskRepository(
 
     @Transactional
     fun claimPendingTasks(region: String, workerId: String, limit: Int = 10): List<ProbeCheckTaskDto>? {
-        val candidateIds = em.createNativeQuery(
+        val ids = em.createNativeQuery(
             """
-        SELECT id FROM (
-            SELECT DISTINCT ON (probe_id) id, probe_id, scheduled_at
-            FROM probe_check_tasks
+            SELECT id FROM probe_check_tasks
             WHERE region = :region
               AND status = 'PENDING'
               AND scheduled_at <= now()
-              AND NOT EXISTS (
-                  SELECT 1 FROM probe_check_tasks running
-                  WHERE running.probe_id = probe_check_tasks.probe_id
-                    AND running.status = 'RUNNING'
-              )
-            ORDER BY probe_id, scheduled_at
-        ) t
-        ORDER BY scheduled_at
-        LIMIT :limit
-        """
+            ORDER BY scheduled_at
+            FOR UPDATE SKIP LOCKED
+            LIMIT :limit
+            """
         ).setParameter("region", region)
             .setParameter("limit", limit)
             .resultList as List<*>
 
-        if (candidateIds.isEmpty()) return null
+        if (ids.isEmpty()) return null
 
-        val lockedIds = em.createNativeQuery(
-            """
-        SELECT id FROM probe_check_tasks
-        WHERE id IN (:ids)
-        FOR UPDATE SKIP LOCKED
-        """
-        ).setParameter("ids", candidateIds)
-            .resultList as List<*>
-
-        if (lockedIds.isEmpty()) return null
-
-        val tasks = find("id in ?1", lockedIds).list()
+        val tasks = find("id in ?1", ids).list()
 
         tasks.forEach {
             it.status = ProbeCheckTaskStatusEnum.RUNNING
