@@ -19,6 +19,5 @@ include(
 // backend modules
 include(
     ":backend:api",
-    ":backend:worker-monitor",
-    ":backend:worker-notification"
+    ":backend:worker",
 )

@@ -9,3 +9,9 @@ data class NotificationTestingDto(
     val type: NotificationChannelsEnum,
     val content: NotificationContent,
 )
+
+@RegisterForReflection
+sealed class NotificationTestResult {
+    object Success : NotificationTestResult()
+    data class Failure(val message: String) : NotificationTestResult()
+}

@@ -14,6 +14,7 @@ import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
 import tmenier.fr.databases.repositories.ProbeRepository
+import tmenier.fr.monitors.ProbeWorkerService
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import java.net.InetAddress

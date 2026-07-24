@@ -24,7 +24,7 @@ import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
-import tmenier.fr.notifications.NotificationService
+import tmenier.fr.notifications.services.NotificationService
 import tmenier.fr.schedulers.services.SaveProbeMonitor
 import java.time.Duration
 import java.time.LocalDateTime
@@ -146,7 +146,7 @@ class ProbeSchedulerTemplateFactory(
 
                 ProbeMonitorLogStatus.WARNING,
                 ProbeMonitorLogStatus.FAILURE,
-                -> {
+                    -> {
                     logger.warn {
                         "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts"
                     }
@@ -181,7 +181,7 @@ class ProbeSchedulerTemplateFactory(
             saveProbeMonitorLog.saveProbeMonitorLog(probeId, now, result)
         }
 
-        notificationService.sendNotification(probeId, result, status)
+        notificationService.sendNotification(probeId, null, result, status)
     }
 
     private suspend fun loadProbe(probeId: UUID): ProbeDTO =

@@ -1,4 +1,4 @@
-package tmenier.fr
+package tmenier.fr.monitors
 
 import jakarta.enterprise.context.ApplicationScoped
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +10,7 @@ import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeCheckTaskDto
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
+import tmenier.fr.notifications.services.NotificationService
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import tmenier.fr.schedulers.services.SaveProbeMonitor
 import kotlin.time.Duration.Companion.milliseconds
@@ -17,7 +18,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @ApplicationScoped
 class ProbeWorkerService(
     private val probeCheckTaskRepository: ProbeCheckTaskRepository,
-    private val saveProbeMonitorLog: SaveProbeMonitor
+    private val saveProbeMonitorLog: SaveProbeMonitor,
+    private val notificationService: NotificationService,
 ) {
 
     /**
@@ -127,7 +129,12 @@ class ProbeWorkerService(
                 saveProbeMonitorLog.saveProbeMonitorLog(probeCheckTask.probeId, probeCheckTask.scheduledAt, result)
             }
 
-            logger.info { "Probe ${probeCheckTask.probeId} notification sent" }
+            notificationService.sendNotification(
+                probeId = probeCheckTask.probeId,
+                result = result,
+                previousStatus = previousStatus
+            )
+
         } catch (e: Exception) {
             logger.error(e) { "Failed to save probe monitor log" }
             throw e

@@ -22,6 +22,10 @@ CREATE INDEX IF NOT EXISTS idx_probe_check_tasks_pull
     ON probe_check_tasks (region, status, scheduled_at)
     WHERE status = 'pending';
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_probe_check_tasks_active_per_probe
+    ON probe_check_tasks (probe_id)
+    WHERE status IN ('pending', 'running');
+
 -- Notification native Postgres.
 CREATE OR REPLACE FUNCTION notify_probe_check_task() RETURNS trigger AS $$
 BEGIN
