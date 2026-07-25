@@ -21,4 +21,5 @@ data class StoreProbeMonitorLogDto(
     val status: ProbeMonitorLogStatus,
     val responseTime: Long,
     val probe: ProbeDTO,
+    val checkTaskId: UUID? = null,
 )

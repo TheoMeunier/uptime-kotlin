@@ -8,17 +8,18 @@ import java.time.Instant
 
 @ApplicationScoped
 class WorkerHeartbeatRepository : PanacheRepositoryBase<WorkerHeartbeat, String> {
-
-    override fun findById(id: String): WorkerHeartbeat? {
-        return find("region = ?1", id).firstResult()
-    }
-
+    override fun findById(id: String): WorkerHeartbeat? = find("region = ?1", id).firstResult()
 
     @Transactional
-    fun activeWorkerCount(): Int {
-        return count(
+    fun activeWorkerCount(): Int =
+        count(
             "lastSeenAt > ?1",
             Instant.now().minusSeconds(30),
         ).toInt()
-    }
+
+    fun activeRegions(): List<String> =
+        find(
+            "lastSeenAt > ?1 order by region",
+            Instant.now().minusSeconds(30),
+        ).list().map { it.region }
 }

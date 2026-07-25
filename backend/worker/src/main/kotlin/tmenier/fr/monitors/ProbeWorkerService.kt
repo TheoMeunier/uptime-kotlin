@@ -1,150 +1,57 @@
 package tmenier.fr.monitors
 
 import jakarta.enterprise.context.ApplicationScoped
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeCheckTaskDto
-import tmenier.fr.databases.dtos.ProbeDTO
-import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
-import tmenier.fr.notifications.services.NotificationService
+import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.ProbeRepository
+import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
-import tmenier.fr.schedulers.services.SaveProbeMonitor
-import kotlin.time.Duration.Companion.milliseconds
+import java.time.LocalDateTime
 
 @ApplicationScoped
 class ProbeWorkerService(
-    private val probeCheckTaskRepository: ProbeCheckTaskRepository,
-    private val saveProbeMonitorLog: SaveProbeMonitor,
-    private val notificationService: NotificationService,
+    private val probeSchedulerFactory: ProbeSchedulerFactory,
+    private val probeRepository: ProbeRepository,
+    private val probeAttemptRecorder: ProbeAttemptRecorder,
 ) {
-
-    /**
-     * Some worker activity, execute a single attempt of the probe check task, if it fails and is not the last attempt, it will cascade to other regions
-     */
-    suspend fun executeSingleAttemptWithCascade(
-        probeCheckTask: ProbeCheckTaskDto,
-        probe: ProbeDTO,
-        typeHandler: ProbeSchedulerInterfaceType<Any>,
-        region: String
+    fun execute(
+        task: ProbeCheckTaskDto,
+        workerId: String,
     ) {
-        val isLastAttempt = probeCheckTask.attemptNumber >= probe.retry + 1
-        val result = typeHandler.execute(probe, probe.content, isLastAttempt)
-
-        logger.info { "Probe ${probe.id} executed with status ${result.status} (region=$region, tentative ${probeCheckTask.attemptNumber})" }
-
-        when (result.status) {
-            ProbeMonitorLogStatus.SUCCESS -> {
-                logger.info { "Probe ${probe.id} ${result.status} (region=$region, tentative ${probeCheckTask.attemptNumber})" }
-                saveAndPublishNotification(probeCheckTask, result, probe.status)
-
-                withContext(Dispatchers.IO) {
-                    probeCheckTaskRepository.markSuccess(probeCheckTask, result.message)
-                }
-            }
-
-            ProbeMonitorLogStatus.WARNING, ProbeMonitorLogStatus.FAILURE -> {
-                logger.warn { "Probe ${probe.id} ${result.status} tentative ${probeCheckTask.attemptNumber} (region=$region)" }
-
-                if (isLastAttempt) {
-                    saveAndPublishNotification(
-                        probeCheckTask,
-                        result.copy(status = ProbeMonitorLogStatus.FAILURE),
-                        probe.status,
-                    )
-                } else {
-                    logger.info { "Probe ${probe.id} will retry in ${probe.interval} seconds (region=$region)" }
-                }
-
-                withContext(Dispatchers.IO) {
-                    probeCheckTaskRepository.markFailedAndMaybeCascade(probeCheckTask, result.message, probe)
-                    saveProbeMonitorLog.saveProbeMonitorLog(probe.id, probeCheckTask.scheduledAt, result)
-                }
-            }
-
-            else -> logger.warn { "Probe ${probe.id} ${result.status}" }
+        val probeEntity = probeRepository.findById(task.probeId)
+        if (!probeEntity.enabled) {
+            logger.info { "Discarding Probe Check task ${task.id}: probe ${task.probeId} is disabled" }
+            probeAttemptRecorder.discardDisabledTask(task.id, workerId)
+            return
         }
-    }
 
-    /**
-     * one worker for check task, local repeat loop, no cascade to other regions
-     */
-    suspend fun executeLocalRetryLoop(
-        probeCheckTask: ProbeCheckTaskDto,
-        probe: ProbeDTO,
-        typeHandler: ProbeSchedulerInterfaceType<Any>,
-    ) {
-        val maxAttempts = probe.retry + 1
+        val probe = ProbeMapper.toDto(probeEntity)
+        val handler =
+            probeSchedulerFactory.getProtocol(probe.protocol)
+                ?: throw IllegalArgumentException("Unknown Probe protocol ${probe.protocol}")
 
-        repeat(maxAttempts) { attempt ->
-            val isLastAttempt = attempt == maxAttempts - 1
-            val result = typeHandler.execute(probe, probe.content, isLastAttempt)
+        @Suppress("UNCHECKED_CAST")
+        val typedHandler = handler as ProbeSchedulerInterfaceType<Any>
+        val isLastAttempt =
+            probe.status == ProbeMonitorLogStatus.FAILURE ||
+                task.attemptNumber >= probe.retry + 1
 
-            when (result.status) {
-                ProbeMonitorLogStatus.SUCCESS -> {
-                    logger.info { "Probe ${probe.id} ${result.status} after ${attempt + 1} attempt(s)" }
-                    saveAndPublishNotification(probeCheckTask, result, probe.status)
-
-                    withContext(Dispatchers.IO) {
-                        probeCheckTaskRepository.markSuccess(probeCheckTask, result.message)
-                    }
-
-                    return
-                }
-
-                ProbeMonitorLogStatus.WARNING, ProbeMonitorLogStatus.FAILURE -> {
-                    logger.warn { "Probe ${probe.id} ${result.status} on attempt ${attempt + 1}/$maxAttempts" }
-
-                    if (isLastAttempt) {
-                        saveAndPublishNotification(
-                            probeCheckTask,
-                            result.copy(status = ProbeMonitorLogStatus.FAILURE),
-                            probe.status,
-                        )
-
-                        withContext(Dispatchers.IO) {
-                            probeCheckTaskRepository.markFailedAndMaybeCascade(probeCheckTask, result.message, probe)
-                        }
-
-                        return
-                    }
-
-                    withContext(Dispatchers.IO) {
-                        probeCheckTaskRepository.markFailedAndMaybeCascade(probeCheckTask, result.message, probe)
-                        saveProbeMonitorLog.saveProbeMonitorLog(probe.id, probeCheckTask.scheduledAt, result)
-                    }
-
-                }
-
-                else -> logger.warn { "Probe ${probe.id} ${result.status}" }
-            }
-
-            delay((probe.interval * 1000L).milliseconds)
+        logger.info {
+            "Executing ${probe.protocol} Probe Check task ${task.id}: probe=${probe.id}, " +
+                "attempt=${task.attemptNumber}/${probe.retry + 1}, lastAttempt=$isLastAttempt"
         }
-    }
-
-    private suspend fun saveAndPublishNotification(
-        probeCheckTask: ProbeCheckTaskDto,
-        result: ProbeResult,
-        previousStatus: ProbeMonitorLogStatus,
-    ) {
-        try {
-            withContext(Dispatchers.IO) {
-                saveProbeMonitorLog.saveProbeMonitorLog(probeCheckTask.probeId, probeCheckTask.scheduledAt, result)
-            }
-
-            notificationService.sendNotification(
-                probeId = probeCheckTask.probeId,
-                result = result,
-                previousStatus = previousStatus
-            )
-
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to save probe monitor log" }
-            throw e
+        val result = typedHandler.execute(probe, probe.content, isLastAttempt)
+        logger.info {
+            "Probe Check task ${task.id} produced status=${result.status}, " +
+                "responseTime=${result.responseTime}ms"
         }
+        probeAttemptRecorder.completeAttempt(
+            taskId = task.id,
+            workerId = workerId,
+            result = result,
+            completedAt = LocalDateTime.now(),
+        )
     }
 }

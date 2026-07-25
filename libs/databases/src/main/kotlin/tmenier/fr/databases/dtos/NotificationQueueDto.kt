@@ -1,11 +1,11 @@
 package tmenier.fr.databases.dtos
 
-import ProbeCheckTaskStatusEnum
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.enums.notifications.NotificationEvent
+import tmenier.fr.common.enums.probes.QueueJobStatus
 import java.time.Instant
 import java.util.UUID
 
@@ -34,7 +34,7 @@ data class NotificationQueueDto(
     val probe: ProbeDTO,
     val notification: NotificationDto,
     val taskId: UUID? = null,
-    val status: ProbeCheckTaskStatusEnum,
+    val status: QueueJobStatus,
     val event: NotificationEvent,
     val payload: ProbeResult,
     val attemptCount: Int,
@@ -50,7 +50,6 @@ data class UpdateNotificationQueueDto(
     val maxAttempts: Int,
     val nextAttemptAt: Instant?,
 )
-
 
 @RegisterForReflection
 data class RetryDecisionDto(

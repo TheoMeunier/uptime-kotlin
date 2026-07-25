@@ -12,8 +12,9 @@ class NotificationTestingService(
     private val notificationFactory: NotificationFactory,
 ) {
     fun test(notificationTesting: NotificationTestingDto): NotificationTestResult {
-        val handler = notificationFactory.getNotification(notificationTesting.type)
-            ?: return NotificationTestResult.Failure("Unknown notification type: ${notificationTesting.type}")
+        val handler =
+            notificationFactory.getNotification(notificationTesting.type)
+                ?: return NotificationTestResult.Failure("Unknown notification type: ${notificationTesting.type}")
 
         @Suppress("UNCHECKED_CAST")
         val typedHandler = handler as TypedNotificationInterfaces<Any>

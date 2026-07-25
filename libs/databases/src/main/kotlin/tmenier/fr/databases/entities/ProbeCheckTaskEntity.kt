@@ -1,6 +1,5 @@
 package tmenier.fr.databases.entities
 
-import ProbeCheckTaskStatusEnum
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -9,14 +8,14 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import tmenier.fr.common.enums.probes.QueueJobStatus
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
-@Table(name = "probe_check_tasks")
+@Table(name = "probe_check_jobs")
 class ProbeCheckTaskEntity : PanacheEntityBase {
-
     @Id
     @Column(nullable = false)
     lateinit var id: UUID
@@ -27,23 +26,35 @@ class ProbeCheckTaskEntity : PanacheEntityBase {
     @Column(nullable = false)
     lateinit var region: String
 
-    @Column(name = "attempt_number", nullable = false)
+    @Column(name = "probe_attempt", nullable = false)
     var attemptNumber: Int = 1
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var status: ProbeCheckTaskStatusEnum = ProbeCheckTaskStatusEnum.PENDING
+    var status: QueueJobStatus = QueueJobStatus.PENDING
 
     @Column(name = "scheduled_at", nullable = false)
     lateinit var scheduledAt: LocalDateTime
 
-    @Column(name = "claimed_by")
+    @Column(name = "available_at", nullable = false)
+    lateinit var availableAt: Instant
+
+    @Column(name = "lease_owner")
     var claimedBy: String? = null
 
-    @Column(name = "claimed_at")
-    var claimedAt: Instant? = null
+    @Column(name = "lease_until")
+    var leaseUntil: Instant? = null
 
-    @Column(name = "result_message")
+    @Column(name = "delivery_attempts", nullable = false)
+    var deliveryAttempts: Int = 0
+
+    @Column(name = "max_delivery_attempts", nullable = false)
+    var maxDeliveryAttempts: Int = 5
+
+    @Column(name = "previous_failed_at")
+    var previousFailedAt: Instant? = null
+
+    @Column(name = "last_error")
     var resultMessage: String? = null
 
     @CreationTimestamp

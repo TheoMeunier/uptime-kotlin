@@ -4,12 +4,14 @@ import io.quarkus.security.Authenticated
 import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
+import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
@@ -32,8 +34,14 @@ class ShowProbeResource(
     ): Response {
         val uuid = UUID.fromString(probeId)
 
+        val probeEntity =
+            probeRepository.findByIdOrNull(uuid)
+                ?: run {
+                    logger.warn { "Probe details requested for unknown probe $uuid" }
+                    throw NotFoundException("Probe not found")
+                }
+
         if (hours == 0L) {
-            val probeEntity = probeRepository.findById(uuid)
             return Response.ok(ProbeMapper.toProbeWithNotificationsIdsDto(probeEntity)).build()
         }
 
@@ -42,10 +50,14 @@ class ShowProbeResource(
             throw BadRequestException("hours must be one of: 1, 3, 6, 24, 168")
         }
 
-        val probeEntity = probeRepository.findByIdWithLogs(uuid, hours)
+        val monitors =
+            probeMonitorRepository.findByProbeAfter(
+                probeId = uuid,
+                after = LocalDateTime.now().minusHours(hours),
+            )
         val uptimes = computeUptimes(uuid)
 
-        return Response.ok(ProbeMapper.toShowDto(probeEntity, uptimes)).build()
+        return Response.ok(ProbeMapper.toShowDto(probeEntity, monitors, uptimes)).build()
     }
 
     private fun computeUptimes(probeId: UUID): ProbeUptimeDTO {

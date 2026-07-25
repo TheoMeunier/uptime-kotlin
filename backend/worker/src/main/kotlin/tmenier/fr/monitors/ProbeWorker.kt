@@ -1,104 +1,120 @@
-package tmenier.fr
+package tmenier.fr.monitors
 
 import io.quarkus.scheduler.Scheduled
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import tmenier.fr.common.utils.logger
-import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
-import tmenier.fr.databases.repositories.ProbeRepository
-import tmenier.fr.monitors.ProbeWorkerService
-import tmenier.fr.schedulers.ProbeSchedulerFactory
-import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import java.net.InetAddress
 import java.time.Duration
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.coroutines.cancellation.CancellationException
+import java.util.concurrent.atomic.AtomicInteger
 
 @ApplicationScoped
 class ProbeWorker(
-    private val probeSchedulerFactory: ProbeSchedulerFactory,
-    private val probeRepository: ProbeRepository,
     private val probeCheckTaskRepository: ProbeCheckTaskRepository,
     private val probeWorkerService: ProbeWorkerService,
-    private val workerRegistry: WorkerRegistry
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
-    private lateinit var strategy: String
+    lateinit var strategy: String
 
-    @ConfigProperty(name = "scheduler.worker.name", defaultValue = "true")
-    private lateinit var myRegion: String
+    @ConfigProperty(name = "scheduler.worker.name", defaultValue = "default")
+    lateinit var region: String
 
-    private val workerScope =
-        CoroutineScope(
-            Executors.newScheduledThreadPool(4).asCoroutineDispatcher() +
-                CoroutineName("ProbeWorker") +
-                SupervisorJob(),
-        )
+    @ConfigProperty(name = "scheduler.worker.concurrency", defaultValue = "1")
+    var concurrency: Int = 1
 
-    @Scheduled(every = "2s")
-    fun execute() {
-        if (strategy != "database") {
-            logger.warn { "Ignoring probe job because strategy is not database" }
-            return
+    private val leaseDuration = Duration.ofMinutes(2)
+    private val activeTasks = AtomicInteger()
+    private val activeTaskIds = ConcurrentHashMap.newKeySet<java.util.UUID>()
+    private val threadSequence = AtomicInteger()
+    private lateinit var executor: ExecutorService
+    private val workerId by lazy { "$region-${InetAddress.getLocalHost().hostName}" }
+
+    @PostConstruct
+    fun started() {
+        require(concurrency > 0) { "scheduler.worker.concurrency must be greater than zero" }
+        executor =
+            Executors.newFixedThreadPool(concurrency) { runnable ->
+                Thread(runnable, "probe-worker-${threadSequence.incrementAndGet()}")
+            }
+        logger.info {
+            "Probe worker started: workerId=$workerId, region=$region, strategy=$strategy, " +
+                "concurrency=$concurrency, leaseDuration=${leaseDuration.seconds}s"
         }
+    }
 
-        val tasks = try {
-            val workerId = "${myRegion}-${InetAddress.getLocalHost().hostName}"
-            probeCheckTaskRepository.claimPendingTasks(myRegion, workerId)
-        } catch (e: Exception) {
-            logger.error(e) { "Failed to claim pending probe tasks" }
-            return
-        }
+    @Scheduled(every = "1s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
+    fun executeDueTasks() {
+        if (strategy != "database") return
 
-        logger.info { "Claimed ${tasks?.size ?: 0} pending probe tasks for region $myRegion" }
+        val capacity = concurrency - activeTasks.get()
+        if (capacity <= 0) return
 
-        tasks?.forEach { task ->
-            workerScope.launch {
-                try {
-                    val probe =
-                        withContext(Dispatchers.IO) {
-                            ProbeMapper.toDto(probeRepository.findById(task.probeId))
-                        }
+        val tasks =
+            try {
+                probeCheckTaskRepository.claimPendingTasks(
+                    region = region,
+                    workerId = workerId,
+                    limit = capacity,
+                    leaseDuration = leaseDuration,
+                )
+            } catch (error: Exception) {
+                logger.error(error) { "Failed to claim Probe Check tasks for region $region" }
+                return
+            }
 
-                    try {
-                        val handler =
-                            probeSchedulerFactory.getProtocol(probe.protocol)
-                                ?: run {
-                                    logger.warn { "Unknown protocol ${probe.protocol}" }
-                                    return@launch
-                                }
-
-                        @Suppress("UNCHECKED_CAST")
-                        val typeHandler = handler as ProbeSchedulerInterfaceType<Any>
-
-                        if (workerRegistry.activeWorkerCount() > 1) {
-                            probeWorkerService.executeSingleAttemptWithCascade(task, probe, typeHandler, myRegion)
-                        } else {
-                            probeWorkerService.executeLocalRetryLoop(task, probe, typeHandler)
-                        }
-                    } finally {
-                        logger.debug { "Released lock for probe ${task.probeId}" }
+        if (tasks.isNotEmpty()) {
+            logger.info {
+                "Claimed ${tasks.size} Probe Check task(s): " +
+                    tasks.joinToString { task ->
+                        "${task.id}(probe=${task.probeId},attempt=${task.attemptNumber})"
                     }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    logger.error(e) { "Unexpected error executing probe ${task.id}" }
+            }
+        }
+
+        tasks.forEach { task ->
+            activeTasks.incrementAndGet()
+            activeTaskIds.add(task.id)
+            executor.submit {
+                try {
+                    logger.info {
+                        "Starting Probe Check task ${task.id}: probe=${task.probeId}, " +
+                            "attempt=${task.attemptNumber}, region=${task.region}"
+                    }
+                    probeWorkerService.execute(task, workerId)
+                    logger.info { "Finished Probe Check task ${task.id}" }
+                } catch (error: Exception) {
+                    logger.error(error) { "Technical failure executing Probe Check task ${task.id}" }
+                    probeCheckTaskRepository.markTechnicalFailure(
+                        taskId = task.id,
+                        workerId = workerId,
+                        message = error.message ?: "Unknown Probe Check processing error",
+                    )
+                } finally {
+                    activeTaskIds.remove(task.id)
+                    activeTasks.decrementAndGet()
                 }
             }
         }
     }
 
-    @Scheduled(every = "1m")
-    fun releaseStaleRunningTasks() {
+    @Scheduled(every = "30s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
+    fun maintainLeases() {
         if (strategy != "database") return
-        probeCheckTaskRepository.releaseStale(Duration.ofMinutes(2))
+        probeCheckTaskRepository.renewLeases(workerId, leaseDuration, activeTaskIds)
+        probeCheckTaskRepository.deadLetterExpiredLeases()
+    }
+
+    @PreDestroy
+    fun close() {
+        logger.info {
+            "Stopping Probe worker $workerId with ${activeTasks.get()} active task(s)"
+        }
+        executor.shutdownNow()
     }
 }
