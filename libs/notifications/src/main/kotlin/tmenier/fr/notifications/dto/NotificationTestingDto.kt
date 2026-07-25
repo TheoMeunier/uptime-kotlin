@@ -13,5 +13,8 @@ data class NotificationTestingDto(
 @RegisterForReflection
 sealed class NotificationTestResult {
     object Success : NotificationTestResult()
-    data class Failure(val message: String) : NotificationTestResult()
+
+    data class Failure(
+        val message: String,
+    ) : NotificationTestResult()
 }

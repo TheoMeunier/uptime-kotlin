@@ -1,4 +1,4 @@
-package tmenier.fr
+package tmenier.fr.monitors
 
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
@@ -12,17 +12,16 @@ import java.time.Instant
 
 @ApplicationScoped
 class WorkerRegistry(
-    private val workerHeartbeatRepository: WorkerHeartbeatRepository
+    private val workerHeartbeatRepository: WorkerHeartbeatRepository,
 ) {
-
     @ConfigProperty(name = "scheduler.worker.name", defaultValue = "true")
     private lateinit var myRegion: String
-    
+
     @Scheduled(every = "10s")
     @Transactional
     fun heartbeat() {
         try {
-            val workerId = "${myRegion}-${InetAddress.getLocalHost().hostName}"
+            val workerId = "$myRegion-${InetAddress.getLocalHost().hostName}"
             val existing = workerHeartbeatRepository.findById(myRegion)
 
             if (existing != null) {
@@ -40,8 +39,5 @@ class WorkerRegistry(
         }
     }
 
-    fun activeWorkerCount(): Int {
-        return workerHeartbeatRepository.activeWorkerCount()
-    }
-
+    fun activeWorkerCount(): Int = workerHeartbeatRepository.activeWorkerCount()
 }

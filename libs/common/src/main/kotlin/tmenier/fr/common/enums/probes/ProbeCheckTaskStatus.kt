@@ -1,1 +1,7 @@
-enum class ProbeCheckTaskStatusEnum { PENDING, RUNNING, SUCCESS, FAILED, CANCELLED }
+package tmenier.fr.common.enums.probes
+
+enum class QueueJobStatus {
+    PENDING,
+    LEASED,
+    DEAD,
+}

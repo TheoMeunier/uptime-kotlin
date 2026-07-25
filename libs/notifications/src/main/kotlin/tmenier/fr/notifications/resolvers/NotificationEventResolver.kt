@@ -6,14 +6,14 @@ import tmenier.fr.common.enums.notifications.NotificationEvent
 
 @ApplicationScoped
 class NotificationEventResolver {
-
     fun resolve(
         previousStatus: ProbeMonitorLogStatus,
         newStatus: ProbeMonitorLogStatus,
-    ): NotificationEvent = when {
-        previousStatus == newStatus -> NotificationEvent.NONE
-        previousStatus != ProbeMonitorLogStatus.FAILURE && newStatus == ProbeMonitorLogStatus.FAILURE -> NotificationEvent.FAILURE
-        previousStatus == ProbeMonitorLogStatus.FAILURE && newStatus == ProbeMonitorLogStatus.SUCCESS -> NotificationEvent.RECOVERY
-        else -> NotificationEvent.NONE
-    }
+    ): NotificationEvent =
+        when {
+            previousStatus == newStatus -> NotificationEvent.NONE
+            previousStatus != ProbeMonitorLogStatus.FAILURE && newStatus == ProbeMonitorLogStatus.FAILURE -> NotificationEvent.FAILURE
+            previousStatus == ProbeMonitorLogStatus.FAILURE && newStatus == ProbeMonitorLogStatus.SUCCESS -> NotificationEvent.RECOVERY
+            else -> NotificationEvent.NONE
+        }
 }
