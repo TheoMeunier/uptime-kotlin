@@ -62,14 +62,12 @@ class ProbesEntity : PanacheEntityBase {
     @JdbcTypeCode(SqlTypes.JSON)
     var content: JsonNode? = null
 
+    @Column(name = "regions_order", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    var regionsOrder: JsonNode? = null
+
     @Column(name = "next_check_at")
     var nextCheckAt: LocalDateTime? = null
-
-    @Column(name = "locked_by")
-    var lockedBy: String? = null
-
-    @Column(name = "locked_at")
-    var lockedAt: LocalDateTime? = null
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
     @JoinTable(

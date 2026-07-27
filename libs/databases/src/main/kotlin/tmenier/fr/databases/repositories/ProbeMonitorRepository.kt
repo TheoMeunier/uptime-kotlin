@@ -24,6 +24,16 @@ class ProbeMonitorRepository(
         to: LocalDateTime,
     ): Long = count("probe.id = ?1 AND status = ?2 AND runAt >= ?3 AND runAt <= ?4", probeId, ProbeMonitorLogStatus.SUCCESS, from, to)
 
+    fun findByProbeAfter(
+        probeId: UUID,
+        after: LocalDateTime,
+    ): List<ProbesMonitorsLogEntity> =
+        find(
+            "probe.id = ?1 AND runAt > ?2 ORDER BY runAt ASC",
+            probeId,
+            after,
+        ).list()
+
     fun store(dto: StoreProbeMonitorLogDto) {
         val probe = probeRepository.findById(dto.probe.id)
 
@@ -34,6 +44,9 @@ class ProbeMonitorRepository(
         entity.status = dto.status
         entity.responseTime = dto.responseTime
         entity.probe = probe
+        entity.checkTaskId = dto.checkTaskId
         entity.persist()
     }
+
+    fun existsByCheckTaskId(checkTaskId: UUID): Boolean = count("checkTaskId = ?1", checkTaskId) > 0
 }

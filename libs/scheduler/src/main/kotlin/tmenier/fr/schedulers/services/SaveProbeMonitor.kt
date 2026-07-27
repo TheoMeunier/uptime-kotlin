@@ -3,12 +3,11 @@ package tmenier.fr.schedulers.services
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
-import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
-import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
+import tmenier.fr.notifications.services.NotificationService
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -16,45 +15,42 @@ import java.util.UUID
 class SaveProbeMonitor(
     private val probeRepository: ProbeRepository,
     private val probeMonitorRepository: ProbeMonitorRepository,
+    private val notificationService: NotificationService,
 ) {
     @Transactional
     fun saveProbeMonitorLog(
         probeId: UUID,
         runAt: LocalDateTime,
         result: ProbeResult,
-    ) {
-        val probe = probeRepository.findById(probeId)
+        checkTaskId: UUID = UUID.randomUUID(),
+    ): Boolean {
+        if (probeMonitorRepository.existsByCheckTaskId(checkTaskId)) return false
 
-        setLastRun(probe, runAt, result.status)
+        val probe = probeRepository.findByIdForUpdate(probeId)
+        if (!probe.enabled) return false
 
-        val dto =
+        val previousStatus = probe.status
+        probe.status = result.status
+        probe.lastRun = runAt
+
+        probeMonitorRepository.store(
             StoreProbeMonitorLogDto(
                 runAt = runAt,
                 message = result.message,
                 status = result.status,
                 responseTime = result.responseTime,
                 probe = ProbeMapper.toDto(probe),
-            )
-
-        probeMonitorRepository.store(dto)
-    }
-
-    private fun setLastRun(
-        probe: ProbesEntity,
-        runAt: LocalDateTime,
-        status: ProbeMonitorLogStatus,
-    ) {
-        if (status in updateStatus) {
-            probe.status = status
-        }
-
-        probe.lastRun = runAt
-        probe.persist()
-    }
-
-    private val updateStatus =
-        setOf(
-            ProbeMonitorLogStatus.SUCCESS,
-            ProbeMonitorLogStatus.FAILURE,
+                checkTaskId = checkTaskId,
+            ),
         )
+
+        notificationService.enqueueForTransition(
+            probe = probe,
+            checkTaskId = checkTaskId,
+            result = result,
+            previousStatus = previousStatus,
+        )
+
+        return true
+    }
 }

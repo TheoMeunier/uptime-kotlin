@@ -143,17 +143,13 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
 
             logger.info { "Slack API response: ${response.statusCode()}" }
 
-            when (response.statusCode()) {
-                200 -> {
-                    logger.info { "Slack notification sent successfully" }
-                }
-
-                else -> {
-                    logger.error { "Slack notification failed with status: ${response.statusCode()}, body: ${response.body()}" }
-                }
+            if (response.statusCode() != 200) {
+                throw IllegalStateException("Slack returned HTTP ${response.statusCode()}: ${response.body()}")
             }
+            logger.info { "Slack notification sent successfully" }
         } catch (e: Exception) {
             logger.error(e) { "Exception while sending Slack notification: ${e.message}" }
+            throw e
         }
     }
 

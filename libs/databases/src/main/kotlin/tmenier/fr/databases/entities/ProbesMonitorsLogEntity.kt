@@ -34,4 +34,7 @@ class ProbesMonitorsLogEntity : PanacheEntityBase {
 
     @Column(name = "run_at", nullable = false, updatable = false)
     lateinit var runAt: LocalDateTime
+
+    @Column(name = "probe_check_job_id", updatable = false)
+    var checkTaskId: UUID? = null
 }

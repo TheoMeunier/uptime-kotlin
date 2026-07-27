@@ -87,13 +87,13 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
 
             logger.info { "Discord API response: ${response.statusCode()}" }
 
-            when (response.statusCode()) {
-                204, 200 -> {
-                    logger.info { "Discord notification sent successfully" }
-                }
+            if (response.statusCode() !in setOf(200, 204)) {
+                throw IllegalStateException("Discord returned HTTP ${response.statusCode()}: ${response.body()}")
             }
+            logger.info { "Discord notification sent successfully" }
         } catch (e: Exception) {
             logger.error(e) { "Exception while sending Discord notification: ${e.message}" }
+            throw e
         }
     }
 }

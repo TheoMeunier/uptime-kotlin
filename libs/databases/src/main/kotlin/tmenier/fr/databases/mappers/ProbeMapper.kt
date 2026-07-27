@@ -15,6 +15,7 @@ import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsIdsDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
+import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 
 object ProbeContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
@@ -152,6 +153,7 @@ object ProbeMapper {
 
     fun toShowDto(
         entity: ProbesEntity,
+        monitors: List<ProbesMonitorsLogEntity>,
         uptimes: ProbeUptimeDTO? = null,
     ): ProbeShowDTO {
         val content = ProbeContentMapper.toDto(entity)
@@ -176,7 +178,7 @@ object ProbeMapper {
                     updatedAt = entity.updatedAt,
                 ),
             monitors =
-                entity.probesMonitorLogs.map {
+                monitors.map {
                     ProbeMonitorDTO(
                         id = it.id,
                         status = it.status,

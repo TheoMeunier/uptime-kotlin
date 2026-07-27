@@ -40,8 +40,6 @@ monitoring service availability without relying on external solutions.
 - [React](https://reactjs.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Docker](https://www.docker.com/)
-- [Redis](https://redis.io/)
-- [RabbitMQ](https://www.rabbitmq.com/)
 
 ## Getting Started
 
@@ -190,16 +188,13 @@ uptime-kotlin-worker-notification:
     - "8081:8080"
   environment:
     TZ: Europe/Paris
-    QUARKUS_SCHEDULER_STRATEGY: rabbitmq
+    QUARKUS_SCHEDULER_STRATEGY: database
+    QUARKUS_SCHEDULER_WORKER_NAME: worker-primary
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
-    RABBITMQ_HOST: localhost
-    RABBITMQ_PORT: 5672
-    RABBITMQ_USERNAME: uptime_kotlin_rabbitmq_username
-    RABBITMQ_PASSWORD: uptime_kotlin_rabbitmq_password
   depends_on:
-    - uptime_kotlin_rabbitmq
+    - uptime_kotlin_api
   networks:
     - app_network
 
@@ -211,18 +206,13 @@ uptime-kotlin-worker-monitor:
     - "8082:8080"
   environment:
     TZ: Europe/Paris
-    QUARKUS_SCHEDULER_STRATEGY: rabbitmq
+    QUARKUS_SCHEDULER_STRATEGY: database
+    QUARKUS_SCHEDULER_WORKER_NAME: worker-primary
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
-    QUARKUS_REDIS_HOSTS: redis://username:password@host:port/database
-    RABBITMQ_HOST: localhost
-    RABBITMQ_PORT: 5672
-    RABBITMQ_USERNAME: uptime_kotlin_rabbitmq_username
-    RABBITMQ_PASSWORD: uptime_kotlin_rabbitmq_password
   depends_on:
-    - uptime_kotlin_rabbitmq
-    - uptime_kotlin_redis
+    - uptime_kotlin_api
   networks:
     - app_network
 
@@ -231,16 +221,8 @@ uptime-kotlin-worker-monitor:
 #### Configure the` variable environnement` file
 
 1. Cluster mode
-    - `QUARKUS_SCHEDULER_STRATEGY`: Application and worker mode if `db-lock` or `rabbitmq`
-
-2. Redis
-    - `QUARKUS_REDIS_HOSTS=redis://[username:password@][host][:port][/database]`: The URL of your Redis database
-
-3. Rabbitmq
-    - `RABBITMQ_HOST`: The host your rabbitmq
-    - `RABBITMQ_PORT`: The port of your rabbitmq
-    - `RABBITMQ_USERNAME`: The username of your rabbitmq
-    - `RABBITMQ_PASSWORD`: The password of your rabbitmq
+    - `QUARKUS_SCHEDULER_STRATEGY`: Application and worker mode if `db-lock` or `database`
+    - `QUARKUS_SCHEDULER_WORKER_NAME`: The name of the worker instance (must be unique for each worker)"
 
 ## Contributing
 

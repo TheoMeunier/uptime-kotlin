@@ -3,12 +3,14 @@ package tmenier.fr.databases.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.persistence.EntityManager
+import jakarta.persistence.LockModeType
 import jakarta.transaction.Transactional
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
-import tmenier.fr.databases.dtos.UpdateLastRunDto
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
@@ -18,30 +20,19 @@ import java.util.UUID
 @ApplicationScoped
 class ProbeRepository(
     private val notificationRepository: NotificationRepository,
+    private val probeCheckTaskRepository: ProbeCheckTaskRepository,
+    private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
     @Transactional
     override fun findById(id: UUID): ProbesEntity = find("id = ?1", id).firstResult() ?: throw IllegalArgumentException("Probe not found")
 
-    fun findByIdWithLogs(
-        probeId: UUID,
-        hour: Long = 1,
-    ) = find(
-        "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE p.id = ?1 AND pml.runAt > ?2 ORDER BY pml.runAt ASC",
-        probeId,
-        LocalDateTime.now().minusHours(hour),
-    ).firstResult() ?: throw IllegalArgumentException("Probe not found")
+    fun findByIdOrNull(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
 
-    fun findDueProbes(now: LocalDateTime) =
-        find(
-            """
-                enabled = true
-                AND (nextCheckAt IS NULL OR nextCheckAt <= ?1)
-                AND (lockedBy IS NULL OR lockedAt < ?2)
-                ORDER BY nextCheckAt ASC NULLS FIRST
-            """,
-            now,
-            now.minusSeconds(30),
-        ).list()
+    fun findByIdForUpdate(id: UUID): ProbesEntity =
+        em.find(ProbesEntity::class.java, id, LockModeType.PESSIMISTIC_WRITE)
+            ?: throw IllegalArgumentException("Probe not found")
+
+    fun findByIds(ids: List<UUID>): List<ProbesEntity> = find("id in ?1", ids).list()
 
     fun getProbesLastHour(): List<ProbeStatusDTO> =
         find(
@@ -90,30 +81,27 @@ class ProbeRepository(
         attach(notifications, entity)
 
         entity.persist()
+        probeCheckTaskRepository.reschedulePendingRetries(dto.id, dto.intervalRetry)
     }
 
-    fun updateLastRun(dto: UpdateLastRunDto) {
-        val entity = findById(dto.id)
-        if (dto.status != null) {
-            entity.status = dto.status
-        }
-        entity.lastRun = dto.lastRun
-        entity.persist()
-    }
-
-    fun updateNextCheckAt(
+    fun updateStatus(
         probeId: UUID,
-        nextCheckAt: LocalDateTime,
+        status: ProbeMonitorLogStatus,
     ) {
         val entity = findById(probeId)
-        entity.nextCheckAt = nextCheckAt
+        entity.status = status
+        entity.updatedAt = LocalDateTime.now()
         entity.persist()
     }
 
     fun onOff(dto: ProbeOnOffDto) {
-        val probe = findById(dto.id)
+        val probe = findByIdForUpdate(dto.id)
         probe.enabled = dto.enabled
         probe.status = dto.status
+        probe.nextCheckAt = if (dto.enabled) LocalDateTime.now() else null
+        if (!dto.enabled) {
+            probeCheckTaskRepository.cancelPending(dto.id)
+        }
         probe.persist()
     }
 }

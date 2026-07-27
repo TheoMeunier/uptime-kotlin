@@ -67,7 +67,7 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
     private fun sendWebhook(
         content: NotificationContent.Webhook,
         jsonPayload: String,
-    ): WebhookResponse =
+    ) {
         try {
             logger.info { "Sending Webhook notification to: ${content.url.take(50)}... [${content.method}]" }
             logger.debug { "Payload: $jsonPayload" }
@@ -89,32 +89,13 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
 
             logger.info { "Webhook response: ${response.statusCode()} - ${response.body()}" }
 
-            val success = response.statusCode() in 200..299
-            if (success) {
-                logger.info { "Webhook notification sent successfully" }
-            } else {
-                logger.warn { "Webhook returned non-2xx status: ${response.statusCode()}" }
+            if (response.statusCode() !in 200..299) {
+                throw IllegalStateException("Webhook returned HTTP ${response.statusCode()}: ${response.body()}")
             }
-
-            WebhookResponse(
-                success = success,
-                statusCode = response.statusCode(),
-                body = response.body(),
-            )
+            logger.info { "Webhook notification sent successfully" }
         } catch (e: Exception) {
             logger.error(e) { "Exception while sending Webhook notification: ${e.message}" }
-            WebhookResponse(
-                success = false,
-                statusCode = null,
-                body = null,
-                error = e.message,
-            )
+            throw e
         }
+    }
 }
-
-data class WebhookResponse(
-    val success: Boolean,
-    val statusCode: Int?,
-    val body: String?,
-    val error: String? = null,
-)

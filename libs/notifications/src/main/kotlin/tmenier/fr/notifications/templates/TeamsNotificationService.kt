@@ -119,13 +119,13 @@ class TeamsNotificationService : tmenier.fr.notifications.TypedNotificationInter
 
             logger.info { "Teams API response: ${response.statusCode()}" }
 
-            when (response.statusCode()) {
-                204, 200 -> {
-                    logger.info { "Teams notification sent successfully" }
-                }
+            if (response.statusCode() !in setOf(200, 204)) {
+                throw IllegalStateException("Teams returned HTTP ${response.statusCode()}: ${response.body()}")
             }
+            logger.info { "Teams notification sent successfully" }
         } catch (e: Exception) {
             logger.error(e) { "Exception while sending Teams notification: ${e.message}" }
+            throw e
         }
     }
 

@@ -55,6 +55,7 @@ data class ProbeDTO(
     val lastRun: LocalDateTime?,
     val status: ProbeMonitorLogStatus,
     val content: ProbeContent,
+    val regionsOrder: List<String>? = null,
     val url: String? = null,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
