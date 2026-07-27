@@ -175,10 +175,9 @@ RabbitMQ handles task queuing between instances.
 #### Add Workers
 
 ```yaml
-uptime-kotlin-worker-notification:
+uptime-kotlin-worker:
   image: ghcr.io/theomeunier/uptime-kotlin/worker:latest
   container_name: uptime_kotlin_worker
-  restart: unless-stopped
   environment:
     TZ: Europe/Paris
     QUARKUS_SCHEDULER_STRATEGY: database
