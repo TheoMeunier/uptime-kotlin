@@ -172,38 +172,12 @@ The cluster mode allows you to run multiple API/Workers instances in parallel, d
 notifications across them. Redis is used for shared state and distributed locking (preventing duplicate checks), while
 RabbitMQ handles task queuing between instances.
 
-#### Prerequisites
-
-- [Redis](https://redis.io/)
-- [Rabbitmq](https://www.rabbitmq.com/)
-
-#### Add Services (Worker monitors and notifications)
+#### Add Workers
 
 ```yaml
-uptime-kotlin-worker-notification:
-  image: ghcr.io/theomeunier/uptime-kotlin/worker-notification:latest
-  container_name: uptime_kotlin_worker_notification
-  restart: unless-stopped
-  ports:
-    - "8081:8080"
-  environment:
-    TZ: Europe/Paris
-    QUARKUS_SCHEDULER_STRATEGY: database
-    QUARKUS_SCHEDULER_WORKER_NAME: worker-primary
-    QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
-    QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
-    QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
-  depends_on:
-    - uptime_kotlin_api
-  networks:
-    - app_network
-
-uptime-kotlin-worker-monitor:
-  image: ghcr.io/theomeunier/uptime-kotlin/worker-monitor:latest
-  container_name: uptime_kotlin_worker_monitor
-  restart: unless-stopped
-  ports:
-    - "8082:8080"
+uptime-kotlin-worker:
+  image: ghcr.io/theomeunier/uptime-kotlin/worker:latest
+  container_name: uptime_kotlin_worker
   environment:
     TZ: Europe/Paris
     QUARKUS_SCHEDULER_STRATEGY: database
