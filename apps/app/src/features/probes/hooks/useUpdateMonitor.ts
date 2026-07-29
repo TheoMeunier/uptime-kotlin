@@ -16,7 +16,10 @@ export default function useUpdateMonitor(probeId: string) {
 			return probeService.updateProbe(probeId, data);
 		},
 		onSuccess: (_, v) => {
-			queryClient.invalidateQueries({ queryKey: ['probes'] }).then(() => {
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: ['probes'] }),
+				queryClient.invalidateQueries({ queryKey: ['probe-update', probeId] }),
+			]).then(() => {
 				toast.success(t('monitors.alerts.update', { data: v.name }));
 				navigate(`/monitors/${probeId}`);
 			});
