@@ -23,41 +23,47 @@ export default function ProbesStatus() {
 	return (
 		<div className="min-h-screen bg-slate-50">
 			<div className="border-b bg-white shadow-sm">
-				<div className="container mx-auto py-8">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 					<div className="flex items-center gap-3 mb-3">
-						<div className="p-2 bg-primary/10 rounded-lg">
+						<div className="p-2 bg-primary/10 rounded-lg shrink-0">
 							<Activity className="h-6 w-6 text-primary" />
 						</div>
 						<div>
-							<h1 className="text-3xl font-bold tracking-tight text-slate-900">{t('pages.status_page.title')}</h1>
-							<p className="text-slate-600 mt-1">{t('pages.status_page.subtitle')}</p>
+							<h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">
+								{t('pages.status_page.title')}
+							</h1>
+							<p className="text-sm sm:text-base text-slate-600 mt-1">{t('pages.status_page.subtitle')}</p>
 						</div>
 					</div>
 
-					<div className="flex items-center gap-2 text-sm text-slate-500">
-						<Clock className="h-4 w-4" />
+					<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
+						<Clock className="h-4 w-4 shrink-0" />
 						<span>
 							{t('pages.status_page.description.last_update')}
 							{new Date().toLocaleTimeString('fr-FR')}
 						</span>
-						<Badge variant="outline" className="ml-2">
+						<Badge variant="outline" className="sm:ml-2">
 							{t('pages.status_page.description.automatic_refresh')} 2min
 						</Badge>
 					</div>
 				</div>
 			</div>
 
-			<div className="w-[98rem] mx-auto py-12">
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<div className="w-full max-w-[98rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
 					{data?.map((item) => (
 						<Card key={item.probe.id} className="border-slate-200 bg-white hover:shadow-md transition-all duration-200">
 							<CardContent>
 								<div>
-									<div className="flex justify-between items-start">
-										<div className="flex items-center">
-											<div>
-												<CardTitle className="text-lg font-semibold text-slate-900">{item.probe.name}</CardTitle>
-												<CardDescription className="text-gray-500 text-sm">{item.probe.url}</CardDescription>
+									<div className="flex flex-wrap justify-between items-start gap-2">
+										<div className="flex items-center min-w-0">
+											<div className="min-w-0">
+												<CardTitle className="text-base sm:text-lg font-semibold text-slate-900 truncate">
+													{item.probe.name}
+												</CardTitle>
+												<CardDescription className="text-gray-500 text-xs sm:text-sm truncate">
+													{item.probe.url}
+												</CardDescription>
 											</div>
 										</div>
 										<ProbeStatus status={item.probe.status} size="sm" />
@@ -104,7 +110,7 @@ function ProbesStatusSkeleton() {
 	return (
 		<div className="min-h-screen bg-slate-50">
 			<div className="border-b bg-white shadow-sm">
-				<div className="container mx-auto py-8">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 					<div className="flex items-center gap-3 mb-3">
 						<Skeleton className="h-10 w-10 rounded-lg shrink-0" />
 						<div className="flex flex-col gap-2">
@@ -120,8 +126,8 @@ function ProbesStatusSkeleton() {
 				</div>
 			</div>
 
-			<div className="w-[98rem] mx-auto py-12">
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<div className="w-full max-w-[98rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
 					{BAR_HEIGHTS.map((heights, i) => (
 						<Card key={i} className="border-slate-200 bg-white">
 							<CardContent>
