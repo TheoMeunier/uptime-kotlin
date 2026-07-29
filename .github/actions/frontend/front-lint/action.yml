@@ -1,4 +1,4 @@
-name: front_security.yml
+name: front_lint.yml
 
 inputs:
   node-version:
@@ -23,8 +23,10 @@ runs:
 
     - name: Install dependencies
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: npm ci
 
     - name: Run Prettier
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       run: npm run format:check
