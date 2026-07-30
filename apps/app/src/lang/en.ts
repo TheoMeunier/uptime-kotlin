@@ -130,6 +130,8 @@ const en = {
 			postgresql_query: 'Query',
 			sqlserver_connection_string: 'Microsoft SQL Server connection string',
 			sqlserver_query: 'Query',
+			mysql_connection_string: 'MySQL/MariaDB connection string',
+			mysql_query: 'Query',
 			protocol: 'Monitor protocol',
 			name_monitor: 'Monitor name',
 			retry: 'Retry',

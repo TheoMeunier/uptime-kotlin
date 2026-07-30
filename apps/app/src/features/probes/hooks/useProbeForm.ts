@@ -86,6 +86,12 @@ const sqlServerProbeSchema = baseStoreProbeSchema.extend({
 	query: z.string().min(1),
 });
 
+const mySqlProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('MYSQL / MARIADB'),
+	connection_string: z.string().regex(/^(?:mysql|mariadb):\/\/\S+$/),
+	query: z.string().min(1),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
@@ -93,6 +99,7 @@ export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	dnsProbeSchema,
 	postgreSqlProbeSchema,
 	sqlServerProbeSchema,
+	mySqlProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;

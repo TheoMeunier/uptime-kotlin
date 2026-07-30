@@ -44,6 +44,10 @@ object ProbeContentMapper {
 
             ProbeProtocol.SQLSERVER -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.SqlServer::class.java)
+            } 
+            
+            ProbeProtocol.MYSQL -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.MySql::class.java)
             }
         } as ProbeContent
 
@@ -56,6 +60,7 @@ object ProbeContentMapper {
                 is ProbeContent.Ping -> ProbeProtocol.PING
                 is ProbeContent.PostgreSql -> ProbeProtocol.POSTGRESQL
                 is ProbeContent.SqlServer -> ProbeProtocol.SQLSERVER
+                is ProbeContent.MySql -> ProbeProtocol.MYSQL
             }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
@@ -71,6 +76,7 @@ object ProbeContentMapper {
             is ProbeContent.Ping -> content.ip
             is ProbeContent.PostgreSql -> content.host
             is ProbeContent.SqlServer -> content.host
+            is ProbeContent.MySql -> content.host
         }
 }
 

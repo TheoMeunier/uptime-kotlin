@@ -29,6 +29,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolPingRequest::class, name = "PING"),
     JsonSubTypes.Type(value = ValidProbeProtocolPostgreSqlRequest::class, name = "POSTGRESQL"),
     JsonSubTypes.Type(value = ValidProbeProtocolSqlServerRequest::class, name = "MICROSOFT SQL SERVER"),
+    JsonSubTypes.Type(value = ValidProbeProtocolMySqlRequest::class, name = "MYSQL / MARIADB"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -155,5 +156,16 @@ data class ValidProbeProtocolSqlServerRequest(
     )
     val connectionString: String,
     @field:NotBlank(message = "Microsoft SQL Server query is required")
+    val query: String = "SELECT 1",
+) : BaseStoreProbeRequest()
+
+data class ValidProbeProtocolMySqlRequest(
+    @field:NotBlank(message = "MySQL/MariaDB connection string is required")
+    @field:Pattern(
+        regexp = "(?:mysql|mariadb)://[^\\s]+",
+        message = "Invalid MySQL/MariaDB connection string",
+    )
+    val connectionString: String,
+    @field:NotBlank(message = "MySQL/MariaDB query is required")
     val query: String = "SELECT 1",
 ) : BaseStoreProbeRequest()

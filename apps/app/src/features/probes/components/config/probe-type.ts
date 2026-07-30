@@ -169,6 +169,24 @@ const PROBE_FIELDS_CONFIG = {
 			{
 				name: 'query',
 				label: i18n.t('monitors.label.sqlserver_query'),
+        input_type: 'textarea',
+				placeholder: 'SELECT 1',
+				default_value: 'SELECT 1',
+       }, 
+    ],
+    advanced_fields: [],
+  },
+	[ProbeProtocol.MYSQL]: {
+		fields: [
+			{
+				name: 'connection_string',
+				label: i18n.t('monitors.label.mysql_connection_string'),
+				input_type: 'text',
+				placeholder: 'mysql://username:password@host:3306/database',
+			},
+			{
+				name: 'query',
+				label: i18n.t('monitors.label.mysql_query'),
 				input_type: 'textarea',
 				placeholder: 'SELECT 1',
 				default_value: 'SELECT 1',

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
 
@@ -20,6 +21,16 @@ class ResolveMonitorContentServiceTest {
         assertEquals(
             ProbeProtocol.SQLSERVER,
             objectMapper.readValue("\"MICROSOFT SQL SERVER\"", ProbeProtocol::class.java),
+        )
+    }
+    
+          fun `serializes MySQL protocol with the MySQL MariaDB API value`() {
+        val objectMapper = ObjectMapper()
+
+        assertEquals("\"MYSQL / MARIADB\"", objectMapper.writeValueAsString(ProbeProtocol.MYSQL))
+        assertEquals(
+            ProbeProtocol.MYSQL,
+            objectMapper.readValue("\"MYSQL / MARIADB\"", ProbeProtocol::class.java),
         )
     }
 
@@ -47,5 +58,17 @@ class ResolveMonitorContentServiceTest {
             ) as ProbeContent.SqlServer
 
         assertEquals("localhost:1433/application", content.host)
+    }
+    
+    fun `resolves MariaDB connection string without credentials`() {
+        val content =
+            ResolveMonitorContentService().resolve(
+                ValidProbeProtocolMySqlRequest(
+                    connectionString = "mariadb://localhost/application",
+                    query = "SELECT 1",
+                ),
+            ) as ProbeContent.MySql
+
+        assertEquals("localhost:3306/application", content.host)
     }
 }

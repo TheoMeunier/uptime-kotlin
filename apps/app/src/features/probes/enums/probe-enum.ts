@@ -5,6 +5,7 @@ enum ProbeProtocol {
 	DNS = 'DNS',
 	POSTGRESQL = 'POSTGRESQL',
 	SQLSERVER = 'MICROSOFT SQL SERVER',
+	MYSQL = 'MYSQL / MARIADB',
 }
 
 export default ProbeProtocol;
