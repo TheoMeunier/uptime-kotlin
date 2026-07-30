@@ -23,8 +23,8 @@ class ResolveMonitorContentServiceTest {
             objectMapper.readValue("\"MICROSOFT SQL SERVER\"", ProbeProtocol::class.java),
         )
     }
-    
-          fun `serializes MySQL protocol with the MySQL MariaDB API value`() {
+
+    fun `serializes MySQL protocol with the MySQL MariaDB API value`() {
         val objectMapper = ObjectMapper()
 
         assertEquals("\"MYSQL / MARIADB\"", objectMapper.writeValueAsString(ProbeProtocol.MYSQL))
@@ -59,7 +59,7 @@ class ResolveMonitorContentServiceTest {
 
         assertEquals("localhost:1433/application", content.host)
     }
-    
+
     fun `resolves MariaDB connection string without credentials`() {
         val content =
             ResolveMonitorContentService().resolve(

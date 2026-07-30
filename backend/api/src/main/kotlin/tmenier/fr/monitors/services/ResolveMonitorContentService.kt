@@ -67,9 +67,9 @@ class ResolveMonitorContentService {
                 ProbeContent.SqlServer(
                     connectionString = request.connectionString,
                     host = databaseTarget(request.connectionString, 1433),
-                   query = request.query,
+                    query = request.query,
                 )
-                
+
             is ValidProbeProtocolMySqlRequest ->
                 ProbeContent.MySql(
                     connectionString = request.connectionString,

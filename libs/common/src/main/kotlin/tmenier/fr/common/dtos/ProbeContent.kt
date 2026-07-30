@@ -95,7 +95,7 @@ sealed interface ProbeContent {
         val query: String = "SELECT 1",
     ) : ProbeContent
 
-   @RegisterForReflection
+    @RegisterForReflection
     data class MySql(
         val connectionString: String,
         val host: String,

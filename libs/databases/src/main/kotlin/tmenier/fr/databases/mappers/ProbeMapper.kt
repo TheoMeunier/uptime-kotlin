@@ -44,8 +44,8 @@ object ProbeContentMapper {
 
             ProbeProtocol.SQLSERVER -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.SqlServer::class.java)
-            } 
-            
+            }
+
             ProbeProtocol.MYSQL -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.MySql::class.java)
             }

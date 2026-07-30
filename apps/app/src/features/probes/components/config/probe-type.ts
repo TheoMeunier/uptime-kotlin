@@ -169,13 +169,13 @@ const PROBE_FIELDS_CONFIG = {
 			{
 				name: 'query',
 				label: i18n.t('monitors.label.sqlserver_query'),
-        input_type: 'textarea',
+				input_type: 'textarea',
 				placeholder: 'SELECT 1',
 				default_value: 'SELECT 1',
-       }, 
-    ],
-    advanced_fields: [],
-  },
+			},
+		],
+		advanced_fields: [],
+	},
 	[ProbeProtocol.MYSQL]: {
 		fields: [
 			{
