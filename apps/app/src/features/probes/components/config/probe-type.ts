@@ -194,6 +194,24 @@ const PROBE_FIELDS_CONFIG = {
 		],
 		advanced_fields: [],
 	},
+	[ProbeProtocol.REDIS]: {
+		fields: [
+			{
+				name: 'connection_string',
+				label: i18n.t('monitors.label.redis_connection_string'),
+				input_type: 'text',
+				placeholder: 'redis://username:password@host:6379/0',
+			},
+			{
+				name: 'command',
+				label: i18n.t('monitors.label.redis_command'),
+				input_type: 'textarea',
+				placeholder: 'PING',
+				default_value: 'PING',
+			},
+		],
+		advanced_fields: [],
+	},
 };
 
 export default PROBE_FIELDS_CONFIG;

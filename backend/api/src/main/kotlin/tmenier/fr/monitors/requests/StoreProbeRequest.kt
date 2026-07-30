@@ -30,6 +30,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolPostgreSqlRequest::class, name = "POSTGRESQL"),
     JsonSubTypes.Type(value = ValidProbeProtocolSqlServerRequest::class, name = "MICROSOFT SQL SERVER"),
     JsonSubTypes.Type(value = ValidProbeProtocolMySqlRequest::class, name = "MYSQL / MARIADB"),
+    JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -168,4 +169,16 @@ data class ValidProbeProtocolMySqlRequest(
     val connectionString: String,
     @field:NotBlank(message = "MySQL/MariaDB query is required")
     val query: String = "SELECT 1",
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolRedisRequest(
+    @field:NotBlank(message = "Redis connection string is required")
+    @field:Pattern(
+        regexp = "rediss?://[^\\s]+",
+        message = "Invalid Redis connection string",
+    )
+    val connectionString: String,
+    @field:NotBlank(message = "Redis command is required")
+    val command: String = "PING",
 ) : BaseStoreProbeRequest()

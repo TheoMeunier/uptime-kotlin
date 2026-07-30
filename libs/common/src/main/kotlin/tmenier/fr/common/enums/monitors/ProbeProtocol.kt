@@ -13,6 +13,7 @@ enum class ProbeProtocol(
     POSTGRESQL("POSTGRESQL"),
     SQLSERVER("MICROSOFT SQL SERVER"),
     MYSQL("MYSQL / MARIADB"),
+    REDIS("REDIS"),
     ;
 
     companion object {

@@ -101,4 +101,11 @@ sealed interface ProbeContent {
         val host: String,
         val query: String = "SELECT 1",
     ) : ProbeContent
+
+    @RegisterForReflection
+    data class Redis(
+        val connectionString: String,
+        val host: String,
+        val command: String = "PING",
+    ) : ProbeContent
 }

@@ -132,6 +132,8 @@ const en = {
 			sqlserver_query: 'Query',
 			mysql_connection_string: 'MySQL/MariaDB connection string',
 			mysql_query: 'Query',
+			redis_connection_string: 'Redis connection string',
+			redis_command: 'Command',
 			protocol: 'Monitor protocol',
 			name_monitor: 'Monitor name',
 			retry: 'Retry',

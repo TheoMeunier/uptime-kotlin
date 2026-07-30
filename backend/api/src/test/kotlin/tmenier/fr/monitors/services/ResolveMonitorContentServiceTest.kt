@@ -7,6 +7,7 @@ import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
 
 class ResolveMonitorContentServiceTest {
@@ -70,5 +71,18 @@ class ResolveMonitorContentServiceTest {
             ) as ProbeContent.MySql
 
         assertEquals("localhost:3306/application", content.host)
+    }
+
+    @Test
+    fun `resolves Redis connection string with its database`() {
+        val content =
+            ResolveMonitorContentService().resolve(
+                ValidProbeProtocolRedisRequest(
+                    connectionString = "redis://localhost/2",
+                    command = "PING",
+                ),
+            ) as ProbeContent.Redis
+
+        assertEquals("localhost:6379/2", content.host)
     }
 }
