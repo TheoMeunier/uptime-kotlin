@@ -92,6 +92,12 @@ const mySqlProbeSchema = baseStoreProbeSchema.extend({
 	query: z.string().min(1),
 });
 
+const redisProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('REDIS'),
+	connection_string: z.string().regex(/^rediss?:\/\/\S+$/),
+	command: z.string().min(1),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
@@ -100,6 +106,7 @@ export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	postgreSqlProbeSchema,
 	sqlServerProbeSchema,
 	mySqlProbeSchema,
+	redisProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;

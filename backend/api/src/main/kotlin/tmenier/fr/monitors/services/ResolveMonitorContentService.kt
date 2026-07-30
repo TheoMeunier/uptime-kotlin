@@ -8,6 +8,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
 import java.net.URI
@@ -77,6 +78,13 @@ class ResolveMonitorContentService {
                     query = request.query,
                 )
 
+            is ValidProbeProtocolRedisRequest ->
+                ProbeContent.Redis(
+                    connectionString = request.connectionString,
+                    host = redisTarget(request.connectionString),
+                    command = request.command,
+                )
+
             else -> throw IllegalArgumentException("Unsupported protocol")
         }
 
@@ -89,5 +97,13 @@ class ResolveMonitorContentService {
         val port = if (uri.port == -1) defaultPort else uri.port
         require(uri.path.isNotBlank() && uri.path != "/") { "Database name is required" }
         return "$host:$port${uri.path}"
+    }
+
+    private fun redisTarget(connectionString: String): String {
+        val uri = URI(connectionString)
+        val host = requireNotNull(uri.host) { "Redis host is required" }
+        val port = if (uri.port == -1) 6379 else uri.port
+        val database = uri.path.takeIf { it.isNotBlank() && it != "/" }.orEmpty()
+        return "$host:$port$database"
     }
 }
