@@ -42,6 +42,10 @@ object ProbeContentMapper {
             ProbeProtocol.POSTGRESQL -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.PostgreSql::class.java)
             }
+
+            ProbeProtocol.MYSQL -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.MySql::class.java)
+            }
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
@@ -52,6 +56,7 @@ object ProbeContentMapper {
                 is ProbeContent.Tcp -> ProbeProtocol.TCP
                 is ProbeContent.Ping -> ProbeProtocol.PING
                 is ProbeContent.PostgreSql -> ProbeProtocol.POSTGRESQL
+                is ProbeContent.MySql -> ProbeProtocol.MYSQL
             }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
@@ -66,6 +71,7 @@ object ProbeContentMapper {
             is ProbeContent.Tcp -> "${content.url}:${content.tcpPort}"
             is ProbeContent.Ping -> content.ip
             is ProbeContent.PostgreSql -> "Postgres host is secret"
+            is ProbeContent.MySql -> content.host
         }
 
     private fun postgreSqlTarget(connectionString: String): String {

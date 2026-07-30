@@ -5,9 +5,11 @@ import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
+import java.net.URI
 
 @ApplicationScoped
 class ResolveMonitorContentService {
@@ -56,10 +58,28 @@ class ResolveMonitorContentService {
             is ValidProbeProtocolPostgreSqlRequest ->
                 ProbeContent.PostgreSql(
                     connectionString = request.connectionString,
-                    host = request.connectionString.split('@')[1],
+                    host = databaseTarget(request.connectionString, 5432),
+                    query = request.query,
+                )
+
+            is ValidProbeProtocolMySqlRequest ->
+                ProbeContent.MySql(
+                    connectionString = request.connectionString,
+                    host = databaseTarget(request.connectionString, 3306),
                     query = request.query,
                 )
 
             else -> throw IllegalArgumentException("Unsupported protocol")
         }
+
+    private fun databaseTarget(
+        connectionString: String,
+        defaultPort: Int,
+    ): String {
+        val uri = URI(connectionString)
+        val host = requireNotNull(uri.host) { "Database host is required" }
+        val port = if (uri.port == -1) defaultPort else uri.port
+        require(uri.path.isNotBlank() && uri.path != "/") { "Database name is required" }
+        return "$host:$port${uri.path}"
+    }
 }
