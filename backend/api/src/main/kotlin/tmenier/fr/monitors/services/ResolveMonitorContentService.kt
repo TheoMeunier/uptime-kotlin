@@ -6,6 +6,7 @@ import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
 
 @ApplicationScoped
@@ -50,6 +51,13 @@ class ResolveMonitorContentService {
                     pingSize = request.pingSize,
                     pingDelay = request.pingDelay,
                     pingNumericOutput = request.pingNumericOutput,
+                )
+
+            is ValidProbeProtocolPostgreSqlRequest ->
+                ProbeContent.PostgreSql(
+                    connectionString = request.connectionString,
+                    host = request.connectionString.split('@')[1],
+                    query = request.query,
                 )
 
             else -> throw IllegalArgumentException("Unsupported protocol")

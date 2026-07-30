@@ -26,7 +26,7 @@ monitoring service availability without relying on external solutions.
 
 ### Key Features
 
-- HTTP/HTTPS, TCP, DNS and ping monitoring
+- HTTP/HTTPS, TCP, DNS, ping and PostgreSQL monitoring
 - Real-time dashboard with historical data
 - Multi-channel notifications (Email, Slack, Discord, Teams, Webhook)
 - Public status pages for your users

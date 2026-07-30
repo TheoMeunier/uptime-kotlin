@@ -16,6 +16,7 @@ import tmenier.fr.databases.dtos.ProbeWithNotificationsIdsDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
+import java.net.URI
 
 object ProbeContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
@@ -37,6 +38,10 @@ object ProbeContentMapper {
             ProbeProtocol.PING -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Ping::class.java)
             }
+
+            ProbeProtocol.POSTGRESQL -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.PostgreSql::class.java)
+            }
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
@@ -46,6 +51,7 @@ object ProbeContentMapper {
                 is ProbeContent.Dns -> ProbeProtocol.DNS
                 is ProbeContent.Tcp -> ProbeProtocol.TCP
                 is ProbeContent.Ping -> ProbeProtocol.PING
+                is ProbeContent.PostgreSql -> ProbeProtocol.POSTGRESQL
             }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
@@ -59,7 +65,19 @@ object ProbeContentMapper {
             is ProbeContent.Dns -> content.hostname
             is ProbeContent.Tcp -> "${content.url}:${content.tcpPort}"
             is ProbeContent.Ping -> content.ip
+            is ProbeContent.PostgreSql -> "Postgres host is secret"
         }
+
+    private fun postgreSqlTarget(connectionString: String): String {
+        return try {
+            val uri = URI(connectionString)
+            val host = uri.host ?: return "PostgreSQL"
+            val port = if (uri.port == -1) 5432 else uri.port
+            "$host:$port${uri.path}"
+        } catch (_: Exception) {
+            "PostgreSQL"
+        }
+    }
 }
 
 object ProbeMapper {

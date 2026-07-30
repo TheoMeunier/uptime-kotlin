@@ -1,6 +1,7 @@
 package tmenier.fr.databases.entities
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -64,7 +65,7 @@ class ProbesEntity : PanacheEntityBase {
 
     @Column(name = "regions_order", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    var regionsOrder: JsonNode? = null
+    var regionsOrder: JsonNode = JsonNodeFactory.instance.arrayNode()
 
     @Column(name = "next_check_at")
     var nextCheckAt: LocalDateTime? = null

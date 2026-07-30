@@ -140,6 +140,24 @@ const PROBE_FIELDS_CONFIG = {
 			},
 		],
 	},
+	[ProbeProtocol.POSTGRESQL]: {
+		fields: [
+			{
+				name: 'connection_string',
+				label: i18n.t('monitors.label.postgresql_connection_string'),
+				input_type: 'text',
+				placeholder: 'postgres://username:password@host:5432/database',
+			},
+			{
+				name: 'query',
+				label: i18n.t('monitors.label.postgresql_query'),
+				input_type: 'textarea',
+				placeholder: 'SELECT 1',
+				default_value: 'SELECT 1',
+			},
+		],
+		advanced_fields: [],
+	},
 };
 
 export default PROBE_FIELDS_CONFIG;

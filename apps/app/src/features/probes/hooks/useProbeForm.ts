@@ -74,11 +74,18 @@ const dnsProbeSchema = baseStoreProbeSchema.extend({
 	record_type: z.enum(['A', 'AAAA', 'CNAME', 'MX', 'TXT']).optional(),
 });
 
+const postgreSqlProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('POSTGRESQL'),
+	connection_string: z.string().regex(/^postgres(?:ql)?:\/\/\S+$/),
+	query: z.string().min(1),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
 	pingProbeSchema,
 	dnsProbeSchema,
+	postgreSqlProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;
