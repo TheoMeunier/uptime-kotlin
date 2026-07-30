@@ -5,4 +5,5 @@ enum class ProbeProtocol {
     TCP,
     PING,
     DNS,
+    POSTGRESQL,
 }

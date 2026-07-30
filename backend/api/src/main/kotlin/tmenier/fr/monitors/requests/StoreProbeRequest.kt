@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.IpAddress
@@ -26,6 +27,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolTcpRequest::class, name = "TCP"),
     JsonSubTypes.Type(value = ValidProbeProtocolDnsRequest::class, name = "DNS"),
     JsonSubTypes.Type(value = ValidProbeProtocolPingRequest::class, name = "PING"),
+    JsonSubTypes.Type(value = ValidProbeProtocolPostgreSqlRequest::class, name = "POSTGRESQL"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -129,4 +131,16 @@ data class ValidProbeProtocolPingRequest(
     @field:Max(60)
     val pingDelay: Int,
     val pingNumericOutput: Boolean,
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolPostgreSqlRequest(
+    @field:NotBlank(message = "PostgreSQL connection string is required")
+    @field:Pattern(
+        regexp = "postgres(?:ql)?://[^\\s]+",
+        message = "Invalid PostgreSQL connection string",
+    )
+    val connectionString: String,
+    @field:NotBlank(message = "PostgreSQL query is required")
+    val query: String = "SELECT 1",
 ) : BaseStoreProbeRequest()

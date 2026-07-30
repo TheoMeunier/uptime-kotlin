@@ -80,4 +80,11 @@ sealed interface ProbeContent {
         val url: String,
         val tcpPort: Int,
     ) : ProbeContent
+
+    @RegisterForReflection
+    data class PostgreSql(
+        val connectionString: String,
+        val host: String,
+        val query: String = "SELECT 1",
+    ) : ProbeContent
 }

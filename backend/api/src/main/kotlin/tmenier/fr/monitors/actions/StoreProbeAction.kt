@@ -1,6 +1,7 @@
 package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.transaction.Transactional
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
@@ -12,6 +13,7 @@ class StoreProbeAction(
     private val probeRepository: ProbeRepository,
     private val getProbeContentService: ResolveMonitorContentService,
 ) {
+    @Transactional
     fun execute(
         payload: BaseStoreProbeRequest,
         probeId: UUID? = null,

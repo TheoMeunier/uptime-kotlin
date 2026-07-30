@@ -35,7 +35,7 @@ class ProbeCheckTaskRepository(
             val scheduledAt = nextUnprocessedSchedule(probe, now)
             advanceAbsoluteSchedule(probe, scheduledAt, now)
 
-            val configuredRegion = probe.regionsOrder?.firstOrNull()?.asText()
+            val configuredRegion = probe.regionsOrder.firstOrNull()?.asText()
             storeEntity(
                 StoreProbeCheckTaskDto(
                     probeId = probe.id,

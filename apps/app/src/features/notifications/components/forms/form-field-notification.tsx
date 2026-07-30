@@ -1,6 +1,7 @@
 import type { FieldConfig } from '@/features/notifications/types/notification.type.ts';
 import { Input } from '@/components/atoms/input.tsx';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/atoms/field.tsx';
+import { Textarea } from '@/components/atoms/textarea.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import FormMultiSelect from '@/components/molecules/forms/form-select-multiple.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
@@ -12,6 +13,22 @@ interface FormFieldNotificationProps {
 }
 
 export default function FormFieldNotification({ key, field, form }: FormFieldNotificationProps) {
+	if (field.input_type === 'textarea') {
+		return (
+			<Field key={key}>
+				<FieldLabel className="block text-sm font-medium text-gray-700">{field.label}</FieldLabel>
+				<Textarea
+					{...form.register(field.name)}
+					placeholder={field.placeholder}
+					defaultValue={field.default_value}
+					rows={5}
+				/>
+				{field.description && <FieldDescription>{field.description}</FieldDescription>}
+				<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
+			</Field>
+		);
+	}
+
 	if (field.input_type === 'number') {
 		return (
 			<Field key={key}>

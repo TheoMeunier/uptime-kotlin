@@ -126,6 +126,8 @@ const en = {
 			ping_max_packet: 'Max packet loss',
 			ping_size: 'Packet size',
 			ping_delay: 'Delay between pings (ms)',
+			postgresql_connection_string: 'PostgreSQL connection string',
+			postgresql_query: 'Query',
 			protocol: 'Monitor protocol',
 			name_monitor: 'Monitor name',
 			retry: 'Retry',
