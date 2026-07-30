@@ -128,6 +128,8 @@ const en = {
 			ping_delay: 'Delay between pings (ms)',
 			postgresql_connection_string: 'PostgreSQL connection string',
 			postgresql_query: 'Query',
+			sqlserver_connection_string: 'Microsoft SQL Server connection string',
+			sqlserver_query: 'Query',
 			protocol: 'Monitor protocol',
 			name_monitor: 'Monitor name',
 			retry: 'Retry',

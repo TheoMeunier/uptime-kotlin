@@ -28,6 +28,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolDnsRequest::class, name = "DNS"),
     JsonSubTypes.Type(value = ValidProbeProtocolPingRequest::class, name = "PING"),
     JsonSubTypes.Type(value = ValidProbeProtocolPostgreSqlRequest::class, name = "POSTGRESQL"),
+    JsonSubTypes.Type(value = ValidProbeProtocolSqlServerRequest::class, name = "MICROSOFT SQL SERVER"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -142,5 +143,17 @@ data class ValidProbeProtocolPostgreSqlRequest(
     )
     val connectionString: String,
     @field:NotBlank(message = "PostgreSQL query is required")
+    val query: String = "SELECT 1",
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolSqlServerRequest(
+    @field:NotBlank(message = "Microsoft SQL Server connection string is required")
+    @field:Pattern(
+        regexp = "(?:sqlserver|mssql)://[^\\s]+",
+        message = "Invalid Microsoft SQL Server connection string",
+    )
+    val connectionString: String,
+    @field:NotBlank(message = "Microsoft SQL Server query is required")
     val query: String = "SELECT 1",
 ) : BaseStoreProbeRequest()

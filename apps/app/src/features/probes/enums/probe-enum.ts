@@ -4,6 +4,7 @@ enum ProbeProtocol {
 	PING = 'PING',
 	DNS = 'DNS',
 	POSTGRESQL = 'POSTGRESQL',
+	SQLSERVER = 'MICROSOFT SQL SERVER',
 }
 
 export default ProbeProtocol;

@@ -80,12 +80,19 @@ const postgreSqlProbeSchema = baseStoreProbeSchema.extend({
 	query: z.string().min(1),
 });
 
+const sqlServerProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('MICROSOFT SQL SERVER'),
+	connection_string: z.string().regex(/^(?:sqlserver|mssql):\/\/\S+$/),
+	query: z.string().min(1),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
 	pingProbeSchema,
 	dnsProbeSchema,
 	postgreSqlProbeSchema,
+	sqlServerProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;

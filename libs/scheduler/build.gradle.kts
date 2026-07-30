@@ -4,6 +4,7 @@ dependencies {
     implementation(project(":libs:notifications"))
 
     implementation(libs.quarkus.scheduler)
+    implementation(libs.quarkus.jdbc.mssql)
     implementation(libs.minidns)
     implementation(libs.jackson.module.kotlin)
     implementation(rootProject.libs.quarkus.arc)
