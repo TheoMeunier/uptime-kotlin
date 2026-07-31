@@ -142,6 +142,9 @@ const en = {
 			kafka_message: 'Kafka producer message',
 			kafka_ssl: 'Enable Kafka SSL',
 			kafka_auto_topic_creation: 'Enable Kafka automatic topic creation',
+			rabbitmq_management_nodes: 'RabbitMQ management nodes',
+			rabbitmq_username: 'RabbitMQ username',
+			rabbitmq_password: 'RabbitMQ password',
 			protocol: 'Monitor protocol',
 			name_monitor: 'Monitor name',
 			retry: 'Retry',
@@ -154,6 +157,8 @@ const en = {
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
 			smtp_security:
 				"'SMTPS' tests implicit SMTP/TLS; 'Ignore TLS' connects in plain text; 'STARTTLS' connects, sends STARTTLS and verifies the server certificate. None of these checks sends an email.",
+			rabbitmq_management_nodes:
+				'Enter RabbitMQ management node URLs including protocol and port, separated by commas. Example: https://node1.rabbitmq.com:15672',
 			internal_retry: 'Maximum retries before the service is marked as down and a notification is sent',
 			check_interval: 'Check every {{ interval }} secondes',
 			now: 'Now',

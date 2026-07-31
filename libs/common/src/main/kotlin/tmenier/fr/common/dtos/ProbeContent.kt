@@ -125,4 +125,11 @@ sealed interface ProbeContent {
         val ssl: Boolean = false,
         val allowAutoTopicCreation: Boolean = false,
     ) : ProbeContent
+
+    @RegisterForReflection
+    data class RabbitMq(
+        val managementNodes: String,
+        val username: String,
+        val password: String,
+    ) : ProbeContent
 }

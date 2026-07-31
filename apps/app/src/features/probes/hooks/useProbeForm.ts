@@ -114,6 +114,13 @@ const kafkaProbeSchema = baseStoreProbeSchema.extend({
 	allow_auto_topic_creation: z.boolean().optional(),
 });
 
+const rabbitMqProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('RABBITMQ'),
+	management_nodes: z.string().min(1),
+	username: z.string().min(1),
+	password: z.string().min(1),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
@@ -125,6 +132,7 @@ export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	redisProbeSchema,
 	smtpProbeSchema,
 	kafkaProbeSchema,
+	rabbitMqProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;

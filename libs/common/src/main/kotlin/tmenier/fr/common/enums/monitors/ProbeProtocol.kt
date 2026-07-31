@@ -16,6 +16,7 @@ enum class ProbeProtocol(
     REDIS("REDIS"),
     SMTP("SMTP"),
     KAFKA("KAFKA PRODUCER"),
+    RABBITMQ("RABBITMQ"),
     ;
 
     companion object {

@@ -26,6 +26,16 @@ services:
     networks:
       - app_network
 
+  # Redis service
+  redis:
+    image: redis:latest
+    container_name: uptime_kotlin_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge

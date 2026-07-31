@@ -8,6 +8,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
@@ -102,5 +103,21 @@ class ResolveMonitorContentServiceTest {
         assertEquals("smtp.example.com", content.hostname)
         assertEquals(587, content.port)
         assertEquals(SmtpSecurity.STARTTLS, content.security)
+    }
+
+    @Test
+    fun `resolves RabbitMQ management settings`() {
+        val content =
+            ResolveMonitorContentService().resolve(
+                ValidProbeProtocolRabbitMqRequest(
+                    managementNodes = "https://rabbitmq.example.com:15672",
+                    username = "monitor",
+                    password = "secret",
+                ),
+            ) as ProbeContent.RabbitMq
+
+        assertEquals("https://rabbitmq.example.com:15672", content.managementNodes)
+        assertEquals("monitor", content.username)
+        assertEquals("secret", content.password)
     }
 }
