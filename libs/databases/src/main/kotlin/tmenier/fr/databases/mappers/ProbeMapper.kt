@@ -53,6 +53,10 @@ object ProbeContentMapper {
             ProbeProtocol.REDIS -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Redis::class.java)
             }
+
+            ProbeProtocol.SMTP -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.Smtp::class.java)
+            }
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
@@ -66,6 +70,7 @@ object ProbeContentMapper {
                 is ProbeContent.SqlServer -> ProbeProtocol.SQLSERVER
                 is ProbeContent.MySql -> ProbeProtocol.MYSQL
                 is ProbeContent.Redis -> ProbeProtocol.REDIS
+                is ProbeContent.Smtp -> ProbeProtocol.SMTP
             }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
@@ -83,6 +88,7 @@ object ProbeContentMapper {
             is ProbeContent.SqlServer -> content.host
             is ProbeContent.MySql -> content.host
             is ProbeContent.Redis -> content.host
+            is ProbeContent.Smtp -> "${content.hostname}:${content.port}"
         }
 }
 

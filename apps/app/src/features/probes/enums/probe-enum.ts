@@ -7,6 +7,7 @@ enum ProbeProtocol {
 	SQLSERVER = 'MICROSOFT SQL SERVER',
 	MYSQL = 'MYSQL / MARIADB',
 	REDIS = 'REDIS',
+	SMTP = 'SMTP',
 }
 
 export default ProbeProtocol;

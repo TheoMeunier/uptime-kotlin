@@ -4,6 +4,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.monitors.HttpCodeEnum
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 
 @RegisterForReflection
 sealed interface ProbeContent {
@@ -107,5 +108,12 @@ sealed interface ProbeContent {
         val connectionString: String,
         val host: String,
         val command: String = "PING",
+    ) : ProbeContent
+
+    @RegisterForReflection
+    data class Smtp(
+        val hostname: String,
+        val port: Int,
+        val security: SmtpSecurity,
     ) : ProbeContent
 }

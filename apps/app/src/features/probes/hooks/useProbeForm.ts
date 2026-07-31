@@ -98,6 +98,13 @@ const redisProbeSchema = baseStoreProbeSchema.extend({
 	command: z.string().min(1),
 });
 
+const smtpProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('SMTP'),
+	hostname: z.string().min(1),
+	port: z.number().min(1).max(65535),
+	security: z.enum(['SMTPS', 'STARTTLS', 'IGNORE_TLS']),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
@@ -107,6 +114,7 @@ export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	sqlServerProbeSchema,
 	mySqlProbeSchema,
 	redisProbeSchema,
+	smtpProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;
