@@ -116,4 +116,13 @@ sealed interface ProbeContent {
         val port: Int,
         val security: SmtpSecurity,
     ) : ProbeContent
+
+    @RegisterForReflection
+    data class Kafka(
+        val brokers: String,
+        val topic: String,
+        val message: String,
+        val ssl: Boolean = false,
+        val allowAutoTopicCreation: Boolean = false,
+    ) : ProbeContent
 }

@@ -105,6 +105,15 @@ const smtpProbeSchema = baseStoreProbeSchema.extend({
 	security: z.enum(['SMTPS', 'STARTTLS', 'IGNORE_TLS']),
 });
 
+const kafkaProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('KAFKA PRODUCER'),
+	brokers: z.string().min(1),
+	topic: z.string().min(1),
+	message: z.string().min(1),
+	ssl: z.boolean().optional(),
+	allow_auto_topic_creation: z.boolean().optional(),
+});
+
 export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	httpProbeSchema,
 	tcpProbeSchema,
@@ -115,6 +124,7 @@ export const storeProbeSchema = z.discriminatedUnion('protocol', [
 	mySqlProbeSchema,
 	redisProbeSchema,
 	smtpProbeSchema,
+	kafkaProbeSchema,
 ]);
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;

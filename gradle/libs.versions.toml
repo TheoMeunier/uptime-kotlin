@@ -50,6 +50,7 @@ quarkus-smallrye-jwt-build = { module = "io.quarkus:quarkus-smallrye-jwt-build",
 quarkus-scheduler = { module = "io.quarkus:quarkus-scheduler", version.ref = "quarkus" }
 quarkus-mailer = { module = "io.quarkus:quarkus-mailer", version.ref = "quarkus" }
 quarkus-smallrye-health = { module = "io.quarkus:quarkus-smallrye-health", version.ref = "quarkus" }
+quarkus-messaging-kafka = { module = "io.quarkus:quarkus-messaging-kafka", version.ref = "quarkus" }
 bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 minidns = { module = "org.minidns:minidns-hla", version.ref = "minidns" }
 
@@ -58,4 +59,3 @@ junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "restassured" }
 quarkus-test-security = { module = "io.quarkus:quarkus-test-security", version.ref = "quarkus" }
 quarkus-junit5 = { module = "io.quarkus:quarkus-junit5", version.ref = "quarkus" }
-
