@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.SmtpSecurity
+import tmenier.fr.monitors.requests.ValidProbeProtocolKafkaRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest

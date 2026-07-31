@@ -240,6 +240,39 @@ const PROBE_FIELDS_CONFIG = {
 		],
 		advanced_fields: [],
 	},
+	[ProbeProtocol.KAFKA]: {
+		fields: [
+			{
+				name: 'brokers',
+				label: i18n.t('monitors.label.kafka_brokers'),
+				input_type: 'text',
+				placeholder: 'kafka-1:9092,kafka-2:9092',
+			},
+			{
+				name: 'topic',
+				label: i18n.t('monitors.label.kafka_topic'),
+				input_type: 'text',
+			},
+			{
+				name: 'message',
+				label: i18n.t('monitors.label.kafka_message'),
+				input_type: 'text',
+			},
+			{
+				name: 'ssl',
+				label: i18n.t('monitors.label.kafka_ssl'),
+				input_type: 'switch',
+				default_value: false,
+			},
+			{
+				name: 'allow_auto_topic_creation',
+				label: i18n.t('monitors.label.kafka_auto_topic_creation'),
+				input_type: 'switch',
+				default_value: false,
+			},
+		],
+		advanced_fields: [],
+	},
 };
 
 export default PROBE_FIELDS_CONFIG;

@@ -8,6 +8,7 @@ enum ProbeProtocol {
 	MYSQL = 'MYSQL / MARIADB',
 	REDIS = 'REDIS',
 	SMTP = 'SMTP',
+	KAFKA = 'KAFKA PRODUCER',
 }
 
 export default ProbeProtocol;

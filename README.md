@@ -26,7 +26,7 @@ monitoring service availability without relying on external solutions.
 
 ### Key Features
 
-- HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis and SMTP monitoring
+- HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis, SMTP and Kafka monitoring
 - Real-time dashboard with historical data
 - Multi-channel notifications (Email, Slack, Discord, Teams, Webhook)
 - Public status pages for your users

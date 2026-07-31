@@ -15,6 +15,7 @@ enum class ProbeProtocol(
     MYSQL("MYSQL / MARIADB"),
     REDIS("REDIS"),
     SMTP("SMTP"),
+    KAFKA("KAFKA PRODUCER"),
     ;
 
     companion object {

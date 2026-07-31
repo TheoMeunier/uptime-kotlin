@@ -33,6 +33,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolMySqlRequest::class, name = "MYSQL / MARIADB"),
     JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
+    JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -194,4 +195,16 @@ data class ValidProbeProtocolSmtpRequest(
     val port: Int,
     @field:NotNull(message = "SMTP security is required")
     val security: SmtpSecurity,
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolKafkaRequest(
+    @field:NotBlank(message = "At least one Kafka broker is required")
+    val brokers: String,
+    @field:NotBlank(message = "Kafka topic is required")
+    val topic: String,
+    @field:NotBlank(message = "Kafka producer message is required")
+    val message: String,
+    val ssl: Boolean = false,
+    val allowAutoTopicCreation: Boolean = false,
 ) : BaseStoreProbeRequest()

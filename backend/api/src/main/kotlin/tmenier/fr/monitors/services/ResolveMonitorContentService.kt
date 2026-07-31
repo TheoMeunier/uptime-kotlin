@@ -5,6 +5,7 @@ import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolKafkaRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
@@ -91,6 +92,15 @@ class ResolveMonitorContentService {
                     hostname = request.hostname,
                     port = request.port,
                     security = request.security,
+                )
+
+            is ValidProbeProtocolKafkaRequest ->
+                ProbeContent.Kafka(
+                    brokers = request.brokers,
+                    topic = request.topic,
+                    message = request.message,
+                    ssl = request.ssl,
+                    allowAutoTopicCreation = request.allowAutoTopicCreation,
                 )
 
             else -> throw IllegalArgumentException("Unsupported protocol")
