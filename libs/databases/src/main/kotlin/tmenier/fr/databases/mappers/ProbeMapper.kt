@@ -61,6 +61,10 @@ object ProbeContentMapper {
             ProbeProtocol.KAFKA -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Kafka::class.java)
             }
+
+            ProbeProtocol.RABBITMQ -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.RabbitMq::class.java)
+            }
         } as ProbeContent
 
     fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
@@ -76,6 +80,7 @@ object ProbeContentMapper {
                 is ProbeContent.Redis -> ProbeProtocol.REDIS
                 is ProbeContent.Smtp -> ProbeProtocol.SMTP
                 is ProbeContent.Kafka -> ProbeProtocol.KAFKA
+                is ProbeContent.RabbitMq -> ProbeProtocol.RABBITMQ
             }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
@@ -95,6 +100,7 @@ object ProbeContentMapper {
             is ProbeContent.Redis -> content.host
             is ProbeContent.Smtp -> "${content.hostname}:${content.port}"
             is ProbeContent.Kafka -> content.brokers
+            is ProbeContent.RabbitMq -> content.managementNodes
         }
 }
 

@@ -9,6 +9,7 @@ enum ProbeProtocol {
 	REDIS = 'REDIS',
 	SMTP = 'SMTP',
 	KAFKA = 'KAFKA PRODUCER',
+	RABBITMQ = 'RABBITMQ',
 }
 
 export default ProbeProtocol;

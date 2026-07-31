@@ -34,6 +34,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
+    JsonSubTypes.Type(value = ValidProbeProtocolRabbitMqRequest::class, name = "RABBITMQ"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -207,4 +208,14 @@ data class ValidProbeProtocolKafkaRequest(
     val message: String,
     val ssl: Boolean = false,
     val allowAutoTopicCreation: Boolean = false,
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolRabbitMqRequest(
+    @field:NotBlank(message = "At least one RabbitMQ management node is required")
+    val managementNodes: String,
+    @field:NotBlank(message = "RabbitMQ username is required")
+    val username: String,
+    @field:NotBlank(message = "RabbitMQ password is required")
+    val password: String,
 ) : BaseStoreProbeRequest()

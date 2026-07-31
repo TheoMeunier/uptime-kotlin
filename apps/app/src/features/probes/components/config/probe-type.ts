@@ -273,6 +273,28 @@ const PROBE_FIELDS_CONFIG = {
 		],
 		advanced_fields: [],
 	},
+	[ProbeProtocol.RABBITMQ]: {
+		fields: [
+			{
+				name: 'management_nodes',
+				label: i18n.t('monitors.label.rabbitmq_management_nodes'),
+				input_type: 'text',
+				placeholder: 'https://node1.rabbitmq.com:15672,https://node2.rabbitmq.com:15672',
+				description: i18n.t('monitors.description.rabbitmq_management_nodes'),
+			},
+			{
+				name: 'username',
+				label: i18n.t('monitors.label.rabbitmq_username'),
+				input_type: 'text',
+			},
+			{
+				name: 'password',
+				label: i18n.t('monitors.label.rabbitmq_password'),
+				input_type: 'password',
+			},
+		],
+		advanced_fields: [],
+	},
 };
 
 export default PROBE_FIELDS_CONFIG;

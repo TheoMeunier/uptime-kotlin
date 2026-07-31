@@ -9,6 +9,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolKafkaRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
@@ -101,6 +102,13 @@ class ResolveMonitorContentService {
                     message = request.message,
                     ssl = request.ssl,
                     allowAutoTopicCreation = request.allowAutoTopicCreation,
+                )
+
+            is ValidProbeProtocolRabbitMqRequest ->
+                ProbeContent.RabbitMq(
+                    managementNodes = request.managementNodes,
+                    username = request.username,
+                    password = request.password,
                 )
 
             else -> throw IllegalArgumentException("Unsupported protocol")
