@@ -14,6 +14,7 @@ enum class ProbeProtocol(
     SQLSERVER("MICROSOFT SQL SERVER"),
     MYSQL("MYSQL / MARIADB"),
     REDIS("REDIS"),
+    SMTP("SMTP"),
     ;
 
     companion object {

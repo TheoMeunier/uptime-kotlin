@@ -9,6 +9,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
 import java.net.URI
@@ -83,6 +84,13 @@ class ResolveMonitorContentService {
                     connectionString = request.connectionString,
                     host = redisTarget(request.connectionString),
                     command = request.command,
+                )
+
+            is ValidProbeProtocolSmtpRequest ->
+                ProbeContent.Smtp(
+                    hostname = request.hostname,
+                    port = request.port,
+                    security = request.security,
                 )
 
             else -> throw IllegalArgumentException("Unsupported protocol")

@@ -212,6 +212,34 @@ const PROBE_FIELDS_CONFIG = {
 		],
 		advanced_fields: [],
 	},
+	[ProbeProtocol.SMTP]: {
+		fields: [
+			{
+				name: 'hostname',
+				label: i18n.t('monitors.label.smtp_hostname'),
+				input_type: 'text',
+				placeholder: 'smtp.example.com',
+			},
+			{
+				name: 'port',
+				label: i18n.t('monitors.label.smtp_port'),
+				input_type: 'number',
+				placeholder: '587',
+			},
+			{
+				name: 'security',
+				label: i18n.t('monitors.label.smtp_security'),
+				input_type: 'select',
+				options: [
+					{ value: 'SMTPS', label: 'SMTPS' },
+					{ value: 'IGNORE_TLS', label: i18n.t('monitors.option.smtp_ignore_tls') },
+					{ value: 'STARTTLS', label: 'STARTTLS' },
+				],
+				description: i18n.t('monitors.description.smtp_security'),
+			},
+		],
+		advanced_fields: [],
+	},
 };
 
 export default PROBE_FIELDS_CONFIG;

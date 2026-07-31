@@ -18,6 +18,7 @@ import tmenier.fr.common.enums.monitors.HttpCodeEnum
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.common.validations.UrlOrIp
 import java.util.UUID
 
@@ -31,6 +32,7 @@ import java.util.UUID
     JsonSubTypes.Type(value = ValidProbeProtocolSqlServerRequest::class, name = "MICROSOFT SQL SERVER"),
     JsonSubTypes.Type(value = ValidProbeProtocolMySqlRequest::class, name = "MYSQL / MARIADB"),
     JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
+    JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -181,4 +183,15 @@ data class ValidProbeProtocolRedisRequest(
     val connectionString: String,
     @field:NotBlank(message = "Redis command is required")
     val command: String = "PING",
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolSmtpRequest(
+    @field:NotBlank(message = "SMTP hostname is required")
+    val hostname: String,
+    @field:Min(value = 1, message = "SMTP port must be at least 1")
+    @field:Max(value = 65535, message = "SMTP port must be at most 65535")
+    val port: Int,
+    @field:NotNull(message = "SMTP security is required")
+    val security: SmtpSecurity,
 ) : BaseStoreProbeRequest()

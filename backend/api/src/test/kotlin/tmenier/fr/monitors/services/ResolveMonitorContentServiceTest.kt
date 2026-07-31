@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
 
 class ResolveMonitorContentServiceTest {
@@ -84,5 +86,21 @@ class ResolveMonitorContentServiceTest {
             ) as ProbeContent.Redis
 
         assertEquals("localhost:6379/2", content.host)
+    }
+
+    @Test
+    fun `resolves SMTP server settings`() {
+        val content =
+            ResolveMonitorContentService().resolve(
+                ValidProbeProtocolSmtpRequest(
+                    hostname = "smtp.example.com",
+                    port = 587,
+                    security = SmtpSecurity.STARTTLS,
+                ),
+            ) as ProbeContent.Smtp
+
+        assertEquals("smtp.example.com", content.hostname)
+        assertEquals(587, content.port)
+        assertEquals(SmtpSecurity.STARTTLS, content.security)
     }
 }
