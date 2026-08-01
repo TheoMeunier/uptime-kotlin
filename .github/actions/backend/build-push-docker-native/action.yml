@@ -1,24 +1,30 @@
 name: build-push-docker-native.yml
+description: Build a Quarkus native executable and its Docker image
 
 inputs:
   name:
-    type: string
+    description: "backend module name"
     required: true
   docker-image:
-    type: string
+    description: "Docker image name"
     required: true
   project-path-build:
-    type: string
+    description: "Gradle project path"
     required: true
   dockerfile-path:
-    type: string
+    description: "path to the native Dockerfile"
     required: true
   registry-token:
-    required: true
+    required: false
+    default: ''
     description: "registry token"
   context:
     required: true
     description: 'context application'
+  push:
+    required: false
+    default: 'true'
+    description: "push the image to the registry"
 
 runs:
   using: 'composite'
@@ -36,8 +42,9 @@ runs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: backend-native
-        path: ./build/${{ inputs.name }}/*-runner
+        name: backend-${{ inputs.name }}-native
+        path: ./backend/${{ inputs.name }}/build/*-runner
+        retention-days: 7
 
     - name: Build Docker Image Native
       uses: ./.github/actions/build-push-docker
@@ -47,3 +54,4 @@ runs:
         context: ${{ inputs.context }}
         docker-path-file: ${{ inputs.dockerfile-path }}
         registry-token: ${{ inputs.registry-token }}
+        push: ${{ inputs.push }}

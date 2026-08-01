@@ -1,8 +1,9 @@
 name: install-gradle.yml
+description: Set up GraalVM and the Gradle wrapper
 
 inputs:
   java-version:
-    type: string
+    description: "GraalVM Java version"
     default: '21'
 
 runs:

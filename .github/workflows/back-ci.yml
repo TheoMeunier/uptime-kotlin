@@ -10,6 +10,9 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Linting & Code Quality
@@ -76,3 +79,36 @@ jobs:
           name: quarkus-app
           path: backend/build/quarkus-app/
           retention-days: 7
+
+  native-image:
+    name: Native image (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: api
+            docker-image: api
+            project-path: :backend:api
+            dockerfile: ./backend/api/src/main/docker/Dockerfile.native
+            context: ./backend/api
+          - name: worker
+            docker-image: worker
+            project-path: :backend:worker
+            dockerfile: ./backend/worker/src/main/docker/Dockerfile.native
+            context: ./backend/worker
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build native executable and Docker image
+        uses: ./.github/actions/backend/build-push-docker-native
+        with:
+          name: ${{ matrix.name }}
+          docker-image: ${{ matrix.docker-image }}
+          project-path-build: ${{ matrix.project-path }}
+          dockerfile-path: ${{ matrix.dockerfile }}
+          context: ${{ matrix.context }}
+          push: 'false'
