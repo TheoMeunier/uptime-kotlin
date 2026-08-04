@@ -146,7 +146,7 @@ const PROBE_FIELDS_CONFIG = {
 				name: 'connection_string',
 				label: i18n.t('monitors.label.postgresql_connection_string'),
 				input_type: 'text',
-				placeholder: 'postgres://username:password@host:5432/database',
+				default_value: 'postgres://username:password@host:5432/database',
 			},
 			{
 				name: 'query',
@@ -164,7 +164,7 @@ const PROBE_FIELDS_CONFIG = {
 				name: 'connection_string',
 				label: i18n.t('monitors.label.sqlserver_connection_string'),
 				input_type: 'text',
-				placeholder: 'sqlserver://username:password@host:1433/database',
+				default_value: 'sqlserver://username:password@host:1433/database',
 			},
 			{
 				name: 'query',
@@ -182,7 +182,7 @@ const PROBE_FIELDS_CONFIG = {
 				name: 'connection_string',
 				label: i18n.t('monitors.label.mysql_connection_string'),
 				input_type: 'text',
-				placeholder: 'mysql://username:password@host:3306/database',
+				default_value: 'mysql://username:password@host:3306/database',
 			},
 			{
 				name: 'query',
@@ -200,7 +200,7 @@ const PROBE_FIELDS_CONFIG = {
 				name: 'connection_string',
 				label: i18n.t('monitors.label.redis_connection_string'),
 				input_type: 'text',
-				placeholder: 'redis://username:password@host:6379/0',
+				default_value: 'redis://username:password@host:6379/0',
 			},
 			{
 				name: 'command',
@@ -218,13 +218,13 @@ const PROBE_FIELDS_CONFIG = {
 				name: 'hostname',
 				label: i18n.t('monitors.label.smtp_hostname'),
 				input_type: 'text',
-				placeholder: 'smtp.example.com',
+				default_value: 'smtp.example.com',
 			},
 			{
 				name: 'port',
 				label: i18n.t('monitors.label.smtp_port'),
 				input_type: 'number',
-				placeholder: '587',
+				default_value: 587,
 			},
 			{
 				name: 'security',
@@ -280,6 +280,7 @@ const PROBE_FIELDS_CONFIG = {
 				label: i18n.t('monitors.label.rabbitmq_management_nodes'),
 				input_type: 'text',
 				placeholder: 'https://node1.rabbitmq.com:15672,https://node2.rabbitmq.com:15672',
+				default_value: 'https://localhost:15672',
 				description: i18n.t('monitors.description.rabbitmq_management_nodes'),
 			},
 			{
