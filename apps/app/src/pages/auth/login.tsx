@@ -6,7 +6,7 @@ export default function Login() {
 			<div className="flex w-full max-w-sm flex-col gap-6">
 				<a href="#" className="flex items-center gap-2 self-center font-medium">
 					<div className="text-primary-foreground flex size-6 items-center justify-center rounded-md">
-						<img src="/img/logo.png" alt="logo" />
+						<img src="/img/logo-ui.png" alt="logo" />
 					</div>
 					Uptime kotlin
 				</a>
