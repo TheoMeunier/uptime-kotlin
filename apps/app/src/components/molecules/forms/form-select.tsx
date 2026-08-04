@@ -11,6 +11,7 @@ interface FormSelectProps<TFieldValues extends FieldValues> {
 	name: Path<TFieldValues>;
 	placeholder?: string;
 	options: SelectOption[] | readonly string[];
+	onValueChange?: (value: string) => void;
 }
 
 export default function FormSelect<TFieldValues extends FieldValues>({
@@ -18,6 +19,7 @@ export default function FormSelect<TFieldValues extends FieldValues>({
 	name,
 	placeholder = 'Select an option',
 	options,
+	onValueChange,
 }: FormSelectProps<TFieldValues>) {
 	// Normalise les options pour supporter les deux formats
 	const normalizedOptions = options.map((option) =>
@@ -29,7 +31,13 @@ export default function FormSelect<TFieldValues extends FieldValues>({
 			name={name}
 			control={form.control}
 			render={({ field, fieldState }) => (
-				<Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+				<Select
+					onValueChange={(value) => {
+						field.onChange(value);
+						onValueChange?.(value);
+					}}
+					value={field.value}
+				>
 					<SelectTrigger className="w-[180px]" data-invalid={fieldState.invalid}>
 						<SelectValue placeholder={placeholder} />
 					</SelectTrigger>

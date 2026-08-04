@@ -22,6 +22,7 @@ import { Button } from '@/components/atoms/button.tsx';
 import PROBE_FIELDS_CONFIG from '@/features/probes/components/config/probe-type.ts';
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
+import type { FieldPath, FieldPathValue } from 'react-hook-form';
 
 type ProbeFormMode = 'create' | 'edit';
 
@@ -40,6 +41,22 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 
 	const dynamicFields = protocol ? PROBE_FIELDS_CONFIG[protocol] : PROBE_FIELDS_CONFIG[ProbeProtocol.HTTP];
 
+	const handleProtocolChange = (value: string) => {
+		const nextProtocol = value as ProbeProtocol;
+		const config = PROBE_FIELDS_CONFIG[nextProtocol];
+		const fields = [...config.fields, ...config.advanced_fields];
+
+		fields.forEach((field) => {
+			const fieldName = field.name as FieldPath<StoreProbeSchema>;
+			const defaultValue = 'default_value' in field ? field.default_value : undefined;
+
+			form.setValue(fieldName, defaultValue as FieldPathValue<StoreProbeSchema, typeof fieldName>, {
+				shouldDirty: true,
+				shouldValidate: false,
+			});
+		});
+	};
+
 	return (
 		<form onSubmit={form.handleSubmit(onSubmit)}>
 			<div className="grid grid-cols-2 gap-8">
@@ -51,7 +68,12 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 						<FieldGroup>
 							<Field className="space-y-2">
 								<FieldLabel htmlFor="protocol">{t('monitors.label.protocol')}</FieldLabel>
-								<FormSelect form={form} name="protocol" options={Object.values(ProbeProtocol)} />
+								<FormSelect
+									form={form}
+									name="protocol"
+									options={Object.values(ProbeProtocol)}
+									onValueChange={handleProtocolChange}
+								/>
 								<FieldError>{errors.protocol?.message}</FieldError>
 							</Field>
 							<Field>
