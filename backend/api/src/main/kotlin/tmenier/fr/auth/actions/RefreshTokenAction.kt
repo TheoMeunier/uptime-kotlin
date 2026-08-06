@@ -22,11 +22,15 @@ class RefreshTokenAction(
             throw InvalidCredentialsException()
         }
 
+
         val newRefreshToken = jwtService.generateRefreshToken()
+        val token = jwtService.generateJwt(rt.user.id, rt.user.name, rt.user.email)
+
         refreshTokenRepository.storeRefreshToken(newRefreshToken, rt.user)
+        refreshTokenRepository.delete(rt)
 
         return LoginResponse(
-            jwtService.generateJwt(rt.user.id, rt.user.name, rt.user.email),
+            token,
             newRefreshToken.toString(),
         )
     }
