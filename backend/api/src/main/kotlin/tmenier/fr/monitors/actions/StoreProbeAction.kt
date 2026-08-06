@@ -3,6 +3,7 @@ package tmenier.fr.monitors.actions
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.databases.dtos.StoreProbeDto
+import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.services.ResolveMonitorContentService
@@ -19,6 +20,10 @@ class StoreProbeAction(
         probeId: UUID? = null,
     ) {
         val isUpdate = probeId != null
+        val existingProbe =
+            probeId?.let {
+                ProbeMapper.toDto(probeRepository.findById(it))
+            }
 
         val dto =
             StoreProbeDto(
@@ -30,7 +35,7 @@ class StoreProbeAction(
                 protocol = payload.protocol,
                 enabled = payload.enabled == true,
                 description = payload.description,
-                content = getProbeContentService.resolve(payload),
+                content = getProbeContentService.resolve(payload, existingProbe),
             )
 
         if (isUpdate) {

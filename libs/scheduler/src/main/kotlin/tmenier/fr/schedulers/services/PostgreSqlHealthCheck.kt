@@ -3,6 +3,7 @@ package tmenier.fr.schedulers.services
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import java.net.URI
 import java.sql.DriverManager
 import java.util.Properties
@@ -15,7 +16,9 @@ fun interface PostgreSqlHealthCheck {
 }
 
 @ApplicationScoped
-class JdbcPostgreSqlHealthCheck : PostgreSqlHealthCheck {
+class JdbcPostgreSqlHealthCheck(
+    private val encryptionService: EncryptionService,
+) : PostgreSqlHealthCheck {
     override fun check(
         content: ProbeContent.PostgreSql,
         timeoutSeconds: Int,
@@ -40,7 +43,7 @@ class JdbcPostgreSqlHealthCheck : PostgreSqlHealthCheck {
     }
 
     internal fun parseConnectionString(connectionString: String): PostgreSqlConnection {
-        val uri = URI(connectionString)
+        val uri = URI(encryptionService.decryptIfEncrypted(connectionString))
         require(uri.scheme == "postgres" || uri.scheme == "postgresql") {
             "Connection string must start with postgres:// or postgresql://"
         }

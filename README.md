@@ -185,6 +185,7 @@ uptime-kotlin-worker:
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
+    ENCRYPTION_MASTER_KEY: superKeyMasterSensileData0123456789
   depends_on:
     - uptime_kotlin_api
   networks:

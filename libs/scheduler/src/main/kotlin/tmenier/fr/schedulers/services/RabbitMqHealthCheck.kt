@@ -2,6 +2,7 @@ package tmenier.fr.schedulers.services
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -18,7 +19,9 @@ fun interface RabbitMqHealthCheck {
 }
 
 @ApplicationScoped
-class HttpRabbitMqHealthCheck : RabbitMqHealthCheck {
+class HttpRabbitMqHealthCheck(
+    private val encryptionService: EncryptionService,
+) : RabbitMqHealthCheck {
     override fun check(
         content: ProbeContent.RabbitMq,
         timeoutSeconds: Int,
@@ -29,7 +32,11 @@ class HttpRabbitMqHealthCheck : RabbitMqHealthCheck {
                 .newBuilder()
                 .connectTimeout(timeout)
                 .build()
-        val authorization = basicAuthorization(content.username, content.password)
+        val authorization =
+            basicAuthorization(
+                content.username,
+                encryptionService.decryptIfEncrypted(content.password),
+            )
 
         parseManagementNodes(content.managementNodes).forEach { node ->
             val healthUri = healthUri(node)

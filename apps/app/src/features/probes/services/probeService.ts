@@ -24,6 +24,11 @@ const probeService = {
 		return schema.parse(response);
 	},
 
+	async getProbeForUpdate<T>(id: string, schema: z.ZodSchema<T>): Promise<T> {
+		const response = await api.get(`probes/${id}/edit`).json();
+		return schema.parse(response);
+	},
+
 	async updateProbe(id: string, data: StoreProbeSchema) {
 		await api
 			.post(`probes/${id}/update`, {

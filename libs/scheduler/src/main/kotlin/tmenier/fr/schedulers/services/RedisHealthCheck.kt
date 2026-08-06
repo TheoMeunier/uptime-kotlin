@@ -3,6 +3,7 @@ package tmenier.fr.schedulers.services
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.EOFException
@@ -21,7 +22,9 @@ fun interface RedisHealthCheck {
 }
 
 @ApplicationScoped
-class SocketRedisHealthCheck : RedisHealthCheck {
+class SocketRedisHealthCheck(
+    private val encryptionService: EncryptionService,
+) : RedisHealthCheck {
     override fun check(
         content: ProbeContent.Redis,
         timeoutSeconds: Int,
@@ -46,7 +49,7 @@ class SocketRedisHealthCheck : RedisHealthCheck {
     }
 
     internal fun parseConnectionString(connectionString: String): RedisConnection {
-        val uri = URI(connectionString)
+        val uri = URI(encryptionService.decryptIfEncrypted(connectionString))
         require(uri.scheme == "redis" || uri.scheme == "rediss") {
             "Connection string must start with redis:// or rediss://"
         }

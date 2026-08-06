@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
@@ -13,10 +14,13 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class ProbeProtocolRedisTest {
+    private val healthCheck =
+        SocketRedisHealthCheck(EncryptionService("0123456789abcdef0123456789abcdef"))
+
     @Test
     fun `parses a Redis connection string with default values`() {
         val connection =
-            SocketRedisHealthCheck().parseConnectionString(
+            healthCheck.parseConnectionString(
                 "redis://localhost",
             )
 
@@ -31,7 +35,7 @@ class ProbeProtocolRedisTest {
     @Test
     fun `parses Redis TLS credentials and database`() {
         val connection =
-            SocketRedisHealthCheck().parseConnectionString(
+            healthCheck.parseConnectionString(
                 "rediss://monitor:secret@redis.example.com:6380/2",
             )
 
@@ -46,7 +50,7 @@ class ProbeProtocolRedisTest {
     @Test
     fun `parses a Redis command with quoted arguments`() {
         val arguments =
-            SocketRedisHealthCheck().parseCommand(
+            healthCheck.parseCommand(
                 """SET "health key" 'all good'""",
             )
 

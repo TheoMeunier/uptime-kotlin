@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
+import jakarta.validation.groups.Default
 import org.hibernate.validator.constraints.IpAddress
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.HttpCodeEnum
@@ -21,6 +22,10 @@ import tmenier.fr.common.enums.monitors.RecordDnsEnum
 import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.common.validations.UrlOrIp
 import java.util.UUID
+
+interface OnCreate : Default
+
+interface OnUpdate : Default
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "protocol", visible = true)
 @JsonSubTypes(
@@ -142,47 +147,59 @@ data class ValidProbeProtocolPingRequest(
 
 @RegisterForReflection
 data class ValidProbeProtocolPostgreSqlRequest(
-    @field:NotBlank(message = "PostgreSQL connection string is required")
+    @field:NotBlank(
+        message = "PostgreSQL connection string is required",
+        groups = [OnCreate::class],
+    )
     @field:Pattern(
-        regexp = "postgres(?:ql)?://[^\\s]+",
+        regexp = "(?:|postgres(?:ql)?://[^\\s]+)",
         message = "Invalid PostgreSQL connection string",
     )
-    val connectionString: String,
+    val connectionString: String = "",
     @field:NotBlank(message = "PostgreSQL query is required")
     val query: String = "SELECT 1",
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
 data class ValidProbeProtocolSqlServerRequest(
-    @field:NotBlank(message = "Microsoft SQL Server connection string is required")
+    @field:NotBlank(
+        message = "Microsoft SQL Server connection string is required",
+        groups = [OnCreate::class],
+    )
     @field:Pattern(
-        regexp = "(?:sqlserver|mssql)://[^\\s]+",
+        regexp = "(?:|(?:sqlserver|mssql)://[^\\s]+)",
         message = "Invalid Microsoft SQL Server connection string",
     )
-    val connectionString: String,
+    val connectionString: String = "",
     @field:NotBlank(message = "Microsoft SQL Server query is required")
     val query: String = "SELECT 1",
 ) : BaseStoreProbeRequest()
 
 data class ValidProbeProtocolMySqlRequest(
-    @field:NotBlank(message = "MySQL/MariaDB connection string is required")
+    @field:NotBlank(
+        message = "MySQL/MariaDB connection string is required",
+        groups = [OnCreate::class],
+    )
     @field:Pattern(
-        regexp = "(?:mysql|mariadb)://[^\\s]+",
+        regexp = "(?:|(?:mysql|mariadb)://[^\\s]+)",
         message = "Invalid MySQL/MariaDB connection string",
     )
-    val connectionString: String,
+    val connectionString: String = "",
     @field:NotBlank(message = "MySQL/MariaDB query is required")
     val query: String = "SELECT 1",
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection
 data class ValidProbeProtocolRedisRequest(
-    @field:NotBlank(message = "Redis connection string is required")
+    @field:NotBlank(
+        message = "Redis connection string is required",
+        groups = [OnCreate::class],
+    )
     @field:Pattern(
-        regexp = "rediss?://[^\\s]+",
+        regexp = "(?:|rediss?://[^\\s]+)",
         message = "Invalid Redis connection string",
     )
-    val connectionString: String,
+    val connectionString: String = "",
     @field:NotBlank(message = "Redis command is required")
     val command: String = "PING",
 ) : BaseStoreProbeRequest()
@@ -216,6 +233,9 @@ data class ValidProbeProtocolRabbitMqRequest(
     val managementNodes: String,
     @field:NotBlank(message = "RabbitMQ username is required")
     val username: String,
-    @field:NotBlank(message = "RabbitMQ password is required")
-    val password: String,
+    @field:NotBlank(
+        message = "RabbitMQ password is required",
+        groups = [OnCreate::class],
+    )
+    val password: String = "",
 ) : BaseStoreProbeRequest()

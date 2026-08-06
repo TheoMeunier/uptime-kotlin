@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
@@ -13,10 +14,13 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class ProbeProtocolSqlServerTest {
+    private val healthCheck =
+        JdbcSqlServerHealthCheck(EncryptionService("0123456789abcdef0123456789abcdef"))
+
     @Test
     fun `converts a SQL Server connection string to JDBC without credentials in the URL`() {
         val connection =
-            JdbcSqlServerHealthCheck().parseConnectionString(
+            healthCheck.parseConnectionString(
                 "sqlserver://monitor:secret@sql.example.com:1434/application?encrypt=true&trustServerCertificate=true",
             )
 
@@ -31,7 +35,7 @@ class ProbeProtocolSqlServerTest {
     @Test
     fun `uses SQL Server defaults when port and credentials are omitted`() {
         val connection =
-            JdbcSqlServerHealthCheck().parseConnectionString(
+            healthCheck.parseConnectionString(
                 "mssql://localhost/application",
             )
 

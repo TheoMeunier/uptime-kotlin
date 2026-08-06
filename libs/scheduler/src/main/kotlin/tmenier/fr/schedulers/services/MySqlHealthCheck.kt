@@ -3,6 +3,7 @@ package tmenier.fr.schedulers.services
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import java.net.URI
 import java.sql.DriverManager
 import java.util.Properties
@@ -15,7 +16,9 @@ fun interface MySqlHealthCheck {
 }
 
 @ApplicationScoped
-class JdbcMySqlHealthCheck : MySqlHealthCheck {
+class JdbcMySqlHealthCheck(
+    private val encryptionService: EncryptionService,
+) : MySqlHealthCheck {
     override fun check(
         content: ProbeContent.MySql,
         timeoutSeconds: Int,
@@ -41,7 +44,7 @@ class JdbcMySqlHealthCheck : MySqlHealthCheck {
     }
 
     internal fun parseConnectionString(connectionString: String): MySqlConnection {
-        val uri = URI(connectionString)
+        val uri = URI(encryptionService.decryptIfEncrypted(connectionString))
         require(uri.scheme == "mysql" || uri.scheme == "mariadb") {
             "Connection string must start with mysql:// or mariadb://"
         }

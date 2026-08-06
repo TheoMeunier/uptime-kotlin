@@ -3,6 +3,7 @@ package tmenier.fr.monitors.resources
 import io.quarkus.security.Authenticated
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
+import jakarta.validation.groups.ConvertGroup
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
@@ -12,6 +13,7 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.monitors.actions.StoreProbeAction
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
+import tmenier.fr.monitors.requests.OnUpdate
 import java.util.UUID
 
 @Path("/api/probes/{probeId}/update")
@@ -25,7 +27,7 @@ class UpdateProbeResource(
     @Transactional
     fun store(
         @PathParam("probeId") probeId: UUID,
-        @Valid payload: BaseStoreProbeRequest,
+        @Valid @ConvertGroup(to = OnUpdate::class) payload: BaseStoreProbeRequest,
     ): Response {
         storeProbeAction.execute(payload, probeId)
         return Response.ok().build()

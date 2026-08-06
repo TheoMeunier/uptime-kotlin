@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
@@ -16,6 +17,9 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 
 class ProbeProtocolRabbitMqTest {
+    private val encryptionService = EncryptionService("0123456789abcdef0123456789abcdef")
+    private val healthCheck = HttpRabbitMqHealthCheck(encryptionService)
+
     @Test
     fun `checks the alarms endpoint with basic authentication`() {
         val authorization = AtomicReference<String>()
@@ -29,9 +33,10 @@ class ProbeProtocolRabbitMqTest {
         server.start()
 
         try {
-            HttpRabbitMqHealthCheck().check(
+            healthCheck.check(
                 content().copy(
                     managementNodes = "http://127.0.0.1:${server.address.port}",
+                    password = encryptionService.encrypt("secret"),
                 ),
                 timeoutSeconds = 2,
             )
@@ -45,7 +50,7 @@ class ProbeProtocolRabbitMqTest {
     @Test
     fun `builds a health endpoint with a management path prefix`() {
         val uri =
-            HttpRabbitMqHealthCheck().healthUri(
+            healthCheck.healthUri(
                 "https://rabbitmq.example.com:15671/management/",
             )
 
