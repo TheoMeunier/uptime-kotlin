@@ -1,5 +1,16 @@
 import ky from 'ky';
 import authService from '@/features/auth/services/authServices.ts';
+import { ApiError, createApiError } from '@/api/api-error.ts';
+
+let refreshTokenRequest: Promise<boolean> | null = null;
+
+function refreshAccessToken() {
+	refreshTokenRequest ??= authService.tryRefreshToken().finally(() => {
+		refreshTokenRequest = null;
+	});
+
+	return refreshTokenRequest;
+}
 
 const api = ky.extend({
 	prefixUrl: '/api',
@@ -20,12 +31,24 @@ const api = ky.extend({
 		afterResponse: [
 			async (request, _, response) => {
 				if (response.status === 401) {
-					try {
-						await authService.tryRefreshToken();
-						return ky(request);
-					} catch (e) {
-						throw new Error('Error while refreshing token: ' + e);
+					const refreshed = await refreshAccessToken();
+
+					if (!refreshed) {
+						throw new ApiError('Your session has expired. Please login again.', 401);
 					}
+
+					const token = authService.getAccessToken();
+					const retryRequest = new Request(request);
+
+					if (token) {
+						retryRequest.headers.set('Authorization', `Bearer ${token}`);
+					}
+
+					return ky(retryRequest);
+				}
+
+				if (!response.ok) {
+					throw await createApiError(response);
 				}
 
 				return response;
@@ -34,8 +57,8 @@ const api = ky.extend({
 	},
 	retry: {
 		methods: ['get', 'post'],
-		limit: 3,
-		statusCodes: [401],
+		limit: 2,
+		statusCodes: [408, 413, 429, 500, 502, 503, 504],
 	},
 });
 

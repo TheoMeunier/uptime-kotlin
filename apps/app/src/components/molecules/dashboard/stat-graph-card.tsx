@@ -1,5 +1,7 @@
+import { lazy, Suspense } from 'react';
 import { CardTitle } from '@/components/atoms/card.tsx';
-import Sparkline from '@/components/molecules/dashboard/sparkline.tsx';
+
+const Sparkline = lazy(() => import('@/components/molecules/dashboard/sparkline.tsx'));
 
 interface CardStatsProps {
 	title: string;
@@ -52,7 +54,9 @@ export default function StatGraphCard({
 
 			{sparklineColor && (
 				<div className="mt-2">
-					<Sparkline color={sparklineColor} type={sparklineType} data={sparklineData ?? []} />
+					<Suspense fallback={<div className="w-full mt-3" style={{ height: 48 }} />}>
+						<Sparkline color={sparklineColor} type={sparklineType} data={sparklineData ?? []} />
+					</Suspense>
 				</div>
 			)}
 		</div>

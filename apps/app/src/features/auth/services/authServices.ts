@@ -2,6 +2,7 @@
 
 import { auth } from '@/features/auth/enums/auth-enum.ts';
 import jwtDecode from '@/lib/jwt-decode.ts';
+import { createApiError } from '@/api/api-error.ts';
 
 interface User {
 	username: string;
@@ -58,9 +59,10 @@ const authService = {
 			});
 
 			if (!res.ok) {
+				const error = await createApiError(res, 'Unable to refresh your session.');
 				this.logout();
 				window.location.href = '/login';
-				return false;
+				throw error;
 			}
 
 			const data = await res.json();
@@ -81,6 +83,10 @@ const authService = {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ email: username, password }),
 		});
+
+		if (!res.ok) {
+			throw await createApiError(res, 'Unable to login.');
+		}
 
 		const data = await res.json();
 		this.saveUser(jwtDecode.parseJwt(data.token).email, jwtDecode.parseJwt(data.token).name);
