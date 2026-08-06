@@ -41,10 +41,6 @@ class ShowProbeResource(
                     throw NotFoundException("Probe not found")
                 }
 
-        if (hours == 0L) {
-            return Response.ok(ProbeMapper.toProbeWithNotificationsIdsDto(probeEntity)).build()
-        }
-
         val validHours = setOf(1L, 3L, 6L, 24L, 168L)
         if (hours !in validHours) {
             throw BadRequestException("hours must be one of: 1, 3, 6, 24, 168")

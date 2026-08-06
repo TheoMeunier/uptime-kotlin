@@ -3,6 +3,7 @@ package tmenier.fr.schedulers.services
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import java.net.URI
 import java.sql.DriverManager
 import java.util.Properties
@@ -15,7 +16,9 @@ fun interface SqlServerHealthCheck {
 }
 
 @ApplicationScoped
-class JdbcSqlServerHealthCheck : SqlServerHealthCheck {
+class JdbcSqlServerHealthCheck(
+    private val encryptionService: EncryptionService,
+) : SqlServerHealthCheck {
     override fun check(
         content: ProbeContent.SqlServer,
         timeoutSeconds: Int,
@@ -40,7 +43,7 @@ class JdbcSqlServerHealthCheck : SqlServerHealthCheck {
     }
 
     internal fun parseConnectionString(connectionString: String): SqlServerConnection {
-        val uri = URI(connectionString)
+        val uri = URI(encryptionService.decryptIfEncrypted(connectionString))
         require(uri.scheme == "sqlserver" || uri.scheme == "mssql") {
             "Connection string must start with sqlserver:// or mssql://"
         }

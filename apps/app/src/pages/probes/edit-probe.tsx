@@ -14,7 +14,7 @@ export default function EditProbe() {
 	const { data, isLoading } = useQuery({
 		queryKey: ['probe-update', params.probeId!],
 		queryFn: async () => {
-			return await probeService.getProbe<ProbeGetUpdateResponse>(params.probeId!, 0, GetProbeUpdateResponseSchema);
+			return await probeService.getProbeForUpdate<ProbeGetUpdateResponse>(params.probeId!, GetProbeUpdateResponseSchema);
 		},
 	});
 

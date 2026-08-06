@@ -88,6 +88,29 @@ object ProbeContentMapper {
         return jsonNode to type
     }
 
+    fun redactSecrets(content: ProbeContent): ProbeContent =
+        when (content) {
+            is ProbeContent.PostgreSql -> content.copy(connectionString = "")
+            is ProbeContent.SqlServer -> content.copy(connectionString = "")
+            is ProbeContent.MySql -> content.copy(connectionString = "")
+            is ProbeContent.Redis -> content.copy(connectionString = "")
+            is ProbeContent.RabbitMq -> content.copy(password = "")
+            else -> content
+        }
+
+    fun revealSecrets(
+        content: ProbeContent,
+        decrypt: (String) -> String,
+    ): ProbeContent =
+        when (content) {
+            is ProbeContent.PostgreSql -> content.copy(connectionString = decrypt(content.connectionString))
+            is ProbeContent.SqlServer -> content.copy(connectionString = decrypt(content.connectionString))
+            is ProbeContent.MySql -> content.copy(connectionString = decrypt(content.connectionString))
+            is ProbeContent.Redis -> content.copy(connectionString = decrypt(content.connectionString))
+            is ProbeContent.RabbitMq -> content.copy(password = decrypt(content.password))
+            else -> content
+        }
+
     fun toUrl(content: ProbeContent): String =
         when (content) {
             is ProbeContent.Http -> content.url
@@ -166,12 +189,15 @@ object ProbeMapper {
                     status = entity.status,
                     createdAt = entity.createdAt,
                     updatedAt = entity.updatedAt,
-                    content = ProbeContentMapper.toDto(entity),
+                    content = ProbeContentMapper.redactSecrets(ProbeContentMapper.toDto(entity)),
                 ),
             notifications = entity.notifications.map { NotificationMapper.toDto(it) },
         )
 
-    fun toProbeWithNotificationsIdsDto(entity: ProbesEntity): ProbeWithNotificationsIdsDTO =
+    fun toProbeWithNotificationsIdsDto(
+        entity: ProbesEntity,
+        contentMapper: (ProbeContent) -> ProbeContent = ProbeContentMapper::redactSecrets,
+    ): ProbeWithNotificationsIdsDTO =
         ProbeWithNotificationsIdsDTO(
             probe =
                 ProbeDTO(
@@ -188,7 +214,7 @@ object ProbeMapper {
                     status = entity.status,
                     createdAt = entity.createdAt,
                     updatedAt = entity.updatedAt,
-                    content = ProbeContentMapper.toDto(entity),
+                    content = contentMapper(ProbeContentMapper.toDto(entity)),
                 ),
             notifications = entity.notifications.map { it.id },
         )
@@ -214,7 +240,7 @@ object ProbeMapper {
                     description = entity.description,
                     lastRun = entity.lastRun,
                     status = entity.status,
-                    content = ProbeContentMapper.toDto(entity),
+                    content = ProbeContentMapper.redactSecrets(content),
                     url = ProbeContentMapper.toUrl(content),
                     createdAt = entity.createdAt,
                     updatedAt = entity.updatedAt,

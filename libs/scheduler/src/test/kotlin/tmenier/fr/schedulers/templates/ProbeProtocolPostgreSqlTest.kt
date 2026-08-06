@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
@@ -13,10 +14,13 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class ProbeProtocolPostgreSqlTest {
+    private val encryptionService = EncryptionService("0123456789abcdef0123456789abcdef")
+    private val healthCheck = JdbcPostgreSqlHealthCheck(encryptionService)
+
     @Test
     fun `accepts a PostgreSQL connection string without credentials`() {
         val connection =
-            JdbcPostgreSqlHealthCheck().parseConnectionString(
+            healthCheck.parseConnectionString(
                 "postgres://localhost:5432/application",
             )
 
@@ -28,7 +32,7 @@ class ProbeProtocolPostgreSqlTest {
     @Test
     fun `converts a PostgreSQL connection string to JDBC without credentials in the URL`() {
         val connection =
-            JdbcPostgreSqlHealthCheck().parseConnectionString(
+            healthCheck.parseConnectionString(
                 "postgres://monitor:secret@postgres.example.com:5433/application?sslmode=require",
             )
 
@@ -36,6 +40,20 @@ class ProbeProtocolPostgreSqlTest {
             "jdbc:postgresql://postgres.example.com:5433/application?sslmode=require",
             connection.jdbcUrl,
         )
+        assertEquals("monitor", connection.username)
+        assertEquals("secret", connection.password)
+    }
+
+    @Test
+    fun `decrypts a PostgreSQL connection string before parsing it`() {
+        val encrypted =
+            encryptionService.encrypt(
+                "postgres://monitor:secret@postgres.example.com:5432/application",
+            )
+
+        val connection = healthCheck.parseConnectionString(encrypted)
+
+        assertEquals("jdbc:postgresql://postgres.example.com:5432/application", connection.jdbcUrl)
         assertEquals("monitor", connection.username)
         assertEquals("secret", connection.password)
     }
