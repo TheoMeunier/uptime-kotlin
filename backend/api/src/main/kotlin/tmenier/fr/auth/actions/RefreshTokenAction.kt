@@ -22,7 +22,6 @@ class RefreshTokenAction(
             throw InvalidCredentialsException()
         }
 
-
         val newRefreshToken = jwtService.generateRefreshToken()
         val token = jwtService.generateJwt(rt.user.id, rt.user.name, rt.user.email)
 
