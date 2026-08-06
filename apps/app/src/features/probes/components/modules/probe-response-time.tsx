@@ -3,8 +3,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useTranslation } from 'react-i18next';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
-import ProbeChart from '@/features/probes/components/modules/probe-chart.tsx';
 import ResponseTimeStats from '@/features/probes/components/modules/probe-response-time-status.tsx';
+import { lazy, Suspense } from 'react';
+
+const ProbeChart = lazy(() => import('@/features/probes/components/modules/probe-chart.tsx'));
 
 interface ProbeResponseTimeProps {
 	monitors: Monitor[];
@@ -66,7 +68,15 @@ export default function ProbeResponseTime({ monitors, monitorStatus, lastHour, s
 				</div>
 				<div className="space-y-8">
 					<ResponseTimeStats monitors={monitors} />
-					<ProbeChart monitors={monitors} lastHour={lastHour} monitorStatus={monitorStatus} />
+					<Suspense
+						fallback={
+							<div className="flex h-[250px] w-full items-center justify-center text-muted-foreground">
+								Loading chart…
+							</div>
+						}
+					>
+						<ProbeChart monitors={monitors} lastHour={lastHour} monitorStatus={monitorStatus} />
+					</Suspense>
 				</div>
 			</CardContent>
 		</Card>

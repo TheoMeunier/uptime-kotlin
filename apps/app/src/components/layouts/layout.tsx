@@ -20,7 +20,6 @@ import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import type { ProbeListItem } from '@/features/probes/schemas/probe-response.schema.ts';
-import { Toaster } from '@/components/atoms/sonner.tsx';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -188,7 +187,6 @@ export default function Layout() {
 				</header>
 				<main className="container mx-auto flex-1 px-4 py-8">
 					<Outlet />
-					<Toaster />
 				</main>
 			</SidebarInset>
 		</SidebarProvider>
