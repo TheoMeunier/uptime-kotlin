@@ -56,6 +56,10 @@ const probeService = {
 	async deleteProbe(id: string) {
 		await api.post(`probes/${id}/remove`).json();
 	},
+
+	async purgeProbeLogs(id: string) {
+		await api.post(`probes/${id}/logs/purge`).json();
+	},
 };
 
 export default probeService;
