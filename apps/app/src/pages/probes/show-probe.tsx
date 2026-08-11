@@ -116,7 +116,7 @@ export function ShowProbe() {
 						</CardContent>
 					</Card>
 				) : (
-					<ProbeMonitorLog monitors={data!.monitors} />
+					<ProbeMonitorLog probeId={data!.probe.id} monitors={data!.monitors} />
 				)}
 			</section>
 		</div>

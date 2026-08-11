@@ -4,6 +4,7 @@ import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts'
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import { Button } from '@/components/atoms/button.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
+import PurgeProbeLogsDialogue from '@/features/probes/components/actions/purge-probe-logs-dialogue.tsx';
 
 interface StatusConfig {
 	badge: string;
@@ -48,7 +49,7 @@ function getMsColor(ms: number) {
 	return 'text-green-700';
 }
 
-export default function ProbeMonitorLog({ monitors }: { monitors: Monitor[] }) {
+export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string; monitors: Monitor[] }) {
 	const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
 
 	const sorted = monitors?.slice().reverse() ?? [];
@@ -65,9 +66,12 @@ export default function ProbeMonitorLog({ monitors }: { monitors: Monitor[] }) {
 						<CardTitle className="text-base font-medium">Logs monitoring</CardTitle>
 						<CardDescription>Recent monitor activity</CardDescription>
 					</div>
-					<div className="flex items-center gap-1.5">
-						<span className="w-2 h-2 rounded-full bg-green-700" />
-						<span className="text-xs text-green-700 font-medium">{sorted.length} entrées</span>
+					<div className="flex items-center gap-3">
+						<PurgeProbeLogsDialogue probeId={probeId} disabled={sorted.length === 0} />
+						<div className="flex items-center gap-1.5">
+							<span className="w-2 h-2 rounded-full bg-green-700" />
+							<span className="text-xs text-green-700 font-medium">{sorted.length} entrées</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -77,6 +81,7 @@ export default function ProbeMonitorLog({ monitors }: { monitors: Monitor[] }) {
 					const count = key === 'all' ? sorted.length : countByStatus(key);
 					return (
 						<Button
+							key={key}
 							variant={activeFilter === key ? 'secondary' : 'outline'}
 							size="sm"
 							onClick={() => setActiveFilter(key)}

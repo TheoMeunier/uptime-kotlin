@@ -48,5 +48,7 @@ class ProbeMonitorRepository(
         entity.persist()
     }
 
+    fun deleteByProbe(probeId: UUID): Long = delete("probe.id = ?1", probeId)
+
     fun existsByCheckTaskId(checkTaskId: UUID): Boolean = count("checkTaskId = ?1", checkTaskId) > 0
 }

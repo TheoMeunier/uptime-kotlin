@@ -37,6 +37,8 @@ const en = {
 		create: 'Create {{entity}}',
 		update: 'Update {{entity}}',
 		remove: 'Remove {{entity}}',
+		purge: 'Purge',
+		purging: 'Purging...',
 		saving: 'Saving...',
 		save: 'Save {{entity}}',
 		test: 'Test {{entity}}',
@@ -44,6 +46,7 @@ const en = {
 		actions: {
 			remove: 'Remove',
 			edit: 'Edit',
+			purge_logs: 'Purge logs',
 		},
 	},
 
@@ -101,6 +104,7 @@ const en = {
 		title: {
 			create: 'Create monitor',
 			remove: 'Remove monitor',
+			purge_logs: 'Purge monitor logs',
 			final_hour: 'Final hour',
 			http_request_assertions: 'HTTP request and assertions',
 		},
@@ -153,6 +157,7 @@ const en = {
 		description: {
 			authentication_optional: 'Optional. Select Basic or Bearer only when required.',
 			remove: 'This action is irreversible. All All associated data will be permanently deleted',
+			purge_logs: 'This will permanently delete the full history for this monitor.',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
 			smtp_security:
@@ -182,6 +187,7 @@ const en = {
 			create: 'Monitor {{ data }} successfully created',
 			update: 'Monitor {{ data }} successfully updated',
 			remove: 'Monitor successfully removed',
+			purge_logs: 'Monitor logs purged successfully',
 		},
 	},
 
