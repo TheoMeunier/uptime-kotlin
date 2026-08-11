@@ -34,6 +34,7 @@ const en = {
 		close: 'Close',
 		cancel: 'Cancel',
 		loading: 'Logging...',
+		exporting: 'Exporting...',
 		create: 'Create {{entity}}',
 		update: 'Update {{entity}}',
 		remove: 'Remove {{entity}}',
@@ -46,6 +47,7 @@ const en = {
 		actions: {
 			remove: 'Remove',
 			edit: 'Edit',
+			export_csv: 'Export CSV',
 			purge_logs: 'Purge logs',
 		},
 	},

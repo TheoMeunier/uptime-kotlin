@@ -34,6 +34,12 @@ class ProbeMonitorRepository(
             after,
         ).list()
 
+    fun findByProbe(probeId: UUID): List<ProbesMonitorsLogEntity> =
+        find(
+            "probe.id = ?1 ORDER BY runAt ASC",
+            probeId,
+        ).list()
+
     fun store(dto: StoreProbeMonitorLogDto) {
         val probe = probeRepository.findById(dto.probe.id)
 
