@@ -7,6 +7,11 @@ import probeResponseSchema, {
 import { z } from 'zod';
 import type { StoreProbeSchema } from '@/features/probes/hooks/useProbeForm.ts';
 
+function getFileNameFromContentDisposition(contentDisposition: string | null) {
+	const match = contentDisposition?.match(/filename="?(?<filename>[^"]+)"?/);
+	return match?.groups?.filename;
+}
+
 const probeService = {
 	async getProbes(): Promise<ProbeListItem[]> {
 		const response = await api.get('probes').json();
@@ -59,6 +64,17 @@ const probeService = {
 
 	async purgeProbeLogs(id: string) {
 		await api.post(`probes/${id}/logs/purge`).json();
+	},
+
+	async exportProbeLogs(id: string) {
+		const response = await api.get(`probes/${id}/logs/export`);
+		const blob = await response.blob();
+		const fileName = getFileNameFromContentDisposition(response.headers.get('Content-Disposition'));
+
+		return {
+			blob,
+			fileName: fileName ?? `monitor-logs-${id}.csv`,
+		};
 	},
 };
 

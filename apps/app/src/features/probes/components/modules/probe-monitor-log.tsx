@@ -5,6 +5,7 @@ import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import { Button } from '@/components/atoms/button.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import PurgeProbeLogsDialogue from '@/features/probes/components/actions/purge-probe-logs-dialogue.tsx';
+import ExportProbeLogsButton from '@/features/probes/components/actions/export-probe-logs-button.tsx';
 
 interface StatusConfig {
 	badge: string;
@@ -67,11 +68,8 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 						<CardDescription>Recent monitor activity</CardDescription>
 					</div>
 					<div className="flex items-center gap-3">
+						<ExportProbeLogsButton probeId={probeId} />
 						<PurgeProbeLogsDialogue probeId={probeId} disabled={sorted.length === 0} />
-						<div className="flex items-center gap-1.5">
-							<span className="w-2 h-2 rounded-full bg-green-700" />
-							<span className="text-xs text-green-700 font-medium">{sorted.length} entrées</span>
-						</div>
 					</div>
 				</div>
 			</div>
