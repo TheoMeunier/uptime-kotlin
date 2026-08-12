@@ -26,7 +26,8 @@ monitoring service availability without relying on external solutions.
 
 ### Key Features
 
-- HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis, SMTP, Kafka and RabbitMQ monitoring
+- HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis, SMTP, Kafka and RabbitMQ
+  monitoring
 - Real-time dashboard with historical data
 - Multi-channel notifications (Email, Slack, Discord, Teams, Webhook)
 - Public status pages for your users
@@ -150,8 +151,8 @@ networks:
 
    3.4 Schedulers Configuration:
 
-    - `QUARKUS_SCHEDULER_STRATEGY` : The strategy used for scheduling tasks (db-lock or rabbitmq) or none if you don't
-      want to use the scheduler for cluster mode.
+    - `QUARKUS_SCHEDULER_STRATEGY` : The strategy used for scheduling tasks (database or none) or none if you don't want
+      to use the scheduler for cluster mode.
 
 
 4. Start the application with docker-compose
