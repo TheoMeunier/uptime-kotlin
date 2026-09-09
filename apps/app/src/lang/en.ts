@@ -246,7 +246,8 @@ const en = {
 		},
 		description: {
 			authentication_optional: 'Optional. Select Basic or Bearer only when required.',
-			max_latency_ms: 'The check fails when the response is slower. Between 1 and 5000 ms, since the HTTP client times out after 5 s. Leave empty to disable the threshold.',
+			max_latency_ms:
+				'The check fails when the response is slower. Between 1 and 5000 ms, since the HTTP client times out after 5 s. Leave empty to disable the threshold.',
 			remove: 'This action is irreversible. All associated data will be permanently deleted',
 			purge_logs: 'This will permanently delete the full history for this monitor.',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
