@@ -64,6 +64,8 @@ const en = {
 		test: 'Test {{entity}}',
 
 		actions: {
+			pause: 'Pause',
+			resume: 'Resume',
 			remove: 'Remove',
 			edit: 'Edit',
 			export_csv: 'Export CSV',
@@ -160,6 +162,8 @@ const en = {
 			update: 'Update monitor',
 			remove: 'Remove monitor',
 			purge_logs: 'Purge monitor logs',
+			pause: 'Pause this monitor?',
+			resume: 'Resume this monitor?',
 			final_hour: 'Last hour',
 			http_request_assertions: 'HTTP request and assertions',
 		},
@@ -255,6 +259,8 @@ const en = {
 			now: 'Now',
 			one_hour_ago: '1 hour ago',
 			paused_slot: 'The monitor was paused, no check was run.',
+			pause: 'Checks stop until you resume it. The history is kept, and no alert will be sent.',
+			resume: 'Checks restart immediately, on the configured interval.',
 		},
 		option: {
 			smtp_ignore_tls: 'Ignore TLS',
@@ -276,6 +282,8 @@ const en = {
 			update: 'Monitor {{ data }} successfully updated',
 			remove: 'Monitor successfully removed',
 			purge_logs: 'Monitor logs purged successfully',
+			paused: 'Monitor paused',
+			resumed: 'Monitor resumed',
 		},
 	},
 
