@@ -124,8 +124,23 @@ const en = {
 	},
 
 	monitors: {
+		protocol_group: {
+			network: 'Web & network',
+			database: 'Databases',
+			messaging: 'Messaging & mail',
+		},
+
+		section: {
+			target: 'What to monitor',
+			schedule: 'Schedule',
+			schedule_description: 'How often the probe runs, and how it retries before raising an alert.',
+			settings: 'Settings',
+			notifications_description: 'Channels alerted when this monitor goes down.',
+		},
+
 		title: {
 			create: 'Create monitor',
+			update: 'Update monitor',
 			remove: 'Remove monitor',
 			purge_logs: 'Purge monitor logs',
 			final_hour: 'Last hour',
@@ -173,9 +188,10 @@ const en = {
 			rabbitmq_username: 'RabbitMQ username',
 			rabbitmq_password: 'RabbitMQ password',
 			protocol: 'Monitor protocol',
+			interval: 'Check interval (s)',
 			name_monitor: 'Monitor name',
-			retry: 'Retry',
-			interval_retry: 'Retry interval',
+			retry: 'Retries',
+			interval_retry: 'Retry interval (s)',
 		},
 		uptime: {
 			h24: 'Uptime 24h',
@@ -218,6 +234,7 @@ const en = {
 				'Enter RabbitMQ management node URLs including protocol and port, separated by commas. Example: https://node1.rabbitmq.com:15672',
 			internal_retry: 'Maximum retries before the service is marked as down and a notification is sent',
 			check_interval: 'Check every {{ interval }} seconds',
+			enabled: 'A paused monitor keeps its history but runs no check.',
 			now: 'Now',
 			one_hour_ago: '1 hour ago',
 			paused_slot: 'The monitor was paused, no check was run.',
@@ -229,6 +246,7 @@ const en = {
 			bearer_token: 'Bearer token',
 		},
 		placeholder: {
+			name_monitor: 'Production API',
 			username: 'Username',
 			password: 'Password',
 			bearer_token: 'Bearer token',

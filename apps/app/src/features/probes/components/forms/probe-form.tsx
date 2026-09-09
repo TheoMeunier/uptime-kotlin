@@ -1,27 +1,21 @@
 import { type StoreProbeSchema, useProbeForm } from '@/features/probes/hooks/useProbeForm.ts';
-import {
-	Field,
-	FieldDescription,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
-	FieldLegend,
-	FieldSet,
-} from '@/components/atoms/field.tsx';
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/atoms/field.tsx';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import { useTranslation } from 'react-i18next';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
-import ProbeProtocol from '@/features/probes/enums/probe-enum.ts';
+import ProbeProtocol, { PROTOCOL_GROUPS, PROTOCOL_LABELS } from '@/features/probes/enums/probe-enum.ts';
 import { Input } from '@/components/atoms/input.tsx';
 import FormFieldNotification from '@/features/notifications/components/forms/form-field-notification.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import { Textarea } from '@/components/atoms/textarea.tsx';
-import { Activity, Bell } from 'lucide-react';
+import { Activity, Bell, Clock, Settings2 } from 'lucide-react';
 import FormSelectNotification from '@/features/notifications/components/forms/form-select-notification.tsx';
 import CreateNotificationDialogue from '@/features/notifications/components/actions/create-notification-dialogue.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import PROBE_FIELDS_CONFIG from '@/features/probes/components/config/probe-type.ts';
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
+import type { ComponentType, ReactNode } from 'react';
 import type { FieldPath, FieldPathValue } from 'react-hook-form';
 
 type ProbeFormMode = 'create' | 'edit';
@@ -34,12 +28,40 @@ interface ProbeFormProps {
 	isLoading?: boolean;
 }
 
+function FormSection({
+	title,
+	description,
+	icon: Icon,
+	children,
+}: {
+	title: string;
+	description?: string;
+	icon: ComponentType<{ className?: string }>;
+	children: ReactNode;
+}) {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle className="flex items-center gap-2 text-base">
+					<Icon className="text-muted-foreground size-4" />
+					{title}
+				</CardTitle>
+				{description && <CardDescription>{description}</CardDescription>}
+			</CardHeader>
+			<CardContent>
+				<FieldGroup>{children}</FieldGroup>
+			</CardContent>
+		</Card>
+	);
+}
+
 export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, onSubmit }: ProbeFormProps) {
 	const { t } = useTranslation();
 	const { form, errors } = useProbeForm({ defaultValues });
 	const protocol = form.watch('protocol');
 
 	const dynamicFields = protocol ? PROBE_FIELDS_CONFIG[protocol] : PROBE_FIELDS_CONFIG[ProbeProtocol.HTTP];
+	const hasAdvancedFields = Boolean(dynamicFields?.advanced_fields?.length);
 
 	const handleProtocolChange = (value: string) => {
 		const nextProtocol = value as ProbeProtocol;
@@ -59,44 +81,52 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 
 	return (
 		<form onSubmit={form.handleSubmit(onSubmit)}>
-			<div className="grid grid-cols-2 gap-8">
-				<FieldGroup>
-					<FieldSet>
-						<FieldLegend className="flex items-center gap-3">
-							<Activity /> Monitors
-						</FieldLegend>
-						<FieldGroup>
-							<Field className="space-y-2">
-								<FieldLabel htmlFor="protocol">{t('monitors.label.protocol')}</FieldLabel>
-								<FormSelect
-									form={form}
-									name="protocol"
-									options={Object.values(ProbeProtocol)}
-									onValueChange={handleProtocolChange}
-								/>
-								<FieldError>{errors.protocol?.message}</FieldError>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="name">{t('monitors.label.name_monitor')}</FieldLabel>
-								<Input {...form.register('name')} id="name" placeholder="Evil Rabbit" required />
-								<FieldError>{errors.name?.message}</FieldError>
-							</Field>
+			<div className="grid gap-6 lg:grid-cols-3">
+				{/* What to watch, and how often. */}
+				<div className="flex flex-col gap-6 lg:col-span-2">
+					<FormSection title={t('monitors.section.target')} icon={Activity}>
+						<Field>
+							<FieldLabel htmlFor="protocol">{t('monitors.label.protocol')}</FieldLabel>
+							<FormSelect
+								form={form}
+								name="protocol"
+								options={PROTOCOL_GROUPS.map((group) => ({
+									label: t(group.labelKey),
+									options: group.protocols.map((protocol) => ({
+										value: protocol,
+										label: PROTOCOL_LABELS[protocol],
+									})),
+								}))}
+								onValueChange={handleProtocolChange}
+							/>
+							<FieldError>{errors.protocol?.message}</FieldError>
+						</Field>
 
-							{protocol && dynamicFields && (
-								<FieldGroup>
-									{dynamicFields.fields.map((field) => (
-										<FormFieldNotification key={field.name} field={field} form={form} />
-									))}
-								</FieldGroup>
-							)}
+						<Field>
+							<FieldLabel htmlFor="name">{t('monitors.label.name_monitor')}</FieldLabel>
+							<Input
+								{...form.register('name')}
+								id="name"
+								placeholder={t('monitors.placeholder.name_monitor')}
+								required
+							/>
+							<FieldError>{errors.name?.message}</FieldError>
+						</Field>
 
+						{protocol &&
+							dynamicFields?.fields.map((field) => (
+								<FormFieldNotification key={field.name} field={field} form={form} />
+							))}
+					</FormSection>
+
+					<FormSection
+						title={t('monitors.section.schedule')}
+						description={t('monitors.section.schedule_description')}
+						icon={Clock}
+					>
+						<div className="grid gap-4 sm:grid-cols-3">
 							<Field>
-								<FieldLabel htmlFor="retry">{t('monitors.label.retry')}</FieldLabel>
-								<Input {...form.register('retry', { valueAsNumber: true })} id="retry" type="number" min={0} required />
-								<FieldError>{errors.retry?.message}</FieldError>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="interval">Interval value (in seconds) default 60</FieldLabel>
+								<FieldLabel htmlFor="interval">{t('monitors.label.interval')}</FieldLabel>
 								<Input
 									{...form.register('interval', { valueAsNumber: true })}
 									id="interval"
@@ -106,75 +136,85 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 								/>
 								<FieldError>{errors.interval?.message}</FieldError>
 							</Field>
+
+							<Field>
+								<FieldLabel htmlFor="retry">{t('monitors.label.retry')}</FieldLabel>
+								<Input {...form.register('retry', { valueAsNumber: true })} id="retry" type="number" min={0} required />
+								<FieldError>{errors.retry?.message}</FieldError>
+							</Field>
+
 							<Field>
 								<FieldLabel htmlFor="interval_retry">{t('monitors.label.interval_retry')}</FieldLabel>
 								<Input
-									{...form.register('interval_retry', {
-										valueAsNumber: true,
-									})}
+									{...form.register('interval_retry', { valueAsNumber: true })}
 									id="interval_retry"
 									type="number"
 									min={0}
 									required
 								/>
 								<FieldError>{errors.interval_retry?.message}</FieldError>
-								<FieldDescription>{t('monitors.description.internal_retry')}</FieldDescription>
 							</Field>
-						</FieldGroup>
-					</FieldSet>
+						</div>
 
-					<FieldGroup>
-						<FieldLegend>Advanced</FieldLegend>
-						<Field className="mb-2">
-							<div className="flex items-center space-x-2">
-								<FormSwitch form={form} name={'enabled'} label={t('form.label.enabled')} />
-							</div>
+						<FieldDescription>{t('monitors.description.internal_retry')}</FieldDescription>
+					</FormSection>
+
+					{protocol === ProbeProtocol.HTTP && (
+						<Card>
+							<CardContent>
+								<HttpAdvancedFieldsForm form={form} />
+							</CardContent>
+						</Card>
+					)}
+				</div>
+
+				{/* Who to tell, and everything optional. */}
+				<div className="flex flex-col gap-6">
+					<FormSection
+						title={t('notifications.title.notifications')}
+						description={t('monitors.section.notifications_description')}
+						icon={Bell}
+					>
+						<FormSelectNotification form={form} name="notifications" />
+						<CreateNotificationDialogue />
+					</FormSection>
+
+					<FormSection title={t('monitors.section.settings')} icon={Settings2}>
+						<Field>
+							<FormSwitch form={form} name="enabled" label={t('form.label.enabled')} />
+							<FieldDescription>{t('monitors.description.enabled')}</FieldDescription>
 							<FieldError>{errors.enabled?.message}</FieldError>
 						</Field>
 
-						{protocol && dynamicFields && (
-							<FieldGroup>
-								{dynamicFields.advanced_fields.map((field) => (
-									<FormFieldNotification key={field.name} field={field} form={form} />
-								))}
-							</FieldGroup>
-						)}
+						{protocol &&
+							hasAdvancedFields &&
+							dynamicFields.advanced_fields.map((field) => (
+								<FormFieldNotification key={field.name} field={field} form={form} />
+							))}
 
-						<Field className="space-y-2">
+						<Field>
 							<FieldLabel htmlFor="description">{t('form.label.description')}</FieldLabel>
-							<Textarea {...form.register('description')} id="description" rows={5} />
+							<Textarea {...form.register('description')} id="description" rows={4} />
 							<FieldError>{errors.description?.message}</FieldError>
 						</Field>
-					</FieldGroup>
-				</FieldGroup>
-
-				<FieldGroup>
-					<FieldSet>
-						<FieldLegend className="flex items-center gap-2">
-							<Bell /> {t('notifications.title.notifications')}
-						</FieldLegend>
-						<FieldGroup className="mt-4">
-							<FormSelectNotification form={form} name="notifications" />
-							<CreateNotificationDialogue />
-						</FieldGroup>
-					</FieldSet>
-
-					{protocol === ProbeProtocol.HTTP && <HttpAdvancedFieldsForm form={form} />}
-				</FieldGroup>
+					</FormSection>
+				</div>
 			</div>
 
-			<FieldGroup className="mt-6">
-				<Field orientation="horizontal">
-					<Button variant="outline" type="button">
-						<Link to={cancelLink}>{t('button.cancel')}</Link>
-					</Button>
-					<Button type="submit">
-						{t(isLoading ? 'button.loading' : mode === 'create' ? 'button.create' : 'button.update', {
-							entity: t('entity.monitor'),
-						})}
-					</Button>
-				</Field>
-			</FieldGroup>
+			{/*
+			 * Sticky action bar: with the HTTP protocol selected this form runs well past one
+			 * screen, and a submit button stranded at the bottom means scrolling back for it.
+			 */}
+			<div className="bg-background/95 border-border sticky bottom-0 mt-6 flex items-center justify-end gap-3 border-t py-4 backdrop-blur">
+				<Button variant="outline" asChild>
+					<Link to={cancelLink}>{t('button.cancel')}</Link>
+				</Button>
+				<Button type="submit" disabled={isLoading}>
+					{t(isLoading ? 'button.loading' : mode === 'create' ? 'button.create' : 'button.update', {
+						entity: t('entity.monitor'),
+					})}
+				</Button>
+			</div>
 		</form>
 	);
 }
