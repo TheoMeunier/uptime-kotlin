@@ -6,4 +6,5 @@ import io.quarkus.runtime.annotations.RegisterForReflection
 data class LoginResponse(
     val token: String,
     val refreshToken: String,
+    val sessionId: String,
 )

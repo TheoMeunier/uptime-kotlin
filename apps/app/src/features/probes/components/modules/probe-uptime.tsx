@@ -1,3 +1,7 @@
+import { useTranslation } from 'react-i18next';
+import Metric from '@/components/molecules/metric.tsx';
+import { uptimeState } from '@/lib/status.ts';
+
 interface UptimesProps {
 	h24: number;
 	d7: number;
@@ -5,25 +9,18 @@ interface UptimesProps {
 }
 
 const uptimeItems = [
-	{ label: 'Uptime 24h', key: 'h24' },
-	{ label: 'Uptime 7j', key: 'd7' },
-	{ label: 'Uptime 30j', key: 'd30' },
+	{ labelKey: 'monitors.uptime.h24', key: 'h24' },
+	{ labelKey: 'monitors.uptime.d7', key: 'd7' },
+	{ labelKey: 'monitors.uptime.d30', key: 'd30' },
 ] as const;
 
 export default function ProbeUptime({ uptimes }: { uptimes: UptimesProps }) {
-	function getUptimeColor(value: number) {
-		if (value >= 99.9) return 'text-green-600';
-		if (value >= 99) return 'text-yellow-500';
-		return 'text-red-500';
-	}
+	const { t } = useTranslation();
 
 	return (
-		<div className="grid grid-cols-3 gap-2 mt-4">
-			{uptimeItems.map(({ label, key }) => (
-				<div key={key} className="bg-gray-50 border border-gray-100 rounded-lg py-3 px-4">
-					<h3 className="text-xs uppercase tracking-wide text-gray-400 mb-1">{label}</h3>
-					<p className={`text-2xl font-medium ${getUptimeColor(uptimes[key])}`}>{uptimes[key].toFixed(1)}%</p>
-				</div>
+		<div className="mt-4 grid grid-cols-3 gap-2">
+			{uptimeItems.map(({ labelKey, key }) => (
+				<Metric key={key} label={t(labelKey)} value={`${uptimes[key].toFixed(1)}%`} state={uptimeState(uptimes[key])} />
 			))}
 		</div>
 	);

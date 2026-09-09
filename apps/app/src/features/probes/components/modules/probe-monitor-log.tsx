@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
@@ -6,66 +7,37 @@ import { Button } from '@/components/atoms/button.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import PurgeProbeLogsDialogue from '@/features/probes/components/actions/purge-probe-logs-dialogue.tsx';
 import ExportProbeLogsButton from '@/features/probes/components/actions/export-probe-logs-button.tsx';
-
-interface StatusConfig {
-	badge: string;
-	dot: string;
-	label: string;
-}
-
-const statusConfig: Record<ProbeStatusEnum, StatusConfig> = {
-	SUCCESS: {
-		badge: 'bg-green-100 text-green-700',
-		dot: 'bg-green-500',
-		label: 'Success',
-	},
-	FAILURE: {
-		badge: 'bg-red-100 text-red-700',
-		dot: 'bg-red-500',
-		label: 'Error',
-	},
-	WARNING: {
-		badge: 'bg-orange-100 text-orange-700',
-		dot: 'bg-orange-500',
-		label: 'Warning',
-	},
-	PAUSE: {
-		badge: 'bg-gray-50 text-gray-800 border border-gray-100',
-		dot: 'bg-gray-700',
-		label: 'Pending',
-	},
-};
+import { getStatusTokens } from '@/lib/status.ts';
 
 const filters = [
-	{ key: 'all', label: 'All' },
-	{ key: ProbeStatusEnum.SUCCESS, label: 'Success' },
-	{ key: ProbeStatusEnum.FAILURE, label: 'Errors' },
+	{ key: 'all', labelKey: 'monitors.logs.filter_all' },
+	{ key: ProbeStatusEnum.SUCCESS, labelKey: 'monitors.logs.filter_success' },
+	{ key: ProbeStatusEnum.FAILURE, labelKey: 'monitors.logs.filter_errors' },
 ] as const;
 
 type FilterKey = 'all' | ProbeStatusEnum;
 
-function getMsColor(ms: number) {
-	if (ms >= 300) return 'text-red-700';
-	if (ms >= 150) return 'text-orange-700';
-	return 'text-green-700';
-}
+/**
+ * Single escalation, single threshold. Colouring every latency on a 60-row list turned the column
+ * into noise; only a genuinely slow response is worth marking.
+ */
+const SLOW_RESPONSE_MS = 300;
 
 export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string; monitors: Monitor[] }) {
+	const { t, i18n } = useTranslation();
 	const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
 
 	const sorted = monitors?.slice().reverse() ?? [];
-
 	const filtered = activeFilter === 'all' ? sorted : sorted.filter((m) => m.status === activeFilter);
-
 	const countByStatus = (status: ProbeStatusEnum) => sorted.filter((m) => m.status === status).length;
 
 	return (
 		<Card className="space-y-0">
-			<div className={'px-4'}>
-				<div className="flex items-center justify-between">
+			<div className="px-4">
+				<div className="flex items-center justify-between gap-3">
 					<div>
-						<CardTitle className="text-base font-medium">Logs monitoring</CardTitle>
-						<CardDescription>Recent monitor activity</CardDescription>
+						<CardTitle className="text-base font-medium">{t('monitors.logs.title')}</CardTitle>
+						<CardDescription>{t('monitors.logs.description')}</CardDescription>
 					</div>
 					<div className="flex items-center gap-3">
 						<ExportProbeLogsButton probeId={probeId} />
@@ -74,8 +46,8 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 				</div>
 			</div>
 
-			<div className="flex items-center gap-2 px-4 pb-2.5 border-b border-gray-100">
-				{filters.map(({ key, label }) => {
+			<div className="border-border flex items-center gap-2 border-b px-4 pb-2.5">
+				{filters.map(({ key, labelKey }) => {
 					const count = key === 'all' ? sorted.length : countByStatus(key);
 					return (
 						<Button
@@ -83,10 +55,10 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 							variant={activeFilter === key ? 'secondary' : 'outline'}
 							size="sm"
 							onClick={() => setActiveFilter(key)}
-							className="rounded-md h-7 text-xs gap-1.5 cursor-pointer"
+							className="h-7 cursor-pointer gap-1.5 rounded-md text-xs"
 						>
-							{label}
-							<Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+							{t(labelKey)}
+							<Badge variant="secondary" className="tabular h-4 px-1.5 text-[10px]">
 								{count}
 							</Badge>
 						</Button>
@@ -96,23 +68,23 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 
 			<div className="max-h-[500px] overflow-y-auto font-mono">
 				{filtered.map((monitor) => {
-					const config = statusConfig[monitor.status] ?? statusConfig.PAUSE;
-					const runAt = new Date(monitor.run_at);
+					const tokens = getStatusTokens(monitor.status);
+					const isSlow = monitor.response_time >= SLOW_RESPONSE_MS;
 
 					return (
 						<div
 							key={monitor.id}
-							className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+							className="border-border hover:bg-muted/60 flex items-center gap-3 border-b px-4 py-2.5 transition-colors"
 						>
 							<span
-								className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${config.badge}`}
+								className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tokens.bg} ${tokens.fg}`}
 							>
-								<span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-								{config.label}
+								<span className={`h-1.5 w-1.5 rounded-full ${tokens.solid}`} />
+								{t(tokens.labelKey)}
 							</span>
 
-							<span className="text-xs text-gray-400 tabular-nums shrink-0">
-								{runAt.toLocaleString('fr-FR', {
+							<span className="text-muted-foreground tabular shrink-0 text-xs">
+								{new Date(monitor.run_at).toLocaleString(i18n.language, {
 									day: '2-digit',
 									month: '2-digit',
 									hour: '2-digit',
@@ -120,17 +92,21 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 								})}
 							</span>
 
-							<span className={`text-xs font-medium tabular-nums shrink-0 ${getMsColor(monitor.response_time)}`}>
-								{monitor.response_time}ms
+							<span
+								className={`tabular shrink-0 text-xs font-medium ${isSlow ? 'text-status-degraded-fg' : 'text-foreground'}`}
+							>
+								{monitor.response_time} ms
 							</span>
 
-							<p className="text-xs text-gray-500 truncate">{monitor.message || 'No message'}</p>
+							<p className="text-muted-foreground truncate text-xs">
+								{monitor.message || t('monitors.logs.no_message')}
+							</p>
 						</div>
 					);
 				})}
 
 				{filtered.length === 0 && (
-					<div className="py-12 text-center text-sm text-gray-400">No logs for this filter</div>
+					<div className="text-muted-foreground py-12 text-center text-sm">{t('monitors.logs.empty_filter')}</div>
 				)}
 			</div>
 		</Card>

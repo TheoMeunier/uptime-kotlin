@@ -40,7 +40,7 @@ export function ShowProbe() {
 			<section className="flex items-center justify-between">
 				<div>
 					<h1 className="text-3xl font-bold mb-2">{data?.probe.name}</h1>
-					<p className="text-gray-500 mb-4">{data?.probe.url}</p>
+					<p className="text-muted-foreground mb-4">{data?.probe.url}</p>
 				</div>
 
 				<div>
@@ -72,7 +72,7 @@ export function ShowProbe() {
 						</div>
 						<ProbeUptime uptimes={data!.uptimes} />
 						<ProbeMonitorChartBar monitors={data!.monitors} probeStatus={data!.probe.status} />
-						<div className="flex justify-between text-xs text-slate-500 mt-1">
+						<div className="flex justify-between text-xs text-muted-foreground mt-1">
 							<span>{t('monitors.description.one_hour_ago')}</span>
 							<span>{t('monitors.description.now')}</span>
 						</div>

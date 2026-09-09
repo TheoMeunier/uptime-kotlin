@@ -1,22 +1,22 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import Metric from '@/components/molecules/metric.tsx';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 
 const statsItems = [
-	{ label: 'Current', key: 'current' as const },
-	{ label: 'Average', key: 'average' as const },
-	{ label: 'Max Peak', key: 'max' as const },
-	{ label: 'Min', key: 'min' as const },
+	{ labelKey: 'monitors.latency.current', key: 'current' as const },
+	{ labelKey: 'monitors.latency.average', key: 'average' as const },
+	{ labelKey: 'monitors.latency.max_peak', key: 'max' as const },
+	{ labelKey: 'monitors.latency.min', key: 'min' as const },
 ];
 
-function getStatColor(key: string, value: number) {
-	if (key === 'max' && value >= 300) return 'text-yellow-600';
-	if (key === 'min') return 'text-green-600';
-	return 'text-gray-800';
-}
-
 export default function ResponseTimeStats({ monitors }: { monitors: Monitor[] }) {
+	const { t } = useTranslation();
+
 	const stats = useMemo(() => {
 		const times = monitors.map((m) => m.response_time);
+		if (times.length === 0) return { current: 0, average: 0, max: 0, min: 0 };
+
 		return {
 			current: times.at(-1) ?? 0,
 			average: Math.round(times.reduce((a, b) => a + b, 0) / times.length),
@@ -26,14 +26,9 @@ export default function ResponseTimeStats({ monitors }: { monitors: Monitor[] })
 	}, [monitors]);
 
 	return (
-		<div className="grid grid-cols-4 gap-2 mt-4">
-			{statsItems.map(({ label, key }) => (
-				<div key={key} className="bg-gray-50 border border-gray-100 rounded-lg py-3 px-4">
-					<h3 className="text-xs uppercase tracking-wide text-gray-400 mb-1">{label}</h3>
-					<p className={`text-2xl font-medium ${getStatColor(key, stats[key])}`}>
-						{stats[key]} <span className="text-sm font-normal text-gray-400">ms</span>
-					</p>
-				</div>
+		<div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+			{statsItems.map(({ labelKey, key }) => (
+				<Metric key={key} label={t(labelKey)} value={stats[key]} unit="ms" />
 			))}
 		</div>
 	);
