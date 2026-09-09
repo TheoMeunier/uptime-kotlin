@@ -58,6 +58,7 @@ const en = {
 		update: 'Update {{entity}}',
 		remove: 'Remove {{entity}}',
 		purge: 'Purge',
+		removing: 'Removing...',
 		purging: 'Purging...',
 		saving: 'Saving...',
 		save: 'Save {{entity}}',
@@ -213,6 +214,7 @@ const en = {
 			name_monitor: 'Monitor name',
 			retry: 'Retries',
 			interval_retry: 'Retry interval (s)',
+			remove_confirmation: 'Confirm the monitor name',
 		},
 		uptime: {
 			h24: 'Uptime 24h',
@@ -246,6 +248,7 @@ const en = {
 		},
 		description: {
 			authentication_optional: 'Optional. Select Basic or Bearer only when required.',
+			remove_confirmation: 'Type this exact value to enable deletion:',
 			max_latency_ms:
 				'The check fails when the response is slower. Between 1 and 5000 ms, since the HTTP client times out after 5 s. Leave empty to disable the threshold.',
 			remove: 'This action is irreversible. All associated data will be permanently deleted',
