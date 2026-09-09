@@ -45,7 +45,7 @@ const httpProbeSchema = baseStoreProbeSchema.extend({
 		)
 		.optional(),
 	follow_redirects: z.boolean().optional(),
-	max_latency_ms: z.number().positive().optional(),
+	max_latency_ms: z.number().int().min(1).max(5000).optional(),
 	tls_expiry_warning_days: z.union([z.literal(7), z.literal(15), z.literal(30)]).optional(),
 	steps: z.array(z.record(z.string(), z.unknown())).optional(),
 });

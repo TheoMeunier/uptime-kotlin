@@ -35,11 +35,14 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 
 				<Input
-					{...form.register(field.name, { valueAsNumber: true })}
+					{...form.register(field.name, {
+						setValueAs: (value: string) => (value === '' || value === null ? undefined : Number(value)),
+					})}
 					type="number"
 					placeholder={field.placeholder}
 					defaultValue={field.default_value}
-					min={1}
+					min={field.min ?? 1}
+					max={field.max}
 				/>
 
 				{field.description && <FieldDescription>{field.description}</FieldDescription>}

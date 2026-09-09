@@ -15,6 +15,7 @@ const DEFAULT_VALUES = {
 	assertions: [],
 	steps: [],
 	follow_redirects: true,
+	max_latency_ms: 2000,
 	tls_expiry_warning_days: 30 as const,
 };
 

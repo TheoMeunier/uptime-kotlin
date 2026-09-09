@@ -91,6 +91,7 @@ data class ValidProbeProtocolHttpRequest(
     val assertions: List<ProbeContent.HttpAssertion> = emptyList(),
     val followRedirects: Boolean = true,
     @field:Positive(message = "Maximum latency must be greater than 0")
+    @field:Max(value = 5_000, message = "Maximum latency must be at most 5000 ms")
     val maxLatencyMs: Long? = null,
     @field:Min(7)
     @field:Max(30)
