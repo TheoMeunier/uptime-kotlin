@@ -73,6 +73,8 @@ const en = {
 				last_update: 'Last update: ',
 				automatic_refresh: 'Auto-refresh',
 			},
+			uptime_30d: '30-day uptime',
+			down_for: 'Down for {{duration}}',
 			verdict: {
 				operational_one: 'All systems operational',
 				operational_other: 'All {{count}} services are operational',
@@ -291,6 +293,12 @@ const en = {
 			latency_average: 'Average latency',
 			executing: 'Executed',
 			currently_incidents: 'Currently active incidents',
+		},
+
+		events: {
+			title: 'Recent events',
+			description: 'State changes across your monitors',
+			empty: 'No state change in the last 7 days',
 		},
 
 		legend: {

@@ -4,18 +4,23 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
 import tmenier.fr.databases.dtos.ProbeMonitorDTO
 import tmenier.fr.databases.dtos.ProbeShowDTO
 import tmenier.fr.databases.dtos.ProbeStatusDTO
+import tmenier.fr.databases.dtos.ProbeStatusMetrics
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsIdsDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
+import java.time.Duration
+import java.time.LocalDateTime
 
 object ProbeContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
@@ -259,10 +264,23 @@ object ProbeMapper {
         )
     }
 
-    fun toStatusDto(entity: ProbesEntity): ProbeStatusDTO {
+    fun toStatusDto(
+        entity: ProbesEntity,
+        metrics: ProbeStatusMetrics? = null,
+    ): ProbeStatusDTO {
         val content = ProbeContentMapper.toDto(entity)
 
+        val downSince =
+            if (entity.status == ProbeMonitorLogStatus.FAILURE) {
+                metrics?.lastSuccessAt ?: entity.createdAt
+            } else {
+                null
+            }
+
         return ProbeStatusDTO(
+            uptimes = metrics?.uptimes,
+            downSince = downSince,
+            downDuration = downSince?.let { Duration.between(it, LocalDateTime.now()).toHumanReadable() },
             probe =
                 ProbeListDTO(
                     id = entity.id,

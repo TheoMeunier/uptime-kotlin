@@ -7,7 +7,8 @@ import { Activity, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { useTranslation } from 'react-i18next';
-import StatusVerdict from '@/components/molecules/status-verdict.tsx';
+import { uptimeState } from '@/lib/status.ts';
+import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 
 export default function ProbesStatus() {
 	const { t, i18n } = useTranslation();
@@ -21,10 +22,34 @@ export default function ProbesStatus() {
 
 	if (isLoading) return <ProbesStatusSkeleton />;
 
+	const statuses = (data ?? []).map((item) => item.probe.status);
+	const total = statuses.length;
+	const downCount = statuses.filter((status) => status === ProbeStatusEnum.FAILURE).length;
+	const degradedCount = statuses.filter((status) => status === ProbeStatusEnum.WARNING).length;
+
+	const summary =
+		downCount > 0
+			? {
+					dot: 'bg-status-down',
+					tone: 'text-status-down-fg',
+					label: t('pages.status_page.verdict.down', { count: downCount, total }),
+				}
+			: degradedCount > 0
+				? {
+						dot: 'bg-status-degraded',
+						tone: 'text-status-degraded-fg',
+						label: t('pages.status_page.verdict.degraded', { count: degradedCount, total }),
+					}
+				: {
+						dot: 'bg-status-up',
+						tone: 'text-status-up-fg',
+						label: t('pages.status_page.verdict.operational', { count: total }),
+					};
+
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="border-b bg-card shadow-sm">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+				<div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 					<div className="flex items-center gap-3 mb-3">
 						<div className="p-2 bg-primary/10 rounded-lg shrink-0">
 							<Activity className="h-6 w-6 text-primary" />
@@ -37,23 +62,27 @@ export default function ProbesStatus() {
 						</div>
 					</div>
 
-					<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-						<Clock className="h-4 w-4 shrink-0" />
-						<span className="tabular">
-							{t('pages.status_page.description.last_update')}
-							{new Date().toLocaleTimeString(i18n.language)}
+					<div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+						<span className="flex items-center gap-1.5 font-medium">
+							<span className={`size-2 shrink-0 rounded-full ${summary.dot}`} />
+							<span className={summary.tone}>{summary.label}</span>
 						</span>
-						<Badge variant="outline" className="sm:ml-2">
-							{t('pages.status_page.description.automatic_refresh')} 2min
-						</Badge>
+
+						<span className="flex items-center gap-1.5">
+							<Clock className="h-4 w-4 shrink-0" />
+							<span className="tabular">
+								{t('pages.status_page.description.last_update')}
+								{new Date().toLocaleTimeString(i18n.language)}
+							</span>
+						</span>
+
+						<Badge variant="outline">{t('pages.status_page.description.automatic_refresh')} 2min</Badge>
 					</div>
 				</div>
 			</div>
 
 			<div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-				<StatusVerdict statuses={(data ?? []).map((item) => item.probe.status)} />
-
-				<div className="mt-6 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+				<div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
 					{data?.map((item) => (
 						<Card key={item.probe.id} className="border-border bg-card hover:shadow-md transition-all duration-200">
 							<CardContent>
@@ -75,10 +104,41 @@ export default function ProbesStatus() {
 
 								<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} barCount={30} />
 
-								<div className="flex justify-between text-xs text-muted-foreground mt-1">
+								<div className="text-muted-foreground mt-1 flex justify-between text-xs">
 									<span>{t('monitors.description.one_hour_ago')}</span>
 									<span>{t('monitors.description.now')}</span>
 								</div>
+
+								{/* An outage without a duration reads the same whether it started two minutes
+								    or three months ago; the 30-day figure gives the badge its context. */}
+								{(item.uptimes || item.down_duration) && (
+									<div className="border-border mt-4 flex items-center justify-between border-t pt-3 text-xs">
+										{item.uptimes ? (
+											<span className="text-muted-foreground">
+												{t('pages.status_page.uptime_30d')}{' '}
+												<span
+													className={`tabular font-semibold ${
+														uptimeState(item.uptimes.d30) === 'down'
+															? 'text-status-down-fg'
+															: uptimeState(item.uptimes.d30) === 'degraded'
+																? 'text-status-degraded-fg'
+																: 'text-foreground'
+													}`}
+												>
+													{item.uptimes.d30.toFixed(2)}%
+												</span>
+											</span>
+										) : (
+											<span />
+										)}
+
+										{item.down_duration && (
+											<span className="text-status-down-fg tabular font-medium">
+												{t('pages.status_page.down_for', { duration: item.down_duration })}
+											</span>
+										)}
+									</div>
+								)}
 							</CardContent>
 						</Card>
 					))}
@@ -101,56 +161,61 @@ export default function ProbesStatus() {
 }
 
 function ProbesStatusSkeleton() {
-	const BAR_HEIGHTS = [
-		[40, 75, 55, 90, 35, 65, 85, 50, 70, 45, 60, 95, 30, 80, 58, 100],
-		[60, 30, 85, 45, 70, 55, 100, 40, 78, 52, 35, 90, 65, 48, 82, 25],
-		[50, 88, 42, 67, 33, 78, 95, 58, 72, 38, 62, 46, 85, 28, 75, 55],
-		[70, 45, 90, 30, 65, 80, 50, 38, 95, 60, 75, 42, 55, 100, 33, 68],
-		[35, 82, 58, 72, 44, 96, 28, 63, 87, 51, 40, 76, 32, 92, 67, 48],
-		[80, 55, 38, 92, 48, 63, 28, 75, 100, 42, 70, 35, 88, 57, 44, 78],
-	];
+	/* Mirrors the real card: uniform bars, same count, same footer row, so nothing shifts on load. */
+	const BAR_COUNT = 30;
+	const CARD_COUNT = 6;
 
 	return (
-		<div className="min-h-screen bg-background">
-			<div className="border-b bg-card shadow-sm">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-					<div className="flex items-center gap-3 mb-3">
-						<Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+		<div className="bg-background min-h-screen">
+			<div className="bg-card border-b shadow-sm">
+				<div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+					<div className="mb-3 flex items-center gap-3">
+						<Skeleton className="h-10 w-10 shrink-0 rounded-lg" />
 						<div className="flex flex-col gap-2">
 							<Skeleton className="h-7 w-56" />
 							<Skeleton className="h-3.5 w-72" />
 						</div>
 					</div>
-					<div className="flex items-center gap-2">
-						<Skeleton className="h-4 w-4 rounded" />
-						<Skeleton className="h-3 w-44" />
-						<Skeleton className="h-6 w-28 rounded-full ml-2" />
+					<div className="flex items-center gap-3">
+						<div className="flex items-center gap-1.5">
+							<Skeleton className="size-2 rounded-full" />
+							<Skeleton className="h-3 w-40" />
+						</div>
+						<div className="flex items-center gap-1.5">
+							<Skeleton className="h-4 w-4 rounded" />
+							<Skeleton className="h-3 w-36" />
+						</div>
+						<Skeleton className="h-6 w-28 rounded-full" />
 					</div>
 				</div>
 			</div>
 
 			<div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-					{BAR_HEIGHTS.map((heights, i) => (
+				<div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+					{Array.from({ length: CARD_COUNT }).map((_, i) => (
 						<Card key={i} className="border-border bg-card">
 							<CardContent>
-								<div className="flex justify-between items-start mb-3.5">
+								<div className="flex items-start justify-between gap-2">
 									<div className="flex flex-col gap-1.5">
 										<Skeleton className="h-4 w-32" />
 										<Skeleton className="h-3 w-48" />
 									</div>
-									<Skeleton className="h-6 w-16 rounded-full" />
+									<Skeleton className="h-6 w-20 shrink-0 rounded-full" />
 								</div>
 
-								<div className="flex items-end gap-0.5 h-12">
-									{heights.map((h, j) => (
-										<Skeleton key={j} className="flex-1 rounded-t-sm rounded-b-none" style={{ height: `${h}%` }} />
+								<div className="my-3 flex h-8 w-full items-end gap-[3px]">
+									{Array.from({ length: BAR_COUNT }).map((_, j) => (
+										<Skeleton key={j} className="h-8 flex-1 rounded-[2px]" />
 									))}
 								</div>
 
-								<div className="flex justify-between mt-1.5">
+								<div className="mt-1 flex justify-between">
 									<Skeleton className="h-2.5 w-16" />
-									<Skeleton className="h-2.5 w-12" />
+									<Skeleton className="h-2.5 w-10" />
+								</div>
+
+								<div className="border-border mt-4 flex items-center justify-between border-t pt-3">
+									<Skeleton className="h-3 w-32" />
 								</div>
 							</CardContent>
 						</Card>

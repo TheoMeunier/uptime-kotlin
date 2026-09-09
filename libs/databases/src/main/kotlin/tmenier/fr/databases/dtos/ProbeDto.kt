@@ -27,6 +27,17 @@ data class ProbeShowDTO(
 data class ProbeStatusDTO(
     val probe: ProbeListDTO,
     val monitors: List<ProbeMonitorDTO>,
+    val uptimes: ProbeUptimeDTO? = null,
+    val downSince: LocalDateTime? = null,
+    val downDuration: String? = null,
+)
+
+
+@RegisterForReflection
+data class ProbeStatusMetrics(
+    val probeId: UUID,
+    val uptimes: ProbeUptimeDTO,
+    val lastSuccessAt: LocalDateTime?,
 )
 
 @RegisterForReflection

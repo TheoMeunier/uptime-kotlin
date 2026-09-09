@@ -16,7 +16,8 @@ class ListingStatusProbes(
 ) {
     @GET
     fun list(): Response {
-        val probes = probeRepository.getProbesLastHour()
+        val metrics = probeRepository.getProbesStatusMetrics()
+        val probes = probeRepository.getProbesLastHourWithMetrics(metrics)
 
         return Response.ok(probes).build()
     }

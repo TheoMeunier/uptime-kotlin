@@ -3,13 +3,19 @@ package tmenier.fr.databases.repositories
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.DownProbeDto
 import tmenier.fr.databases.dtos.IncidentBar
 import tmenier.fr.databases.dtos.MonitorSummary
+import tmenier.fr.databases.dtos.ProbeEventDto
 import tmenier.fr.databases.dtos.ResponseMetrics24h
 import tmenier.fr.databases.dtos.SparklinePoint
+import java.sql.Timestamp
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -188,19 +194,61 @@ class DashboardRepository(
         }
     }
 
-    private fun Duration.toHumanReadable(): String {
-        val totalSeconds = this.seconds
 
-        val days = totalSeconds / 86_400
-        val hours = (totalSeconds % 86_400) / 3_600
-        val minutes = (totalSeconds % 3_600) / 60
-        val seconds = totalSeconds % 60
+    fun getRecentEvents(limit: Int = 15): List<ProbeEventDto> {
+        val since = LocalDateTime.now(ZoneOffset.UTC).minus(7, ChronoUnit.DAYS)
 
-        return buildString {
-            if (days > 0) append("${days}j ")
-            if (hours > 0) append("${hours}h ")
-            if (minutes > 0) append("${minutes}m ")
-            if (days == 0L && seconds > 0) append("${seconds}s")
-        }.trim()
+        val sql =
+            """
+            SELECT probe_id, probe_name, status, message, run_at
+            FROM (
+                SELECT pml.probe_id       AS probe_id,
+                       p.name             AS probe_name,
+                       pml.status         AS status,
+                       pml.message        AS message,
+                       pml.run_at         AS run_at,
+                       LAG(pml.status) OVER (PARTITION BY pml.probe_id ORDER BY pml.run_at) AS previous_status
+                FROM probes_monitors_logs pml
+                JOIN probes p ON p.id = pml.probe_id
+                WHERE pml.run_at > :since AND p.enabled = true
+            ) transitions
+            WHERE status IS DISTINCT FROM previous_status
+            ORDER BY run_at DESC
+            """.trimIndent()
+
+        val rows =
+            em
+                .createNativeQuery(sql, Tuple::class.java)
+                .setParameter("since", since)
+                .setMaxResults(limit)
+                .resultList as List<Tuple>
+
+        val statuses = ProbeMonitorLogStatus.entries
+
+        return rows.map { row ->
+            val ordinal = (row.get("status") as Number).toInt()
+
+            ProbeEventDto(
+                probeId = row.get("probe_id") as UUID,
+                probeName = row.get("probe_name") as String,
+                status = statuses.getOrNull(ordinal)?.name ?: ProbeMonitorLogStatus.FAILURE.name,
+                message = row.get("message") as? String ?: "",
+                runAt = row.readTimestamp("run_at"),
+            )
+        }
     }
+
+    /**
+     * A native query hands back whatever the JDBC driver produced for a timestamp column, and that
+     * varies: the PostgreSQL driver returns a LocalDateTime here, others still return a
+     * java.sql.Timestamp. Accept both rather than betting on one.
+     */
+    private fun Tuple.readTimestamp(column: String): LocalDateTime =
+        when (val value = this.get(column)) {
+            is LocalDateTime -> value
+            is Timestamp -> value.toLocalDateTime()
+            is OffsetDateTime -> value.toLocalDateTime()
+            is Instant -> LocalDateTime.ofInstant(value, ZoneOffset.UTC)
+            else -> error("Unsupported timestamp type for column '$column': ${value?.javaClass?.name}")
+        }
 }

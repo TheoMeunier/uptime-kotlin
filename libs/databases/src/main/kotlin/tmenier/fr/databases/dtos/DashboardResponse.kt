@@ -33,6 +33,15 @@ data class SparklinePoint(
 )
 
 @RegisterForReflection
+data class ProbeEventDto(
+    val probeId: UUID,
+    val probeName: String,
+    val status: String,
+    val message: String,
+    val runAt: LocalDateTime,
+)
+
+@RegisterForReflection
 data class IncidentBar(
     val hour: LocalDateTime,
     val upCount: Long,
