@@ -32,7 +32,6 @@ data class ProbeStatusDTO(
     val downDuration: String? = null,
 )
 
-
 @RegisterForReflection
 data class ProbeStatusMetrics(
     val probeId: UUID,

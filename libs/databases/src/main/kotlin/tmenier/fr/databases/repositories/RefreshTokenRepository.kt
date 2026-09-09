@@ -50,7 +50,6 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
         return id
     }
 
-
     fun rotateRefreshToken(
         id: UUID,
         newRefreshToken: UUID,
