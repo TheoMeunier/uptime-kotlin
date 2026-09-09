@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.jwt.JsonWebToken
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.BadRequestException
+import tmenier.fr.databases.repositories.RefreshTokenRepository
 import tmenier.fr.databases.repositories.UserRepository
 import tmenier.fr.profile.dtos.requests.UpdatePasswordRequest
 import java.util.UUID
@@ -13,6 +14,7 @@ class UpdatePasswordAction(
     private val jwt: JsonWebToken,
     private val passwordService: BcryptService,
     private val userRepository: UserRepository,
+    private val refreshTokenRepository: RefreshTokenRepository,
 ) {
     fun execute(payload: UpdatePasswordRequest) {
         val userId = UUID.fromString(jwt.name)
@@ -23,5 +25,9 @@ class UpdatePasswordAction(
 
         val password = passwordService.hashPassword(payload.password)
         userRepository.updatePassword(userId, password)
+
+        // A password change invalidates every session: any refresh token issued before the change
+        // is dropped, so a device that was already signed in has to authenticate again.
+        refreshTokenRepository.revokeAllForUser(userId)
     }
 }

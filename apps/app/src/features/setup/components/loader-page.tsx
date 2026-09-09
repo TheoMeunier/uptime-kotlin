@@ -11,10 +11,10 @@ export default function LoaderPage() {
 				</div>
 
 				<div className="text-center space-y-2">
-					<h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-gray-800">Uptime Kotlin</h1>
+					<h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">Uptime Kotlin</h1>
 				</div>
 
-				<div className="w-56 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+				<div className="w-56 h-1.5 bg-muted rounded-full overflow-hidden">
 					<div className="h-full w-1/3 bg-gradient-to-r from-indigo-400 via-indigo-500 to-purple-400 animate-[loader_1.4s_ease-in-out_infinite]" />
 				</div>
 

@@ -7,9 +7,10 @@ import { Activity, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { useTranslation } from 'react-i18next';
+import StatusVerdict from '@/components/molecules/status-verdict.tsx';
 
 export default function ProbesStatus() {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { data, isLoading } = useQuery({
 		queryKey: ['probes-status'],
 		queryFn: async () => {
@@ -21,26 +22,26 @@ export default function ProbesStatus() {
 	if (isLoading) return <ProbesStatusSkeleton />;
 
 	return (
-		<div className="min-h-screen bg-slate-50">
-			<div className="border-b bg-white shadow-sm">
+		<div className="min-h-screen bg-background">
+			<div className="border-b bg-card shadow-sm">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 					<div className="flex items-center gap-3 mb-3">
 						<div className="p-2 bg-primary/10 rounded-lg shrink-0">
 							<Activity className="h-6 w-6 text-primary" />
 						</div>
 						<div>
-							<h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">
+							<h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
 								{t('pages.status_page.title')}
 							</h1>
-							<p className="text-sm sm:text-base text-slate-600 mt-1">{t('pages.status_page.subtitle')}</p>
+							<p className="text-sm sm:text-base text-muted-foreground mt-1">{t('pages.status_page.subtitle')}</p>
 						</div>
 					</div>
 
-					<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
+					<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
 						<Clock className="h-4 w-4 shrink-0" />
-						<span>
+						<span className="tabular">
 							{t('pages.status_page.description.last_update')}
-							{new Date().toLocaleTimeString('fr-FR')}
+							{new Date().toLocaleTimeString(i18n.language)}
 						</span>
 						<Badge variant="outline" className="sm:ml-2">
 							{t('pages.status_page.description.automatic_refresh')} 2min
@@ -49,19 +50,21 @@ export default function ProbesStatus() {
 				</div>
 			</div>
 
-			<div className="w-full max-w-[98rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+			<div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+				<StatusVerdict statuses={(data ?? []).map((item) => item.probe.status)} />
+
+				<div className="mt-6 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
 					{data?.map((item) => (
-						<Card key={item.probe.id} className="border-slate-200 bg-white hover:shadow-md transition-all duration-200">
+						<Card key={item.probe.id} className="border-border bg-card hover:shadow-md transition-all duration-200">
 							<CardContent>
 								<div>
 									<div className="flex flex-wrap justify-between items-start gap-2">
 										<div className="flex items-center min-w-0">
 											<div className="min-w-0">
-												<CardTitle className="text-base sm:text-lg font-semibold text-slate-900 truncate">
+												<CardTitle className="text-base sm:text-lg font-semibold text-foreground truncate">
 													{item.probe.name}
 												</CardTitle>
-												<CardDescription className="text-gray-500 text-xs sm:text-sm truncate">
+												<CardDescription className="text-muted-foreground text-xs sm:text-sm truncate">
 													{item.probe.url}
 												</CardDescription>
 											</div>
@@ -70,9 +73,9 @@ export default function ProbesStatus() {
 									</div>
 								</div>
 
-								<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} />
+								<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} barCount={30} />
 
-								<div className="flex justify-between text-xs text-slate-500 mt-1">
+								<div className="flex justify-between text-xs text-muted-foreground mt-1">
 									<span>{t('monitors.description.one_hour_ago')}</span>
 									<span>{t('monitors.description.now')}</span>
 								</div>
@@ -82,13 +85,13 @@ export default function ProbesStatus() {
 				</div>
 
 				{data?.length === 0 && (
-					<Card className="border-slate-200 bg-white">
+					<Card className="border-border bg-card">
 						<CardContent className="text-center py-16">
-							<div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-								<Activity className="h-8 w-8 text-slate-400" />
+							<div className="p-4 bg-muted rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+								<Activity className="h-8 w-8 text-muted-foreground" />
 							</div>
-							<h3 className="text-lg font-semibold text-slate-900 mb-2">Aucune sonde disponible</h3>
-							<p className="text-slate-600">Commencez par ajouter des sondes pour surveiller votre infrastructure</p>
+							<h3 className="text-foreground mb-2 text-lg font-semibold">{t('pages.status_page.empty.title')}</h3>
+							<p className="text-muted-foreground">{t('pages.status_page.empty.description')}</p>
 						</CardContent>
 					</Card>
 				)}
@@ -108,8 +111,8 @@ function ProbesStatusSkeleton() {
 	];
 
 	return (
-		<div className="min-h-screen bg-slate-50">
-			<div className="border-b bg-white shadow-sm">
+		<div className="min-h-screen bg-background">
+			<div className="border-b bg-card shadow-sm">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 					<div className="flex items-center gap-3 mb-3">
 						<Skeleton className="h-10 w-10 rounded-lg shrink-0" />
@@ -126,10 +129,10 @@ function ProbesStatusSkeleton() {
 				</div>
 			</div>
 
-			<div className="w-full max-w-[98rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+			<div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
 					{BAR_HEIGHTS.map((heights, i) => (
-						<Card key={i} className="border-slate-200 bg-white">
+						<Card key={i} className="border-border bg-card">
 							<CardContent>
 								<div className="flex justify-between items-start mb-3.5">
 									<div className="flex flex-col gap-1.5">

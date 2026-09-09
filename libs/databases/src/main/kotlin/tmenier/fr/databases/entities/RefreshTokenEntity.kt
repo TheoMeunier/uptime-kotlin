@@ -25,6 +25,18 @@ class RefreshTokenEntity : PanacheEntityBase {
     @Column(name = "refresh_token", nullable = false)
     lateinit var refreshToken: UUID
 
-    @Column(name = "expired_at", nullable = false, updatable = false)
+    @Column(name = "expired_at", nullable = false)
     lateinit var expiredAt: LocalDateTime
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    lateinit var createdAt: LocalDateTime
+
+    @Column(name = "last_used_at")
+    var lastUsedAt: LocalDateTime? = null
+
+    @Column(name = "user_agent", length = 512)
+    var userAgent: String? = null
+
+    @Column(name = "ip_address", length = 45)
+    var ipAddress: String? = null
 }

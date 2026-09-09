@@ -11,6 +11,7 @@ import { SetupAppProvider } from '@/features/setup/contexts/setup-app-provider.t
 import { toast } from 'sonner';
 import { getApiErrorMessage } from '@/api/api-error.ts';
 import { Toaster } from '@/components/atoms/sonner.tsx';
+import { ThemeProvider } from 'next-themes';
 
 const Dashboard = lazy(() => import('@/pages/dashboard.tsx'));
 const Login = lazy(() => import('@/pages/auth/login.tsx'));
@@ -36,36 +37,38 @@ export const queryClient = new QueryClient({
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<BrowserRouter>
-				<SetupProvider>
-					<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading…</div>}>
-						<Routes>
-							<Route path="/" element={<SetupAppProvider />}>
-								<Route path="/" element={<ProtectedRouteProvider />}>
-									<Route path="/" element={<Layout />}>
-										<Route path="/dashboard" element={<Dashboard />} />
+		<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+			<QueryClientProvider client={queryClient}>
+				<BrowserRouter>
+					<SetupProvider>
+						<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading…</div>}>
+							<Routes>
+								<Route path="/" element={<SetupAppProvider />}>
+									<Route path="/" element={<ProtectedRouteProvider />}>
+										<Route path="/" element={<Layout />}>
+											<Route path="/dashboard" element={<Dashboard />} />
 
-										<Route path="monitors/new" element={<CreateProbe />} />
-										<Route path="monitors/:probeId/edit" element={<EditProbe />} />
-										<Route path="monitors/:probeId" element={<ShowProbe />} />
+											<Route path="monitors/new" element={<CreateProbe />} />
+											<Route path="monitors/:probeId/edit" element={<EditProbe />} />
+											<Route path="monitors/:probeId" element={<ShowProbe />} />
 
-										<Route path="profile" element={<Profile />} />
+											<Route path="profile" element={<Profile />} />
+										</Route>
 									</Route>
+
+									<Route path="/status" element={<ProbesStatus />} />
+									<Route path="/login" element={<Login />} />
+
+									<Route path="*" element={<Navigate to="/dashboard" replace />} />
 								</Route>
 
-								<Route path="/status" element={<ProbesStatus />} />
-								<Route path="/login" element={<Login />} />
-
-								<Route path="*" element={<Navigate to="/dashboard" replace />} />
-							</Route>
-
-							<Route path="/setup" element={<SetupPage />} />
-						</Routes>
-					</Suspense>
-					<Toaster />
-				</SetupProvider>
-			</BrowserRouter>
-		</QueryClientProvider>
+								<Route path="/setup" element={<SetupPage />} />
+							</Routes>
+						</Suspense>
+						<Toaster />
+					</SetupProvider>
+				</BrowserRouter>
+			</QueryClientProvider>
+		</ThemeProvider>
 	</StrictMode>
 );

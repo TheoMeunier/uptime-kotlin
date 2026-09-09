@@ -11,6 +11,10 @@ data class RefreshTokenDto(
     val token: UUID,
     val expiredAt: LocalDateTime,
     val user: UserDto,
+    val createdAt: LocalDateTime,
+    val lastUsedAt: LocalDateTime? = null,
+    val userAgent: String? = null,
+    val ipAddress: String? = null,
 )
 
 object RefreshTokenMapper {
@@ -20,6 +24,10 @@ object RefreshTokenMapper {
             token = refreshTokenEntity.refreshToken,
             expiredAt = refreshTokenEntity.expiredAt,
             user = refreshTokenEntity.user.let { UserMapper.fromEntity(it) },
+            createdAt = refreshTokenEntity.createdAt,
+            lastUsedAt = refreshTokenEntity.lastUsedAt,
+            userAgent = refreshTokenEntity.userAgent,
+            ipAddress = refreshTokenEntity.ipAddress,
         )
 
     fun toEntity(refreshTokenDto: RefreshTokenDto): RefreshTokenEntity =
@@ -28,5 +36,9 @@ object RefreshTokenMapper {
             refreshToken = refreshTokenDto.token
             expiredAt = refreshTokenDto.expiredAt
             user = refreshTokenDto.user.let { UserMapper.toEntity(it) }
+            createdAt = refreshTokenDto.createdAt
+            lastUsedAt = refreshTokenDto.lastUsedAt
+            userAgent = refreshTokenDto.userAgent
+            ipAddress = refreshTokenDto.ipAddress
         }
 }

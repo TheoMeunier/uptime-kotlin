@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.auth.dtos.requests.LoginRequest
 import tmenier.fr.auth.dtos.responses.LoginResponse
 import tmenier.fr.auth.services.JwtService
+import tmenier.fr.auth.services.SessionContextService
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.databases.repositories.RefreshTokenRepository
@@ -15,6 +16,7 @@ class LoginAction(
     val refreshTokenRepository: RefreshTokenRepository,
     val passwordService: BcryptService,
     val jwtService: JwtService,
+    val sessionContextService: SessionContextService,
 ) {
     fun execute(payload: LoginRequest): LoginResponse {
         val user = userRepository.findByEmail(payload.email)
@@ -25,11 +27,18 @@ class LoginAction(
             )
         ) {
             val refreshToken = jwtService.generateRefreshToken()
-            refreshTokenRepository.storeRefreshToken(refreshToken, user)
+            val sessionId =
+                refreshTokenRepository.storeRefreshToken(
+                    refreshToken,
+                    user,
+                    sessionContextService.userAgent(),
+                    sessionContextService.ipAddress(),
+                )
 
             return LoginResponse(
                 token = jwtService.generateJwt(user.id, user.name, user.email),
                 refreshToken = refreshToken.toString(),
+                sessionId = sessionId.toString(),
             )
         } else {
             passwordService.verifyPassword(payload.password, "uptime-kotlin")

@@ -1,4 +1,11 @@
 const en = {
+	status: {
+		healthy: 'Healthy',
+		degraded: 'Degraded',
+		unhealthy: 'Unhealthy',
+		paused: 'Paused',
+	},
+
 	form: {
 		label: {
 			full_name: 'Full Name',
@@ -66,6 +73,18 @@ const en = {
 				last_update: 'Last update: ',
 				automatic_refresh: 'Auto-refresh',
 			},
+			verdict: {
+				operational_one: 'All systems operational',
+				operational_other: 'All {{count}} services are operational',
+				degraded_one: '1 service of {{total}} is degraded',
+				degraded_other: '{{count}} services of {{total}} are degraded',
+				down_one: '1 service of {{total}} is experiencing an incident',
+				down_other: '{{count}} services of {{total}} are experiencing an incident',
+			},
+			empty: {
+				title: 'No monitor yet',
+				description: 'Add a monitor to start watching your infrastructure.',
+			},
 		},
 		login: {
 			title: 'Login to your account',
@@ -107,7 +126,7 @@ const en = {
 			create: 'Create monitor',
 			remove: 'Remove monitor',
 			purge_logs: 'Purge monitor logs',
-			final_hour: 'Final hour',
+			final_hour: 'Last hour',
 			http_request_assertions: 'HTTP request and assertions',
 		},
 		label: {
@@ -156,9 +175,38 @@ const en = {
 			retry: 'Retry',
 			interval_retry: 'Retry interval',
 		},
+		uptime: {
+			h24: 'Uptime 24h',
+			d7: 'Uptime 7d',
+			d30: 'Uptime 30d',
+		},
+		latency: {
+			current: 'Current',
+			average: 'Average',
+			max_peak: 'Max peak',
+			min: 'Min',
+		},
+		chart: {
+			title: 'Response time',
+			description: 'Showing probe response times for {{range}}',
+			response_time: 'Response time (ms)',
+			average_reference: 'avg {{value}} ms',
+			select_range: 'Select time range',
+			loading: 'Loading chart…',
+			empty: 'No data available for the selected time range',
+		},
+		logs: {
+			title: 'Monitoring logs',
+			description: 'Recent monitor activity',
+			filter_all: 'All',
+			filter_success: 'Success',
+			filter_errors: 'Errors',
+			no_message: 'No message',
+			empty_filter: 'No logs for this filter',
+		},
 		description: {
 			authentication_optional: 'Optional. Select Basic or Bearer only when required.',
-			remove: 'This action is irreversible. All All associated data will be permanently deleted',
+			remove: 'This action is irreversible. All associated data will be permanently deleted',
 			purge_logs: 'This will permanently delete the full history for this monitor.',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
@@ -167,9 +215,10 @@ const en = {
 			rabbitmq_management_nodes:
 				'Enter RabbitMQ management node URLs including protocol and port, separated by commas. Example: https://node1.rabbitmq.com:15672',
 			internal_retry: 'Maximum retries before the service is marked as down and a notification is sent',
-			check_interval: 'Check every {{ interval }} secondes',
+			check_interval: 'Check every {{ interval }} seconds',
 			now: 'Now',
 			one_hour_ago: '1 hour ago',
+			paused_slot: 'The monitor was paused, no check was run.',
 		},
 		option: {
 			smtp_ignore_tls: 'Ignore TLS',
@@ -244,6 +293,11 @@ const en = {
 			currently_incidents: 'Currently active incidents',
 		},
 
+		legend: {
+			up: 'Up',
+			down: 'Down',
+		},
+
 		table: {
 			services: 'Services',
 			times: 'Times',
@@ -261,7 +315,18 @@ const en = {
 	},
 
 	layout: {
+		theme: {
+			switch_to_light: 'Switch to light theme',
+			switch_to_dark: 'Switch to dark theme',
+		},
+		updated: {
+			seconds_one: 'Updated {{count}}s ago',
+			seconds_other: 'Updated {{count}}s ago',
+			minutes_one: 'Updated {{count}} min ago',
+			minutes_other: 'Updated {{count}} min ago',
+		},
 		sidebar: {
+			monitors: 'Monitors',
 			settings: 'Settings',
 			logout: 'Logout',
 			dashboard: 'Dashboard',

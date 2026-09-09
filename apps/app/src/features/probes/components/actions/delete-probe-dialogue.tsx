@@ -50,7 +50,7 @@ export default function DeleteProbeDialogue({ probeId }: { probeId: string }) {
 				<form onSubmit={form.handleSubmit(onSubmit)} noValidate>
 					<DialogHeader className="items-center text-center mb-4 mt-2">
 						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-							<Trash2 className="h-6 w-6 text-red-600" />
+							<Trash2 className="text-status-down-fg h-6 w-6" />
 						</div>
 
 						<DialogTitle className="mt-4">{t('monitors.title.remove')} ?</DialogTitle>

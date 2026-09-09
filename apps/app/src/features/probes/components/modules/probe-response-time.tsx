@@ -40,12 +40,15 @@ export default function ProbeResponseTime({ monitors, monitorStatus, lastHour, s
 			<CardContent>
 				<div className="flex items-center gap-2 space-y-0 sm:flex-row">
 					<div className="grid flex-1 gap-1">
-						<CardTitle>Response Time</CardTitle>
-						<CardDescription>Showing probe response times for {getTimeRangeLabel()}</CardDescription>
+						<CardTitle>{t('monitors.chart.title')}</CardTitle>
+						<CardDescription>{t('monitors.chart.description', { range: getTimeRangeLabel() })}</CardDescription>
 					</div>
 					<Select value={lastHour.toString()} onValueChange={(value) => setLastHour(Number(value))}>
-						<SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex" aria-label="Select a value">
-							<SelectValue placeholder="Select time range" />
+						<SelectTrigger
+							className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
+							aria-label={t('monitors.chart.select_range')}
+						>
+							<SelectValue placeholder={t('monitors.chart.select_range')} />
 						</SelectTrigger>
 						<SelectContent className="rounded-xl">
 							<SelectItem value="1" className="rounded-lg">
@@ -70,8 +73,8 @@ export default function ProbeResponseTime({ monitors, monitorStatus, lastHour, s
 					<ResponseTimeStats monitors={monitors} />
 					<Suspense
 						fallback={
-							<div className="flex h-[250px] w-full items-center justify-center text-muted-foreground">
-								Loading chart…
+							<div className="text-muted-foreground flex h-[250px] w-full items-center justify-center">
+								{t('monitors.chart.loading')}
 							</div>
 						}
 					>

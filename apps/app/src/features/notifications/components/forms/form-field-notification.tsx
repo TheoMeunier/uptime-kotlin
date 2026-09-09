@@ -16,7 +16,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 	if (field.input_type === 'textarea') {
 		return (
 			<Field key={key}>
-				<FieldLabel className="block text-sm font-medium text-gray-700">{field.label}</FieldLabel>
+				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 				<Textarea
 					{...form.register(field.name)}
 					placeholder={field.placeholder}
@@ -32,7 +32,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 	if (field.input_type === 'number') {
 		return (
 			<Field key={key}>
-				<FieldLabel className="block text-sm font-medium text-gray-700">{field.label}</FieldLabel>
+				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 
 				<Input
 					{...form.register(field.name, { valueAsNumber: true })}
@@ -82,7 +82,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 	if (field.input_type === 'select') {
 		return (
 			<Field>
-				<FieldLabel className="block text-sm font-medium text-gray-700">{field.label}</FieldLabel>
+				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 				<FormSelect form={form} name={field.name} options={field.options as string[]} />
 				{field.description && <FieldDescription>{field.description}</FieldDescription>}
 				<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
@@ -91,7 +91,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 	}
 	return (
 		<Field key={key}>
-			<FieldLabel className="block text-sm font-medium text-gray-700">{field.label}</FieldLabel>
+			<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 			<Input
 				{...form.register(field.name)}
 				type={field.input_type}
