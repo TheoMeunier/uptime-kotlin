@@ -1,4 +1,11 @@
 const en = {
+	errors: {
+		load: {
+			title: 'Could not load this data',
+			description: 'The API did not answer. It may be restarting, or unreachable from your browser.',
+		},
+	},
+
 	app: {
 		loading: 'Loading Uptime Kotlin',
 	},
@@ -42,6 +49,7 @@ const en = {
 
 	button: {
 		login: 'Login',
+		retry: 'Try again',
 		close: 'Close',
 		cancel: 'Cancel',
 		loading: 'Logging...',

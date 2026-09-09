@@ -8,11 +8,12 @@ import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { useTranslation } from 'react-i18next';
 import { uptimeState } from '@/lib/status.ts';
+import ErrorState from '@/components/molecules/error-state.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 
 export default function ProbesStatus() {
 	const { t, i18n } = useTranslation();
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ['probes-status'],
 		queryFn: async () => {
 			return probeService.getProbesStatus();
@@ -21,6 +22,16 @@ export default function ProbesStatus() {
 	});
 
 	if (isLoading) return <ProbesStatusSkeleton />;
+
+	if (isError) {
+		return (
+			<div className="bg-background min-h-screen">
+				<div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+					<ErrorState onRetry={() => refetch()} />
+				</div>
+			</div>
+		);
+	}
 
 	const statuses = (data ?? []).map((item) => item.probe.status);
 	const total = statuses.length;
@@ -55,7 +66,7 @@ export default function ProbesStatus() {
 							<Activity className="h-6 w-6 text-primary" />
 						</div>
 						<div>
-							<h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-foreground">
+							<h1 className="text-foreground text-2xl font-semibold tracking-tight sm:text-3xl">
 								{t('pages.status_page.title')}
 							</h1>
 							<p className="text-sm sm:text-base text-muted-foreground mt-1">{t('pages.status_page.subtitle')}</p>

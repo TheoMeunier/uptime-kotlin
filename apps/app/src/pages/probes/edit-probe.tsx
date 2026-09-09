@@ -6,6 +6,7 @@ import ProbeForm from '@/features/probes/components/forms/probe-form.tsx';
 import useUpdateMonitor from '@/features/probes/hooks/useUpdateMonitor.ts';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Card, CardContent, CardHeader } from '@/components/atoms/card.tsx';
+import ErrorState from '@/components/molecules/error-state.tsx';
 import {
 	GetProbeUpdateResponseSchema,
 	type ProbeGetUpdateResponse,
@@ -15,7 +16,7 @@ export default function EditProbe() {
 	const params = useParams();
 	const { t } = useTranslation();
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ['probe-update', params.probeId!],
 		queryFn: async () => {
 			return await probeService.getProbeForUpdate<ProbeGetUpdateResponse>(
@@ -25,7 +26,8 @@ export default function EditProbe() {
 		},
 	});
 
-	if (isLoading || !data) return <EditProbeSkeleton />;
+	if (isLoading) return <EditProbeSkeleton />;
+	if (isError || !data) return <ErrorState onRetry={() => refetch()} />;
 
 	const flattenedData = { notifications: data.notifications, ...data.probe, ...data.probe?.content };
 

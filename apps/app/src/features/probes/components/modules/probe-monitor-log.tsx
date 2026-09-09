@@ -66,7 +66,7 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 				})}
 			</div>
 
-			<div className="max-h-[500px] overflow-y-auto font-mono">
+			<div className="overflow-x-auto font-mono">
 				{filtered.map((monitor) => {
 					const tokens = getStatusTokens(monitor.status);
 					const isSlow = monitor.response_time >= SLOW_RESPONSE_MS;
@@ -74,16 +74,16 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 					return (
 						<div
 							key={monitor.id}
-							className="border-border hover:bg-muted/60 flex items-center gap-3 border-b px-4 py-2.5 transition-colors"
+							className="border-border hover:bg-muted/60 grid min-w-[38rem] grid-cols-[7rem_8rem_5rem_1fr] items-center gap-3 border-b px-4 py-2.5 transition-colors"
 						>
 							<span
-								className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tokens.bg} ${tokens.fg}`}
+								className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${tokens.bg} ${tokens.fg}`}
 							>
 								<span className={`h-1.5 w-1.5 rounded-full ${tokens.solid}`} />
 								{t(tokens.labelKey)}
 							</span>
 
-							<span className="text-muted-foreground tabular shrink-0 text-xs">
+							<span className="text-muted-foreground tabular text-xs">
 								{new Date(monitor.run_at).toLocaleString(i18n.language, {
 									day: '2-digit',
 									month: '2-digit',
@@ -93,7 +93,7 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 							</span>
 
 							<span
-								className={`tabular shrink-0 text-xs font-medium ${isSlow ? 'text-status-degraded-fg' : 'text-foreground'}`}
+								className={`tabular text-right text-xs font-medium ${isSlow ? 'text-status-degraded-fg' : 'text-foreground'}`}
 							>
 								{monitor.response_time} ms
 							</span>
