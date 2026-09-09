@@ -24,6 +24,7 @@ class DashboardResource(
         val getLatencySparkline = dashboardRepository.getLatencySparkline()
         val getIncidentBar = dashboardRepository.getIncidentBars()
         val getCheckSparkLine = dashboardRepository.getChecksSparkline()
+        val recentEvents = dashboardRepository.getRecentEvents()
 
         val result =
             mapOf(
@@ -33,6 +34,7 @@ class DashboardResource(
                 "latency_spark_line" to getLatencySparkline,
                 "incident_bar" to getIncidentBar,
                 "check_spark_line" to getCheckSparkLine,
+                "recent_events" to recentEvents,
             )
 
         return Response.ok(result).build()

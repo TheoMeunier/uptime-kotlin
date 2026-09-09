@@ -60,6 +60,9 @@ export const ProbeStatusShowSchema = z.array(
 	z.object({
 		probe: ProbeForStatusPageSchema,
 		monitors: ProbeMonitorsSchema,
+		uptimes: ProbeUptimeSchema.nullable().optional(),
+		down_since: z.string().nullable().optional(),
+		down_duration: z.string().nullable().optional(),
 	})
 );
 

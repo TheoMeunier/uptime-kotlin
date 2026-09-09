@@ -30,6 +30,14 @@ const spark_line_point = z.object({
 	value: z.number(),
 });
 
+const recent_event = z.object({
+	probe_id: z.uuid(),
+	probe_name: z.string(),
+	status: z.string(),
+	message: z.string(),
+	run_at: z.coerce.date(),
+});
+
 const DashboardStatsSchema = z.object({
 	summary: summary,
 	metrics_last_days: metrics_last_days,
@@ -37,6 +45,7 @@ const DashboardStatsSchema = z.object({
 	latency_spark_line: z.array(spark_line_point),
 	incident_bar: z.array(incident_bar),
 	check_spark_line: z.array(spark_line_point),
+	recent_events: z.array(recent_event).default([]),
 });
 
 export type DashboardStats = z.infer<typeof DashboardStatsSchema>;
