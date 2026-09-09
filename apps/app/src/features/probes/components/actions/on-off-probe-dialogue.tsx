@@ -56,9 +56,13 @@ export default function OnOffMonitorProbeDialogue({ probeId, enabled }: { probeI
 				<form onSubmit={form.handleSubmit(onSubmit)} noValidate>
 					<DialogHeader className="items-center text-center">
 						<div
-							className={`flex h-12 w-12 items-center justify-center rounded-full ${enabled ? 'bg-red-100' : 'bg-green-100'}`}
+							className={`flex h-12 w-12 items-center justify-center rounded-full ${enabled ? 'bg-status-down-bg' : 'bg-status-up-bg'}`}
 						>
-							{enabled ? <Pause className="h-6 w-6 text-red-600" /> : <Play className="h-6 w-6 text-green-600" />}
+							{enabled ? (
+								<Pause className="h-6 w-6 text-status-down-fg" />
+							) : (
+								<Play className="h-6 w-6 text-status-up-fg" />
+							)}
 						</div>
 
 						<DialogTitle className="my-6">{enabled ? 'Pause' : 'Play'} monitor ?</DialogTitle>

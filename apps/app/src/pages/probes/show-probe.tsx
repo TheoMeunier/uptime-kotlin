@@ -71,7 +71,7 @@ export function ShowProbe() {
 							<ProbeStatus status={data!.probe.status} />
 						</div>
 						<ProbeUptime uptimes={data!.uptimes} />
-						<ProbeMonitorChartBar monitors={data!.monitors} probeStatus={data!.probe.status} />
+						<ProbeMonitorChartBar monitors={data!.monitors} probeStatus={data!.probe.status} barCount={60} />
 						<div className="flex justify-between text-xs text-muted-foreground mt-1">
 							<span>{t('monitors.description.one_hour_ago')}</span>
 							<span>{t('monitors.description.now')}</span>
