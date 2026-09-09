@@ -194,7 +194,6 @@ class DashboardRepository(
         }
     }
 
-
     fun getRecentEvents(limit: Int = 15): List<ProbeEventDto> {
         val since = LocalDateTime.now(ZoneOffset.UTC).minus(7, ChronoUnit.DAYS)
 

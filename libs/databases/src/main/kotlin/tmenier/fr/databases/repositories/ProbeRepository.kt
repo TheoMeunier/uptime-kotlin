@@ -46,7 +46,6 @@ class ProbeRepository(
             LocalDateTime.now().minusHours(1),
         ).list().sortedBy { it.name.lowercase() }
 
-
     fun getProbesStatusMetrics(): Map<UUID, ProbeStatusMetrics> {
         val now = LocalDateTime.now()
         val since24h = now.minusHours(24)
