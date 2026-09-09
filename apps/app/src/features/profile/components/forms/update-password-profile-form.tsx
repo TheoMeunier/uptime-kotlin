@@ -20,6 +20,19 @@ export default function UpdatePasswordProfileForm() {
 				<CardContent>
 					<FieldGroup>
 						<Field>
+							<FieldLabel htmlFor="current_password">{t('profile.label.current_password')}</FieldLabel>
+							<Input
+								{...form.register('current_password')}
+								id="current_password"
+								type="password"
+								autoComplete="current-password"
+								required
+							/>
+							<FieldDescription>{t('profile.description.current_password')}</FieldDescription>
+							<FieldError>{errors.current_password?.message}</FieldError>
+						</Field>
+
+						<Field>
 							<FieldLabel htmlFor="password">{t('profile.label.password')}</FieldLabel>
 							<Input
 								{...form.register('password')}
