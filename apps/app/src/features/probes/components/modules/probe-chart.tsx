@@ -27,7 +27,7 @@ export default function ProbeChart({
 		},
 	} satisfies ChartConfig;
 
-	const chartData = useMemo(() => {
+	const { chartData, xAxisDomain } = useMemo(() => {
 		const now = Date.now();
 		const startTime = now - lastHour * 60 * 60 * 1000;
 
@@ -59,7 +59,7 @@ export default function ProbeChart({
 			}
 		}
 
-		return dataWithGaps;
+		return { chartData: dataWithGaps, xAxisDomain: [startTime, now] };
 	}, [monitors, lastHour]);
 
 	/*
@@ -91,11 +91,6 @@ export default function ProbeChart({
 
 		return date.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 	};
-
-	const xAxisDomain = useMemo(() => {
-		const now = Date.now();
-		return [now - lastHour * 60 * 60 * 1000, now];
-	}, [lastHour]);
 
 	const hasData = chartData.some((d) => d.response_time !== null);
 
