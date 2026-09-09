@@ -242,6 +242,7 @@ const en = {
 			filter_errors: 'Errors',
 			no_message: 'No message',
 			empty_filter: 'No logs for this filter',
+			showing: 'Showing {{count}} of {{total}} — scroll for more',
 		},
 		description: {
 			authentication_optional: 'Optional. Select Basic or Bearer only when required.',
