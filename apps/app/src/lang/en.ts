@@ -1,4 +1,8 @@
 const en = {
+	app: {
+		loading: 'Loading Uptime Kotlin',
+	},
+
 	status: {
 		healthy: 'Healthy',
 		degraded: 'Degraded',
@@ -105,7 +109,12 @@ const en = {
 			settings: 'Manage your notifications',
 			remove: 'This action is irreversible. All associated data will be permanently deleted',
 		},
+		empty: {
+			title: 'No notification channel yet',
+			description: 'Create one to be alerted when a monitor goes down.',
+		},
 		label: {
+			is_default: 'Default',
 			type_notification: 'Type notification',
 			notification_name: 'Notification name',
 		},

@@ -2,6 +2,7 @@ import useUpdateProfile from '@/features/profile/hooks/useUpdateProfile';
 import { Button } from '@/components/atoms/button';
 import { Input } from '@/components/atoms/input';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/atoms/field';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/atoms/card';
 import { useTranslation } from 'react-i18next';
 
 export default function UpdateProfileForm() {
@@ -9,33 +10,35 @@ export default function UpdateProfileForm() {
 	const { form, isLoading, onSubmit, errors } = useUpdateProfile();
 
 	return (
-		<div className="w-full max-w-2xl space-y-6">
-			<div className="space-y-1">
-				<h2 className="text-xl font-semibold">{t('profile.title.update_profile')}</h2>
-				<p className="text-sm text-muted-foreground">{t('profile.description.update_profile')}</p>
-			</div>
+		<form onSubmit={form.handleSubmit(onSubmit)}>
+			<Card>
+				<CardHeader>
+					<CardTitle>{t('profile.title.update_profile')}</CardTitle>
+					<CardDescription>{t('profile.description.update_profile')}</CardDescription>
+				</CardHeader>
 
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-				<FieldGroup>
-					<Field>
-						<FieldLabel htmlFor="name">{t('form.label.username')}</FieldLabel>
-						<Input {...form.register('name')} id="name" type="text" required />
-						<FieldError>{errors.name?.message}</FieldError>
-					</Field>
+				<CardContent>
+					<FieldGroup>
+						<Field>
+							<FieldLabel htmlFor="name">{t('form.label.username')}</FieldLabel>
+							<Input {...form.register('name')} id="name" type="text" autoComplete="name" required />
+							<FieldError>{errors.name?.message}</FieldError>
+						</Field>
 
-					<Field>
-						<FieldLabel htmlFor="email">{t('form.label.email')}</FieldLabel>
-						<Input {...form.register('email')} id="email" type="email" required />
-						<FieldError>{errors.email?.message}</FieldError>
-					</Field>
-				</FieldGroup>
+						<Field>
+							<FieldLabel htmlFor="email">{t('form.label.email')}</FieldLabel>
+							<Input {...form.register('email')} id="email" type="email" autoComplete="email" required />
+							<FieldError>{errors.email?.message}</FieldError>
+						</Field>
+					</FieldGroup>
+				</CardContent>
 
-				<div>
+				<CardFooter>
 					<Button type="submit" disabled={isLoading}>
 						{isLoading ? t('button.saving') : t('button.save', { entity: t('entity.profile') })}
 					</Button>
-				</div>
-			</form>
-		</div>
+				</CardFooter>
+			</Card>
+		</form>
 	);
 }
