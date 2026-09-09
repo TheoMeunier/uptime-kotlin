@@ -31,6 +31,10 @@ const PROBE_FIELDS_CONFIG = {
 				name: 'max_latency_ms',
 				label: i18n.t('monitors.label.max_latency_ms'),
 				input_type: 'number',
+				default_value: 2000,
+				min: 1,
+				max: 5000,
+				description: i18n.t('monitors.description.max_latency_ms'),
 			},
 			{
 				name: 'tls_expiry_warning_days',

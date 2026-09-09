@@ -7,6 +7,8 @@ export interface FieldConfig {
 	default_value?: string | number | boolean | string[] | number[];
 	placeholder?: string;
 	description?: string;
+	min?: number;
+	max?: number;
 	searchable?: boolean;
 	closeOnSelect?: boolean;
 	options?: MultiSelectOption[] | MultiSelectGroup[] | readonly string[];
