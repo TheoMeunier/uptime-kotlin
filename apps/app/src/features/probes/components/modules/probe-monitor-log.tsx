@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
@@ -17,19 +17,41 @@ const filters = [
 
 type FilterKey = 'all' | ProbeStatusEnum;
 
-/**
- * Single escalation, single threshold. Colouring every latency on a 60-row list turned the column
- * into noise; only a genuinely slow response is worth marking.
- */
 const SLOW_RESPONSE_MS = 300;
+
+const PAGE_SIZE = 30;
 
 export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string; monitors: Monitor[] }) {
 	const { t, i18n } = useTranslation();
 	const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
+	const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const sorted = monitors?.slice().reverse() ?? [];
 	const filtered = activeFilter === 'all' ? sorted : sorted.filter((m) => m.status === activeFilter);
 	const countByStatus = (status: ProbeStatusEnum) => sorted.filter((m) => m.status === status).length;
+
+	const visible = filtered.slice(0, visibleCount);
+	const hasMore = visibleCount < filtered.length;
+
+	useEffect(() => setVisibleCount(PAGE_SIZE), [activeFilter]);
+
+	useEffect(() => {
+		const node = sentinelRef.current;
+		if (!node || !hasMore) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					setVisibleCount((count) => count + PAGE_SIZE);
+				}
+			},
+			{ rootMargin: '300px' }
+		);
+
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [hasMore]);
 
 	return (
 		<Card className="space-y-0">
@@ -67,7 +89,7 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 			</div>
 
 			<div className="overflow-x-auto font-mono">
-				{filtered.map((monitor) => {
+				{visible.map((monitor) => {
 					const tokens = getStatusTokens(monitor.status);
 					const isSlow = monitor.response_time >= SLOW_RESPONSE_MS;
 
@@ -107,6 +129,12 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 
 				{filtered.length === 0 && (
 					<div className="text-muted-foreground py-12 text-center text-sm">{t('monitors.logs.empty_filter')}</div>
+				)}
+
+				{hasMore && (
+					<div ref={sentinelRef} className="text-muted-foreground py-4 text-center text-xs">
+						{t('monitors.logs.showing', { count: visible.length, total: filtered.length })}
+					</div>
 				)}
 			</div>
 		</Card>
