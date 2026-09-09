@@ -300,12 +300,14 @@ const en = {
 			notifications: 'Notifications',
 		},
 		description: {
+			current_password: 'For security reasons, confirm the password you use today.',
 			update_password: 'Changing your password will log you out of all your sessions. You will need to log in again.',
 			update_profile: 'Manage your personal information to keep your account accurate and secure.',
 			create_first_user: 'Enter your email address to create the first user and initialize the application.',
 		},
 		label: {
-			password: 'Password',
+			current_password: 'Current Password',
+			password: 'New Password',
 			password_confirm: 'Confirmation Password',
 		},
 		alerts: {

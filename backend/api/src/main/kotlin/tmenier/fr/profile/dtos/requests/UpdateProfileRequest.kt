@@ -16,6 +16,8 @@ data class UpdateProfileRequest(
 
 @RegisterForReflection
 data class UpdatePasswordRequest(
+    @field:NotBlank(message = "Current password is required")
+    val currentPassword: String,
     @field:NotBlank(message = "New password is required")
     @field:Size(min = 8, message = "New password must be at least 8 characters long")
     val password: String,

@@ -8,12 +8,17 @@ import { useTranslation } from 'react-i18next';
 
 const storeUpdatePasswordSchema = z
 	.object({
+		current_password: z.string().min(1),
 		password: z.string().min(8),
 		password_confirmation: z.string().min(8),
 	})
 	.refine((data) => data.password === data.password_confirmation, {
 		message: 'Passwords do not match',
 		path: ['password_confirmation'],
+	})
+	.refine((data) => data.password !== data.current_password, {
+		message: 'New password must be different from the current password',
+		path: ['password'],
 	});
 
 export type StoreUpdatePasswordSchemaType = z.infer<typeof storeUpdatePasswordSchema>;

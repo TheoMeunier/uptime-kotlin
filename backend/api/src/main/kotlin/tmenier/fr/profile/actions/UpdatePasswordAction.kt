@@ -23,11 +23,19 @@ class UpdatePasswordAction(
             throw BadRequestException("Passwords do not match")
         }
 
+        val user = userRepository.findById(userId)
+
+        if (!passwordService.verifyPassword(payload.currentPassword, user.password)) {
+            throw BadRequestException("Current password is incorrect")
+        }
+
+        if (payload.currentPassword == payload.password) {
+            throw BadRequestException("New password must be different from the current password")
+        }
+
         val password = passwordService.hashPassword(payload.password)
         userRepository.updatePassword(userId, password)
 
-        // A password change invalidates every session: any refresh token issued before the change
-        // is dropped, so a device that was already signed in has to authenticate again.
         refreshTokenRepository.revokeAllForUser(userId)
     }
 }
