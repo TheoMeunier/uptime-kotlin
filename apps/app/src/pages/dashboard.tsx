@@ -7,6 +7,7 @@ import Metric from '@/components/molecules/metric.tsx';
 import IncidentBarCard from '@/components/molecules/dashboard/incident-bar-card.tsx';
 import DashboardSkeleton from '@/components/molecules/dashboard/dashboard-skeleton.tsx';
 import RecentEvents from '@/components/molecules/dashboard/recent-events.tsx';
+import ErrorState from '@/components/molecules/error-state.tsx';
 import { failureCountState, uptimeState } from '@/lib/status.ts';
 
 const Sparkline = lazy(() => import('@/components/molecules/dashboard/sparkline.tsx'));
@@ -16,12 +17,13 @@ const SPARKLINE_FALLBACK = <div className="mt-3 w-full" style={{ height: 48 }} /
 export default function Dashboard() {
 	const { t } = useTranslation();
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ['dashboard_stats'],
 		queryFn: async () => await dashboardService.getStats(),
 	});
 
-	if (isLoading || !data) return <DashboardSkeleton />;
+	if (isLoading) return <DashboardSkeleton />;
+	if (isError || !data) return <ErrorState onRetry={() => refetch()} />;
 
 	const downCount = data.summary.total_monitors_failures;
 

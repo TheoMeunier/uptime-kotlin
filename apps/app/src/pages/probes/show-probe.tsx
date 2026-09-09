@@ -16,13 +16,14 @@ import { useState } from 'react';
 import { type ProbeShow, ProbeShowSchema } from '@/features/probes/schemas/probe-response.schema.ts';
 import ProbeUptime from '@/features/probes/components/modules/probe-uptime.tsx';
 import ProbeResponseTime from '@/features/probes/components/modules/probe-response-time.tsx';
+import ErrorState from '@/components/molecules/error-state.tsx';
 
 export function ShowProbe() {
 	const { t } = useTranslation();
 	const params = useParams();
 	const [hours, setHours] = useState(1);
 
-	const { data, isLoading, isFetching } = useQuery({
+	const { data, isLoading, isFetching, isError, refetch } = useQuery({
 		queryKey: ['probe', params.probeId!, hours],
 		queryFn: async () => {
 			return probeService.getProbe<ProbeShow>(params.probeId!, hours, ProbeShowSchema);
@@ -32,26 +33,28 @@ export function ShowProbe() {
 	});
 
 	if (isLoading) return <ShowProbeSkeleton />;
+	if (isError || !data) return <ErrorState onRetry={() => refetch()} />;
 
 	const isRefetching = isFetching && !isLoading;
 
 	return (
 		<div className="space-y-4">
-			<section className="flex items-center justify-between">
-				<div>
-					<h1 className="text-3xl font-bold mb-2">{data?.probe.name}</h1>
-					<p className="text-muted-foreground mb-4">{data?.probe.url}</p>
+			{/* Stacks below sm: a 3xl title and three buttons never fit side by side on a phone. */}
+			<section className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+				<div className="min-w-0">
+					<h1 className="truncate text-2xl font-semibold tracking-tight">{data.probe.name}</h1>
+					<p className="text-muted-foreground mt-1 truncate text-sm">{data.probe.url}</p>
 				</div>
 
-				<div>
+				<div className="shrink-0">
 					<ButtonGroup>
-						<OnOffMonitorProbeDialogue probeId={data!.probe.id} enabled={data!.probe.enabled} />
+						<OnOffMonitorProbeDialogue probeId={data.probe.id} enabled={data.probe.enabled} />
 						<Button variant="outline" asChild>
-							<Link to={`/monitors/${data!.probe.id}/edit`}>
+							<Link to={`/monitors/${data.probe.id}/edit`}>
 								<Pencil /> {t('button.actions.edit')}
 							</Link>
 						</Button>
-						<DeleteProbeDialogue probeId={data!.probe.id} />
+						<DeleteProbeDialogue probeId={data.probe.id} />
 					</ButtonGroup>
 				</div>
 			</section>
@@ -64,14 +67,14 @@ export function ShowProbe() {
 								<CardTitle className="text-xl">{t('monitors.title.final_hour')}</CardTitle>
 								<CardDescription className="mt-1">
 									{t('monitors.description.check_interval', {
-										interval: data?.probe.interval,
+										interval: data.probe.interval,
 									})}
 								</CardDescription>
 							</div>
-							<ProbeStatus status={data!.probe.status} />
+							<ProbeStatus status={data.probe.status} />
 						</div>
-						<ProbeUptime uptimes={data!.uptimes} />
-						<ProbeMonitorChartBar monitors={data!.monitors} probeStatus={data!.probe.status} barCount={60} />
+						<ProbeUptime uptimes={data.uptimes} />
+						<ProbeMonitorChartBar monitors={data.monitors} probeStatus={data.probe.status} barCount={60} />
 						<div className="flex justify-between text-xs text-muted-foreground mt-1">
 							<span>{t('monitors.description.one_hour_ago')}</span>
 							<span>{t('monitors.description.now')}</span>
@@ -80,20 +83,15 @@ export function ShowProbe() {
 				</Card>
 			</section>
 
-			{/*
-			 * The query keeps the previous data while a new range loads (placeholderData), so the
-			 * chart and the logs stay on screen and only dim. Swapping them for skeletons made the
-			 * page flash content -> skeleton -> content on every range change.
-			 */}
 			<section
 				className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}
 				aria-busy={isRefetching}
 			>
 				<ProbeResponseTime
-					monitors={data!.monitors}
+					monitors={data.monitors}
 					lastHour={hours}
 					setLastHour={setHours}
-					monitorStatus={data!.probe.status}
+					monitorStatus={data.probe.status}
 				/>
 			</section>
 
@@ -101,7 +99,7 @@ export function ShowProbe() {
 				className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}
 				aria-busy={isRefetching}
 			>
-				<ProbeMonitorLog probeId={data!.probe.id} monitors={data!.monitors} />
+				<ProbeMonitorLog probeId={data.probe.id} monitors={data.monitors} />
 			</section>
 		</div>
 	);
