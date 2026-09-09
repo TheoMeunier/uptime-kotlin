@@ -9,7 +9,7 @@ export default function RecentEvents({ events }: { events: RecentEvent[] }) {
 	const { t, i18n } = useTranslation();
 
 	return (
-		<Card className="shadow-none">
+		<Card>
 			<CardHeader className="pb-3">
 				<CardTitle className="text-sm font-medium">{t('dashboard.events.title')}</CardTitle>
 				<CardDescription className="mt-0.5 text-xs">{t('dashboard.events.description')}</CardDescription>

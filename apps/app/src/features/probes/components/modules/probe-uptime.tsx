@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import Metric from '@/components/molecules/metric.tsx';
+import Metric, { MetricRow } from '@/components/molecules/metric.tsx';
 import { uptimeState } from '@/lib/status.ts';
 
 interface UptimesProps {
@@ -18,10 +18,18 @@ export default function ProbeUptime({ uptimes }: { uptimes: UptimesProps }) {
 	const { t } = useTranslation();
 
 	return (
-		<div className="mt-4 grid grid-cols-3 gap-2">
-			{uptimeItems.map(({ labelKey, key }) => (
-				<Metric key={key} label={t(labelKey)} value={`${uptimes[key].toFixed(1)}%`} state={uptimeState(uptimes[key])} />
-			))}
+		<div className="mt-5">
+			<MetricRow>
+				{uptimeItems.map(({ labelKey, key }) => (
+					<Metric
+						key={key}
+						variant="inline"
+						label={t(labelKey)}
+						value={`${uptimes[key].toFixed(1)}%`}
+						state={uptimeState(uptimes[key])}
+					/>
+				))}
+			</MetricRow>
 		</div>
 	);
 }

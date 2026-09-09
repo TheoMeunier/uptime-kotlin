@@ -110,7 +110,7 @@ export default function ProbeChart({
 	return (
 		<div className="relative">
 			<ChartContainer config={chartConfig} className="h-[250px] w-full">
-				<AreaChart data={chartData} margin={{ top: 8, right: 12, left: -20, bottom: 5 }}>
+				<AreaChart data={chartData} margin={{ top: 8, right: 12, left: 4, bottom: 5 }}>
 					<CartesianGrid vertical={false} strokeDasharray="3 3" />
 					<XAxis
 						dataKey="timestamp"

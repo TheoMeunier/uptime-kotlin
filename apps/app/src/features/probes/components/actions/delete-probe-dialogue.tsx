@@ -40,7 +40,7 @@ export default function DeleteProbeDialogue({ probeId }: { probeId: string }) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="destructive">
+				<Button variant="outline" className="text-status-down-fg hover:bg-status-down-bg hover:text-status-down-fg">
 					<Trash2 className="mr-2 h-4 w-4" />
 					{t('button.actions.remove')}
 				</Button>
@@ -49,7 +49,7 @@ export default function DeleteProbeDialogue({ probeId }: { probeId: string }) {
 			<DialogContent className="sm:max-w-md">
 				<form onSubmit={form.handleSubmit(onSubmit)} noValidate>
 					<DialogHeader className="items-center text-center mb-4 mt-2">
-						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+						<div className="bg-status-down-bg flex h-12 w-12 items-center justify-center rounded-full">
 							<Trash2 className="text-status-down-fg h-6 w-6" />
 						</div>
 

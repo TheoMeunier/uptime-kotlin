@@ -20,7 +20,11 @@ export default function DeleteNotificationDialogue({ notificationId }: { notific
 	return (
 		<Dialog open={openDialogue} onOpenChange={setOpenDialogue}>
 			<DialogTrigger asChild>
-				<Button variant="destructive" size="sm" className="cursor-pointer">
+				<Button
+					variant="outline"
+					size="sm"
+					className="text-status-down-fg hover:bg-status-down-bg hover:text-status-down-fg cursor-pointer"
+				>
 					<Trash2 className="h-4 w-4" />
 				</Button>
 			</DialogTrigger>
@@ -28,8 +32,8 @@ export default function DeleteNotificationDialogue({ notificationId }: { notific
 			<DialogContent className="sm:max-w-md">
 				<form onSubmit={form.handleSubmit(onSubmit)} noValidate>
 					<DialogHeader className="items-center text-center mb-4 mt-2">
-						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-							<Trash2 className="h-6 w-6 text-red-600" />
+						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-status-down-bg">
+							<Trash2 className="h-6 w-6 text-status-down-fg" />
 						</div>
 
 						<DialogTitle className="mt-4">{t('notifications.title.remove')} ?</DialogTitle>

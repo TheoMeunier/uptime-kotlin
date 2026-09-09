@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Metric from '@/components/molecules/metric.tsx';
+import Metric, { MetricRow } from '@/components/molecules/metric.tsx';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 
 const statsItems = [
@@ -26,10 +26,12 @@ export default function ResponseTimeStats({ monitors }: { monitors: Monitor[] })
 	}, [monitors]);
 
 	return (
-		<div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-			{statsItems.map(({ labelKey, key }) => (
-				<Metric key={key} label={t(labelKey)} value={stats[key]} unit="ms" />
-			))}
+		<div className="mt-5">
+			<MetricRow>
+				{statsItems.map(({ labelKey, key }) => (
+					<Metric key={key} variant="inline" label={t(labelKey)} value={stats[key]} unit="ms" />
+				))}
+			</MetricRow>
 		</div>
 	);
 }

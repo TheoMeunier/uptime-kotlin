@@ -48,7 +48,7 @@ export default function ProbesStatus() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<div className="border-b bg-card shadow-sm">
+			<div className="bg-card border-b">
 				<div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 					<div className="flex items-center gap-3 mb-3">
 						<div className="p-2 bg-primary/10 rounded-lg shrink-0">
@@ -84,7 +84,10 @@ export default function ProbesStatus() {
 			<div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
 				<div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
 					{data?.map((item) => (
-						<Card key={item.probe.id} className="border-border bg-card hover:shadow-md transition-all duration-200">
+						<Card
+							key={item.probe.id}
+							className="border-border bg-card hover:border-muted-foreground/30 transition-colors"
+						>
 							<CardContent>
 								<div>
 									<div className="flex flex-wrap justify-between items-start gap-2">
@@ -167,7 +170,7 @@ function ProbesStatusSkeleton() {
 
 	return (
 		<div className="bg-background min-h-screen">
-			<div className="bg-card border-b shadow-sm">
+			<div className="bg-card border-b">
 				<div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 					<div className="mb-3 flex items-center gap-3">
 						<Skeleton className="h-10 w-10 shrink-0 rounded-lg" />
