@@ -54,7 +54,7 @@ export function ShowProbe() {
 								<Pencil /> {t('button.actions.edit')}
 							</Link>
 						</Button>
-						<DeleteProbeDialogue probeId={data.probe.id} />
+						<DeleteProbeDialogue probeId={data.probe.id} probeName={data.probe.name} />
 					</ButtonGroup>
 				</div>
 			</section>
