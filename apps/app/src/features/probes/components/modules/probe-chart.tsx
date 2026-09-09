@@ -125,7 +125,7 @@ export default function ProbeChart({
 						tickLine={false}
 						axisLine={false}
 						tickMargin={8}
-						width={56}
+						width={68}
 						tickFormatter={(value: number) => `${value} ms`}
 					/>
 					<ChartTooltip
@@ -141,7 +141,14 @@ export default function ProbeChart({
 						}
 					/>
 
-					<Area dataKey="response_time" type="monotone" fill={seriesFill} stroke={seriesColor} connectNulls={false} />
+					<Area
+						dataKey="response_time"
+						type="monotone"
+						fill={seriesFill}
+						stroke={seriesColor}
+						connectNulls={false}
+						isAnimationActive={false}
+					/>
 
 					{average !== null && (
 						<ReferenceLine

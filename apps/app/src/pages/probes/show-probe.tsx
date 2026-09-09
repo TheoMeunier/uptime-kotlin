@@ -80,44 +80,28 @@ export function ShowProbe() {
 				</Card>
 			</section>
 
-			<section>
-				{isRefetching ? (
-					<Card>
-						<CardContent>
-							<Skeleton className="h-6 w-[200px] mb-4" />
-							<Skeleton className="h-[300px] w-full" />
-						</CardContent>
-					</Card>
-				) : (
-					<ProbeResponseTime
-						monitors={data!.monitors}
-						lastHour={hours}
-						setLastHour={setHours}
-						monitorStatus={data!.probe.status}
-					/>
-				)}
+			{/*
+			 * The query keeps the previous data while a new range loads (placeholderData), so the
+			 * chart and the logs stay on screen and only dim. Swapping them for skeletons made the
+			 * page flash content -> skeleton -> content on every range change.
+			 */}
+			<section
+				className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}
+				aria-busy={isRefetching}
+			>
+				<ProbeResponseTime
+					monitors={data!.monitors}
+					lastHour={hours}
+					setLastHour={setHours}
+					monitorStatus={data!.probe.status}
+				/>
 			</section>
 
-			<section>
-				{isRefetching ? (
-					<Card>
-						<CardContent>
-							<Skeleton className="h-6 w-[180px] mb-4" />
-							<div className="space-y-3">
-								{[...Array(8)].map((_, index) => (
-									<div key={index} className="flex items-center gap-4 p-3 border rounded-lg">
-										<Skeleton className="h-4 w-4 rounded-full" />
-										<Skeleton className="h-4 w-[150px]" />
-										<Skeleton className="h-4 w-[100px]" />
-										<Skeleton className="h-4 flex-1" />
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
-				) : (
-					<ProbeMonitorLog probeId={data!.probe.id} monitors={data!.monitors} />
-				)}
+			<section
+				className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}
+				aria-busy={isRefetching}
+			>
+				<ProbeMonitorLog probeId={data!.probe.id} monitors={data!.monitors} />
 			</section>
 		</div>
 	);
