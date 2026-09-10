@@ -58,8 +58,15 @@ chmod 644 privateKey.pem publicKey.pem
 
 2. Create a `compose.yaml` file
 
-Download the Nginx reverse proxy configuration from
-the [project repository](https://github.com/TheoMeunier/uptime-kotlin/blob/main/docker/nginx.conf).
+Download the Nginx reverse proxy configuration into a `docker/` folder next to your `compose.yaml`:
+
+```bash
+mkdir -p docker && curl -o docker/nginx.conf \
+  https://raw.githubusercontent.com/TheoMeunier/uptime-kotlin/main/docker/nginx.conf
+```
+
+The reverse proxy is not optional: the frontend calls the API with relative URLs (`/api/...`), so both must
+answer on the same origin. Only Nginx publishes a port — the app and the API are reached through it.
 
 ```yml
 services:
@@ -84,12 +91,14 @@ services:
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
-      ENCRYPTION_MASTER_KEY: superKeyMasterSensileData0123456789
+      ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
       MP_JWT_VERIFY_PUBLICKEY_LOCATION: /certs/publicKey.pem
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
       SMALLRYE_JWT_SIGN_KEY_LOCATION: /certs/privateKey.pem
     volumes:
       - ./certs:/certs
+    depends_on:
+      - postgres
     networks:
       - app_network
 
@@ -102,8 +111,8 @@ services:
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - uptime_kotlin_api
-      - uptime_kotlin_app
+      - uptime-kotlin-api
+      - uptime-kotlin-app
     networks:
       - app_network
 
@@ -111,8 +120,6 @@ services:
     image: postgres:17.4-alpine
     container_name: uptime_kotlin_database
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: uptime-kotlin
       POSTGRES_USER: uptime-kotlin
@@ -120,15 +127,15 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./storage-db:/var/lib/postgresql/data
-    depends_on:
-      - uptime_kotlin_api
     networks:
       - app_network
+    # Uncomment to reach the database from your host, and change POSTGRES_PASSWORD first.
+    # ports:
+    #   - "5432:5432"
 
 networks:
   app_network:
     driver: bridge
-
 ```
 
 3. Configure the `variable environnement` file
