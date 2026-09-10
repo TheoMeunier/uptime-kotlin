@@ -14,7 +14,7 @@ import {
 	SidebarTrigger,
 } from '@/components/atoms/sidebar.tsx';
 import { Button } from '@/components/atoms/button.tsx';
-import { Activity, BadgeCheck, ChevronsUpDown, Home, LogOut, Plus } from 'lucide-react';
+import { Activity, BadgeCheck, ChevronsUpDown, Home, LogOut, Plus, Wrench } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
@@ -45,6 +45,7 @@ import LastUpdated from '@/components/molecules/last-updated.tsx';
 const SECTION_TITLES: { prefix: string; key: string }[] = [
 	{ prefix: '/dashboard', key: 'layout.sidebar.dashboard' },
 	{ prefix: '/monitors/new', key: 'monitors.title.create' },
+	{ prefix: '/maintenances', key: 'layout.sidebar.maintenances' },
 	{ prefix: '/profile', key: 'layout.sidebar.settings' },
 ];
 
@@ -94,6 +95,11 @@ export default function Layout() {
 							<SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard')}>
 								<Link to={'/dashboard'}>
 									<Home size={18} /> {t('layout.sidebar.dashboard')}
+								</Link>
+							</SidebarMenuButton>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/maintenances')}>
+								<Link to={'/maintenances'}>
+									<Wrench size={18} /> {t('layout.sidebar.maintenances')}
 								</Link>
 							</SidebarMenuButton>
 							<SidebarMenuButton asChild isActive={pathname.startsWith('/status')}>

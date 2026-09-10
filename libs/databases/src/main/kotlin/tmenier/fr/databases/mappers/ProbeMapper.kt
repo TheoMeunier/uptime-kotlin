@@ -9,6 +9,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
+import tmenier.fr.databases.dtos.ProbeMaintenanceState
 import tmenier.fr.databases.dtos.ProbeMonitorDTO
 import tmenier.fr.databases.dtos.ProbeShowDTO
 import tmenier.fr.databases.dtos.ProbeStatusDTO
@@ -17,6 +18,7 @@ import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsIdsDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
+import tmenier.fr.databases.entities.MaintenanceOccurrenceEntity
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import java.time.Duration
@@ -144,6 +146,7 @@ object ProbeMapper {
             protocol = dto.protocol
             description = dto.description
             content = ProbeContentMapper.toEntity(dto.content).first
+            alertedStatus = ProbeMonitorLogStatus.SUCCESS
         }
 
     fun toDto(entity: ProbesEntity): ProbeDTO =
@@ -228,6 +231,8 @@ object ProbeMapper {
         entity: ProbesEntity,
         monitors: List<ProbesMonitorsLogEntity>,
         uptimes: ProbeUptimeDTO? = null,
+        maintenance: ProbeMaintenanceState? = null,
+        maintenancePeriods: List<MaintenanceOccurrenceEntity> = emptyList(),
     ): ProbeShowDTO {
         val content = ProbeContentMapper.toDto(entity)
 
@@ -258,9 +263,13 @@ object ProbeMapper {
                         responseTime = it.responseTime,
                         message = it.message,
                         runAt = it.runAt,
+                        underMaintenance = it.underMaintenance,
                     )
                 },
             uptimes = uptimes,
+            maintenance = maintenance?.current,
+            nextMaintenance = maintenance?.next,
+            maintenancePeriods = maintenancePeriods.map(MaintenanceMapper::toOccurrenceDto),
         )
     }
 
@@ -281,6 +290,13 @@ object ProbeMapper {
             uptimes = metrics?.uptimes,
             downSince = downSince,
             downDuration = downSince?.let { Duration.between(it, LocalDateTime.now()).toHumanReadable() },
+            maintenance = metrics?.maintenance?.current,
+            nextMaintenance = metrics?.maintenance?.next,
+            maintenanceDuration =
+                metrics
+                    ?.maintenanceSeconds
+                    ?.takeIf { it > 0 }
+                    ?.let { Duration.ofSeconds(it).toHumanReadable() },
             probe =
                 ProbeListDTO(
                     id = entity.id,
@@ -297,6 +313,7 @@ object ProbeMapper {
                         responseTime = it.responseTime,
                         message = it.message,
                         runAt = it.runAt,
+                        underMaintenance = it.underMaintenance,
                     )
                 },
         )

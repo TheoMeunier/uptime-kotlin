@@ -20,6 +20,7 @@ const EditProbe = lazy(() => import('@/pages/probes/edit-probe.tsx'));
 const ShowProbe = lazy(() => import('@/pages/probes/show-probe.tsx').then((module) => ({ default: module.ShowProbe })));
 const Profile = lazy(() => import('@/pages/profile/profile.tsx'));
 const ProbesStatus = lazy(() => import('@/pages/probes/probes-status.tsx'));
+const Maintenances = lazy(() => import('@/pages/maintenances/maintenances.tsx'));
 const SetupPage = lazy(() => import('@/pages/setup/setup-page.tsx'));
 
 export const queryClient = new QueryClient({
@@ -51,6 +52,8 @@ createRoot(document.getElementById('root')!).render(
 											<Route path="monitors/new" element={<CreateProbe />} />
 											<Route path="monitors/:probeId/edit" element={<EditProbe />} />
 											<Route path="monitors/:probeId" element={<ShowProbe />} />
+
+											<Route path="maintenances" element={<Maintenances />} />
 
 											<Route path="profile" element={<Profile />} />
 										</Route>

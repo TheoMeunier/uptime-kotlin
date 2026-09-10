@@ -2,6 +2,10 @@ import { z } from 'zod';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import ProbeMonitorsSchema from '@/features/probes/schemas/probe-monitor.schema.ts';
 import ProbeProtocol from '@/features/probes/enums/probe-enum.ts';
+import {
+	MaintenanceOccurrenceSchema,
+	ProbeMaintenanceSchema,
+} from '@/features/maintenances/schemas/maintenance.schema.ts';
 
 const ProbeListSidebarSchema = z.array(
 	z.object({
@@ -44,6 +48,9 @@ export const ProbeShowSchema = z.object({
 	probe: ProbeResponseSchema,
 	monitors: ProbeMonitorsSchema,
 	uptimes: ProbeUptimeSchema,
+	maintenance: ProbeMaintenanceSchema.nullable().optional(),
+	next_maintenance: ProbeMaintenanceSchema.nullable().optional(),
+	maintenance_periods: z.array(MaintenanceOccurrenceSchema).optional().default([]),
 });
 
 export type ProbeShow = z.infer<typeof ProbeShowSchema>;
@@ -63,6 +70,9 @@ export const ProbeStatusShowSchema = z.array(
 		uptimes: ProbeUptimeSchema.nullable().optional(),
 		down_since: z.string().nullable().optional(),
 		down_duration: z.string().nullable().optional(),
+		maintenance: ProbeMaintenanceSchema.nullable().optional(),
+		next_maintenance: ProbeMaintenanceSchema.nullable().optional(),
+		maintenance_duration: z.string().nullable().optional(),
 	})
 );
 

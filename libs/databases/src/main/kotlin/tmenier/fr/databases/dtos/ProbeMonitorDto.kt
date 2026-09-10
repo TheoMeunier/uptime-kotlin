@@ -12,6 +12,7 @@ data class ProbeMonitorDTO(
     val responseTime: Long,
     val message: String,
     val runAt: LocalDateTime,
+    val underMaintenance: Boolean = false,
 )
 
 @RegisterForReflection
@@ -22,4 +23,5 @@ data class StoreProbeMonitorLogDto(
     val responseTime: Long,
     val probe: ProbeDTO,
     val checkTaskId: UUID? = null,
+    val underMaintenance: Boolean = false,
 )

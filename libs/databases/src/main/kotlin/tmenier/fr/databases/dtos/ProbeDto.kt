@@ -21,6 +21,9 @@ data class ProbeShowDTO(
     val probe: ProbeDTO,
     val monitors: List<ProbeMonitorDTO>,
     val uptimes: ProbeUptimeDTO? = null,
+    val maintenance: ProbeMaintenanceDto? = null,
+    val nextMaintenance: ProbeMaintenanceDto? = null,
+    val maintenancePeriods: List<MaintenanceOccurrenceDto> = emptyList(),
 )
 
 @RegisterForReflection
@@ -30,6 +33,9 @@ data class ProbeStatusDTO(
     val uptimes: ProbeUptimeDTO? = null,
     val downSince: LocalDateTime? = null,
     val downDuration: String? = null,
+    val maintenance: ProbeMaintenanceDto? = null,
+    val nextMaintenance: ProbeMaintenanceDto? = null,
+    val maintenanceDuration: String? = null,
 )
 
 @RegisterForReflection
@@ -37,6 +43,8 @@ data class ProbeStatusMetrics(
     val probeId: UUID,
     val uptimes: ProbeUptimeDTO,
     val lastSuccessAt: LocalDateTime?,
+    val maintenance: ProbeMaintenanceState? = null,
+    val maintenanceSeconds: Long = 0L,
 )
 
 @RegisterForReflection

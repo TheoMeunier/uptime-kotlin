@@ -50,6 +50,9 @@ class ProbesEntity : PanacheEntityBase {
     @Column(nullable = false)
     var status: ProbeMonitorLogStatus = ProbeMonitorLogStatus.FAILURE
 
+    @Column(name = "alerted_status", nullable = false)
+    var alertedStatus: ProbeMonitorLogStatus = ProbeMonitorLogStatus.SUCCESS
+
     @Column(nullable = false)
     var protocol: ProbeProtocol = ProbeProtocol.HTTP
 

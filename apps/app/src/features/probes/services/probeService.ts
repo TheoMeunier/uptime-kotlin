@@ -6,11 +6,7 @@ import probeResponseSchema, {
 
 import { z } from 'zod';
 import type { StoreProbeSchema } from '@/features/probes/hooks/useProbeForm.ts';
-
-function getFileNameFromContentDisposition(contentDisposition: string | null) {
-	const match = contentDisposition?.match(/filename="?(?<filename>[^"]+)"?/);
-	return match?.groups?.filename;
-}
+import { getFileNameFromContentDisposition } from '@/lib/http.ts';
 
 const probeService = {
 	async getProbes(): Promise<ProbeListItem[]> {

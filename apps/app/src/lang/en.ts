@@ -78,6 +78,7 @@ const en = {
 		monitor: 'monitor',
 		notification: 'notification',
 		profile: 'profile',
+		maintenance: 'maintenance window',
 	},
 
 	pages: {
@@ -90,6 +91,7 @@ const en = {
 			},
 			uptime_30d: '30-day uptime',
 			down_for: 'Down for {{duration}}',
+			planned_downtime: '{{duration}} planned',
 			verdict: {
 				operational_one: 'All systems operational',
 				operational_other: 'All {{count}} services are operational',
@@ -97,6 +99,8 @@ const en = {
 				degraded_other: '{{count}} services of {{total}} are degraded',
 				down_one: '1 service of {{total}} is experiencing an incident',
 				down_other: '{{count}} services of {{total}} are experiencing an incident',
+				maintenance_one: '1 service under maintenance',
+				maintenance_other: '{{count}} services under maintenance',
 			},
 			empty: {
 				title: 'No monitor yet',
@@ -293,6 +297,75 @@ const en = {
 		},
 	},
 
+	maintenances: {
+		title: {
+			index: 'Maintenance windows',
+			start: 'Start a maintenance window',
+			remove: 'Remove this maintenance window?',
+		},
+		description: {
+			index: 'Planned downtime: alerts stay quiet and uptime is not charged for it.',
+			start:
+				'Alerts are suppressed and uptime is not charged for the outage. Checks keep running, so you can watch the service come back.',
+			start_hint: 'You can always end it early. There is no open-ended option on purpose.',
+			remove: 'Removing "{{title}}" also removes its scheduled occurrences. Alerts resume immediately.',
+		},
+		actions: {
+			schedule: 'Schedule a window',
+			start: 'Maintenance',
+			end: 'End now',
+		},
+		badge: {
+			in_progress: 'Maintenance, {{duration}} left',
+			scheduled: 'Maintenance in {{duration}}',
+		},
+		recurrence: {
+			ONCE: 'One-off',
+			DAILY: 'Daily',
+			WEEKLY: 'Weekly',
+			MONTHLY: 'Monthly',
+		},
+		table: {
+			title: 'Window',
+			state: 'Next occurrence',
+			recurrence: 'Repeats',
+			duration: 'Duration',
+			monitors: 'Monitors',
+			actions: 'Actions',
+			no_occurrence: 'Nothing scheduled',
+			inactive: 'Disabled',
+		},
+		form: {
+			title_placeholder: 'Database migration',
+			probes: 'Monitors covered',
+			probes_description: 'A window with no monitor silences nothing.',
+			starts_at: 'Starts at',
+			duration: 'Duration (minutes)',
+			duration_description: 'A window nobody closes is a monitoring system silently disarmed.',
+			recurrence: 'Repeats',
+			timezone: 'Timezone',
+			timezone_description: 'Keeps a 02:00 window at 02:00 on both sides of a clock change.',
+			recurrence_until: 'Repeats until',
+			recurrence_until_description: 'Leave empty to repeat indefinitely.',
+			active: 'Enabled',
+			active_description: 'Disable to keep the window without it suppressing anything.',
+			is_public: 'Show on the status page',
+			is_public_description: 'Publishing the schedule of an internal estate also publishes when its defences are down.',
+		},
+		alerts: {
+			created: 'Maintenance window "{{title}}" scheduled',
+			updated: 'Maintenance window "{{title}}" updated',
+			removed: 'Maintenance window removed',
+			started: 'Maintenance started',
+			ended: 'Maintenance ended',
+			occurrence_cancelled: 'Occurrence cancelled',
+		},
+		empty: {
+			title: 'No maintenance window yet',
+			description: 'Schedule one before your next deployment, and the alerts will stay quiet.',
+		},
+	},
+
 	profile: {
 		title: {
 			update_profile: 'Update profile',
@@ -390,6 +463,7 @@ const en = {
 			logout: 'Logout',
 			dashboard: 'Dashboard',
 			status_page: 'Status page',
+			maintenances: 'Maintenance',
 			new_monitor: 'New monitor',
 		},
 	},

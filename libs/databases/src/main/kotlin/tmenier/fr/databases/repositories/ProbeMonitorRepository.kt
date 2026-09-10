@@ -16,13 +16,20 @@ class ProbeMonitorRepository(
         probeId: UUID,
         from: LocalDateTime,
         to: LocalDateTime,
-    ): Long = count("probe.id = ?1 AND runAt >= ?2 AND runAt <= ?3", probeId, from, to)
+    ): Long = count("probe.id = ?1 AND runAt >= ?2 AND runAt <= ?3 AND underMaintenance = false", probeId, from, to)
 
     fun countSuccessByProbeAndPeriod(
         probeId: UUID,
         from: LocalDateTime,
         to: LocalDateTime,
-    ): Long = count("probe.id = ?1 AND status = ?2 AND runAt >= ?3 AND runAt <= ?4", probeId, ProbeMonitorLogStatus.SUCCESS, from, to)
+    ): Long =
+        count(
+            "probe.id = ?1 AND status = ?2 AND runAt >= ?3 AND runAt <= ?4 AND underMaintenance = false",
+            probeId,
+            ProbeMonitorLogStatus.SUCCESS,
+            from,
+            to,
+        )
 
     fun findByProbeAfter(
         probeId: UUID,
@@ -51,6 +58,7 @@ class ProbeMonitorRepository(
         entity.responseTime = dto.responseTime
         entity.probe = probe
         entity.checkTaskId = dto.checkTaskId
+        entity.underMaintenance = dto.underMaintenance
         entity.persist()
     }
 
