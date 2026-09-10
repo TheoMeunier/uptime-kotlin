@@ -12,11 +12,10 @@ import java.util.UUID
 class UserRepository : PanacheRepository<UserEntity> {
     fun findById(id: UUID): UserEntity = find("id = ?1", id).firstResult() ?: throw NotFoundException("User not found with id")
 
-    fun findByEmail(email: String): UserDto {
-        val user = find("email = ?1", email).firstResult() ?: throw NotFoundException("User not found with email: $email")
-
-        return UserMapper.fromEntity(user)
-    }
+    fun findByEmailOrNull(email: String): UserDto? =
+        find("email = ?1", email)
+            .firstResult()
+            ?.let { UserMapper.fromEntity(it) }
 
     fun countAll() = count()
 
