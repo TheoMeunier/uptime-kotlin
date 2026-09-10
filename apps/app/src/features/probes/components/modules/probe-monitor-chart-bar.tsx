@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/atoms/hover-card';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 import { getStatusTokens } from '@/lib/status.ts';
+import { formatDayLong, formatTime } from '@/lib/datetime.ts';
 
 type BarItem = Monitor | { type: 'pause'; id: string; timestamp: Date };
 
@@ -14,15 +15,9 @@ interface ProbeMonitorChartBarProps {
 export default function ProbeMonitorChartBar({ monitors, probeStatus, barCount = 40 }: ProbeMonitorChartBarProps) {
 	const { t, i18n } = useTranslation();
 
-	const formatTime = (value: string) =>
-		new Date(value).toLocaleTimeString(i18n.language, {
-			hour: '2-digit',
-			minute: '2-digit',
-			second: '2-digit',
-		});
-
-	const formatDate = (value: string) =>
-		new Date(value).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' });
+	/* Les secondes comptent ici : deux checks consecutifs peuvent tomber dans la meme minute. */
+	const formatBarTime = (value: string) => formatTime(value, i18n.language, { withSeconds: true });
+	const formatBarDate = (value: string) => formatDayLong(value, i18n.language);
 
 	const isPaused = probeStatus === 'PAUSE';
 
@@ -94,8 +89,8 @@ export default function ProbeMonitorChartBar({ monitors, probeStatus, barCount =
 									<BarTooltip
 										title={t('status.paused')}
 										message={t('monitors.description.paused_slot')}
-										date={formatDate(item.timestamp.toISOString())}
-										time={formatTime(item.timestamp.toISOString())}
+										date={formatBarDate(item.timestamp.toISOString())}
+										time={formatBarTime(item.timestamp.toISOString())}
 									/>
 								</HoverCardContent>
 							</HoverCard>
@@ -114,8 +109,8 @@ export default function ProbeMonitorChartBar({ monitors, probeStatus, barCount =
 								<BarTooltip
 									title={t(tokens.labelKey)}
 									message={check.message}
-									date={formatDate(check.run_at.toString())}
-									time={formatTime(check.run_at.toString())}
+									date={formatBarDate(check.run_at.toString())}
+									time={formatBarTime(check.run_at.toString())}
 									responseTime={check.status === 'SUCCESS' ? check.response_time : undefined}
 									tone={tokens.fg}
 								/>

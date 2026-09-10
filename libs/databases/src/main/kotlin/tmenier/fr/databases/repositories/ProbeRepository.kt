@@ -63,7 +63,7 @@ class ProbeRepository(
               SUM(CASE WHEN pml.status = :success THEN 1 ELSE 0 END),
               MAX(CASE WHEN pml.status = :success THEN pml.runAt ELSE NULL END)
             FROM ProbesEntity p
-            LEFT JOIN p.probesMonitorLogs pml WITH pml.runAt > :since30d
+            LEFT JOIN p.probesMonitorLogs pml WITH pml.runAt > :since30d AND pml.underMaintenance = false
             WHERE p.enabled = true
             GROUP BY p.id
             """.trimIndent()
@@ -163,6 +163,7 @@ class ProbeRepository(
         val probe = findByIdForUpdate(dto.id)
         probe.enabled = dto.enabled
         probe.status = dto.status
+        probe.alertedStatus = dto.status
         probe.nextCheckAt = if (dto.enabled) LocalDateTime.now() else null
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)

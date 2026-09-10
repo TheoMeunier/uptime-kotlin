@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import { getStatusTokens } from '@/lib/status.ts';
 import type { DashboardStats } from '@/features/dashboard/schemas/dashboard-stats.schema.ts';
+import { formatShortDateTime } from '@/lib/datetime.ts';
 
 type RecentEvent = DashboardStats['recent_events'][number];
 
@@ -39,12 +40,7 @@ export default function RecentEvents({ events }: { events: RecentEvent[] }) {
 										className="text-muted-foreground tabular ml-auto shrink-0 text-xs"
 										dateTime={event.run_at.toISOString()}
 									>
-										{event.run_at.toLocaleString(i18n.language, {
-											day: '2-digit',
-											month: '2-digit',
-											hour: '2-digit',
-											minute: '2-digit',
-										})}
+										{formatShortDateTime(event.run_at, i18n.language)}
 									</time>
 								</li>
 							);

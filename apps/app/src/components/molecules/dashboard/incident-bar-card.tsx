@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { TriangleAlert } from 'lucide-react';
 import Metric from '@/components/molecules/metric.tsx';
+import { formatTime } from '@/lib/datetime.ts';
 
 interface IncidentBar {
 	hour: Date;
@@ -23,8 +24,7 @@ export default function IncidentBarCard({ data, description }: IncidentBarCardPr
 	const maxVal = Math.max(...data.map((d) => d.up_count + d.down_count), 1);
 	const hasIncident = data.some((d) => d.down_count > 0);
 
-	const fmtHour = (date: Date) =>
-		new Date(date).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+	const fmtHour = (date: Date) => formatTime(date, i18n.language);
 
 	return (
 		<Metric

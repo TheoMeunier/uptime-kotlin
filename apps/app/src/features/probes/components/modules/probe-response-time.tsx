@@ -3,6 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useTranslation } from 'react-i18next';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
+import type { MaintenanceOccurrence } from '@/features/maintenances/schemas/maintenance.schema.ts';
 import ResponseTimeStats from '@/features/probes/components/modules/probe-response-time-status.tsx';
 import { lazy, Suspense } from 'react';
 
@@ -13,9 +14,16 @@ interface ProbeResponseTimeProps {
 	lastHour: number;
 	setLastHour: (value: number) => void;
 	monitorStatus: ProbeStatusEnum;
+	maintenancePeriods?: MaintenanceOccurrence[];
 }
 
-export default function ProbeResponseTime({ monitors, monitorStatus, lastHour, setLastHour }: ProbeResponseTimeProps) {
+export default function ProbeResponseTime({
+	monitors,
+	monitorStatus,
+	lastHour,
+	setLastHour,
+	maintenancePeriods,
+}: ProbeResponseTimeProps) {
 	const { t } = useTranslation();
 
 	const getTimeRangeLabel = () => {
@@ -78,7 +86,12 @@ export default function ProbeResponseTime({ monitors, monitorStatus, lastHour, s
 							</div>
 						}
 					>
-						<ProbeChart monitors={monitors} lastHour={lastHour} monitorStatus={monitorStatus} />
+						<ProbeChart
+							monitors={monitors}
+							lastHour={lastHour}
+							monitorStatus={monitorStatus}
+							maintenancePeriods={maintenancePeriods}
+						/>
 					</Suspense>
 				</div>
 			</CardContent>

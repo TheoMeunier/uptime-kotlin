@@ -55,6 +55,9 @@
 	--color-status-paused: var(--status-paused);
 	--color-status-paused-bg: var(--status-paused-bg);
 	--color-status-paused-fg: var(--status-paused-fg);
+	--color-status-maintenance: var(--status-maintenance);
+	--color-status-maintenance-bg: var(--status-maintenance-bg);
+	--color-status-maintenance-fg: var(--status-maintenance-fg);
 	--color-status-nodata: var(--status-nodata);
 }
 
@@ -105,6 +108,10 @@
 	--status-paused: oklch(0.65 0.012 220);
 	--status-paused-bg: oklch(0.95 0.004 220);
 	--status-paused-fg: oklch(0.48 0.012 220);
+	/* Planned downtime is not an incident: blue reads as "we know, it is on purpose". */
+	--status-maintenance: oklch(0.62 0.14 250);
+	--status-maintenance-bg: oklch(0.95 0.03 250);
+	--status-maintenance-fg: oklch(0.45 0.14 250);
 	--status-nodata: oklch(0.9 0.005 220);
 }
 
@@ -152,6 +159,9 @@
 	--status-paused: oklch(0.55 0.012 220);
 	--status-paused-bg: oklch(0.27 0.008 220);
 	--status-paused-fg: oklch(0.72 0.012 220);
+	--status-maintenance: oklch(0.7 0.13 250);
+	--status-maintenance-bg: oklch(0.28 0.06 250);
+	--status-maintenance-fg: oklch(0.84 0.11 250);
 	--status-nodata: oklch(0.3 0.008 220);
 }
 

@@ -37,4 +37,7 @@ class ProbesMonitorsLogEntity : PanacheEntityBase {
 
     @Column(name = "probe_check_job_id", updatable = false)
     var checkTaskId: UUID? = null
+
+    @Column(name = "under_maintenance", nullable = false, updatable = false)
+    var underMaintenance: Boolean = false
 }

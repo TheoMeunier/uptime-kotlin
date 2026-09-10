@@ -8,6 +8,7 @@ import { Badge } from '@/components/atoms/badge.tsx';
 import PurgeProbeLogsDialogue from '@/features/probes/components/actions/purge-probe-logs-dialogue.tsx';
 import ExportProbeLogsButton from '@/features/probes/components/actions/export-probe-logs-button.tsx';
 import { getStatusTokens } from '@/lib/status.ts';
+import { formatShortDateTime } from '@/lib/datetime.ts';
 
 const filters = [
 	{ key: 'all', labelKey: 'monitors.logs.filter_all' },
@@ -106,12 +107,7 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 							</span>
 
 							<span className="text-muted-foreground tabular text-xs">
-								{new Date(monitor.run_at).toLocaleString(i18n.language, {
-									day: '2-digit',
-									month: '2-digit',
-									hour: '2-digit',
-									minute: '2-digit',
-								})}
+								{formatShortDateTime(monitor.run_at, i18n.language)}
 							</span>
 
 							<span

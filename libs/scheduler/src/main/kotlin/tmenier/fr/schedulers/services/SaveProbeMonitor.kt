@@ -3,8 +3,12 @@ package tmenier.fr.schedulers.services
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.enums.notifications.NotificationEvent
+import tmenier.fr.common.utils.MonitoringClock
+import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
 import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.notifications.services.NotificationService
@@ -15,6 +19,7 @@ import java.util.UUID
 class SaveProbeMonitor(
     private val probeRepository: ProbeRepository,
     private val probeMonitorRepository: ProbeMonitorRepository,
+    private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
     private val notificationService: NotificationService,
 ) {
     @Transactional
@@ -29,7 +34,13 @@ class SaveProbeMonitor(
         val probe = probeRepository.findByIdForUpdate(probeId)
         if (!probe.enabled) return false
 
-        val previousStatus = probe.status
+        val underMaintenance =
+            maintenanceOccurrenceRepository.isProbeUnderMaintenance(
+                probeId = probe.id,
+                at = MonitoringClock.toInstant(runAt),
+            )
+
+        val alertedStatus = probe.alertedStatus
         probe.status = result.status
         probe.lastRun = runAt
 
@@ -41,15 +52,29 @@ class SaveProbeMonitor(
                 responseTime = result.responseTime,
                 probe = ProbeMapper.toDto(probe),
                 checkTaskId = checkTaskId,
+                underMaintenance = underMaintenance,
             ),
         )
 
-        notificationService.enqueueForTransition(
-            probe = probe,
-            checkTaskId = checkTaskId,
-            result = result,
-            previousStatus = previousStatus,
-        )
+        if (underMaintenance) {
+            logger.info {
+                "Suppressed notifications for Probe Check $checkTaskId: probe=${probe.id} is under maintenance at $runAt " +
+                    "(status=${result.status}, last announced=$alertedStatus)"
+            }
+            return true
+        }
+
+        val event =
+            notificationService.enqueueForTransition(
+                probe = probe,
+                checkTaskId = checkTaskId,
+                result = result,
+                previousStatus = alertedStatus,
+            )
+
+        if (event != NotificationEvent.NONE) {
+            probe.alertedStatus = result.status
+        }
 
         return true
     }

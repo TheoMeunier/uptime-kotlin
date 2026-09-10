@@ -11,11 +11,14 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -25,6 +28,7 @@ import java.util.UUID
 class ShowProbeResource(
     private val probeRepository: ProbeRepository,
     private val probeMonitorRepository: ProbeMonitorRepository,
+    private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
 ) {
     @GET
     @Authenticated
@@ -46,14 +50,38 @@ class ShowProbeResource(
             throw BadRequestException("hours must be one of: 1, 3, 6, 24, 168")
         }
 
+        val from = LocalDateTime.now().minusHours(hours)
         val monitors =
             probeMonitorRepository.findByProbeAfter(
                 probeId = uuid,
-                after = LocalDateTime.now().minusHours(hours),
+                after = from,
             )
         val uptimes = computeUptimes(uuid)
 
-        return Response.ok(ProbeMapper.toShowDto(probeEntity, monitors, uptimes)).build()
+        val now = MonitoringClock.now()
+        val maintenance =
+            maintenanceOccurrenceRepository
+                .findMaintenanceStateByProbe(
+                    at = now,
+                    horizon = now.plus(Duration.ofDays(MAINTENANCE_LOOKAHEAD_DAYS)),
+                )[uuid]
+        val maintenancePeriods =
+            maintenanceOccurrenceRepository.findByProbeBetween(
+                probeId = uuid,
+                from = MonitoringClock.toInstant(from),
+                to = now,
+            )
+
+        return Response
+            .ok(
+                ProbeMapper.toShowDto(
+                    entity = probeEntity,
+                    monitors = monitors,
+                    uptimes = uptimes,
+                    maintenance = maintenance,
+                    maintenancePeriods = maintenancePeriods,
+                ),
+            ).build()
     }
 
     private fun computeUptimes(probeId: UUID): ProbeUptimeDTO {
@@ -74,5 +102,9 @@ class ShowProbeResource(
         val success = probeMonitorRepository.countSuccessByProbeAndPeriod(probeId, from, to)
         if (total == 0L) return 100.0
         return (success.toDouble() / total.toDouble()) * 100.0
+    }
+
+    companion object {
+        private const val MAINTENANCE_LOOKAHEAD_DAYS = 30L
     }
 }

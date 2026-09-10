@@ -17,6 +17,8 @@ import { type ProbeShow, ProbeShowSchema } from '@/features/probes/schemas/probe
 import ProbeUptime from '@/features/probes/components/modules/probe-uptime.tsx';
 import ProbeResponseTime from '@/features/probes/components/modules/probe-response-time.tsx';
 import ErrorState from '@/components/molecules/error-state.tsx';
+import StartMaintenanceDialogue from '@/features/maintenances/components/actions/start-maintenance-dialogue.tsx';
+import MaintenanceBanner from '@/features/maintenances/components/maintenance-banner.tsx';
 
 export function ShowProbe() {
 	const { t } = useTranslation();
@@ -39,7 +41,6 @@ export function ShowProbe() {
 
 	return (
 		<div className="space-y-4">
-			{/* Stacks below sm: a 3xl title and three buttons never fit side by side on a phone. */}
 			<section className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<div className="min-w-0">
 					<h1 className="truncate text-2xl font-semibold tracking-tight">{data.probe.name}</h1>
@@ -48,6 +49,7 @@ export function ShowProbe() {
 
 				<div className="shrink-0">
 					<ButtonGroup>
+						<StartMaintenanceDialogue probeId={data.probe.id} />
 						<OnOffMonitorProbeDialogue probeId={data.probe.id} enabled={data.probe.enabled} />
 						<Button variant="outline" asChild>
 							<Link to={`/monitors/${data.probe.id}/edit`}>
@@ -58,6 +60,8 @@ export function ShowProbe() {
 					</ButtonGroup>
 				</div>
 			</section>
+
+			<MaintenanceBanner probeId={data.probe.id} current={data.maintenance} next={data.next_maintenance} />
 
 			<section>
 				<Card>
@@ -92,6 +96,7 @@ export function ShowProbe() {
 					lastHour={hours}
 					setLastHour={setHours}
 					monitorStatus={data.probe.status}
+					maintenancePeriods={data.maintenance_periods}
 				/>
 			</section>
 

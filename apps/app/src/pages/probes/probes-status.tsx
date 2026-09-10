@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { uptimeState } from '@/lib/status.ts';
 import ErrorState from '@/components/molecules/error-state.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
+import MaintenanceBadge from '@/features/maintenances/components/maintenance-badge.tsx';
+import { formatTime } from '@/lib/datetime.ts';
 
 export default function ProbesStatus() {
 	const { t, i18n } = useTranslation();
@@ -33,10 +35,12 @@ export default function ProbesStatus() {
 		);
 	}
 
-	const statuses = (data ?? []).map((item) => item.probe.status);
-	const total = statuses.length;
-	const downCount = statuses.filter((status) => status === ProbeStatusEnum.FAILURE).length;
-	const degradedCount = statuses.filter((status) => status === ProbeStatusEnum.WARNING).length;
+	const items = data ?? [];
+	const watched = items.filter((item) => !item.maintenance);
+	const maintenanceCount = items.length - watched.length;
+	const total = watched.length;
+	const downCount = watched.filter((item) => item.probe.status === ProbeStatusEnum.FAILURE).length;
+	const degradedCount = watched.filter((item) => item.probe.status === ProbeStatusEnum.WARNING).length;
 
 	const summary =
 		downCount > 0
@@ -79,11 +83,18 @@ export default function ProbesStatus() {
 							<span className={summary.tone}>{summary.label}</span>
 						</span>
 
+						{maintenanceCount > 0 && (
+							<span className="text-status-maintenance-fg flex items-center gap-1.5">
+								<span className="bg-status-maintenance size-2 shrink-0 rounded-full" />
+								{t('pages.status_page.verdict.maintenance', { count: maintenanceCount })}
+							</span>
+						)}
+
 						<span className="flex items-center gap-1.5">
 							<Clock className="h-4 w-4 shrink-0" />
 							<span className="tabular">
 								{t('pages.status_page.description.last_update')}
-								{new Date().toLocaleTimeString(i18n.language)}
+								{formatTime(new Date(), i18n.language, { withSeconds: true })}
 							</span>
 						</span>
 
@@ -112,7 +123,11 @@ export default function ProbesStatus() {
 												</CardDescription>
 											</div>
 										</div>
-										<ProbeStatus status={item.probe.status} size="sm" />
+										{item.maintenance ? (
+											<MaintenanceBadge current={item.maintenance} size="sm" />
+										) : (
+											<ProbeStatus status={item.probe.status} size="sm" />
+										)}
 									</div>
 								</div>
 
@@ -123,10 +138,8 @@ export default function ProbesStatus() {
 									<span>{t('monitors.description.now')}</span>
 								</div>
 
-								{/* An outage without a duration reads the same whether it started two minutes
-								    or three months ago; the 30-day figure gives the badge its context. */}
-								{(item.uptimes || item.down_duration) && (
-									<div className="border-border mt-4 flex items-center justify-between border-t pt-3 text-xs">
+								{(item.uptimes || item.down_duration || item.next_maintenance) && (
+									<div className="border-border mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t pt-3 text-xs">
 										{item.uptimes ? (
 											<span className="text-muted-foreground">
 												{t('pages.status_page.uptime_30d')}{' '}
@@ -146,10 +159,20 @@ export default function ProbesStatus() {
 											<span />
 										)}
 
-										{item.down_duration && (
+										{item.down_duration && !item.maintenance && (
 											<span className="text-status-down-fg tabular font-medium">
 												{t('pages.status_page.down_for', { duration: item.down_duration })}
 											</span>
+										)}
+
+										{item.maintenance_duration && (
+											<span className="text-muted-foreground tabular">
+												{t('pages.status_page.planned_downtime', { duration: item.maintenance_duration })}
+											</span>
+										)}
+
+										{!item.maintenance && item.next_maintenance && (
+											<MaintenanceBadge next={item.next_maintenance} size="sm" />
 										)}
 									</div>
 								)}
@@ -175,7 +198,6 @@ export default function ProbesStatus() {
 }
 
 function ProbesStatusSkeleton() {
-	/* Mirrors the real card: uniform bars, same count, same footer row, so nothing shifts on load. */
 	const BAR_COUNT = 30;
 	const CARD_COUNT = 6;
 

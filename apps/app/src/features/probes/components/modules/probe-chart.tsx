@@ -1,18 +1,22 @@
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms/chart.tsx';
-import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceDot, ReferenceLine, XAxis, YAxis } from 'recharts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
 import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
+import type { MaintenanceOccurrence } from '@/features/maintenances/schemas/maintenance.schema.ts';
+import { formatDayShort, formatTime } from '@/lib/datetime.ts';
 
 export default function ProbeChart({
 	monitors,
 	lastHour,
 	monitorStatus,
+	maintenancePeriods = [],
 }: {
 	monitors: Monitor[];
 	lastHour: number;
 	monitorStatus: ProbeStatusEnum;
+	maintenancePeriods?: MaintenanceOccurrence[];
 }) {
 	const { t, i18n } = useTranslation();
 
@@ -31,7 +35,6 @@ export default function ProbeChart({
 		const now = Date.now();
 		const startTime = now - lastHour * 60 * 60 * 1000;
 
-		// 10 min below 6h of range, 1h above: anything longer is a real gap, not a missed check.
 		const gapThreshold = lastHour <= 6 ? 10 * 60 * 1000 : 60 * 60 * 1000;
 
 		const filteredMonitors = monitors
@@ -62,11 +65,6 @@ export default function ProbeChart({
 		return { chartData: dataWithGaps, xAxisDomain: [startTime, now] };
 	}, [monitors, lastHour]);
 
-	/*
-	 * Without a baseline a reader cannot tell whether 146 ms is good for this particular service.
-	 * The period average gives the curve something to be measured against, and the last point is
-	 * marked because it is the value people actually came to read.
-	 */
 	const { average, lastPoint } = useMemo(() => {
 		const values = chartData.filter((d) => d.response_time !== null) as {
 			timestamp: number;
@@ -82,15 +80,20 @@ export default function ProbeChart({
 		};
 	}, [chartData]);
 
-	const formatTime = (timestamp: number) => {
-		const date = new Date(timestamp);
+	const formatTick = (timestamp: number) =>
+		lastHour === 168 ? formatDayShort(timestamp, i18n.language) : formatTime(timestamp, i18n.language);
 
-		if (lastHour === 168) {
-			return date.toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
-		}
+	const maintenanceBands = useMemo(() => {
+		const [start, end] = xAxisDomain;
 
-		return date.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
-	};
+		return maintenancePeriods
+			.map((period) => ({
+				id: period.id,
+				from: Math.max(new Date(period.starts_at).getTime(), start),
+				to: Math.min(new Date(period.ends_at).getTime(), end),
+			}))
+			.filter((band) => Number.isFinite(band.from) && Number.isFinite(band.to) && band.to > band.from);
+	}, [maintenancePeriods, xAxisDomain]);
 
 	const hasData = chartData.some((d) => d.response_time !== null);
 
@@ -114,7 +117,7 @@ export default function ProbeChart({
 						tickLine={false}
 						axisLine={false}
 						tickMargin={8}
-						tickFormatter={formatTime}
+						tickFormatter={formatTick}
 					/>
 					<YAxis
 						tickLine={false}
@@ -129,12 +132,25 @@ export default function ProbeChart({
 							<ChartTooltipContent
 								labelFormatter={(_, payload) => {
 									const timestamp = payload?.[0]?.payload?.timestamp;
-									return timestamp ? formatTime(timestamp) : '';
+									return timestamp ? formatTick(timestamp) : '';
 								}}
 								indicator="dot"
 							/>
 						}
 					/>
+
+					{maintenanceBands.map((band) => (
+						<ReferenceArea
+							key={band.id}
+							x1={band.from}
+							x2={band.to}
+							fill="var(--status-maintenance)"
+							fillOpacity={0.12}
+							stroke="var(--status-maintenance)"
+							strokeOpacity={0.25}
+							ifOverflow="hidden"
+						/>
+					))}
 
 					<Area
 						dataKey="response_time"
