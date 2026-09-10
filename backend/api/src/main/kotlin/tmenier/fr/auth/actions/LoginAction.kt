@@ -9,6 +9,7 @@ import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.databases.repositories.RefreshTokenRepository
 import tmenier.fr.databases.repositories.UserRepository
+import java.util.UUID
 
 @ApplicationScoped
 class LoginAction(
@@ -18,32 +19,35 @@ class LoginAction(
     val jwtService: JwtService,
     val sessionContextService: SessionContextService,
 ) {
+    private val unknownUserHash: String by lazy {
+        passwordService.hashPassword(UUID.randomUUID().toString())
+    }
+
     fun execute(payload: LoginRequest): LoginResponse {
-        val user = userRepository.findByEmail(payload.email)
+        val user = userRepository.findByEmailOrNull(payload.email)
 
-        if (passwordService.verifyPassword(
-                payload.password,
-                user.password,
-            )
-        ) {
-            val refreshToken = jwtService.generateRefreshToken()
-            val sessionId =
-                refreshTokenRepository.storeRefreshToken(
-                    refreshToken,
-                    user,
-                    sessionContextService.userAgent(),
-                    sessionContextService.ipAddress(),
-                )
-
-            return LoginResponse(
-                token = jwtService.generateJwt(user.id, user.name, user.email),
-                refreshToken = refreshToken.toString(),
-                sessionId = sessionId.toString(),
-            )
-        } else {
-            passwordService.verifyPassword(payload.password, "uptime-kotlin")
+        if (user == null) {
+            passwordService.verifyPassword(payload.password, unknownUserHash)
+            throw InvalidCredentialsException()
         }
 
-        throw InvalidCredentialsException()
+        if (!passwordService.verifyPassword(payload.password, user.password)) {
+            throw InvalidCredentialsException()
+        }
+
+        val refreshToken = jwtService.generateRefreshToken()
+        val sessionId =
+            refreshTokenRepository.storeRefreshToken(
+                refreshToken,
+                user,
+                sessionContextService.userAgent(),
+                sessionContextService.ipAddress(),
+            )
+
+        return LoginResponse(
+            token = jwtService.generateJwt(user.id, user.name, user.email),
+            refreshToken = refreshToken.toString(),
+            sessionId = sessionId.toString(),
+        )
     }
 }
