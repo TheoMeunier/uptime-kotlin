@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
-import tmenier.fr.common.utils.toHumanReadable
+import tmenier.fr.common.utils.DowntimeWindow
 import tmenier.fr.databases.dtos.DownProbeDto
 import tmenier.fr.databases.dtos.IncidentBar
 import tmenier.fr.databases.dtos.MonitorSummary
@@ -12,7 +12,6 @@ import tmenier.fr.databases.dtos.ProbeEventDto
 import tmenier.fr.databases.dtos.ResponseMetrics24h
 import tmenier.fr.databases.dtos.SparklinePoint
 import java.sql.Timestamp
-import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -75,32 +74,37 @@ class DashboardRepository(
     }
 
     fun findDownProbesWithDowntime(): List<DownProbeDto> {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val since = DowntimeWindow.startOf(now)
+
         val jpql =
             """
             SELECT p.id, p.name, MAX(pml.runAt), p.createdAt
             FROM ProbesEntity p
-            LEFT JOIN p.probesMonitorLogs pml WITH pml.status = 0
+            LEFT JOIN p.probesMonitorLogs pml
+                WITH pml.status = 0 AND pml.runAt > :since AND pml.underMaintenance = false
             WHERE p.enabled = true AND p.status = 3
             GROUP BY p.id, p.name, p.createdAt
             """.trimIndent()
 
-        val results = em.createQuery(jpql, Tuple::class.java).resultList
-
-        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val results =
+            em
+                .createQuery(jpql, Tuple::class.java)
+                .setParameter("since", since)
+                .resultList
 
         return results.map { row ->
-            val id = (row[0] as UUID)
-            val name = row[1] as String
-            val lastSuccess = row[2] as LocalDateTime?
-            val createdAt = row[3] as LocalDateTime
-
-            val since = lastSuccess ?: createdAt
-            val duration = Duration.between(since, now)
+            val downtime =
+                DowntimeWindow.resolve(
+                    lastSuccessAt = row[2] as LocalDateTime?,
+                    createdAt = row[3] as LocalDateTime,
+                    now = now,
+                )
 
             DownProbeDto(
-                id = id,
-                name = name,
-                downDuration = duration.toHumanReadable(),
+                id = row[0] as UUID,
+                name = row[1] as String,
+                downDuration = downtime.humanReadable(now),
             )
         }
     }
