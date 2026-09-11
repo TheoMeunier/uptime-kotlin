@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.utils.DowntimeWindow
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
@@ -279,17 +280,22 @@ object ProbeMapper {
     ): ProbeStatusDTO {
         val content = ProbeContentMapper.toDto(entity)
 
-        val downSince =
+        val now = LocalDateTime.now()
+        val downtime =
             if (entity.status == ProbeMonitorLogStatus.FAILURE) {
-                metrics?.lastSuccessAt ?: entity.createdAt
+                DowntimeWindow.resolve(
+                    lastSuccessAt = metrics?.lastSuccessAt,
+                    createdAt = entity.createdAt,
+                    now = now,
+                )
             } else {
                 null
             }
 
         return ProbeStatusDTO(
             uptimes = metrics?.uptimes,
-            downSince = downSince,
-            downDuration = downSince?.let { Duration.between(it, LocalDateTime.now()).toHumanReadable() },
+            downSince = downtime?.since,
+            downDuration = downtime?.humanReadable(now),
             maintenance = metrics?.maintenance?.current,
             nextMaintenance = metrics?.maintenance?.next,
             maintenanceDuration =
