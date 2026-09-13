@@ -34,12 +34,15 @@ class ProbeMonitorRepository(
     fun findByProbeAfter(
         probeId: UUID,
         after: LocalDateTime,
+        limit: Int = MAX_POINTS,
     ): List<ProbesMonitorsLogEntity> =
         find(
-            "probe.id = ?1 AND runAt > ?2 ORDER BY runAt ASC",
+            "probe.id = ?1 AND runAt > ?2 ORDER BY runAt DESC",
             probeId,
             after,
-        ).list()
+        ).range(0, limit - 1)
+            .list()
+            .reversed()
 
     fun findByProbe(probeId: UUID): List<ProbesMonitorsLogEntity> =
         find(
@@ -65,4 +68,8 @@ class ProbeMonitorRepository(
     fun deleteByProbe(probeId: UUID): Long = delete("probe.id = ?1", probeId)
 
     fun existsByCheckTaskId(checkTaskId: UUID): Boolean = count("checkTaskId = ?1", checkTaskId) > 0
+
+    companion object {
+        const val MAX_POINTS: Int = 500
+    }
 }
