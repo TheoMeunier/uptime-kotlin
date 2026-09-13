@@ -31,7 +31,7 @@ class EditProbeResource(
         val uuid = UUID.fromString(probeId)
 
         val probeEntity =
-            probeRepository.findByIdOrNull(uuid)
+            probeRepository.findByIdWithNotificationsOrNull(uuid)
                 ?: run {
                     logger.warn { "Probe edition requested for unknown probe $uuid" }
                     throw NotFoundException("Probe not found")

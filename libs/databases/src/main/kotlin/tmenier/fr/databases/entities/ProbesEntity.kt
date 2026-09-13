@@ -73,7 +73,7 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "next_check_at")
     var nextCheckAt: LocalDateTime? = null
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.REMOVE])
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinTable(
         name = "probes_notifications_channels",
         joinColumns = [JoinColumn("probe_id")],

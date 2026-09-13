@@ -31,6 +31,12 @@ class ProbeRepository(
 
     fun findByIdOrNull(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
 
+    fun findByIdWithNotificationsOrNull(id: UUID): ProbesEntity? =
+        find(
+            "SELECT p FROM ProbesEntity p LEFT JOIN FETCH p.notifications WHERE p.id = ?1",
+            id,
+        ).firstResult()
+
     fun findByIdForUpdate(id: UUID): ProbesEntity =
         em.find(ProbesEntity::class.java, id, LockModeType.PESSIMISTIC_WRITE)
             ?: throw IllegalArgumentException("Probe not found")
