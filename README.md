@@ -158,8 +158,13 @@ networks:
 
    3.4 Schedulers Configuration:
 
-    - `QUARKUS_SCHEDULER_STRATEGY` : The strategy used for scheduling tasks (database or none) or none if you don't want
-      to use the scheduler for cluster mode.
+    - `QUARKUS_SCHEDULER_STRATEGY` : scheduler strategy of the API (`db-lock`, or `none` if the workers produce the
+      checks).
+
+   3.5 Maintenance windows (set the same values on the API and the workers):
+
+    - `MAINTENANCE_HORIZON_DAYS` (default `90`) : how far ahead recurring windows are unrolled into occurrences.
+    - `MAINTENANCE_MAX_DURATION_HOURS` (default `24`) : longest window the API accepts.
 
 
 4. Start the application with docker-compose
@@ -188,8 +193,11 @@ uptime-kotlin-worker:
   container_name: uptime_kotlin_worker
   environment:
     TZ: Europe/Paris
-    QUARKUS_SCHEDULER_STRATEGY: database
-    QUARKUS_SCHEDULER_WORKER_NAME: worker-primary
+    SCHEDULER_STRATEGY: database
+    SCHEDULER_WORKER_NAME: worker-primary
+    SCHEDULER_WORKER_CONCURRENCY: "4"
+    MAINTENANCE_HORIZON_DAYS: "90"
+    MAINTENANCE_MAX_DURATION_HOURS: "24"
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
@@ -204,8 +212,15 @@ uptime-kotlin-worker:
 #### Configure the` variable environnement` file
 
 1. Cluster mode
-    - `QUARKUS_SCHEDULER_STRATEGY`: Application and worker mode if `db-lock` or `database`
-    - `QUARKUS_SCHEDULER_WORKER_NAME`: The name of the worker instance (must be unique for each worker)"
+
+   On the **API**: `QUARKUS_SCHEDULER_STRATEGY` set to `db-lock`.
+
+   On each **worker** (these are `SCHEDULER_*` variables, not `QUARKUS_SCHEDULER_*`):
+
+    - `SCHEDULER_STRATEGY`: `database` to run checks from the queue, `none` (default) to stay idle.
+    - `SCHEDULER_WORKER_NAME`: name of the worker, unique for each instance.
+    - `SCHEDULER_WORKER_CONCURRENCY` (default `1`): checks run in parallel by this worker. Keep it under the datasource
+      pool size.
 
 ## Contributing
 
