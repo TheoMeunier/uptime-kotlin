@@ -17,6 +17,7 @@ class NotificationService(
     private val notificationEventResolver: NotificationEventResolver,
     private val notificationTaskRepository: NotificationTaskRepository,
 ) {
+  
     fun announce(
         probe: ProbesEntity,
         checkTaskId: UUID,
