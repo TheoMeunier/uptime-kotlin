@@ -23,22 +23,28 @@ export default function CreateFirstUserApplicationForm() {
 							<Field>
 								<Field>
 									<FieldLabel htmlFor="name">{t('form.label.full_name')}</FieldLabel>
-									<Input {...form.register('name')} type="text" placeholder="John Doe" required />
+									<Input {...form.register('name')} id="name" type="text" placeholder="John Doe" required />
 									<FieldError>{errors.name?.message}</FieldError>
 								</Field>
 								<Field>
 									<FieldLabel htmlFor="email">{t('form.label.email')}</FieldLabel>
-									<Input {...form.register('email')} type="email" placeholder="admin@uptime-kotlin.com" required />
+									<Input
+										{...form.register('email')}
+										id="email"
+										type="email"
+										placeholder="admin@uptime-kotlin.com"
+										required
+									/>
 									<FieldError>{errors.email?.message}</FieldError>
 								</Field>
 								<Field>
 									<FieldLabel htmlFor="password">{t('form.label.password')}</FieldLabel>
-									<Input {...form.register('password')} type="password" required />
+									<Input {...form.register('password')} id="password" type="password" required />
 									<FieldError>{errors.password?.message}</FieldError>
 								</Field>
 								<Field>
 									<FieldLabel htmlFor="confirm-password">{t('form.label.confirmation_password')}</FieldLabel>
-									<Input {...form.register('password_confirmation')} type="password" required />
+									<Input {...form.register('password_confirmation')} id="confirm-password" type="password" required />
 									<FieldError>{errors.password_confirmation?.message}</FieldError>
 								</Field>
 								<FieldDescription>{t('form.description.password')}</FieldDescription>

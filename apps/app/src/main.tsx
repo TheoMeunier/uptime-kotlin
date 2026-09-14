@@ -23,7 +23,14 @@ const ProbesStatus = lazy(() => import('@/pages/probes/probes-status.tsx'));
 const Maintenances = lazy(() => import('@/pages/maintenances/maintenances.tsx'));
 const SetupPage = lazy(() => import('@/pages/setup/setup-page.tsx'));
 
+const DEFAULT_STALE_TIME_MS = 10_000;
+
 export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: DEFAULT_STALE_TIME_MS,
+		},
+	},
 	queryCache: new QueryCache({
 		onError: (error) => {
 			toast.error(getApiErrorMessage(error));

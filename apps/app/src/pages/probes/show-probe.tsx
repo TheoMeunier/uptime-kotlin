@@ -20,6 +20,15 @@ import ErrorState from '@/components/molecules/error-state.tsx';
 import StartMaintenanceDialogue from '@/features/maintenances/components/actions/start-maintenance-dialogue.tsx';
 import MaintenanceBanner from '@/features/maintenances/components/maintenance-banner.tsx';
 
+const POLL_MIN_MS = 15_000;
+const POLL_MAX_MS = 120_000;
+
+function pollIntervalFor(probeIntervalSeconds: number | undefined): number {
+	if (!probeIntervalSeconds || !Number.isFinite(probeIntervalSeconds)) return POLL_MAX_MS;
+
+	return Math.min(Math.max(probeIntervalSeconds * 1000, POLL_MIN_MS), POLL_MAX_MS);
+}
+
 export function ShowProbe() {
 	const { t } = useTranslation();
 	const params = useParams();
@@ -31,7 +40,7 @@ export function ShowProbe() {
 			return probeService.getProbe<ProbeShow>(params.probeId!, hours, ProbeShowSchema);
 		},
 		placeholderData: (previousData) => previousData,
-		refetchInterval: 120000,
+		refetchInterval: (query) => pollIntervalFor(query.state.data?.probe.interval),
 	});
 
 	if (isLoading) return <ShowProbeSkeleton />;
