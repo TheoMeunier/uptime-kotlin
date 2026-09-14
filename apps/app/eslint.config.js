@@ -7,6 +7,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 export default defineConfig([
 	globalIgnores([
 		'dist',
+		'.vite',
 		'src/components/atoms',
 		'src/features/notifications/components/forms/form-field-notification.tsx',
 	]),
