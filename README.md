@@ -29,7 +29,8 @@ monitoring service availability without relying on external solutions.
 - HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis, SMTP, Kafka and RabbitMQ
   monitoring
 - Real-time dashboard with historical data
-- Multi-channel notifications (Email, Slack, Discord, Teams, Webhook)
+- Multi-channel notifications (Email, Slack, Discord, Teams, Webhook), with periodic resend while a monitor
+  stays down (per-monitor interval, disabled by default)
 - Public status pages for your users
 - JWT authentication with encrypted data
 - Docker-ready deployment

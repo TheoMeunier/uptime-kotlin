@@ -36,6 +36,7 @@ class StoreProbeAction(
                 enabled = payload.enabled == true,
                 description = payload.description,
                 content = getProbeContentService.resolve(payload, existingProbe),
+                alertRepeatSeconds = payload.alertRepeatSeconds,
             )
 
         if (isUpdate) {

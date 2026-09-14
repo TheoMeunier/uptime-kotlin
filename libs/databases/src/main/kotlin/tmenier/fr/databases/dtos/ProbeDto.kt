@@ -72,6 +72,7 @@ data class ProbeDTO(
     val description: String?,
     val lastRun: LocalDateTime?,
     val status: ProbeMonitorLogStatus,
+    val alertRepeatSeconds: Int = 0,
     val content: ProbeContent,
     val regionsOrder: List<String>? = null,
     val url: String? = null,
@@ -90,6 +91,7 @@ data class StoreProbeDto(
     val enabled: Boolean,
     val description: String?,
     val content: ProbeContent,
+    val alertRepeatSeconds: Int = 0,
 )
 
 @RegisterForReflection

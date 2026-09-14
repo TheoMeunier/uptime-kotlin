@@ -25,6 +25,7 @@ class NotificationTaskRepository(
         checkTaskId: UUID,
         result: ProbeResult,
         event: NotificationEvent,
+        reminderIndex: Int = 0,
     ) {
         if (event == NotificationEvent.NONE) return
 
@@ -34,6 +35,7 @@ class NotificationTaskRepository(
                     id = UUID.randomUUID()
                     this.checkTaskId = checkTaskId
                     this.event = event
+                    this.reminderIndex = reminderIndex
                     status = QueueJobStatus.PENDING
                     payload = NotificationTaskMapper.payloadToEntity(result)
                     nextAttemptAt = Instant.now()

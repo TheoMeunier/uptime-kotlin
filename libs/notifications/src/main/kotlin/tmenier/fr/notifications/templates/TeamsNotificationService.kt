@@ -51,6 +51,23 @@ class TeamsNotificationService : tmenier.fr.notifications.TypedNotificationInter
         sendTeamsNotification(content, jsonPayload)
     }
 
+    override fun sendReminder(
+        content: NotificationContent.Teams,
+        probe: ProbeDTO,
+        result: ProbeResult,
+        reminderIndex: Int,
+    ) {
+        val jsonPayload =
+            buildTeamsMessage(
+                "Service ${probe.name} - still ${result.status} (reminder #$reminderIndex)",
+                result.message,
+                "FF8C00",
+                result.runAt,
+                result.status,
+            )
+        sendTeamsNotification(content, jsonPayload)
+    }
+
     override fun sendTest(content: NotificationContent.Teams) {
         sendTeamsNotification(
             content,

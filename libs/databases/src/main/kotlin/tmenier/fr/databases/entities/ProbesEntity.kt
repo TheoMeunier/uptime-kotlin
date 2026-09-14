@@ -19,6 +19,7 @@ import org.hibernate.annotations.UpdateTimestamp
 import org.hibernate.type.SqlTypes
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -52,6 +53,15 @@ class ProbesEntity : PanacheEntityBase {
 
     @Column(name = "alerted_status", nullable = false)
     var alertedStatus: ProbeMonitorLogStatus = ProbeMonitorLogStatus.SUCCESS
+
+    @Column(name = "alert_repeat_seconds", nullable = false)
+    var alertRepeatSeconds: Int = 0
+
+    @Column(name = "next_alert_at")
+    var nextAlertAt: Instant? = null
+
+    @Column(name = "alert_repeat_count", nullable = false)
+    var alertRepeatCount: Int = 0
 
     @Column(nullable = false)
     var protocol: ProbeProtocol = ProbeProtocol.HTTP

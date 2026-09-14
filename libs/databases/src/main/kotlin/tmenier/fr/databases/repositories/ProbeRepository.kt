@@ -17,6 +17,7 @@ import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -147,6 +148,7 @@ class ProbeRepository(
         entity.enabled = dto.enabled
         entity.description = dto.description
         entity.content = ProbeContentMapper.toEntity(dto.content).first
+        applyAlertRepeat(entity, dto.alertRepeatSeconds)
 
         entity.notifications.clear()
         attach(notifications, entity)
@@ -165,11 +167,38 @@ class ProbeRepository(
         entity.persist()
     }
 
+    /**
+     * Keeps the resend deadline consistent with the setting it depends on: turning
+     * the resend off must silence the probe now, and turning it on while the probe
+     * is already announced as down must arm a deadline -- otherwise the setting
+     * would only take effect at the next outage.
+     */
+    private fun applyAlertRepeat(
+        entity: ProbesEntity,
+        alertRepeatSeconds: Int,
+    ) {
+        entity.alertRepeatSeconds = alertRepeatSeconds
+
+        if (alertRepeatSeconds <= 0) {
+            entity.nextAlertAt = null
+            entity.alertRepeatCount = 0
+            return
+        }
+
+        if (entity.alertedStatus == ProbeMonitorLogStatus.FAILURE && entity.nextAlertAt == null) {
+            entity.nextAlertAt = Instant.now().plusSeconds(alertRepeatSeconds.toLong())
+        }
+    }
+
     fun onOff(dto: ProbeOnOffDto) {
         val probe = findByIdForUpdate(dto.id)
         probe.enabled = dto.enabled
         probe.status = dto.status
         probe.alertedStatus = dto.status
+        // A paused probe has no open alert: a deadline left behind would fire on
+        // the first check after it is resumed.
+        probe.nextAlertAt = null
+        probe.alertRepeatCount = 0
         probe.nextCheckAt = if (dto.enabled) LocalDateTime.now() else null
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)

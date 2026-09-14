@@ -51,6 +51,23 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
         sendSlackNotification(content, jsonPayload)
     }
 
+    override fun sendReminder(
+        content: NotificationContent.Slack,
+        probe: ProbeDTO,
+        result: ProbeResult,
+        reminderIndex: Int,
+    ) {
+        val jsonPayload =
+            buildSlackMessage(
+                "Service ${probe.name} - still ${result.status} (reminder #$reminderIndex)",
+                result.message,
+                "#FF8C00",
+                result.runAt,
+                result.status,
+            )
+        sendSlackNotification(content, jsonPayload)
+    }
+
     override fun sendTest(content: NotificationContent.Slack) {
         sendSlackNotification(
             content,

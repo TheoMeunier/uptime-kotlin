@@ -147,6 +147,7 @@ object ProbeMapper {
             description = dto.description
             content = ProbeContentMapper.toEntity(dto.content).first
             alertedStatus = ProbeMonitorLogStatus.SUCCESS
+            alertRepeatSeconds = dto.alertRepeatSeconds
         }
 
     fun toDto(entity: ProbesEntity): ProbeDTO =
@@ -162,6 +163,7 @@ object ProbeMapper {
             description = entity.description,
             lastRun = entity.lastRun,
             status = entity.status,
+            alertRepeatSeconds = entity.alertRepeatSeconds,
             content = ProbeContentMapper.toDto(entity),
             url = ProbeContentMapper.toUrl(ProbeContentMapper.toDto(entity)),
             createdAt = entity.createdAt,
@@ -195,6 +197,7 @@ object ProbeMapper {
                     description = entity.description,
                     lastRun = entity.lastRun,
                     status = entity.status,
+                    alertRepeatSeconds = entity.alertRepeatSeconds,
                     createdAt = entity.createdAt,
                     updatedAt = entity.updatedAt,
                     content = ProbeContentMapper.redactSecrets(ProbeContentMapper.toDto(entity)),
@@ -220,6 +223,7 @@ object ProbeMapper {
                     description = entity.description,
                     lastRun = entity.lastRun,
                     status = entity.status,
+                    alertRepeatSeconds = entity.alertRepeatSeconds,
                     createdAt = entity.createdAt,
                     updatedAt = entity.updatedAt,
                     content = contentMapper(ProbeContentMapper.toDto(entity)),
@@ -250,6 +254,7 @@ object ProbeMapper {
                     description = entity.description,
                     lastRun = entity.lastRun,
                     status = entity.status,
+                    alertRepeatSeconds = entity.alertRepeatSeconds,
                     content = ProbeContentMapper.redactSecrets(content),
                     url = ProbeContentMapper.toUrl(content),
                     createdAt = entity.createdAt,

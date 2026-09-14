@@ -78,6 +78,36 @@ class EmailNotificationService(
         logger.info("Failure notification sent to ${content.to} for probe ${probe.name}")
     }
 
+    override fun sendReminder(
+        content: NotificationContent.Mail,
+        probe: ProbeDTO,
+        result: ProbeResult,
+        reminderIndex: Int,
+    ) {
+        val client = getMailClient(content)
+
+        val message =
+            MailMessage()
+                .setFrom(content.from)
+                .setTo(content.to)
+                .setSubject("🔁 Still down: ${probe.name} (reminder #$reminderIndex)")
+                .setText(
+                    """
+                    Monitor: ${probe.name}
+                    Status: FAILURE (still down, reminder #$reminderIndex)
+                    Error: ${result.message}
+                    Timestamp: ${result.runAt}
+                    """.trimIndent(),
+                )
+
+        client
+            .sendMail(message)
+            .toCompletionStage()
+            .toCompletableFuture()
+            .join()
+        logger.info("Reminder #$reminderIndex sent to ${content.to} for probe ${probe.name}")
+    }
+
     override fun sendTest(content: NotificationContent.Mail) {
         val client = getMailClient(content)
         val message =

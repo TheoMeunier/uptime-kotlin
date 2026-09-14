@@ -5,6 +5,7 @@ import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
+import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
@@ -23,7 +24,7 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
         probe: ProbeDTO,
         result: ProbeResult,
     ) {
-        val payload = buildPayload(probe.name, result.message, result.runAt, result.status)
+        val payload = buildPayload(probe.name, result.message, result.runAt, result.status, NotificationEvent.RECOVERY)
         sendWebhook(content, payload)
     }
 
@@ -32,14 +33,38 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
         probe: ProbeDTO,
         result: ProbeResult,
     ) {
-        val payload = buildPayload(probe.name, result.message, result.runAt, result.status)
+        val payload = buildPayload(probe.name, result.message, result.runAt, result.status, NotificationEvent.FAILURE)
+        sendWebhook(content, payload)
+    }
+
+    override fun sendReminder(
+        content: NotificationContent.Webhook,
+        probe: ProbeDTO,
+        result: ProbeResult,
+        reminderIndex: Int,
+    ) {
+        val payload =
+            buildPayload(
+                name = probe.name,
+                message = result.message,
+                runAt = result.runAt,
+                status = result.status,
+                event = NotificationEvent.REMINDER,
+                reminderIndex = reminderIndex,
+            )
         sendWebhook(content, payload)
     }
 
     override fun sendTest(content: NotificationContent.Webhook) {
         sendWebhook(
             content,
-            buildPayload("Test", "Test notification", LocalDateTime.now(), ProbeMonitorLogStatus.SUCCESS),
+            buildPayload(
+                "Test",
+                "Test notification",
+                LocalDateTime.now(),
+                ProbeMonitorLogStatus.SUCCESS,
+                NotificationEvent.NONE,
+            ),
         )
     }
 
@@ -50,14 +75,21 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
         message: String,
         runAt: LocalDateTime,
         status: ProbeMonitorLogStatus,
+        event: NotificationEvent,
+        reminderIndex: Int = 0,
     ): String {
         val escapedName = name.replace("\"", "\\\"").replace("\n", "\\n")
         val escapedMessage = message.replace("\"", "\\\"").replace("\n", "\\n")
 
+        // `event` and `reminderIndex` are additive: a receiver that only reads
+        // `status` keeps working, one that wants to deduplicate a repeated alert
+        // now can.
         return """
             {
                 "name": "$escapedName",
                 "status": "${status.name}",
+                "event": "${event.name}",
+                "reminderIndex": $reminderIndex,
                 "message": "$escapedMessage",
                 "runAt": "$runAt"
             }

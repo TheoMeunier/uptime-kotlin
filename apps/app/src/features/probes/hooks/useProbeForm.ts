@@ -9,6 +9,14 @@ const baseStoreProbeSchema = z.object({
 	retry: z.number().min(1).max(10).optional(),
 	interval_retry: z.number().min(0).max(3600).optional(),
 	enabled: z.boolean().optional(),
+	alert_repeat_seconds: z
+		.number()
+		.min(0)
+		.max(86400)
+		.refine((value) => value === 0 || value >= 60, {
+			message: 'Use 0 to disable, or at least 60 seconds',
+		})
+		.optional(),
 	description: z
 		.string()
 		.transform((val) => (val === '' ? null : val))
