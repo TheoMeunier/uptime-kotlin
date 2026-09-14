@@ -6,4 +6,5 @@ dependencies {
 
     implementation(libs.jackson.module.kotlin)
     implementation(libs.quarkus.scheduler)
+    implementation(libs.quarkus.smallrye.health)
 }

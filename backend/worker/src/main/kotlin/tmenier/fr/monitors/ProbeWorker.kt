@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class ProbeWorker(
     private val probeCheckTaskRepository: ProbeCheckTaskRepository,
     private val probeWorkerService: ProbeWorkerService,
+    private val probeLoopHeartbeat: ProbeLoopHeartbeat,
 ) {
     @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
     lateinit var strategy: String
@@ -50,6 +51,8 @@ class ProbeWorker(
 
     @Scheduled(every = "1s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun executeDueTasks() {
+        probeLoopHeartbeat.tick()
+
         if (strategy != "database") return
 
         val capacity = concurrency - activeTasks.get()
