@@ -71,6 +71,7 @@ class NotificationRetryJob(
                         delivery.probe,
                         delivery.payload,
                         delivery.event,
+                        delivery.reminderIndex,
                     )
                     notificationTaskRepository.markSent(id)
                     logger.info { "Notification delivery $id sent" }

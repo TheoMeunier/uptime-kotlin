@@ -20,5 +20,12 @@ interface TypedNotificationInterfaces<T> : NotificationInterfaces {
         result: ProbeResult,
     )
 
+    fun sendReminder(
+        content: T,
+        probe: ProbeDTO,
+        result: ProbeResult,
+        reminderIndex: Int,
+    ) = sendFailure(content, probe, result)
+
     fun sendTest(content: T)
 }

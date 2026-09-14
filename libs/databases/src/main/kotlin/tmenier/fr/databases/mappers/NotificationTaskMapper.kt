@@ -26,6 +26,7 @@ object NotificationTaskMapper {
             status = entity.status,
             event = entity.event,
             payload = payloadToDto(entity),
+            reminderIndex = entity.reminderIndex,
             attemptCount = entity.attemptCount,
             maxAttempts = entity.maxAttempts,
         )

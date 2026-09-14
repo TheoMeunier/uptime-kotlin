@@ -3,7 +3,6 @@ package tmenier.fr.schedulers.services
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
-import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
@@ -34,10 +33,11 @@ class SaveProbeMonitor(
         val probe = probeRepository.findByIdForUpdate(probeId)
         if (!probe.enabled) return false
 
+        val at = MonitoringClock.toInstant(runAt)
         val underMaintenance =
             maintenanceOccurrenceRepository.isProbeUnderMaintenance(
                 probeId = probe.id,
-                at = MonitoringClock.toInstant(runAt),
+                at = at,
             )
 
         val alertedStatus = probe.alertedStatus
@@ -64,17 +64,12 @@ class SaveProbeMonitor(
             return true
         }
 
-        val event =
-            notificationService.enqueueForTransition(
-                probe = probe,
-                checkTaskId = checkTaskId,
-                result = result,
-                previousStatus = alertedStatus,
-            )
-
-        if (event != NotificationEvent.NONE) {
-            probe.alertedStatus = result.status
-        }
+        notificationService.announce(
+            probe = probe,
+            checkTaskId = checkTaskId,
+            result = result,
+            at = at,
+        )
 
         return true
     }

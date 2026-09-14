@@ -218,6 +218,7 @@ const en = {
 			name_monitor: 'Monitor name',
 			retry: 'Retries',
 			interval_retry: 'Retry interval (s)',
+			alert_repeat_seconds: 'Resend alert every (s)',
 			remove_confirmation: 'Confirm the monitor name',
 		},
 		uptime: {
@@ -264,6 +265,8 @@ const en = {
 			rabbitmq_management_nodes:
 				'Enter RabbitMQ management node URLs including protocol and port, separated by commas. Example: https://node1.rabbitmq.com:15672',
 			internal_retry: 'Maximum retries before the service is marked as down and a notification is sent',
+			alert_repeat_seconds:
+				'While the monitor stays down, announce the alert again on the same channels at this interval. 0 sends a single notification, as before. Minimum 60 s.',
 			check_interval: 'Check every {{ interval }} seconds',
 			enabled: 'A paused monitor keeps its history but runs no check.',
 			now: 'Now',

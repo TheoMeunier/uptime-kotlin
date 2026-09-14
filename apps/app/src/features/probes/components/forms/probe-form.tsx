@@ -177,6 +177,19 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 					>
 						<FormSelectNotification form={form} name="notifications" />
 						<CreateNotificationDialogue />
+
+						<Field>
+							<FieldLabel htmlFor="alert_repeat_seconds">{t('monitors.label.alert_repeat_seconds')}</FieldLabel>
+							<Input
+								{...form.register('alert_repeat_seconds', { valueAsNumber: true })}
+								id="alert_repeat_seconds"
+								type="number"
+								min={0}
+								step={60}
+							/>
+							<FieldDescription>{t('monitors.description.alert_repeat_seconds')}</FieldDescription>
+							<FieldError>{errors.alert_repeat_seconds?.message}</FieldError>
+						</Field>
 					</FormSection>
 
 					<FormSection title={t('monitors.section.settings')} icon={Settings2}>

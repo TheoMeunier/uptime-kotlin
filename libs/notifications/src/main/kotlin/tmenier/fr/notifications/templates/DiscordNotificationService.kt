@@ -35,6 +35,16 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
         sendDiscordEmbed(content, jsonPayload)
     }
 
+    override fun sendReminder(
+        content: NotificationContent.Discord,
+        probe: ProbeDTO,
+        result: ProbeResult,
+        reminderIndex: Int,
+    ) {
+        val jsonPayload = buildEmbed(probe.name, result.message, 0xFF8C00, result.runAt, result.status, reminderIndex)
+        sendDiscordEmbed(content, jsonPayload)
+    }
+
     override fun sendTest(content: NotificationContent.Discord) {
         sendDiscordEmbed(
             content,
@@ -50,15 +60,22 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
         color: Int,
         runAt: LocalDateTime,
         status: ProbeMonitorLogStatus,
+        reminderIndex: Int = 0,
     ): String {
         val escapedTitle = title.replace("\"", "\\\"").replace("\n", "\\n")
         val escapedDescription = description.replace("\"", "\\\"").replace("\n", "\\n")
+        val headline =
+            if (reminderIndex > 0) {
+                "Your service $escapedTitle is STILL $status (reminder #$reminderIndex)"
+            } else {
+                "Your service $escapedTitle is $status"
+            }
 
         return """
             {
                 "embeds": [
                     {
-                        "title": "Your service $escapedTitle is $status",
+                        "title": "$headline",
                         "description": "$escapedDescription",
                         "color": $color
                     }

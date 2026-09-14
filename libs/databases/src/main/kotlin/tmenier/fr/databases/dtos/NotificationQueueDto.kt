@@ -37,6 +37,7 @@ data class NotificationQueueDto(
     val status: QueueJobStatus,
     val event: NotificationEvent,
     val payload: ProbeResult,
+    val reminderIndex: Int,
     val attemptCount: Int,
     val maxAttempts: Int,
 )

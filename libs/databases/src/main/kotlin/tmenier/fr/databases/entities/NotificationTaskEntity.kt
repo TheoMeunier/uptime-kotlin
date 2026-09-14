@@ -43,6 +43,9 @@ class NotificationTaskEntity : PanacheEntityBase {
     @Column(name = "last_error")
     var errorMessage: String? = null
 
+    @Column(name = "reminder_index", nullable = false)
+    var reminderIndex: Int = 0
+
     @Column(name = "delivery_attempts", nullable = false)
     var attemptCount: Int = 0
 

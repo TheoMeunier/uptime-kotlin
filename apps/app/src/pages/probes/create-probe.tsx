@@ -8,6 +8,7 @@ const DEFAULT_VALUES = {
 	interval_retry: 60,
 	retry: 3,
 	timeout: 30,
+	alert_repeat_seconds: 0,
 	enabled: true,
 	notifications: [],
 	method: 'GET' as const,

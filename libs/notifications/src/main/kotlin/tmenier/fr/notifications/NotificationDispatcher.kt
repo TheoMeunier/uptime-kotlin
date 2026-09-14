@@ -15,6 +15,7 @@ class NotificationDispatcher(
         probe: ProbeDTO,
         result: ProbeResult,
         event: NotificationEvent,
+        reminderIndex: Int = 0,
     ) {
         if (event == NotificationEvent.NONE) return
 
@@ -28,6 +29,7 @@ class NotificationDispatcher(
         when (event) {
             NotificationEvent.FAILURE -> typedHandler.sendFailure(notification.content, probe, result)
             NotificationEvent.RECOVERY -> typedHandler.sendSuccess(notification.content, probe, result)
+            NotificationEvent.REMINDER -> typedHandler.sendReminder(notification.content, probe, result, reminderIndex)
             NotificationEvent.NONE -> Unit
         }
     }

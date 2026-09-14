@@ -73,6 +73,14 @@ abstract class BaseStoreProbeRequest {
 
     @field:Size(min = 1, message = "At least one notification is required")
     val notifications: List<UUID> = emptyList()
+
+    @field:Min(value = 0, message = "Alert repeat must be 0 or a positive number of seconds")
+    @field:Max(value = 86_400, message = "Alert repeat must be at most 86400 seconds")
+    var alertRepeatSeconds: Int = 0
+
+    @AssertTrue(message = "Alert repeat must be 0 (disabled) or at least 60 seconds")
+    @JsonIgnore
+    fun isAlertRepeatValid(): Boolean = alertRepeatSeconds == 0 || alertRepeatSeconds >= 60
 }
 
 @RegisterForReflection
