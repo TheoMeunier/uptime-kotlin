@@ -18,9 +18,9 @@ monitoring service availability without relying on external solutions.
 
 <table>
   <tr>
-    <td><img src="docs/images/dashboard.png" alt="dashboard" width="300"></td>
-    <td><img src="docs/images/status-page.png" alt="status page" width="300"></td>
-    <td><img src="docs/images/monitor-page.png" alt="monitor" width="300"></td>
+    <td><img src="docs/images/dashboard.webp" alt="dashboard" width="300"></td>
+    <td><img src="docs/images/status-page.webp" alt="status page" width="300"></td>
+    <td><img src="docs/images/monitor-page.webp" alt="monitor" width="300"></td>
   </tr>
 </table>
 
