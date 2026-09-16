@@ -6,6 +6,7 @@ import setupService from '@/features/setup/services/setupService.ts';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import useSetup from '@/features/setup/hooks/useSetupApp.ts';
+import i18n from '@/lang/i18n.ts';
 
 const storeCreateFirstUserSchema = z
 	.object({
@@ -15,7 +16,7 @@ const storeCreateFirstUserSchema = z
 		password_confirmation: z.string().min(8),
 	})
 	.refine((data) => data.password === data.password_confirmation, {
-		message: 'Passwords do not match',
+		error: () => i18n.t('validation.passwords_mismatch'),
 		path: ['password_confirmation'],
 	});
 
@@ -34,7 +35,7 @@ export default function useStoreFirstUserApplication() {
 			return setupService.createFirstUserApplication(data);
 		},
 		onSuccess: () => {
-			toast.success('First user created');
+			toast.success(i18n.t('profile.alerts.create_first_user'));
 			updateSetupStatus(true);
 			navigate('/login', { replace: true });
 		},

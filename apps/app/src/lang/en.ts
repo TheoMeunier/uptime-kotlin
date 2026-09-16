@@ -8,6 +8,7 @@ const en = {
 
 	app: {
 		loading: 'Loading Uptime Kotlin',
+		loading_short: 'Loading…',
 	},
 
 	status: {
@@ -36,11 +37,15 @@ const en = {
 			url: 'Url',
 			enabled: 'Enabled',
 			method: 'Method',
+			bot_name: 'Bot name',
 		},
 		placeholder: {
 			email: 'john.doe@exemple.com',
 			password: '********',
 			mailer_url: 'smtp.exemple.com',
+			full_name: 'John Doe',
+			admin_email: 'admin@uptime-kotlin.com',
+			bot_name: 'Uptime Kotlin',
 		},
 		description: {
 			password: 'Must be at least 8 characters long',
@@ -79,6 +84,20 @@ const en = {
 		notification: 'notification',
 		profile: 'profile',
 		maintenance: 'maintenance window',
+		first_account: 'first account',
+	},
+
+	validation: {
+		passwords_mismatch: 'Passwords do not match',
+		password_must_differ: 'New password must be different from the current password',
+		password_required: 'Password is required',
+		alert_repeat_seconds: 'Use 0 to disable, or at least 60 seconds',
+		recurrence_until_after_start: 'The recurrence must end after its first occurrence',
+	},
+
+	select: {
+		placeholder: 'Select options',
+		empty: 'No results found.',
 	},
 
 	pages: {
@@ -130,6 +149,7 @@ const en = {
 		},
 		label: {
 			is_default: 'Default',
+			set_as_default: 'Have the notification by default',
 			type_notification: 'Type notification',
 			notification_name: 'Notification name',
 		},
@@ -402,6 +422,7 @@ const en = {
 		alerts: {
 			update_profile: 'Profile successfully updated',
 			update_password: 'Password successfully updated',
+			create_first_user: 'First user created',
 		},
 	},
 
@@ -464,6 +485,11 @@ const en = {
 		theme: {
 			switch_to_light: 'Switch to light theme',
 			switch_to_dark: 'Switch to dark theme',
+		},
+		language: {
+			label: 'Language',
+			en: 'English',
+			fr: 'Français',
 		},
 		updated: {
 			seconds_one: 'Updated {{count}}s ago',

@@ -90,18 +90,16 @@ export default function DeleteProbeDialogue({ probeId, probeName }: { probeId: s
 							<Trash2 className="text-status-down-fg h-6 w-6" />
 						</div>
 
-						<DialogTitle className="mt-4">{t('monitors.title.remove')} ?</DialogTitle>
+						<DialogTitle className="mt-4">{t('monitors.title.remove')}</DialogTitle>
 
 						<DialogDescription className="text-sm text-center text-muted-foreground mb-4">
-							{t('monitors.description.remove')} ?
+							{t('monitors.description.remove')}
 						</DialogDescription>
 					</DialogHeader>
 
 					<Field className="mb-4">
 						<FieldLabel htmlFor="remove-confirmation">{t('monitors.label.remove_confirmation')}</FieldLabel>
 
-						{/* <code> and not <pre>: FieldDescription renders a <p>, which cannot legally contain a
-						    <pre>, and only an inline element stays on the same line as the sentence. */}
 						<FieldDescription>
 							{t('monitors.description.remove_confirmation')}{' '}
 							<code className="bg-muted text-status-down-fg rounded px-1.5 py-0.5 font-mono text-xs break-all select-all">

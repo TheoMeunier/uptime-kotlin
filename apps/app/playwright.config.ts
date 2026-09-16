@@ -11,6 +11,9 @@ export default defineConfig({
 	reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
 	use: {
 		baseURL,
+		// Le sélecteur de langue retombe sur la langue du navigateur : sans locale fixée, les
+		// assertions sur les libellés anglais cassent sur une machine configurée en français.
+		locale: 'en-US',
 		trace: 'on-first-retry',
 		screenshot: 'only-on-failure',
 	},

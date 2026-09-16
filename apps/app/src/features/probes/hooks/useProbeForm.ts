@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import HttpStatusCode from '@/features/probes/enums/http-status-code.ts';
+import i18n from '@/lang/i18n.ts';
 
 const baseStoreProbeSchema = z.object({
 	name: z.string().min(3).max(255),
@@ -14,7 +15,7 @@ const baseStoreProbeSchema = z.object({
 		.min(0)
 		.max(86400)
 		.refine((value) => value === 0 || value >= 60, {
-			message: 'Use 0 to disable, or at least 60 seconds',
+			error: () => i18n.t('validation.alert_repeat_seconds'),
 		})
 		.optional(),
 	description: z

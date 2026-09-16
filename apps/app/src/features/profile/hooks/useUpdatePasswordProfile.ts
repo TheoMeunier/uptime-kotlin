@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import profileService from '@/features/profile/services/profileService.tsx';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/lang/i18n.ts';
 
 const storeUpdatePasswordSchema = z
 	.object({
@@ -13,11 +14,11 @@ const storeUpdatePasswordSchema = z
 		password_confirmation: z.string().min(8),
 	})
 	.refine((data) => data.password === data.password_confirmation, {
-		message: 'Passwords do not match',
+		error: () => i18n.t('validation.passwords_mismatch'),
 		path: ['password_confirmation'],
 	})
 	.refine((data) => data.password !== data.current_password, {
-		message: 'New password must be different from the current password',
+		error: () => i18n.t('validation.password_must_differ'),
 		path: ['password'],
 	});
 

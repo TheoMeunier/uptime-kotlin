@@ -37,6 +37,7 @@ import { summarizeAttention } from '@/lib/status.ts';
 import { buildCrumbs, currentPageLabel } from '@/lib/breadcrumb.ts';
 import useTabStatus from '@/hooks/use-tab-status.ts';
 import ThemeToggle from '@/components/molecules/theme-toggle.tsx';
+import LanguageToggle from '@/components/molecules/language-toggle.tsx';
 import LastUpdated from '@/components/molecules/last-updated.tsx';
 import SidebarMonitors from '@/components/molecules/sidebar-monitors.tsx';
 import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
@@ -179,6 +180,7 @@ export default function Layout() {
 
 					<div className="ml-auto flex items-center gap-2">
 						<LastUpdated at={dataUpdatedAt} />
+						<LanguageToggle />
 						<ThemeToggle />
 					</div>
 				</header>

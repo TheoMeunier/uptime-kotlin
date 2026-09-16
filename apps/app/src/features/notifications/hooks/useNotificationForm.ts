@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import i18n from '@/lang/i18n.ts';
 
 const baseStoreNotificationSchema = z.object({
 	name: z.string().min(3).max(255),
@@ -77,7 +78,7 @@ function createNotificationSchema(mode: NotificationFormMode) {
 		if (mode === 'create' && data.notification_type === 'MAIL' && !data.password) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
-				message: 'Password is required',
+				message: i18n.t('validation.password_required'),
 				path: ['password'],
 			});
 		}

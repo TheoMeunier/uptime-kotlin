@@ -2,6 +2,7 @@ import { Controller, type FieldValues, type Path, type UseFormReturn } from 'rea
 import type { MultiSelectGroup, MultiSelectOption } from '@/components/atoms/multi-select';
 import { MultiSelect } from '@/components/atoms/multi-select';
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '@/components/atoms/field';
+import { useTranslation } from 'react-i18next';
 
 interface FormMultiSelectProps<TFieldValues extends FieldValues> {
 	form: UseFormReturn<TFieldValues>;
@@ -23,7 +24,7 @@ export default function FormMultiSelect<TFieldValues extends FieldValues>({
 	name,
 	label,
 	description,
-	placeholder = 'Select options',
+	placeholder,
 	options,
 	searchable = true,
 	hideSelectAll = false,
@@ -32,6 +33,7 @@ export default function FormMultiSelect<TFieldValues extends FieldValues>({
 	closeOnSelect = false,
 	disabled = false,
 }: FormMultiSelectProps<TFieldValues>) {
+	const { t } = useTranslation();
 	const normalizeDash = (v: string) => v.replace(/[–—]/g, '-');
 
 	const normalizedOptions = (() => {
@@ -80,11 +82,11 @@ export default function FormMultiSelect<TFieldValues extends FieldValues>({
 						options={normalizedOptions}
 						onValueChange={field.onChange}
 						defaultValue={field.value ?? []}
-						placeholder={placeholder}
+						placeholder={placeholder ?? t('select.placeholder')}
 						searchable={searchable}
 						hideSelectAll={hideSelectAll}
 						maxCount={maxCount}
-						emptyIndicator={emptyIndicator}
+						emptyIndicator={emptyIndicator ?? t('select.empty')}
 						closeOnSelect={closeOnSelect}
 						disabled={disabled}
 					/>
