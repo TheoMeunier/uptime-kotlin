@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { MaintenanceRecurrenceEnum } from '@/features/maintenances/schemas/maintenance.schema.ts';
 import { toDatetimeLocal } from '@/lib/datetime.ts';
+import i18n from '@/lang/i18n.ts';
 
 export const storeMaintenanceSchema = z
 	.object({
@@ -18,7 +19,7 @@ export const storeMaintenanceSchema = z
 		probe_ids: z.array(z.uuid()),
 	})
 	.refine((data) => data.recurrence === 'ONCE' || !data.recurrence_until || data.recurrence_until > data.starts_at, {
-		message: 'The recurrence must end after its first occurrence',
+		error: () => i18n.t('validation.recurrence_until_after_start'),
 		path: ['recurrence_until'],
 	});
 

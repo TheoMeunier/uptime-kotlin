@@ -12,10 +12,10 @@ import { Activity, Bell, Clock, Settings2 } from 'lucide-react';
 import FormSelectNotification from '@/features/notifications/components/forms/form-select-notification.tsx';
 import CreateNotificationDialogue from '@/features/notifications/components/actions/create-notification-dialogue.tsx';
 import { Button } from '@/components/atoms/button.tsx';
-import PROBE_FIELDS_CONFIG from '@/features/probes/components/config/probe-type.ts';
+import { buildProbeFieldsConfig } from '@/features/probes/components/config/probe-type.ts';
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
-import type { ComponentType, ReactNode } from 'react';
+import { useMemo, type ComponentType, type ReactNode } from 'react';
 import type { FieldPath, FieldPathValue } from 'react-hook-form';
 
 type ProbeFormMode = 'create' | 'edit';
@@ -59,6 +59,9 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 	const { t } = useTranslation();
 	const { form, errors } = useProbeForm({ defaultValues });
 	const protocol = form.watch('protocol');
+
+	// `t` change d'identité à chaque changement de langue : les libellés se retraduisent.
+	const PROBE_FIELDS_CONFIG = useMemo(() => buildProbeFieldsConfig(t), [t]);
 
 	const dynamicFields = protocol ? PROBE_FIELDS_CONFIG[protocol] : PROBE_FIELDS_CONFIG[ProbeProtocol.HTTP];
 	const hasAdvancedFields = Boolean(dynamicFields?.advanced_fields?.length);

@@ -1,10 +1,11 @@
+import { useMemo } from 'react';
 import { DialogFooter, DialogHeader, DialogTitle } from '@/components/atoms/dialog.tsx';
 import { useTranslation } from 'react-i18next';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/atoms/field.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
 import NotificationTypeEnum from '@/features/notifications/enums/notification-type-enum.ts';
 import { Input } from '@/components/atoms/input.tsx';
-import NOTIFICATION_FIELDS_CONFIG from '@/features/notifications/components/config/notification-type.ts';
+import { buildNotificationFieldsConfig } from '@/features/notifications/components/config/notification-type.ts';
 import FormFieldNotification from '@/features/notifications/components/forms/form-field-notification.tsx';
 import { Separator } from '@radix-ui/react-select';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
@@ -28,6 +29,8 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 	const { form, errors } = useNotificationForm({ defaultValues, mode });
 
 	const notificationType = form.watch('notification_type');
+
+	const NOTIFICATION_FIELDS_CONFIG = useMemo(() => buildNotificationFieldsConfig(t), [t]);
 
 	const dynamicFields = notificationType
 		? NOTIFICATION_FIELDS_CONFIG[notificationType]
@@ -98,7 +101,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 
 				<FieldGroup>
 					<div className="flex items-center space-x-2">
-						<FormSwitch form={form} name={'is_default'} label="Have the notification by default" />
+						<FormSwitch form={form} name={'is_default'} label={t('notifications.label.set_as_default')} />
 						<FieldError>{errors.is_default?.message}</FieldError>
 					</div>
 				</FieldGroup>
@@ -107,7 +110,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 			<DialogFooter className="flex justify-between items-center gap-4 w-full mt-4">
 				<Button variant="outline" type="button" onClick={handleTestNotifications}>
 					{t(isTesting ? 'button.loading' : 'button.test', {
-						entity: 'notification',
+						entity: t('entity.notification'),
 					})}
 				</Button>
 

@@ -23,7 +23,13 @@ export default function CreateFirstUserApplicationForm() {
 							<Field>
 								<Field>
 									<FieldLabel htmlFor="name">{t('form.label.full_name')}</FieldLabel>
-									<Input {...form.register('name')} id="name" type="text" placeholder="John Doe" required />
+									<Input
+										{...form.register('name')}
+										id="name"
+										type="text"
+										placeholder={t('form.placeholder.full_name')}
+										required
+									/>
 									<FieldError>{errors.name?.message}</FieldError>
 								</Field>
 								<Field>
@@ -32,7 +38,7 @@ export default function CreateFirstUserApplicationForm() {
 										{...form.register('email')}
 										id="email"
 										type="email"
-										placeholder="admin@uptime-kotlin.com"
+										placeholder={t('form.placeholder.admin_email')}
 										required
 									/>
 									<FieldError>{errors.email?.message}</FieldError>
@@ -51,7 +57,7 @@ export default function CreateFirstUserApplicationForm() {
 							</Field>
 							<Field>
 								<Button type="submit" disabled={isLoading}>
-									{t('button.create', { entity: 'first account' })}
+									{t('button.create', { entity: t('entity.first_account') })}
 								</Button>
 							</Field>
 						</FieldGroup>

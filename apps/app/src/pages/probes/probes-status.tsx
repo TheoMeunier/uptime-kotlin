@@ -14,6 +14,7 @@ import ErrorState from '@/components/molecules/error-state.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import MaintenanceBadge from '@/features/maintenances/components/maintenance-badge.tsx';
 import { formatTime } from '@/lib/datetime.ts';
+import LanguageToggle from '@/components/molecules/language-toggle.tsx';
 
 export default function ProbesStatus() {
 	const { t, i18n } = useTranslation();
@@ -25,8 +26,6 @@ export default function ProbesStatus() {
 		refetchInterval: 120000,
 	});
 
-	// Probes under maintenance are excluded here for the same reason as in the verdict below: a
-	// planned window is not an incident, and the tab must not cry wolf about one.
 	const attention = useMemo(
 		() => summarizeAttention(data?.filter((item) => !item.maintenance).map((item) => item.probe.status)),
 		[data]
@@ -85,6 +84,11 @@ export default function ProbesStatus() {
 								{t('pages.status_page.title')}
 							</h1>
 							<p className="text-sm sm:text-base text-muted-foreground mt-1">{t('pages.status_page.subtitle')}</p>
+						</div>
+
+						{/* The status page is public and has no app chrome: the selector has to live here. */}
+						<div className="ml-auto self-start">
+							<LanguageToggle />
 						</div>
 					</div>
 
