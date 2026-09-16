@@ -40,14 +40,7 @@ import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import { getStatusTokens } from '@/lib/status.ts';
 import ThemeToggle from '@/components/molecules/theme-toggle.tsx';
 import LastUpdated from '@/components/molecules/last-updated.tsx';
-
-/** Route prefix to page title. Monitor pages title themselves with the probe name. */
-const SECTION_TITLES: { prefix: string; key: string }[] = [
-	{ prefix: '/dashboard', key: 'layout.sidebar.dashboard' },
-	{ prefix: '/monitors/new', key: 'monitors.title.create' },
-	{ prefix: '/maintenances', key: 'layout.sidebar.maintenances' },
-	{ prefix: '/profile', key: 'layout.sidebar.settings' },
-];
+import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
 
 export default function Layout() {
 	const { t } = useTranslation();
@@ -71,8 +64,6 @@ export default function Layout() {
 		await authServices.logout();
 		navigate('/login');
 	};
-
-	const section = SECTION_TITLES.find((s) => pathname.startsWith(s.prefix));
 
 	return (
 		<SidebarProvider>
@@ -213,7 +204,7 @@ export default function Layout() {
 				<header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
 					<SidebarTrigger className="-ml-1" />
 					<Separator orientation="vertical" className="mr-1 data-[orientation=vertical]:h-4" />
-					{section && <h1 className="text-sm font-semibold">{t(section.key)}</h1>}
+					<PageBreadcrumb />
 
 					<div className="ml-auto flex items-center gap-2">
 						<LastUpdated at={dataUpdatedAt} />
