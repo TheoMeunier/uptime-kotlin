@@ -4,6 +4,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -76,6 +77,8 @@ data class ProbeDTO(
     val content: ProbeContent,
     val regionsOrder: List<String>? = null,
     val url: String? = null,
+    val tlsExpiresAt: Instant? = null,
+    val tlsCheckedAt: Instant? = null,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 )

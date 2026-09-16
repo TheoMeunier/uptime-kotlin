@@ -221,6 +221,14 @@ const en = {
 			alert_repeat_seconds: 'Resend alert every (s)',
 			remove_confirmation: 'Confirm the monitor name',
 		},
+		tls: {
+			expired: 'Certificate expired {{days}}d ago',
+			expires_in: 'Certificate expires in {{days}}d',
+			expires_today: 'Certificate expires today',
+			valid_for: 'Certificate valid {{days}}d',
+			expires_on: 'Expires on {{date}}',
+			checked_at: 'Last read {{date}}',
+		},
 		uptime: {
 			h24: 'Uptime 24h',
 			d7: 'Uptime 7d',

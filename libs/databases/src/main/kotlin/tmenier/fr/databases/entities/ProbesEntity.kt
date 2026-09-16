@@ -72,6 +72,12 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "last_run")
     var lastRun: LocalDateTime? = null
 
+    @Column(name = "tls_expires_at")
+    var tlsExpiresAt: Instant? = null
+
+    @Column(name = "tls_checked_at")
+    var tlsCheckedAt: Instant? = null
+
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     var content: JsonNode? = null

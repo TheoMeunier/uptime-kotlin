@@ -13,6 +13,8 @@ data class ProbeResult(
     val runAt: LocalDateTime,
     val statusCode: Int? = null,
     val responseBody: String? = null,
+    val tlsExpiresAt: Instant? = null,
+    val tlsCheckedAt: Instant? = null,
 )
 
 @RegisterForReflection
