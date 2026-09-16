@@ -2,9 +2,7 @@ import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
-	SidebarGroup,
 	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarInset,
 	SidebarMenu,
@@ -20,7 +18,6 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
-import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import type { ProbeListItem } from '@/features/probes/schemas/probe-response.schema.ts';
 import {
 	DropdownMenu,
@@ -32,17 +29,16 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/atoms/dropdown-menu.tsx';
 import { useIsMobile } from '@/hooks/use-mobile.ts';
-import { ScrollArea } from '@/components/atoms/scroll-area.tsx';
 import { Separator } from '@/components/atoms/separator.tsx';
 import authServices from '@/features/auth/services/authServices.ts';
 import { getInitials } from '@/lib/utils.ts';
 import { useTranslation } from 'react-i18next';
-import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
-import { getStatusTokens, summarizeAttention } from '@/lib/status.ts';
+import { summarizeAttention } from '@/lib/status.ts';
 import { buildCrumbs, currentPageLabel } from '@/lib/breadcrumb.ts';
 import useTabStatus from '@/hooks/use-tab-status.ts';
 import ThemeToggle from '@/components/molecules/theme-toggle.tsx';
 import LastUpdated from '@/components/molecules/last-updated.tsx';
+import SidebarMonitors from '@/components/molecules/sidebar-monitors.tsx';
 import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
 
 export default function Layout() {
@@ -89,8 +85,8 @@ export default function Layout() {
 					</Link>
 				</SidebarHeader>
 
-				<SidebarContent className="flex flex-col gap-4 p-2">
-					<SidebarGroupContent>
+				<SidebarContent className="flex min-h-0 flex-col gap-4 overflow-hidden p-2">
+					<SidebarGroupContent className="shrink-0">
 						<Button asChild className="flex w-full items-center gap-2 p-3 font-medium">
 							<Link to={'/monitors/new'}>
 								<Plus size={18} /> {t('layout.sidebar.new_monitor')}
@@ -115,46 +111,7 @@ export default function Layout() {
 						</SidebarMenuItem>
 					</SidebarGroupContent>
 
-					<SidebarGroup>
-						<SidebarGroupLabel className="text-muted-foreground px-2 py-1 text-xs font-semibold">
-							{t('layout.sidebar.monitors')}
-						</SidebarGroupLabel>
-
-						<ScrollArea className="h-full px-1 py-1">
-							<div className="flex flex-col gap-1">
-								{isLoading
-									? Array.from({ length: 3 }).map((_, index) => (
-											<div key={index} className="flex items-center gap-3 p-3">
-												<Skeleton className="h-4 w-4 rounded" />
-												<Skeleton className="h-4 flex-1" />
-											</div>
-										))
-									: data?.map((monitor: ProbeListItem) => {
-											const tokens = getStatusTokens(monitor.status);
-											const isDown = monitor.status !== ProbeStatusEnum.SUCCESS;
-
-											return (
-												<Link
-													key={monitor.id}
-													to={`/monitors/${monitor.id}`}
-													className="hover:bg-sidebar-accent group flex w-full items-center gap-3 rounded-lg p-3 text-left transition"
-												>
-													<span className="relative flex size-2.5 shrink-0">
-														{isDown && (
-															<span
-																className={`motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${tokens.solid}`}
-															/>
-														)}
-														<span className={`relative inline-flex size-2.5 rounded-full ${tokens.solid}`} />
-													</span>
-
-													<span className="truncate text-sm font-medium">{monitor.name}</span>
-												</Link>
-											);
-										})}
-							</div>
-						</ScrollArea>
-					</SidebarGroup>
+					<SidebarMonitors probes={data} isLoading={isLoading} />
 				</SidebarContent>
 
 				<SidebarFooter>
