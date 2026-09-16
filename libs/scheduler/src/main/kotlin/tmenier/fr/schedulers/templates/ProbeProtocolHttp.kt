@@ -9,6 +9,8 @@ import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.schedulers.services.SslCertificateService
+import tmenier.fr.schedulers.services.TlsCertificateInspector
+import tmenier.fr.schedulers.services.TlsInspection
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -20,6 +22,7 @@ import java.util.Base64
 @ApplicationScoped
 class ProbeProtocolHttp(
     private val sslCertificateService: SslCertificateService,
+    private val tlsCertificateInspector: TlsCertificateInspector,
     private val objectMapper: ObjectMapper,
 ) : ProbeProtocolAbstract<ProbeContent.Http>() {
     override fun execute(
@@ -28,6 +31,7 @@ class ProbeProtocolHttp(
         isLastAttempt: Boolean,
     ): ProbeResult {
         val startedAt = now()
+        var tls = TlsInspection.NONE
 
         return try {
             val steps = content.steps.ifEmpty { listOf(content.asSingleStep()) }
@@ -51,7 +55,8 @@ class ProbeProtocolHttp(
                     "${step.name}: latency ${latency}ms exceeds ${maxLatency}ms"
                 }
                 checkAssertions(step.name, step.assertions.ifEmpty { content.assertions }, response)
-                checkTls(content, step)
+                tls = tls.merge(tlsCertificateInspector.inspect(probe, content, step))
+                tls.failure?.let { throw IllegalArgumentException(it) }
                 messages += "${index + 1}/${steps.size} ${step.name}: HTTP ${response.statusCode()} in $latency ms"
             }
 
@@ -62,6 +67,8 @@ class ProbeProtocolHttp(
                 runAt = getRunAt(startedAt),
                 statusCode = lastStatusCode,
                 responseBody = lastBody,
+                tlsExpiresAt = tls.expiresAt,
+                tlsCheckedAt = tls.checkedAt,
             )
         } catch (e: Exception) {
             ProbeResult(
@@ -69,6 +76,8 @@ class ProbeProtocolHttp(
                 responseTime = getResponseTime(startedAt),
                 message = "HTTP check failed: ${e.message}",
                 runAt = getRunAt(startedAt),
+                tlsExpiresAt = tls.expiresAt,
+                tlsCheckedAt = tls.checkedAt,
             )
         }
     }
@@ -141,15 +150,6 @@ class ProbeProtocolHttp(
                 }
             require(matches) { "$stepName: ${assertion.type} assertion failed" }
         }
-    }
-
-    private fun checkTls(
-        content: ProbeContent.Http,
-        step: ProbeContent.HttpStep,
-    ) {
-        if (!step.url.startsWith("https://") || !content.notificationCertified || content.ignoreCertificateErrors) return
-        val sslInfo = sslCertificateService.checkSslCertificate(step.url, content.tlsExpiryWarningDays) ?: return
-        require(!sslInfo.isExpiringSoon) { sslCertificateService.buildSslWarningMessage(sslInfo) ?: "TLS certificate expires soon" }
     }
 
     private fun ProbeContent.Http.asSingleStep() =

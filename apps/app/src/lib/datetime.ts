@@ -69,6 +69,13 @@ export function formatDateTime(value: Date | string | number, locale: string, ti
 	}).format(date);
 }
 
+export function daysUntil(value: Date | string | number, now: number = Date.now()): number | null {
+	const date = toDate(value);
+	if (!date) return null;
+
+	return Math.floor((date.getTime() - now) / 86_400_000);
+}
+
 export function formatDuration(totalSeconds: number): string {
 	const days = Math.floor(totalSeconds / 86400);
 	const hours = Math.floor((totalSeconds % 86400) / 3600);

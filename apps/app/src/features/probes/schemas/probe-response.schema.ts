@@ -35,6 +35,8 @@ export const ProbeResponseSchema = z.object({
 	status: z.enum(ProbeStatusEnum),
 	content: z.any().nullable(),
 	url: z.string().nullable(),
+	tls_expires_at: z.string().nullable().optional(),
+	tls_checked_at: z.string().nullable().optional(),
 	created_at: z.string(),
 	updated_at: z.string(),
 });

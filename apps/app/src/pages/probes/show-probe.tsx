@@ -10,6 +10,7 @@ import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-mon
 import ProbeMonitorLog from '@/features/probes/components/modules/probe-monitor-log.tsx';
 import OnOffMonitorProbeDialogue from '@/features/probes/components/actions/on-off-probe-dialogue.tsx';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
+import ProbeTlsBadge from '@/features/probes/components/modules/probe-tls-badge.tsx';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { useState } from 'react';
@@ -84,7 +85,14 @@ export function ShowProbe() {
 									})}
 								</CardDescription>
 							</div>
-							<ProbeStatus status={data.probe.status} />
+							<div className="flex items-center gap-2">
+								<ProbeTlsBadge
+									expiresAt={data.probe.tls_expires_at}
+									checkedAt={data.probe.tls_checked_at}
+									warningDays={data.probe.content?.tls_expiry_warning_days}
+								/>
+								<ProbeStatus status={data.probe.status} />
+							</div>
 						</div>
 						<ProbeUptime uptimes={data.uptimes} />
 						<ProbeMonitorChartBar monitors={data.monitors} probeStatus={data.probe.status} barCount={60} />

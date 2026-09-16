@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.sun.net.httpserver.HttpServer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
@@ -13,6 +14,7 @@ import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.schedulers.services.SslCertificateService
+import tmenier.fr.schedulers.services.TlsCertificateInspector
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
@@ -280,7 +282,38 @@ class ProbeProtocolHttpTest {
         assertTrue(result.message.contains("2/2 Second"))
     }
 
-    private fun executor() = ProbeProtocolHttp(SslCertificateService(), jacksonObjectMapper())
+    @Test
+    fun `a check without TLS reports no certificate, and never opens a handshake`() {
+        server =
+            HttpServer.create(InetSocketAddress(0), 0).apply {
+                createContext("/plain") { exchange ->
+                    exchange.sendResponseHeaders(204, -1)
+                    exchange.close()
+                }
+                start()
+            }
+        val content =
+            defaultContent().copy(
+                url = url("/plain"),
+                httpCodeAllowed = listOf(HttpCodeEnum.NO_CONTENT),
+            )
+
+        val result = executor().execute(probe(content), content, true)
+
+        assertEquals(ProbeMonitorLogStatus.SUCCESS, result.status)
+        assertNull(result.tlsExpiresAt)
+        assertNull(result.tlsCheckedAt)
+    }
+
+    private fun executor(): ProbeProtocolHttp {
+        val sslCertificateService = SslCertificateService()
+
+        return ProbeProtocolHttp(
+            sslCertificateService = sslCertificateService,
+            tlsCertificateInspector = TlsCertificateInspector(sslCertificateService),
+            objectMapper = jacksonObjectMapper(),
+        )
+    }
 
     private fun defaultContent() =
         ProbeContent.Http(

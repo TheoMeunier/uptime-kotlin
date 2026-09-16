@@ -44,6 +44,9 @@ class SaveProbeMonitor(
         probe.status = result.status
         probe.lastRun = runAt
 
+        result.tlsCheckedAt?.let { probe.tlsCheckedAt = it }
+        result.tlsExpiresAt?.let { probe.tlsExpiresAt = it }
+
         probeMonitorRepository.store(
             StoreProbeMonitorLogDto(
                 runAt = runAt,
