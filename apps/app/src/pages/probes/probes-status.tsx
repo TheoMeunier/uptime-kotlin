@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
@@ -7,7 +8,8 @@ import { Activity, Clock } from 'lucide-react';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { useTranslation } from 'react-i18next';
-import { uptimeState } from '@/lib/status.ts';
+import { summarizeAttention, uptimeState } from '@/lib/status.ts';
+import useTabStatus from '@/hooks/use-tab-status.ts';
 import ErrorState from '@/components/molecules/error-state.tsx';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import MaintenanceBadge from '@/features/maintenances/components/maintenance-badge.tsx';
@@ -22,6 +24,15 @@ export default function ProbesStatus() {
 		},
 		refetchInterval: 120000,
 	});
+
+	// Probes under maintenance are excluded here for the same reason as in the verdict below: a
+	// planned window is not an incident, and the tab must not cry wolf about one.
+	const attention = useMemo(
+		() => summarizeAttention(data?.filter((item) => !item.maintenance).map((item) => item.probe.status)),
+		[data]
+	);
+
+	useTabStatus({ ...attention, page: t('pages.status_page.title') });
 
 	if (isLoading) return <ProbesStatusSkeleton />;
 

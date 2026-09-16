@@ -65,3 +65,31 @@ export function uptimeState(percent: number): MetricState {
 export function failureCountState(count: number | undefined): MetricState {
 	return count && count > 0 ? 'down' : 'neutral';
 }
+
+export type AttentionSeverity = 'none' | 'degraded' | 'down';
+
+export interface AttentionSummary {
+	severity: AttentionSeverity;
+	/** How many probes sit in the worst state currently present — the figure the tab badge shows. */
+	count: number;
+}
+
+/**
+ * What the tab has to shout about. Only the worst state present is counted, so `(2)` next to a red
+ * dot always means "two of them are down" and never a mixed total nobody can act on. A paused probe
+ * is a decision, not an incident: it never counts.
+ */
+export function summarizeAttention(statuses: Array<ProbeStatusEnum | string> | undefined): AttentionSummary {
+	let down = 0;
+	let degraded = 0;
+
+	for (const status of statuses ?? []) {
+		if (status === ProbeStatusEnum.FAILURE) down += 1;
+		else if (status === ProbeStatusEnum.WARNING) degraded += 1;
+	}
+
+	if (down > 0) return { severity: 'down', count: down };
+	if (degraded > 0) return { severity: 'degraded', count: degraded };
+
+	return { severity: 'none', count: 0 };
+}

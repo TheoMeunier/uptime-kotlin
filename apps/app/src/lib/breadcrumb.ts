@@ -28,3 +28,10 @@ export function buildCrumbs(pathname: string, resolveProbe: (id: string) => Part
 
 	return [];
 }
+
+export function currentPageLabel(crumbs: Crumb[], t: (key: string) => string): string | undefined {
+	const last = crumbs.at(-1);
+	if (!last || last.pending) return undefined;
+
+	return last.key ? t(last.key) : last.label;
+}
