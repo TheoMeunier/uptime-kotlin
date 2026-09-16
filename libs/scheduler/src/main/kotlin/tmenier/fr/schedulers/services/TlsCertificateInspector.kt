@@ -27,7 +27,6 @@ data class TlsInspection(
     }
 }
 
-
 @ApplicationScoped
 class TlsCertificateInspector(
     private val sslCertificateService: SslCertificateService,
