@@ -17,6 +17,7 @@ import { Button } from '@/components/atoms/button.tsx';
 import { Activity, BadgeCheck, ChevronsUpDown, Home, LogOut, Plus, Wrench } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
@@ -37,7 +38,9 @@ import authServices from '@/features/auth/services/authServices.ts';
 import { getInitials } from '@/lib/utils.ts';
 import { useTranslation } from 'react-i18next';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
-import { getStatusTokens } from '@/lib/status.ts';
+import { getStatusTokens, summarizeAttention } from '@/lib/status.ts';
+import { buildCrumbs, currentPageLabel } from '@/lib/breadcrumb.ts';
+import useTabStatus from '@/hooks/use-tab-status.ts';
 import ThemeToggle from '@/components/molecules/theme-toggle.tsx';
 import LastUpdated from '@/components/molecules/last-updated.tsx';
 import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
@@ -59,6 +62,17 @@ export default function Layout() {
 		refetchOnWindowFocus: true,
 		refetchIntervalInBackground: true,
 	});
+
+	const attention = useMemo(() => summarizeAttention(data?.map((probe: ProbeListItem) => probe.status)), [data]);
+	const page = currentPageLabel(
+		buildCrumbs(pathname, (id) => {
+			const probe = data?.find((item: ProbeListItem) => item.id === id);
+			return probe ? { label: probe.name } : { pending: true };
+		}),
+		t
+	);
+
+	useTabStatus({ ...attention, page });
 
 	const logout = async () => {
 		await authServices.logout();
