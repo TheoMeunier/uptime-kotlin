@@ -465,6 +465,13 @@ const en = {
 		},
 		sidebar: {
 			monitors: 'Monitors',
+			search: {
+				placeholder: 'Filter monitors',
+				label: 'Filter monitors by name or description',
+				clear: 'Clear the filter',
+				count: '{{visible}} of {{total}}',
+				empty: 'No monitor matches "{{query}}".',
+			},
 			settings: 'Settings',
 			logout: 'Logout',
 			dashboard: 'Dashboard',
