@@ -1,11 +1,13 @@
 import en from '@/lang/en.ts';
 import fr from '@/lang/fr.ts';
+import de from '@/lang/de.ts';
+import es from '@/lang/es.ts';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import i18n from 'i18next';
 import { z } from 'zod';
 
-export const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
+export const SUPPORTED_LANGUAGES = ['en', 'fr', 'de', 'es'] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export const LANGUAGE_STORAGE_KEY = 'uptime-kotlin.language';
@@ -13,11 +15,15 @@ export const LANGUAGE_STORAGE_KEY = 'uptime-kotlin.language';
 const resources = {
 	en: { translation: en },
 	fr: { translation: fr },
+	de: { translation: de },
+	es: { translation: es },
 };
 
 const ZOD_LOCALES: Record<SupportedLanguage, () => Parameters<typeof z.config>[0]> = {
 	en: z.locales.en,
 	fr: z.locales.fr,
+	de: z.locales.de,
+	es: z.locales.es,
 };
 
 function normalize(language: string | undefined): SupportedLanguage {
