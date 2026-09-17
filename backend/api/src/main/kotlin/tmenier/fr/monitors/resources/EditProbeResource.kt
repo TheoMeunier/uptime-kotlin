@@ -26,14 +26,12 @@ class EditProbeResource(
     @GET
     @Authenticated
     fun edit(
-        @PathParam("probeId") probeId: String,
+        @PathParam("probeId") probeId: UUID,
     ): Response {
-        val uuid = UUID.fromString(probeId)
-
         val probeEntity =
-            probeRepository.findByIdWithNotificationsOrNull(uuid)
+            probeRepository.findByIdWithNotificationsOrNull(probeId)
                 ?: run {
-                    logger.warn { "Probe edition requested for unknown probe $uuid" }
+                    logger.warn { "Probe edition requested for unknown probe $probeId" }
                     throw NotFoundException("Probe not found")
                 }
 

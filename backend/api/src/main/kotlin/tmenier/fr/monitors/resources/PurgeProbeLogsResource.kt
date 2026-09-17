@@ -23,15 +23,13 @@ class PurgeProbeLogsResource(
     @Authenticated
     @Transactional
     fun purgeProbeLogs(
-        @PathParam("probeId") probeId: String,
+        @PathParam("probeId") probeId: UUID,
     ): Response {
-        val uuid = UUID.fromString(probeId)
-
-        if (probeRepository.findByIdOrNull(uuid) == null) {
+        if (probeRepository.findByIdOrNull(probeId) == null) {
             throw NotFoundException("Probe not found")
         }
 
-        probeMonitorRepository.deleteByProbe(uuid)
+        probeMonitorRepository.deleteByProbe(probeId)
 
         return Response.noContent().build()
     }

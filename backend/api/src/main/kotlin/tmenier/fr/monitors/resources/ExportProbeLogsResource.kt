@@ -22,19 +22,17 @@ class ExportProbeLogsResource(
     @Authenticated
     @Produces("text/csv")
     fun exportProbeLogs(
-        @PathParam("probeId") probeId: String,
+        @PathParam("probeId") probeId: UUID,
     ): Response {
-        val uuid = UUID.fromString(probeId)
-
-        if (probeRepository.findByIdOrNull(uuid) == null) {
+        if (probeRepository.findByIdOrNull(probeId) == null) {
             throw NotFoundException("Probe not found")
         }
 
-        val csv = buildCsv(probeMonitorRepository.findByProbe(uuid))
+        val csv = buildCsv(probeMonitorRepository.findByProbe(probeId))
 
         return Response
             .ok(csv)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"monitor-logs-$uuid.csv\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"monitor-logs-$probeId.csv\"")
             .build()
     }
 
