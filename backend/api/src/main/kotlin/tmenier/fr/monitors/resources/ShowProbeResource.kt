@@ -33,15 +33,13 @@ class ShowProbeResource(
     @GET
     @Authenticated
     fun show(
-        @PathParam("probeId") probeId: String,
+        @PathParam("probeId") probeId: UUID,
         @QueryParam("hours") hours: Long,
     ): Response {
-        val uuid = UUID.fromString(probeId)
-
         val probeEntity =
-            probeRepository.findByIdOrNull(uuid)
+            probeRepository.findByIdOrNull(probeId)
                 ?: run {
-                    logger.warn { "Probe details requested for unknown probe $uuid" }
+                    logger.warn { "Probe details requested for unknown probe $probeId" }
                     throw NotFoundException("Probe not found")
                 }
 
@@ -53,10 +51,10 @@ class ShowProbeResource(
         val from = LocalDateTime.now().minusHours(hours)
         val monitors =
             probeMonitorRepository.findByProbeAfter(
-                probeId = uuid,
+                probeId = probeId,
                 after = from,
             )
-        val uptimes = computeUptimes(uuid)
+        val uptimes = computeUptimes(probeId)
 
         val now = MonitoringClock.now()
         val maintenance =
@@ -64,10 +62,10 @@ class ShowProbeResource(
                 .findMaintenanceStateByProbe(
                     at = now,
                     horizon = now.plus(Duration.ofDays(MAINTENANCE_LOOKAHEAD_DAYS)),
-                )[uuid]
+                )[probeId]
         val maintenancePeriods =
             maintenanceOccurrenceRepository.findByProbeBetween(
-                probeId = uuid,
+                probeId = probeId,
                 from = MonitoringClock.toInstant(from),
                 to = now,
             )

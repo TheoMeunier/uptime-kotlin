@@ -20,9 +20,9 @@ class RemoveProbeResource(
     @Authenticated
     @Transactional
     fun removeProbe(
-        @PathParam("probeId") probeId: String,
+        @PathParam("probeId") probeId: UUID,
     ): Response {
-        probeRepository.delete(UUID.fromString(probeId))
+        probeRepository.delete(probeId)
 
         return Response.noContent().build()
     }

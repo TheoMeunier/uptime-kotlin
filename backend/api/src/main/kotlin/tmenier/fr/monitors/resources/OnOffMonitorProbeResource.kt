@@ -24,10 +24,10 @@ class OnOffMonitorProbeResource(
     @Authenticated
     @Transactional
     fun onOffProbeMonitor(
-        @PathParam("probeId") probeId: String,
+        @PathParam("probeId") probeId: UUID,
         @Valid payload: OnOffRequest,
     ): Response {
-        onOffProbeMonitorAction.execute(UUID.fromString(probeId), payload.enabled)
+        onOffProbeMonitorAction.execute(probeId, payload.enabled)
 
         return Response.ok().build()
     }
