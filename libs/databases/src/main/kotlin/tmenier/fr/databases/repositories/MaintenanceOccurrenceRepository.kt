@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
 import jakarta.transaction.Transactional
+import tmenier.fr.databases.dtos.MaintenanceStatusFingerprint
 import tmenier.fr.databases.dtos.ProbeMaintenanceDto
 import tmenier.fr.databases.dtos.ProbeMaintenanceState
 import tmenier.fr.databases.entities.MaintenanceOccurrenceEntity
@@ -172,6 +173,43 @@ class MaintenanceOccurrenceRepository(
                 occurrences.firstOrNull { it.startsAt <= at } to occurrences.firstOrNull { it.startsAt > at }
             }
     }
+
+    fun getStatusFingerprint(
+        from: Instant,
+        at: Instant,
+        horizon: Instant,
+    ): MaintenanceStatusFingerprint {
+        val row =
+            em
+                .createQuery(
+                    """
+                    SELECT COUNT(o.id),
+                      SUM(CASE WHEN o.endsAt > :at THEN 1 ELSE 0 END),
+                      SUM(CASE WHEN o.startsAt <= :at AND o.endsAt > :at THEN 1 ELSE 0 END),
+                      MAX(w.updatedAt)
+                    FROM MaintenanceOccurrenceEntity o
+                    JOIN o.window w
+                    JOIN w.probes p
+                    WHERE w.active = true
+                      AND o.cancelled = false
+                      AND o.endsAt > :from
+                      AND o.startsAt <= :horizon
+                    """.trimIndent(),
+                    Tuple::class.java,
+                ).setParameter("from", from)
+                .setParameter("at", at)
+                .setParameter("horizon", horizon)
+                .singleResult
+
+        return MaintenanceStatusFingerprint(
+            occurrences = asLong(row[0]),
+            visibleOccurrences = asLong(row[1]),
+            runningOccurrences = asLong(row[2]),
+            lastWindowUpdateAt = row[3] as Instant?,
+        )
+    }
+
+    private fun asLong(value: Any?): Long = ((value as Number?) ?: 0L).toLong()
 
     fun sumMaintenanceSecondsByProbe(
         from: Instant,

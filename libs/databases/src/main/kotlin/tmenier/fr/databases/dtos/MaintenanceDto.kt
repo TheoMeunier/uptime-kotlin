@@ -76,3 +76,11 @@ data class ProbeMaintenanceState(
     val current: ProbeMaintenanceDto? = null,
     val next: ProbeMaintenanceDto? = null,
 )
+
+@RegisterForReflection
+data class MaintenanceStatusFingerprint(
+    val occurrences: Long,
+    val visibleOccurrences: Long,
+    val runningOccurrences: Long,
+    val lastWindowUpdateAt: Instant?,
+)

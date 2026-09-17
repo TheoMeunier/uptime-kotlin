@@ -117,3 +117,12 @@ data class ProbeUptimeDTO(
     val d7: Double,
     val d30: Double,
 )
+
+@RegisterForReflection
+data class ProbesStatusFingerprint(
+    val enabledProbes: Long,
+    val failingProbes: Long,
+    val lastProbeUpdateAt: LocalDateTime?,
+    val logsInWindow: Long,
+    val lastLogAt: LocalDateTime?,
+)
