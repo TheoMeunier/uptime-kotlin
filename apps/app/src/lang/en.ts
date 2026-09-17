@@ -402,22 +402,29 @@ const en = {
 			update_profile: 'Update profile',
 			update_password: 'Update password',
 			create_first_user: 'Create your account',
+			preferences: 'Display preferences',
 		},
 		tabs: {
 			account: 'Account',
 			password: 'Password',
 			notifications: 'Notifications',
+			preferences: 'Preferences',
 		},
 		description: {
 			current_password: 'For security reasons, confirm the password you use today.',
 			update_password: 'Changing your password will log you out of all your sessions. You will need to log in again.',
 			update_profile: 'Manage your personal information to keep your account accurate and secure.',
 			create_first_user: 'Enter your email address to create the first user and initialize the application.',
+			preferences: 'Stored in this browser, not on your account: another browser keeps its own choice.',
+			language: 'Applies immediately. Dates, times and numbers follow the same choice.',
+			theme: '"System" follows your operating system setting.',
 		},
 		label: {
 			current_password: 'Current Password',
 			password: 'New Password',
 			password_confirm: 'Confirmation Password',
+			language: 'Language',
+			theme: 'Theme',
 		},
 		alerts: {
 			update_profile: 'Profile successfully updated',
@@ -485,11 +492,16 @@ const en = {
 		theme: {
 			switch_to_light: 'Switch to light theme',
 			switch_to_dark: 'Switch to dark theme',
+			system: 'System',
+			light: 'Light',
+			dark: 'Dark',
 		},
 		language: {
 			label: 'Language',
 			en: 'English',
 			fr: 'Français',
+			de: 'Deutsch',
+			es: 'Español',
 		},
 		updated: {
 			seconds_one: 'Updated {{count}}s ago',

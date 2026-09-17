@@ -408,11 +408,13 @@ const fr: typeof en = {
 			update_profile: 'Modifier le profil',
 			update_password: 'Modifier le mot de passe',
 			create_first_user: 'Créez votre compte',
+			preferences: 'Préférences d’affichage',
 		},
 		tabs: {
 			account: 'Compte',
 			password: 'Mot de passe',
 			notifications: 'Notifications',
+			preferences: 'Préférences',
 		},
 		description: {
 			current_password: 'Par sécurité, confirmez le mot de passe que vous utilisez aujourd’hui.',
@@ -421,11 +423,17 @@ const fr: typeof en = {
 			update_profile: 'Gérez vos informations personnelles pour garder votre compte exact et sûr.',
 			create_first_user:
 				'Saisissez votre adresse e-mail pour créer le premier utilisateur et initialiser l’application.',
+			preferences:
+				'Enregistrées dans ce navigateur, pas sur votre compte : un autre navigateur garde son propre choix.',
+			language: 'Prise en compte immédiatement. Les dates, heures et nombres suivent le même choix.',
+			theme: '« Système » suit le réglage de votre système d’exploitation.',
 		},
 		label: {
 			current_password: 'Mot de passe actuel',
 			password: 'Nouveau mot de passe',
 			password_confirm: 'Confirmation du mot de passe',
+			language: 'Langue',
+			theme: 'Thème',
 		},
 		alerts: {
 			update_profile: 'Profil mis à jour',
@@ -493,11 +501,16 @@ const fr: typeof en = {
 		theme: {
 			switch_to_light: 'Passer au thème clair',
 			switch_to_dark: 'Passer au thème sombre',
+			system: 'Système',
+			light: 'Clair',
+			dark: 'Sombre',
 		},
 		language: {
 			label: 'Langue',
 			en: 'English',
 			fr: 'Français',
+			de: 'Deutsch',
+			es: 'Español',
 		},
 		updated: {
 			seconds_one: 'Mis à jour il y a {{count}} s',

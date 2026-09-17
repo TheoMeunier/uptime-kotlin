@@ -1,35 +1,28 @@
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Bell, Lock, User } from 'lucide-react';
+import { Bell, Lock, SlidersHorizontal, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UpdateProfileForm from '@/features/profile/components/forms/update-profile-form.tsx';
 import UpdatePasswordProfileForm from '@/features/profile/components/forms/update-password-profile-form.tsx';
 import ListingNotification from '@/features/notifications/components/listing-notification.tsx';
+import PreferencesForm from '@/features/profile/components/forms/preferences-form.tsx';
 
 const SECTIONS = [
 	{ id: 'account', labelKey: 'profile.tabs.account', icon: User },
 	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock },
 	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell },
+	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal },
 ] as const;
 
 export default function Profile() {
 	const { t } = useTranslation();
 
-	/*
-	 * The active section lives in the URL rather than in component state: a reload used to drop
-	 * the user back on "account", and a link to the notification settings could not be shared.
-	 */
 	const [searchParams, setSearchParams] = useSearchParams();
 	const requested = searchParams.get('tab');
 	const active = SECTIONS.some((section) => section.id === requested) ? requested! : 'account';
 
 	return (
 		<div className="flex flex-col gap-8 md:flex-row md:gap-10">
-			{/*
-			 * No border and no background: with the app's own sidebar right next to it, a second
-			 * bordered rail read as two nested navigations. Here the active item carries the
-			 * emphasis instead. Scrolls horizontally on narrow screens rather than squeezing.
-			 */}
 			<aside className="md:w-52 md:shrink-0">
 				<nav className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 md:mx-0 md:flex-col md:overflow-visible md:px-0 md:pb-0">
 					{SECTIONS.map(({ id, labelKey, icon: Icon }) => {
@@ -62,6 +55,7 @@ export default function Profile() {
 				{active === 'account' && <UpdateProfileForm />}
 				{active === 'password' && <UpdatePasswordProfileForm />}
 				{active === 'notifications' && <ListingNotification />}
+				{active === 'preferences' && <PreferencesForm />}
 			</div>
 		</div>
 	);
