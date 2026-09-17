@@ -248,7 +248,7 @@ class ProbeCheckTaskRepository(
 
             ImmediateCheckDecision.DO_NOTHING_ALREADY_RUNNING,
             ImmediateCheckDecision.DO_NOTHING_DISABLED,
-                -> Unit
+            -> Unit
         }
 
         return decision.toOutcome()
