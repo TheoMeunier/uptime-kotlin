@@ -13,6 +13,7 @@ import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.ProbeStatusMetrics
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
+import tmenier.fr.databases.dtos.ProbesStatusFingerprint
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
@@ -100,6 +101,44 @@ class ProbeRepository(
                 )
         }
     }
+
+    fun getStatusFingerprint(since: LocalDateTime): ProbesStatusFingerprint {
+        val probes =
+            em
+                .createQuery(
+                    """
+                    SELECT COUNT(p.id),
+                      SUM(CASE WHEN p.status = :failure THEN 1 ELSE 0 END),
+                      MAX(p.updatedAt)
+                    FROM ProbesEntity p
+                    WHERE p.enabled = true
+                    """.trimIndent(),
+                    Tuple::class.java,
+                ).setParameter("failure", ProbeMonitorLogStatus.FAILURE)
+                .singleResult
+
+        val logs =
+            em
+                .createQuery(
+                    """
+                    SELECT COUNT(pml.id), MAX(pml.runAt)
+                    FROM ProbesMonitorsLogEntity pml
+                    WHERE pml.probe.enabled = true AND pml.runAt > :since
+                    """.trimIndent(),
+                    Tuple::class.java,
+                ).setParameter("since", since)
+                .singleResult
+
+        return ProbesStatusFingerprint(
+            enabledProbes = asLong(probes[0]),
+            failingProbes = asLong(probes[1]),
+            lastProbeUpdateAt = probes[2] as LocalDateTime?,
+            logsInWindow = asLong(logs[0]),
+            lastLogAt = logs[1] as LocalDateTime?,
+        )
+    }
+
+    private fun asLong(value: Any?): Long = ((value as Number?) ?: 0L).toLong()
 
     private fun ratio(
         success: Any?,
