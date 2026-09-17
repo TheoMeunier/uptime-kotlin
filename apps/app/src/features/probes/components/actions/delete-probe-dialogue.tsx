@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Input } from '@/components/atoms/input.tsx';
 import { Field, FieldDescription, FieldLabel } from '@/components/atoms/field.tsx';
+import useControllableDialog, { type ControllableDialogProps } from '@/hooks/use-controllable-dialog.ts';
 
 function slugify(value: string) {
 	return value
@@ -30,23 +31,22 @@ function slugify(value: string) {
 		.replace(/^-+|-+$/g, '');
 }
 
-// A name made only of punctuation slugs down to an empty string; falling back to the raw name
-// keeps such a monitor deletable instead of locking the confirmation for good.
 function confirmationValue(value: string) {
 	return slugify(value) || value.trim();
 }
 
-export default function DeleteProbeDialogue({ probeId, probeName }: { probeId: string; probeName: string }) {
-	const [open, setOpen] = useState(false);
+export default function DeleteProbeDialogue({
+	probeId,
+	probeName,
+	...dialogProps
+}: { probeId: string; probeName: string } & ControllableDialogProps) {
+	const { isControlled, open, setOpen } = useControllableDialog(dialogProps);
 	const [confirmation, setConfirmation] = useState('');
 	const client = useQueryClient();
 	const navigate = useNavigate();
 	const form = useForm();
 	const { t } = useTranslation();
 
-	// Deleting a monitor drops its whole history, so the name has to be typed back: an accidental
-	// click on a destructive button in a button group should never be enough. Both sides go through
-	// the same slug so a name with spaces, accents or capitals stays typable.
 	const expectedSlug = confirmationValue(probeName);
 	const isConfirmed = expectedSlug.length > 0 && confirmationValue(confirmation) === expectedSlug;
 
@@ -76,12 +76,14 @@ export default function DeleteProbeDialogue({ probeId, probeName }: { probeId: s
 				setConfirmation('');
 			}}
 		>
-			<DialogTrigger asChild>
-				<Button variant="outline" className="text-status-down-fg hover:bg-status-down-bg hover:text-status-down-fg">
-					<Trash2 className="mr-2 h-4 w-4" />
-					{t('button.actions.remove')}
-				</Button>
-			</DialogTrigger>
+			{!isControlled && (
+				<DialogTrigger asChild>
+					<Button variant="outline" className="text-status-down-fg hover:bg-status-down-bg hover:text-status-down-fg">
+						<Trash2 className="mr-2 h-4 w-4" />
+						{t('button.actions.remove')}
+					</Button>
+				</DialogTrigger>
+			)}
 
 			<DialogContent className="sm:max-w-md">
 				<form onSubmit={form.handleSubmit(onSubmit)} noValidate>

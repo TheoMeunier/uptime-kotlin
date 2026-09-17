@@ -5,10 +5,8 @@ import { Button } from '@/components/atoms/button.tsx';
 import { Pencil } from 'lucide-react';
 import { ButtonGroup } from '@/components/atoms/button-group.tsx';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
-import DeleteProbeDialogue from '@/features/probes/components/actions/delete-probe-dialogue.tsx';
 import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-monitor-chart-bar.tsx';
 import ProbeMonitorLog from '@/features/probes/components/modules/probe-monitor-log.tsx';
-import OnOffMonitorProbeDialogue from '@/features/probes/components/actions/on-off-probe-dialogue.tsx';
 import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import ProbeTlsBadge from '@/features/probes/components/modules/probe-tls-badge.tsx';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +16,8 @@ import { type ProbeShow, ProbeShowSchema } from '@/features/probes/schemas/probe
 import ProbeUptime from '@/features/probes/components/modules/probe-uptime.tsx';
 import ProbeResponseTime from '@/features/probes/components/modules/probe-response-time.tsx';
 import ErrorState from '@/components/molecules/error-state.tsx';
-import StartMaintenanceDialogue from '@/features/maintenances/components/actions/start-maintenance-dialogue.tsx';
+import CheckProbeNowButton from '@/features/probes/components/actions/check-probe-now-button.tsx';
+import ProbeActionsMenu from '@/features/probes/components/actions/probe-actions-menu.tsx';
 import MaintenanceBanner from '@/features/maintenances/components/maintenance-banner.tsx';
 
 const POLL_MIN_MS = 15_000;
@@ -59,14 +58,13 @@ export function ShowProbe() {
 
 				<div className="shrink-0">
 					<ButtonGroup>
-						<StartMaintenanceDialogue probeId={data.probe.id} />
-						<OnOffMonitorProbeDialogue probeId={data.probe.id} enabled={data.probe.enabled} />
+						<CheckProbeNowButton probeId={data.probe.id} enabled={data.probe.enabled} />
 						<Button variant="outline" asChild>
 							<Link to={`/monitors/${data.probe.id}/edit`}>
 								<Pencil /> {t('button.actions.edit')}
 							</Link>
 						</Button>
-						<DeleteProbeDialogue probeId={data.probe.id} probeName={data.probe.name} />
+						<ProbeActionsMenu probeId={data.probe.id} probeName={data.probe.name} enabled={data.probe.enabled} />
 					</ButtonGroup>
 				</div>
 			</section>
@@ -136,9 +134,9 @@ function ShowProbeSkeleton() {
 					<Skeleton className="h-4 w-80" />
 				</div>
 				<div className="flex">
-					<Skeleton className="h-9 w-28 rounded-l-lg rounded-r-none" />
-					<Skeleton className="h-9 w-24 rounded-none ml-px" />
-					<Skeleton className="h-9 w-24 rounded-r-lg rounded-l-none ml-px" />
+					<Skeleton className="h-9 w-32 rounded-l-lg rounded-r-none" />
+					<Skeleton className="h-9 w-20 rounded-none ml-px" />
+					<Skeleton className="h-9 w-10 rounded-r-lg rounded-l-none ml-px" />
 				</div>
 			</section>
 

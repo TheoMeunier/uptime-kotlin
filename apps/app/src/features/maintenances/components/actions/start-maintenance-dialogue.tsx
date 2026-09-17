@@ -15,23 +15,29 @@ import {
 import { Input } from '@/components/atoms/input.tsx';
 import { Field, FieldDescription, FieldLabel } from '@/components/atoms/field.tsx';
 import { useStartAdHocMaintenance } from '@/features/maintenances/hooks/useMaintenanceActions.ts';
+import useControllableDialog, { type ControllableDialogProps } from '@/hooks/use-controllable-dialog.ts';
 
 const PRESETS = [15, 30, 60, 120];
 
-export default function StartMaintenanceDialogue({ probeId }: { probeId: string }) {
+export default function StartMaintenanceDialogue({
+	probeId,
+	...dialogProps
+}: { probeId: string } & ControllableDialogProps) {
 	const { t } = useTranslation();
-	const [open, setOpen] = useState(false);
+	const { isControlled, open, setOpen } = useControllableDialog(dialogProps);
 	const [minutes, setMinutes] = useState(60);
 	const { start, isLoading } = useStartAdHocMaintenance(probeId);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="outline">
-					<Wrench className="mr-2 size-4" />
-					{t('maintenances.actions.start')}
-				</Button>
-			</DialogTrigger>
+			{!isControlled && (
+				<DialogTrigger asChild>
+					<Button variant="outline">
+						<Wrench className="mr-2 size-4" />
+						{t('maintenances.actions.start')}
+					</Button>
+				</DialogTrigger>
+			)}
 
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader className="items-center text-center">

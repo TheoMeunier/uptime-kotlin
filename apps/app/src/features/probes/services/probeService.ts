@@ -1,5 +1,7 @@
 import api from '@/api/kyClient.ts';
 import probeResponseSchema, {
+	CheckProbeNowResponseSchema,
+	type CheckProbeNowResponse,
 	type ProbeListItem,
 	ProbeStatusShowSchema,
 } from '@/features/probes/schemas/probe-response.schema.ts';
@@ -56,6 +58,12 @@ const probeService = {
 
 	async deleteProbe(id: string) {
 		await api.post(`probes/${id}/remove`).json();
+	},
+
+	async checkProbeNow(id: string): Promise<CheckProbeNowResponse> {
+		const response = await api.post(`probes/${id}/check-now`).json();
+
+		return CheckProbeNowResponseSchema.parse(response);
 	},
 
 	async purgeProbeLogs(id: string) {

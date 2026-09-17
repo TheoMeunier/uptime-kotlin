@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pause, Play } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -15,11 +14,16 @@ import {
 	DialogTrigger,
 } from '@/components/atoms/dialog.tsx';
 import probeService from '@/features/probes/services/probeService.ts';
+import useControllableDialog, { type ControllableDialogProps } from '@/hooks/use-controllable-dialog.ts';
 
-export default function OnOffMonitorProbeDialogue({ probeId, enabled }: { probeId: string; enabled: boolean }) {
+export default function OnOffMonitorProbeDialogue({
+	probeId,
+	enabled,
+	...dialogProps
+}: { probeId: string; enabled: boolean } & ControllableDialogProps) {
 	const { t } = useTranslation();
 	const client = useQueryClient();
-	const [open, setOpen] = useState(false);
+	const { isControlled, open, setOpen } = useControllableDialog(dialogProps);
 
 	const mutation = useMutation({
 		mutationFn: async () => {
@@ -33,22 +37,19 @@ export default function OnOffMonitorProbeDialogue({ probeId, enabled }: { probeI
 		},
 	});
 
-	/*
-	 * Pausing is not a failure, so the icon is amber rather than red; resuming is a return to
-	 * health, so it is green. The confirm button stays neutral when pausing: in this app green
-	 * means "service up", and a green button on the action that stops watching reads backwards.
-	 */
 	const Icon = enabled ? Pause : Play;
 	const iconTone = enabled ? 'bg-status-degraded-bg text-status-degraded-fg' : 'bg-status-up-bg text-status-up-fg';
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="outline">
-					<Icon className="mr-2 h-4 w-4" />
-					{t(enabled ? 'button.actions.pause' : 'button.actions.resume')}
-				</Button>
-			</DialogTrigger>
+			{!isControlled && (
+				<DialogTrigger asChild>
+					<Button variant="outline">
+						<Icon className="mr-2 h-4 w-4" />
+						{t(enabled ? 'button.actions.pause' : 'button.actions.resume')}
+					</Button>
+				</DialogTrigger>
+			)}
 
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader className="items-center text-center">

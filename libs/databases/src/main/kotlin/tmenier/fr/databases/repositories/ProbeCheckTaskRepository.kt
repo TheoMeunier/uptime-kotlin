@@ -5,7 +5,10 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
 import jakarta.transaction.Transactional
+import tmenier.fr.common.enums.probes.ImmediateCheckOutcome
 import tmenier.fr.common.enums.probes.QueueJobStatus
+import tmenier.fr.common.policies.ImmediateCheckDecision
+import tmenier.fr.common.policies.ImmediateCheckPolicy
 import tmenier.fr.databases.dtos.ProbeCheckTaskDto
 import tmenier.fr.databases.dtos.StoreProbeCheckTaskDto
 import tmenier.fr.databases.entities.ProbeCheckTaskEntity
@@ -216,6 +219,39 @@ class ProbeCheckTaskRepository(
             ).setParameter("intervalSeconds", intervalRetrySeconds)
             .setParameter("probeId", probeId)
             .executeUpdate()
+    }
+
+    @Transactional
+    fun requestImmediateCheck(
+        probeId: UUID,
+        now: LocalDateTime = LocalDateTime.now(),
+    ): ImmediateCheckOutcome {
+        val probe =
+            em.find(ProbesEntity::class.java, probeId, LockModeType.PESSIMISTIC_WRITE)
+                ?: throw IllegalArgumentException("Probe not found")
+
+        val activeJob =
+            find(
+                "probeId = ?1 and status in ?2",
+                probeId,
+                listOf(QueueJobStatus.PENDING, QueueJobStatus.LEASED),
+            ).firstResult()
+
+        val decision = ImmediateCheckPolicy.decide(probe.enabled, activeJob?.status)
+
+        when (decision) {
+            ImmediateCheckDecision.PULL_JOB_FORWARD ->
+                activeJob!!.availableAt = now.atZone(ZoneId.systemDefault()).toInstant()
+
+            ImmediateCheckDecision.PULL_PROBE_SCHEDULE_FORWARD ->
+                probe.nextCheckAt = now
+
+            ImmediateCheckDecision.DO_NOTHING_ALREADY_RUNNING,
+            ImmediateCheckDecision.DO_NOTHING_DISABLED,
+                -> Unit
+        }
+
+        return decision.toOutcome()
     }
 
     private fun storeEntity(dto: StoreProbeCheckTaskDto): ProbeCheckTaskEntity {

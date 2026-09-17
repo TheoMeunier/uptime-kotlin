@@ -87,3 +87,9 @@ export const GetProbeUpdateResponseSchema = z.object({
 });
 
 export type ProbeGetUpdateResponse = z.infer<typeof GetProbeUpdateResponseSchema>;
+
+export const CheckProbeNowResponseSchema = z.object({
+	status: z.enum(['triggered', 'already_running']),
+});
+
+export type CheckProbeNowResponse = z.infer<typeof CheckProbeNowResponseSchema>;
