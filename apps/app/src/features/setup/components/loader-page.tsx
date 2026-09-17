@@ -6,7 +6,7 @@ export default function LoaderPage() {
 	return (
 		<div className="bg-background flex min-h-screen items-center justify-center">
 			<div className="flex flex-col items-center gap-6">
-				<img src="/img/logo.png" alt="" className="h-24 w-24 md:h-32 md:w-32" />
+				<img src="/img/logo-ui.png" alt="" className="h-24 w-24 md:h-32 md:w-32" />
 
 				<h1 className="text-foreground text-3xl font-semibold tracking-tight md:text-4xl">Uptime Kotlin</h1>
 
