@@ -3,7 +3,6 @@ package tmenier.fr.common.policies
 import tmenier.fr.common.enums.probes.ImmediateCheckOutcome
 import tmenier.fr.common.enums.probes.QueueJobStatus
 
-
 enum class ImmediateCheckDecision {
     PULL_JOB_FORWARD,
     PULL_PROBE_SCHEDULE_FORWARD,
