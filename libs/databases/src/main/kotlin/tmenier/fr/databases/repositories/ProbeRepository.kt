@@ -206,12 +206,6 @@ class ProbeRepository(
         entity.persist()
     }
 
-    /**
-     * Keeps the resend deadline consistent with the setting it depends on: turning
-     * the resend off must silence the probe now, and turning it on while the probe
-     * is already announced as down must arm a deadline -- otherwise the setting
-     * would only take effect at the next outage.
-     */
     private fun applyAlertRepeat(
         entity: ProbesEntity,
         alertRepeatSeconds: Int,
@@ -234,12 +228,8 @@ class ProbeRepository(
         probe.enabled = dto.enabled
         probe.status = dto.status
         probe.alertedStatus = dto.status
-        // A paused probe has no open alert: a deadline left behind would fire on
-        // the first check after it is resumed.
         probe.nextAlertAt = null
         probe.alertRepeatCount = 0
-        // Same for the outage start: a probe resumed days later must not report
-        // the pause as downtime.
         probe.failingSince = null
         probe.nextCheckAt = if (dto.enabled) LocalDateTime.now() else null
         if (!dto.enabled) {
