@@ -1,7 +1,7 @@
 import { lazy, StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './assets/index.css';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router';
 import { ProtectedRouteProvider } from '@/features/auth/contexts/protected-route-provider.tsx';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from '@/components/layouts/layout.tsx';
@@ -43,41 +43,45 @@ export const queryClient = new QueryClient({
 	}),
 });
 
+const router = createBrowserRouter(
+	createRoutesFromElements(
+		<>
+			<Route path="/" element={<SetupAppProvider />}>
+				<Route path="/" element={<ProtectedRouteProvider />}>
+					<Route path="/" element={<Layout />}>
+						<Route path="/dashboard" element={<Dashboard />} />
+
+						<Route path="monitors/new" element={<CreateProbe />} />
+						<Route path="monitors/:probeId/edit" element={<EditProbe />} />
+						<Route path="monitors/:probeId" element={<ShowProbe />} />
+
+						<Route path="maintenances" element={<Maintenances />} />
+
+						<Route path="profile" element={<Profile />} />
+					</Route>
+				</Route>
+
+				<Route path="/status" element={<ProbesStatus />} />
+				<Route path="/login" element={<Login />} />
+
+				<Route path="*" element={<Navigate to="/dashboard" replace />} />
+			</Route>
+
+			<Route path="/setup" element={<SetupPage />} />
+		</>
+	)
+);
+
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 			<QueryClientProvider client={queryClient}>
-				<BrowserRouter>
-					<SetupProvider>
-						<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}>
-							<Routes>
-								<Route path="/" element={<SetupAppProvider />}>
-									<Route path="/" element={<ProtectedRouteProvider />}>
-										<Route path="/" element={<Layout />}>
-											<Route path="/dashboard" element={<Dashboard />} />
-
-											<Route path="monitors/new" element={<CreateProbe />} />
-											<Route path="monitors/:probeId/edit" element={<EditProbe />} />
-											<Route path="monitors/:probeId" element={<ShowProbe />} />
-
-											<Route path="maintenances" element={<Maintenances />} />
-
-											<Route path="profile" element={<Profile />} />
-										</Route>
-									</Route>
-
-									<Route path="/status" element={<ProbesStatus />} />
-									<Route path="/login" element={<Login />} />
-
-									<Route path="*" element={<Navigate to="/dashboard" replace />} />
-								</Route>
-
-								<Route path="/setup" element={<SetupPage />} />
-							</Routes>
-						</Suspense>
-						<Toaster />
-					</SetupProvider>
-				</BrowserRouter>
+				<SetupProvider>
+					<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}>
+						<RouterProvider router={router} />
+					</Suspense>
+					<Toaster />
+				</SetupProvider>
 			</QueryClientProvider>
 		</ThemeProvider>
 	</StrictMode>

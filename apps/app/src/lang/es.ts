@@ -9,6 +9,13 @@ const es: typeof en = {
 		},
 	},
 
+	unsaved_changes: {
+		title: '¿Salir sin guardar?',
+		description: 'Los cambios de este formulario no se han guardado. Se perderán si sales de esta página.',
+		stay: 'Seguir editando',
+		leave: 'Salir sin guardar',
+	},
+
 	app: {
 		loading: 'Cargando Uptime Kotlin',
 		loading_short: 'Cargando…',

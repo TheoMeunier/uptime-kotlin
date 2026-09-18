@@ -16,7 +16,7 @@ export function useStoreMonitor() {
 			return probeService.storeProbe(data);
 		},
 		onSuccess: (_, values) => {
-			queryClient.invalidateQueries({ queryKey: ['probes'] }).then(() => {
+			return queryClient.invalidateQueries({ queryKey: ['probes'] }).then(() => {
 				toast.success(t('monitors.alerts.create', { data: values.name }));
 				navigate('/dashboard');
 			});

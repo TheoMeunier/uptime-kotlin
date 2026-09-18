@@ -6,6 +6,13 @@ const en = {
 		},
 	},
 
+	unsaved_changes: {
+		title: 'Leave without saving?',
+		description: 'Your changes to this form have not been saved. They will be lost if you leave this page.',
+		stay: 'Keep editing',
+		leave: 'Leave without saving',
+	},
+
 	app: {
 		loading: 'Loading Uptime Kotlin',
 		loading_short: 'Loading…',

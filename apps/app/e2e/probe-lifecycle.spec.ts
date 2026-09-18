@@ -92,3 +92,31 @@ test('duplicate a monitor, adjust the target and create the copy', async ({ page
 	await expect(page.getByRole('link', { name: sourceName })).toHaveCount(2);
 	await expect(page.getByRole('link', { name: copyName })).toBeVisible();
 });
+
+test('leaving a monitor form with unsaved changes asks for confirmation', async ({ page }) => {
+	await completeSetupIfNeeded(page);
+	await login(page);
+
+	await page.getByRole('link', { name: 'New monitor' }).click();
+	await page.waitForURL(/\/monitors\/new/);
+
+	// Untouched form: leaving is not blocked.
+	await page.getByRole('link', { name: 'Cancel' }).click();
+	await page.waitForURL(/\/dashboard/);
+
+	await page.getByRole('link', { name: 'New monitor' }).click();
+	await page.waitForURL(/\/monitors\/new/);
+	await page.getByLabel('Monitor name').fill(`E2E unsaved ${Date.now()}`);
+
+	const dialog = page.getByRole('dialog', { name: 'Leave without saving?' });
+
+	await page.getByRole('link', { name: 'Cancel' }).click();
+	await expect(dialog).toBeVisible();
+	await dialog.getByRole('button', { name: 'Keep editing' }).click();
+	await expect(dialog).toBeHidden();
+	await expect(page).toHaveURL(/\/monitors\/new/);
+
+	await page.getByRole('link', { name: 'Cancel' }).click();
+	await dialog.getByRole('button', { name: 'Leave without saving' }).click();
+	await page.waitForURL(/\/dashboard/);
+});

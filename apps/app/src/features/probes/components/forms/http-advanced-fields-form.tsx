@@ -129,7 +129,7 @@ function JsonField({ form, name, label, placeholder, fallback }: JsonFieldProps)
 					const next = event.target.value;
 					setValue(next);
 					try {
-						form.setValue(name, JSON.parse(next), { shouldValidate: true });
+						form.setValue(name, JSON.parse(next), { shouldDirty: true, shouldValidate: true });
 						form.clearErrors(name);
 						setError(undefined);
 					} catch {

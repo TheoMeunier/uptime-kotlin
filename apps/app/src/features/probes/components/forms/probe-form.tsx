@@ -15,7 +15,8 @@ import { Button } from '@/components/atoms/button.tsx';
 import { buildProbeFieldsConfig } from '@/features/probes/components/config/probe-type.ts';
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
-import { useMemo, type ComponentType, type ReactNode } from 'react';
+import UnsavedChangesGuard from '@/components/molecules/forms/unsaved-changes-guard.tsx';
+import { type ComponentType, type ReactNode, useMemo } from 'react';
 import type { FieldPath, FieldPathValue } from 'react-hook-form';
 
 type ProbeFormMode = 'create' | 'edit';
@@ -60,9 +61,7 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 	const { form, errors } = useProbeForm({ defaultValues });
 	const protocol = form.watch('protocol');
 
-	// `t` change d'identité à chaque changement de langue : les libellés se retraduisent.
 	const PROBE_FIELDS_CONFIG = useMemo(() => buildProbeFieldsConfig(t), [t]);
-
 	const dynamicFields = protocol ? PROBE_FIELDS_CONFIG[protocol] : PROBE_FIELDS_CONFIG[ProbeProtocol.HTTP];
 	const hasAdvancedFields = Boolean(dynamicFields?.advanced_fields?.length);
 
@@ -84,8 +83,9 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 
 	return (
 		<form onSubmit={form.handleSubmit(onSubmit)}>
+			<UnsavedChangesGuard when={form.formState.isDirty && !isLoading} />
+
 			<div className="grid gap-6 lg:grid-cols-3">
-				{/* What to watch, and how often. */}
 				<div className="flex flex-col gap-6 lg:col-span-2">
 					<FormSection title={t('monitors.section.target')} icon={Activity}>
 						<Field>
@@ -171,7 +171,6 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 					)}
 				</div>
 
-				{/* Who to tell, and everything optional. */}
 				<div className="flex flex-col gap-6">
 					<FormSection
 						title={t('notifications.title.notifications')}
@@ -217,10 +216,6 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 				</div>
 			</div>
 
-			{/*
-			 * Sticky action bar: with the HTTP protocol selected this form runs well past one
-			 * screen, and a submit button stranded at the bottom means scrolling back for it.
-			 */}
 			<div className="bg-background/95 border-border sticky bottom-0 mt-6 flex items-center justify-end gap-3 border-t py-4 backdrop-blur">
 				<Button variant="outline" asChild>
 					<Link to={cancelLink}>{t('button.cancel')}</Link>

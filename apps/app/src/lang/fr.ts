@@ -9,6 +9,14 @@ const fr: typeof en = {
 		},
 	},
 
+	unsaved_changes: {
+		title: 'Quitter sans enregistrer ?',
+		description:
+			'Vos modifications de ce formulaire n’ont pas été enregistrées. Elles seront perdues si vous quittez cette page.',
+		stay: 'Continuer l’édition',
+		leave: 'Quitter sans enregistrer',
+	},
+
 	app: {
 		loading: 'Chargement d’Uptime Kotlin',
 		loading_short: 'Chargement…',
