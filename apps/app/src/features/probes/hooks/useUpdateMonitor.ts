@@ -15,14 +15,13 @@ export default function useUpdateMonitor(probeId: string) {
 		mutationFn: async (data: StoreProbeSchema) => {
 			return probeService.updateProbe(probeId, data);
 		},
-		onSuccess: (_, v) => {
-			Promise.all([
+		onSuccess: async (_, v) => {
+			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: ['probes'] }),
 				queryClient.invalidateQueries({ queryKey: ['probe-update', probeId] }),
-			]).then(() => {
-				toast.success(t('monitors.alerts.update', { data: v.name }));
-				navigate(`/monitors/${probeId}`);
-			});
+			]);
+			toast.success(t('monitors.alerts.update', { data: v.name }));
+			navigate(`/monitors/${probeId}`);
 		},
 	});
 

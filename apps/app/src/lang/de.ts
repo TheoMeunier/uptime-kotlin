@@ -10,6 +10,14 @@ const de: typeof en = {
 		},
 	},
 
+	unsaved_changes: {
+		title: 'Ohne Speichern verlassen?',
+		description:
+			'Ihre Änderungen an diesem Formular wurden nicht gespeichert. Sie gehen verloren, wenn Sie diese Seite verlassen.',
+		stay: 'Weiter bearbeiten',
+		leave: 'Ohne Speichern verlassen',
+	},
+
 	app: {
 		loading: 'Uptime Kotlin wird geladen',
 		loading_short: 'Wird geladen…',
