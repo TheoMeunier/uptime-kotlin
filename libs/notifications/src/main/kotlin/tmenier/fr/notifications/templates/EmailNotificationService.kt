@@ -11,8 +11,11 @@ import org.jboss.logging.Logger
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
+import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.resolvers.OutageWindow
+import java.time.Duration
 
 @ApplicationScoped
 class EmailNotificationService(
@@ -24,6 +27,7 @@ class EmailNotificationService(
         content: NotificationContent.Mail,
         probe: ProbeDTO,
         result: ProbeResult,
+        downtime: Duration?,
     ) {
         val client = getMailClient(content)
 
@@ -31,14 +35,15 @@ class EmailNotificationService(
             MailMessage()
                 .setFrom(content.from)
                 .setTo(content.to)
-                .setSubject("✅ Monitor Success: ${probe.name}")
+                .setSubject("✅ Monitor Success: ${probe.name}${OutageWindow.suffix(downtime)}")
                 .setText(
-                    """
-                    Monitor: ${probe.name}
-                    Status: SUCCESS
-                    Response Time: ${result.responseTime}ms
-                    Timestamp: ${result.runAt}
-                    """.trimIndent(),
+                    listOfNotNull(
+                        "Monitor: ${probe.name}",
+                        "Status: SUCCESS",
+                        downtime?.let { "Downtime: ${it.toHumanReadable()}" },
+                        "Response Time: ${result.responseTime}ms",
+                        "Timestamp: ${result.runAt}",
+                    ).joinToString("\n"),
                 )
 
         client

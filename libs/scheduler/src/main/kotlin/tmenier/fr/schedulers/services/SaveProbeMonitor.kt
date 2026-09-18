@@ -10,6 +10,7 @@ import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
+import tmenier.fr.notifications.resolvers.OutageWindow
 import tmenier.fr.notifications.services.NotificationService
 import java.time.LocalDateTime
 import java.util.UUID
@@ -41,7 +42,9 @@ class SaveProbeMonitor(
             )
 
         val alertedStatus = probe.alertedStatus
+        val outageStart = probe.failingSince
         probe.status = result.status
+        probe.failingSince = OutageWindow.startAfter(outageStart, result.status, at)
         probe.lastRun = runAt
 
         result.tlsCheckedAt?.let { probe.tlsCheckedAt = it }
@@ -72,6 +75,7 @@ class SaveProbeMonitor(
             checkTaskId = checkTaskId,
             result = result,
             at = at,
+            outageStart = outageStart,
         )
 
         return true

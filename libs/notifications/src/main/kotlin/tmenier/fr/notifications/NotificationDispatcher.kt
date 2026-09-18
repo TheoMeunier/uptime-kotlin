@@ -5,6 +5,7 @@ import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.dtos.ProbeDTO
+import java.time.Duration
 
 @ApplicationScoped
 class NotificationDispatcher(
@@ -16,6 +17,7 @@ class NotificationDispatcher(
         result: ProbeResult,
         event: NotificationEvent,
         reminderIndex: Int = 0,
+        downtime: Duration? = null,
     ) {
         if (event == NotificationEvent.NONE) return
 
@@ -28,7 +30,7 @@ class NotificationDispatcher(
 
         when (event) {
             NotificationEvent.FAILURE -> typedHandler.sendFailure(notification.content, probe, result)
-            NotificationEvent.RECOVERY -> typedHandler.sendSuccess(notification.content, probe, result)
+            NotificationEvent.RECOVERY -> typedHandler.sendSuccess(notification.content, probe, result, downtime)
             NotificationEvent.REMINDER -> typedHandler.sendReminder(notification.content, probe, result, reminderIndex)
             NotificationEvent.NONE -> Unit
         }

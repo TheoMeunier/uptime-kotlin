@@ -238,6 +238,9 @@ class ProbeRepository(
         // the first check after it is resumed.
         probe.nextAlertAt = null
         probe.alertRepeatCount = 0
+        // Same for the outage start: a probe resumed days later must not report
+        // the pause as downtime.
+        probe.failingSince = null
         probe.nextCheckAt = if (dto.enabled) LocalDateTime.now() else null
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)

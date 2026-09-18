@@ -2,6 +2,7 @@ package tmenier.fr.notifications
 
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.databases.dtos.ProbeDTO
+import java.time.Duration
 
 interface NotificationInterfaces {
     fun getNotificationType(): String
@@ -12,6 +13,7 @@ interface TypedNotificationInterfaces<T> : NotificationInterfaces {
         content: T,
         probe: ProbeDTO,
         result: ProbeResult,
+        downtime: Duration?,
     )
 
     fun sendFailure(

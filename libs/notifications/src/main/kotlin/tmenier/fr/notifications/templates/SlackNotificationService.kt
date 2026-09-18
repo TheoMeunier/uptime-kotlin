@@ -7,10 +7,12 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.resolvers.OutageWindow
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -23,10 +25,11 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
         content: NotificationContent.Slack,
         probe: ProbeDTO,
         result: ProbeResult,
+        downtime: Duration?,
     ) {
         val jsonPayload =
             buildSlackMessage(
-                "Service ${probe.name} - ${result.status}",
+                "Service ${probe.name} - ${result.status}${OutageWindow.suffix(downtime)}",
                 result.message,
                 "#00FF00",
                 result.runAt,

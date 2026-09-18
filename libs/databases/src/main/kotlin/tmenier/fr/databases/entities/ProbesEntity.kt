@@ -63,6 +63,10 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "alert_repeat_count", nullable = false)
     var alertRepeatCount: Int = 0
 
+    /** First unsuccessful check since the last SUCCESS; null while healthy. */
+    @Column(name = "failing_since")
+    var failingSince: Instant? = null
+
     @Column(nullable = false)
     var protocol: ProbeProtocol = ProbeProtocol.HTTP
 

@@ -9,6 +9,7 @@ import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.repositories.NotificationTaskRepository
 import tmenier.fr.notifications.resolvers.AlertRepeatPolicy
 import tmenier.fr.notifications.resolvers.NotificationEventResolver
+import tmenier.fr.notifications.resolvers.OutageWindow
 import java.time.Instant
 import java.util.UUID
 
@@ -22,17 +23,27 @@ class NotificationService(
         checkTaskId: UUID,
         result: ProbeResult,
         at: Instant,
+        outageStart: Instant? = null,
     ): NotificationEvent {
         val announcedStatus = probe.alertedStatus
         val event = notificationEventResolver.resolve(announcedStatus, result.status)
 
         if (event != NotificationEvent.NONE) {
-            notificationTaskRepository.enqueueDeliveries(probe, checkTaskId, result, event)
+            // Frozen now: a delivery retried later must report the same downtime.
+            val downtime = if (event == NotificationEvent.RECOVERY) OutageWindow.downtime(outageStart, at) else null
+            notificationTaskRepository.enqueueDeliveries(
+                probe = probe,
+                checkTaskId = checkTaskId,
+                result = result,
+                event = event,
+                downtime = downtime,
+            )
             applyAnnouncedStatus(probe, result.status, at)
 
             logger.info {
                 "Resolved notification transition for Probe Check $checkTaskId: " +
-                    "$announcedStatus -> ${result.status}, event=$event, channels=${probe.notifications.size}, " +
+                    "$announcedStatus -> ${result.status}, event=$event, downtime=${downtime?.seconds}s, " +
+                    "channels=${probe.notifications.size}, " +
                     "nextAlertAt=${probe.nextAlertAt}"
             }
             return event

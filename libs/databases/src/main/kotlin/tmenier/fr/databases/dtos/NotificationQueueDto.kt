@@ -6,6 +6,7 @@ import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.common.enums.probes.QueueJobStatus
+import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 
@@ -38,6 +39,7 @@ data class NotificationQueueDto(
     val event: NotificationEvent,
     val payload: ProbeResult,
     val reminderIndex: Int,
+    val downtime: Duration? = null,
     val attemptCount: Int,
     val maxAttempts: Int,
 )
