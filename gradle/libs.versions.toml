@@ -9,7 +9,7 @@ slf4j = "2.0.17"
 bcrypt = "0.10.2"
 rest-assured = "5.5.1"
 minidns = "1.1.1"
-flyway = "12.6.1"
+flyway = "13.6.0"
 jackson = "2.18.3"
 
 [plugins]
