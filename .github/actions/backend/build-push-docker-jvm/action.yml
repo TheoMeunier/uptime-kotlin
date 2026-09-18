@@ -33,7 +33,7 @@ runs:
       run: ./gradlew ${{ inputs.project-path-build }}:quarkusBuild
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.name }}
         path: ./backend/${{ inputs.name }}/build/quarkus-app/quarkus-run.jar
