@@ -1,0 +1,57 @@
+# Doc : https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels: [ "dependencies", "backend" ]
+    commit-message:
+      prefix: "chore(deps-back)"
+    groups:
+      gradle-minor-patch:
+        update-types: [ "minor", "patch" ]
+
+  - package-ecosystem: "npm"
+    directory: "/apps/app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels: [ "dependencies", "frontend" ]
+    commit-message:
+      prefix: "chore(deps-front)"
+    groups:
+      npm-dev-minor-patch:
+        dependency-type: "development"
+        update-types: [ "minor", "patch" ]
+      npm-prod-minor-patch:
+        dependency-type: "production"
+        update-types: [ "minor", "patch" ]
+
+  - package-ecosystem: "github-actions"
+    directories:
+      - "/"
+      - "/.github/actions/install-gradle"
+      - "/.github/actions/build-push-docker"
+      - "/.github/actions/backend/build-push-docker-jvm"
+      - "/.github/actions/backend/build-push-docker-native"
+      - "/.github/actions/frontend/front-build"
+      - "/.github/actions/frontend/front-lint"
+      - "/.github/actions/frontend/front-security"
+    schedule:
+      interval: "monthly"
+      timezone: "Europe/Paris"
+    labels: [ "dependencies", "ci" ]
+    commit-message:
+      prefix: "chore(deps-ci)"
+    groups:
+      github-actions:
+        patterns: [ "*" ]
