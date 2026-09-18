@@ -78,6 +78,7 @@ const en = {
 			more: 'More actions',
 			check_now: 'Check now',
 			purge_logs: 'Purge logs',
+			duplicate: 'Duplicate',
 		},
 	},
 
@@ -184,6 +185,11 @@ const en = {
 			notifications_description: 'Channels alerted when this monitor goes down.',
 		},
 
+		duplicate: {
+			copy_name: '{{name}} (copy)',
+			description: 'Copy of {{name}}. Adjust the target before saving: nothing is created until you do.',
+		},
+
 		title: {
 			create: 'Create monitor',
 			update: 'Update monitor',
@@ -193,6 +199,7 @@ const en = {
 			resume: 'Resume this monitor?',
 			final_hour: 'Last hour',
 			http_request_assertions: 'HTTP request and assertions',
+			duplicate: 'Duplicate monitor',
 		},
 		label: {
 			http_method: 'HTTP method',

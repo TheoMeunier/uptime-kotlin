@@ -81,6 +81,7 @@ const es: typeof en = {
 			more: 'Más acciones',
 			check_now: 'Comprobar ahora',
 			purge_logs: 'Purgar registros',
+			duplicate: 'Duplicar',
 		},
 	},
 
@@ -188,6 +189,11 @@ const es: typeof en = {
 			notifications_description: 'Canales avisados cuando este monitor cae.',
 		},
 
+		duplicate: {
+			copy_name: '{{name}} (copia)',
+			description: 'Copia de {{name}}. Ajuste el destino antes de guardar: no se crea nada hasta entonces.',
+		},
+
 		title: {
 			create: 'Crear monitor',
 			update: 'Editar monitor',
@@ -197,6 +203,7 @@ const es: typeof en = {
 			resume: '¿Reanudar este monitor?',
 			final_hour: 'Última hora',
 			http_request_assertions: 'Petición HTTP y aserciones',
+			duplicate: 'Duplicar monitor',
 		},
 		label: {
 			http_method: 'Método HTTP',

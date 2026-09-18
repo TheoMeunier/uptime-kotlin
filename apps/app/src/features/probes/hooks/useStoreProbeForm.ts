@@ -1,4 +1,4 @@
-import { data, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { type SubmitHandler } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
@@ -15,9 +15,9 @@ export function useStoreMonitor() {
 		mutationFn: async (data: StoreProbeSchema) => {
 			return probeService.storeProbe(data);
 		},
-		onSuccess: () => {
+		onSuccess: (_, values) => {
 			queryClient.invalidateQueries({ queryKey: ['probes'] }).then(() => {
-				toast.success(t('monitors.alerts.create', { data: data.name }));
+				toast.success(t('monitors.alerts.create', { data: values.name }));
 				navigate('/dashboard');
 			});
 		},
