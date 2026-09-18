@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.quarkus) apply false
-    id("org.kordamp.gradle.jandex") version "2.1.0" apply false
+    id("org.kordamp.gradle.jandex") version "2.3.0" apply false
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0" apply false
 }
 
