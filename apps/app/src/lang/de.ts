@@ -82,6 +82,7 @@ const de: typeof en = {
 			more: 'Weitere Aktionen',
 			check_now: 'Jetzt prüfen',
 			purge_logs: 'Protokolle bereinigen',
+			duplicate: 'Duplizieren',
 		},
 	},
 
@@ -189,6 +190,11 @@ const de: typeof en = {
 			notifications_description: 'Kanäle, die bei einem Ausfall dieses Monitors benachrichtigt werden.',
 		},
 
+		duplicate: {
+			copy_name: '{{name}} (Kopie)',
+			description: 'Kopie von {{name}}. Passen Sie das Ziel vor dem Speichern an – erst dann wird etwas angelegt.',
+		},
+
 		title: {
 			create: 'Monitor erstellen',
 			update: 'Monitor bearbeiten',
@@ -198,6 +204,7 @@ const de: typeof en = {
 			resume: 'Diesen Monitor fortsetzen?',
 			final_hour: 'Letzte Stunde',
 			http_request_assertions: 'HTTP-Anfrage und Prüfungen',
+			duplicate: 'Monitor duplizieren',
 		},
 		label: {
 			http_method: 'HTTP-Methode',
