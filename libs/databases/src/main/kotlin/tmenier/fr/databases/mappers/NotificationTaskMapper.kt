@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.databases.dtos.NotificationQueueDto
 import tmenier.fr.databases.entities.NotificationTaskEntity
+import java.time.Duration
 
 object NotificationTaskMapper {
     private val objectMapper =
@@ -27,6 +28,7 @@ object NotificationTaskMapper {
             event = entity.event,
             payload = payloadToDto(entity),
             reminderIndex = entity.reminderIndex,
+            downtime = entity.downtimeSeconds?.let(Duration::ofSeconds),
             attemptCount = entity.attemptCount,
             maxAttempts = entity.maxAttempts,
         )

@@ -7,10 +7,12 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.resolvers.OutageWindow
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
 import java.time.LocalDateTime
 
 @ApplicationScoped
@@ -21,8 +23,17 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
         content: NotificationContent.Discord,
         probe: ProbeDTO,
         result: ProbeResult,
+        downtime: Duration?,
     ) {
-        val jsonPayload = buildEmbed(probe.name, result.message, 0x00FF00, result.runAt, result.status)
+        val jsonPayload =
+            buildEmbed(
+                probe.name,
+                result.message,
+                0x00FF00,
+                result.runAt,
+                result.status,
+                headlineSuffix = OutageWindow.suffix(downtime),
+            )
         sendDiscordEmbed(content, jsonPayload)
     }
 
@@ -61,6 +72,7 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
         runAt: LocalDateTime,
         status: ProbeMonitorLogStatus,
         reminderIndex: Int = 0,
+        headlineSuffix: String = "",
     ): String {
         val escapedTitle = title.replace("\"", "\\\"").replace("\n", "\\n")
         val escapedDescription = description.replace("\"", "\\\"").replace("\n", "\\n")
@@ -68,7 +80,7 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
             if (reminderIndex > 0) {
                 "Your service $escapedTitle is STILL $status (reminder #$reminderIndex)"
             } else {
-                "Your service $escapedTitle is $status"
+                "Your service $escapedTitle is $status$headlineSuffix"
             }
 
         return """

@@ -46,6 +46,10 @@ class NotificationTaskEntity : PanacheEntityBase {
     @Column(name = "reminder_index", nullable = false)
     var reminderIndex: Int = 0
 
+    /** Downtime frozen when a RECOVERY is queued; null otherwise or when unknown. */
+    @Column(name = "downtime_seconds")
+    var downtimeSeconds: Long? = null
+
     @Column(name = "delivery_attempts", nullable = false)
     var attemptCount: Int = 0
 
