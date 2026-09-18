@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Pause, Play, Trash2, Wrench } from 'lucide-react';
+import { Link } from 'react-router';
+import { Copy, MoreHorizontal, Pause, Play, Trash2, Wrench } from 'lucide-react';
 import { Button } from '@/components/atoms/button.tsx';
 import {
 	DropdownMenu,
@@ -51,6 +52,13 @@ export default function ProbeActionsMenu({
 					<DropdownMenuItem onSelect={() => setDialog('on-off')}>
 						<PauseIcon />
 						{t(enabled ? 'button.actions.pause' : 'button.actions.resume')}
+					</DropdownMenuItem>
+
+					<DropdownMenuItem asChild>
+						<Link to={`/monitors/new?from=${probeId}`}>
+							<Copy />
+							{t('button.actions.duplicate')}
+						</Link>
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />

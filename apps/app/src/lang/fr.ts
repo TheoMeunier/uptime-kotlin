@@ -81,6 +81,7 @@ const fr: typeof en = {
 			more: 'Plus d’actions',
 			check_now: 'Vérifier maintenant',
 			purge_logs: 'Purger les journaux',
+			duplicate: 'Dupliquer',
 		},
 	},
 
@@ -188,6 +189,12 @@ const fr: typeof en = {
 			notifications_description: 'Canaux alertés quand cette sonde tombe.',
 		},
 
+		duplicate: {
+			copy_name: '{{name}} (copie)',
+			description:
+				'Copie de {{name}}. Ajustez la cible avant d’enregistrer : rien n’est créé tant que vous ne l’avez pas fait.',
+		},
+
 		title: {
 			create: 'Créer une sonde',
 			update: 'Modifier la sonde',
@@ -197,6 +204,7 @@ const fr: typeof en = {
 			resume: 'Reprendre cette sonde ?',
 			final_hour: 'Dernière heure',
 			http_request_assertions: 'Requête HTTP et assertions',
+			duplicate: 'Dupliquer la sonde',
 		},
 		label: {
 			http_method: 'Méthode HTTP',
