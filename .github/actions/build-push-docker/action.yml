@@ -38,7 +38,7 @@ runs:
 
     - name: Extract metadata
       id: meta
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@v6
       with:
         images: ghcr.io/${{ github.repository }}/${{ inputs.image-name }}
         tags: |
@@ -48,7 +48,7 @@ runs:
 
     - name: Build and push
       if: ${{ inputs.docker-path-file != '' }}
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.docker-path-file }}
@@ -59,7 +59,7 @@ runs:
 
     - name: Build and push
       if: ${{ inputs.docker-path-file == '' }}
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         context: ${{ inputs.context }}
         push: ${{ inputs.push == 'true' }}
