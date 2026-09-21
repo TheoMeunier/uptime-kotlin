@@ -8,7 +8,7 @@ import tmenier.fr.common.enums.monitors.HttpCodeEnum
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
-import tmenier.fr.schedulers.services.SslCertificateService
+import tmenier.fr.schedulers.services.ProbeHttpClientFactory
 import tmenier.fr.schedulers.services.TlsCertificateInspector
 import tmenier.fr.schedulers.services.TlsInspection
 import java.net.URI
@@ -21,7 +21,7 @@ import java.util.Base64
 
 @ApplicationScoped
 class ProbeProtocolHttp(
-    private val sslCertificateService: SslCertificateService,
+    private val httpClientFactory: ProbeHttpClientFactory,
     private val tlsCertificateInspector: TlsCertificateInspector,
     private val objectMapper: ObjectMapper,
 ) : ProbeProtocolAbstract<ProbeContent.Http>() {
@@ -32,6 +32,7 @@ class ProbeProtocolHttp(
     ): ProbeResult {
         val startedAt = now()
         var tls = TlsInspection.NONE
+        val clients = mutableMapOf<Boolean, HttpClient>()
 
         return try {
             val steps = content.steps.ifEmpty { listOf(content.asSingleStep()) }
@@ -41,7 +42,12 @@ class ProbeProtocolHttp(
 
             for ((index, step) in steps.withIndex()) {
                 val stepStartedAt = now()
-                val response = executeStep(content, step)
+                val followRedirects = step.followRedirects ?: content.followRedirects
+                val client =
+                    clients.getOrPut(followRedirects) {
+                        httpClientFactory.create(followRedirects, content.ignoreCertificateErrors)
+                    }
+                val response = executeStep(client, content, step)
                 val latency = getResponseTime(stepStartedAt)
                 lastStatusCode = response.statusCode()
                 lastBody = response.body()
@@ -79,34 +85,22 @@ class ProbeProtocolHttp(
                 tlsExpiresAt = tls.expiresAt,
                 tlsCheckedAt = tls.checkedAt,
             )
+        } finally {
+            clients.values.forEach(HttpClient::close)
         }
     }
 
     private fun executeStep(
+        client: HttpClient,
         content: ProbeContent.Http,
         step: ProbeContent.HttpStep,
     ): HttpResponse<String> {
-        val clientBuilder =
-            HttpClient
-                .newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .followRedirects(
-                    if (step.followRedirects ?: content.followRedirects) {
-                        HttpClient.Redirect.NORMAL
-                    } else {
-                        HttpClient.Redirect.NEVER
-                    },
-                )
-        if (content.ignoreCertificateErrors) {
-            clientBuilder.sslContext(sslCertificateService.createInsecureSSLContext())
-        }
-
         val request = HttpRequest.newBuilder().uri(URI(step.url)).timeout(Duration.ofSeconds(5))
         (content.headers + step.headers).forEach(request::header)
         applyAuthentication(request, step.authentication ?: content.authentication)
         val publisher = step.body?.let(HttpRequest.BodyPublishers::ofString) ?: HttpRequest.BodyPublishers.noBody()
         request.method(step.method.name, publisher)
-        return clientBuilder.build().send(request.build(), HttpResponse.BodyHandlers.ofString())
+        return client.send(request.build(), HttpResponse.BodyHandlers.ofString())
     }
 
     private fun applyAuthentication(
@@ -122,10 +116,12 @@ class ProbeProtocolHttp(
                 val encoded = Base64.getEncoder().encodeToString(value.toByteArray(StandardCharsets.UTF_8))
                 request.header("Authorization", "Basic $encoded")
             }
+
             ProbeContent.HttpAuthenticationType.BEARER -> {
                 require(!authentication.token.isNullOrBlank()) { "Bearer authentication requires a token" }
                 request.header("Authorization", "Bearer ${authentication.token}")
             }
+
             null -> Unit
         }
     }
@@ -141,6 +137,7 @@ class ProbeProtocolHttp(
                     ProbeContent.HttpAssertionType.TEXT_CONTAINS -> response.body().contains(assertion.expected)
                     ProbeContent.HttpAssertionType.RESPONSE_HEADER_EQUALS ->
                         assertion.header?.let { response.headers().firstValue(it).orElse(null) } == assertion.expected
+
                     ProbeContent.HttpAssertionType.JSON_EQUALS -> {
                         val path = requireNotNull(assertion.path) { "JSON assertion requires a path" }
                         val root = objectMapper.readTree(response.body())
