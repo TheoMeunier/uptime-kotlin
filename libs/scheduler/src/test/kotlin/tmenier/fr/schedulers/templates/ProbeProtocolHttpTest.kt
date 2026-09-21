@@ -13,9 +13,12 @@ import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.schedulers.services.DefaultProbeHttpClientFactory
+import tmenier.fr.schedulers.services.ProbeHttpClientFactory
 import tmenier.fr.schedulers.services.SslCertificateService
 import tmenier.fr.schedulers.services.TlsCertificateInspector
 import java.net.InetSocketAddress
+import java.net.http.HttpClient
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.util.Base64
@@ -305,11 +308,109 @@ class ProbeProtocolHttpTest {
         assertNull(result.tlsCheckedAt)
     }
 
-    private fun executor(): ProbeProtocolHttp {
+    @Test
+    fun `reuses one client across the steps of a check and closes it afterwards`() {
+        server = okServer("/one", "/two")
+        val content =
+            defaultContent().copy(
+                steps =
+                    listOf(
+                        ProbeContent.HttpStep(name = "One", url = url("/one")),
+                        ProbeContent.HttpStep(name = "Two", url = url("/two")),
+                    ),
+            )
+        val factory = RecordingHttpClientFactory()
+
+        val result = executor(factory).execute(probe(content), content, true)
+
+        assertEquals(ProbeMonitorLogStatus.SUCCESS, result.status)
+        assertEquals(1, factory.clients.size)
+        assertTrue(factory.clients.all(HttpClient::isTerminated))
+    }
+
+    @Test
+    fun `closes the client when a step fails`() {
+        server =
+            HttpServer.create(InetSocketAddress(0), 0).apply {
+                createContext("/failure") { exchange ->
+                    exchange.sendResponseHeaders(500, -1)
+                    exchange.close()
+                }
+                start()
+            }
+        val content = defaultContent().copy(url = url("/failure"))
+        val factory = RecordingHttpClientFactory()
+
+        val result = executor(factory).execute(probe(content), content, true)
+
+        assertEquals(ProbeMonitorLogStatus.FAILURE, result.status)
+        assertEquals(1, factory.clients.size)
+        assertTrue(factory.clients.all(HttpClient::isTerminated))
+    }
+
+    @Test
+    fun `closes the client when the target is unreachable`() {
+        val content = defaultContent().copy(url = "http://localhost:1/unreachable")
+        val factory = RecordingHttpClientFactory()
+
+        val result = executor(factory).execute(probe(content), content, true)
+
+        assertEquals(ProbeMonitorLogStatus.FAILURE, result.status)
+        assertEquals(1, factory.clients.size)
+        assertTrue(factory.clients.all(HttpClient::isTerminated))
+    }
+
+    @Test
+    fun `uses one client per redirect policy and closes both`() {
+        server = okServer("/follow", "/no-follow")
+        val content =
+            defaultContent().copy(
+                steps =
+                    listOf(
+                        ProbeContent.HttpStep(name = "Follow", url = url("/follow"), followRedirects = true),
+                        ProbeContent.HttpStep(name = "No follow", url = url("/no-follow"), followRedirects = false),
+                    ),
+            )
+        val factory = RecordingHttpClientFactory()
+
+        val result = executor(factory).execute(probe(content), content, true)
+
+        assertEquals(ProbeMonitorLogStatus.SUCCESS, result.status)
+        assertEquals(listOf(true, false), factory.redirectPolicies)
+        assertTrue(factory.clients.all(HttpClient::isTerminated))
+    }
+
+    private fun okServer(vararg paths: String) =
+        HttpServer.create(InetSocketAddress(0), 0).apply {
+            paths.forEach { path ->
+                createContext(path) { exchange ->
+                    exchange.sendResponseHeaders(200, -1)
+                    exchange.close()
+                }
+            }
+            start()
+        }
+
+    /** Delegates to the production factory and keeps every client it hands out. */
+    private class RecordingHttpClientFactory : ProbeHttpClientFactory {
+        private val delegate = DefaultProbeHttpClientFactory(SslCertificateService())
+        val clients = mutableListOf<HttpClient>()
+        val redirectPolicies = mutableListOf<Boolean>()
+
+        override fun create(
+            followRedirects: Boolean,
+            ignoreCertificateErrors: Boolean,
+        ): HttpClient {
+            redirectPolicies += followRedirects
+            return delegate.create(followRedirects, ignoreCertificateErrors).also(clients::add)
+        }
+    }
+
+    private fun executor(httpClientFactory: ProbeHttpClientFactory = RecordingHttpClientFactory()): ProbeProtocolHttp {
         val sslCertificateService = SslCertificateService()
 
         return ProbeProtocolHttp(
-            sslCertificateService = sslCertificateService,
+            httpClientFactory = httpClientFactory,
             tlsCertificateInspector = TlsCertificateInspector(sslCertificateService),
             objectMapper = jacksonObjectMapper(),
         )

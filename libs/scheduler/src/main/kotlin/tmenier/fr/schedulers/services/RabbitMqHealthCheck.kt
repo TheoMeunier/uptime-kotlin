@@ -27,31 +27,30 @@ class HttpRabbitMqHealthCheck(
         timeoutSeconds: Int,
     ) {
         val timeout = Duration.ofSeconds(timeoutSeconds.toLong())
-        val client =
-            HttpClient
-                .newBuilder()
-                .connectTimeout(timeout)
-                .build()
         val authorization =
             basicAuthorization(
                 content.username,
                 encryptionService.decryptIfEncrypted(content.password),
             )
 
-        parseManagementNodes(content.managementNodes).forEach { node ->
-            val healthUri = healthUri(node)
-            val request =
-                HttpRequest
-                    .newBuilder(healthUri)
-                    .timeout(timeout)
-                    .header("Authorization", authorization)
-                    .header("Accept", "application/json")
-                    .GET()
-                    .build()
-            val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        val nodes = parseManagementNodes(content.managementNodes)
 
-            require(response.statusCode() == 200) {
-                "RabbitMQ node $node returned HTTP ${response.statusCode()}: ${response.body()}"
+        HttpClient.newBuilder().connectTimeout(timeout).build().use { client ->
+            nodes.forEach { node ->
+                val healthUri = healthUri(node)
+                val request =
+                    HttpRequest
+                        .newBuilder(healthUri)
+                        .timeout(timeout)
+                        .header("Authorization", authorization)
+                        .header("Accept", "application/json")
+                        .GET()
+                        .build()
+                val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+
+                require(response.statusCode() == 200) {
+                    "RabbitMQ node $node returned HTTP ${response.statusCode()}: ${response.body()}"
+                }
             }
         }
     }
