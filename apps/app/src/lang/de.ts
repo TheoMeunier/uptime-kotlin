@@ -3,6 +3,20 @@ import type en from '@/lang/en.ts';
 // Typisiert auf `en`: ein fehlender oder überzähliger Schlüssel ist ein Compile-Fehler.
 const de: typeof en = {
 	errors: {
+		chunk: {
+			title: 'Eine neue Version ist verfügbar',
+			reloading: 'Uptime Kotlin wurde aktualisiert, seit dieser Tab geöffnet wurde. Seite wird neu geladen…',
+			stalled: 'Die neue Version konnte nicht geladen werden. Prüfen Sie Ihre Verbindung und laden Sie die Seite neu.',
+		},
+		crash: {
+			title: 'Etwas ist schiefgelaufen',
+			description: 'Auf dieser Seite ist ein unerwarteter Fehler aufgetreten. Neu laden hilft meistens; andernfalls kehren Sie zum Dashboard zurück.',
+			details: 'Technische Details',
+		},
+		actions: {
+			reload: 'Neu laden',
+			dashboard: 'Zurück zum Dashboard',
+		},
 		load: {
 			title: 'Diese Daten konnten nicht geladen werden',
 			description:
