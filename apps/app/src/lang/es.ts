@@ -3,6 +3,20 @@ import type en from '@/lang/en.ts';
 // Tipado sobre `en`: una clave que falte o que sobre es un error de compilación.
 const es: typeof en = {
 	errors: {
+		chunk: {
+			title: 'Hay una nueva versión disponible',
+			reloading: 'Uptime Kotlin se ha actualizado desde que se abrió esta pestaña. Recargando la página…',
+			stalled: 'No se pudo cargar la nueva versión. Compruebe su conexión y vuelva a cargar la página.',
+		},
+		crash: {
+			title: 'Algo ha salido mal',
+			description: 'Esta página ha encontrado un error inesperado. Recargar suele solucionarlo; si no, vuelva al panel.',
+			details: 'Detalles técnicos',
+		},
+		actions: {
+			reload: 'Recargar',
+			dashboard: 'Volver al panel',
+		},
 		load: {
 			title: 'No se han podido cargar estos datos',
 			description: 'La API no ha respondido. Puede que se esté reiniciando o que no sea accesible desde su navegador.',

@@ -1,5 +1,19 @@
 const en = {
 	errors: {
+		chunk: {
+			title: 'A new version is available',
+			reloading: 'Uptime Kotlin was updated since this tab was opened. Reloading the page…',
+			stalled: 'This page could not load the latest version. Check your connection, then reload.',
+		},
+		crash: {
+			title: 'Something went wrong',
+			description: 'This page hit an unexpected error. Reloading usually fixes it; otherwise, go back to the dashboard.',
+			details: 'Technical details',
+		},
+		actions: {
+			reload: 'Reload',
+			dashboard: 'Back to dashboard',
+		},
 		load: {
 			title: 'Could not load this data',
 			description: 'The API did not answer. It may be restarting, or unreachable from your browser.',

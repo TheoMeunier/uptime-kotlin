@@ -12,6 +12,17 @@ import { toast } from 'sonner';
 import { getApiErrorMessage } from '@/api/api-error.ts';
 import { Toaster } from '@/components/atoms/sonner.tsx';
 import { ThemeProvider } from 'next-themes';
+import AppErrorBoundary from '@/components/molecules/app-error-boundary.tsx';
+import RouteErrorBoundary from '@/components/molecules/route-error-boundary.tsx';
+import { reloadOnce } from '@/lib/chunk-error.ts';
+
+// Build de prod : Vite émet cet événement quand un import dynamique (ou ses dépendances
+// préchargées) échoue, typiquement un chunk supprimé par un déploiement. On recharge avant que
+// React ne voie l'erreur ; si la garde anti-boucle refuse, l'erreur suit son cours jusqu'au
+// RouteErrorBoundary, qui affiche un bouton « Recharger ».
+window.addEventListener('vite:preloadError', (event) => {
+	if (reloadOnce()) event.preventDefault();
+});
 
 const Dashboard = lazy(() => import('@/pages/dashboard.tsx'));
 const Login = lazy(() => import('@/pages/auth/login.tsx'));
@@ -46,18 +57,21 @@ export const queryClient = new QueryClient({
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
-			<Route path="/" element={<SetupAppProvider />}>
+			<Route path="/" element={<SetupAppProvider />} errorElement={<RouteErrorBoundary fullscreen />}>
 				<Route path="/" element={<ProtectedRouteProvider />}>
 					<Route path="/" element={<Layout />}>
-						<Route path="/dashboard" element={<Dashboard />} />
+						{/* Route sans chemin : une page qui plante garde la sidebar et le header. */}
+						<Route errorElement={<RouteErrorBoundary />}>
+							<Route path="/dashboard" element={<Dashboard />} />
 
-						<Route path="monitors/new" element={<CreateProbe />} />
-						<Route path="monitors/:probeId/edit" element={<EditProbe />} />
-						<Route path="monitors/:probeId" element={<ShowProbe />} />
+							<Route path="monitors/new" element={<CreateProbe />} />
+							<Route path="monitors/:probeId/edit" element={<EditProbe />} />
+							<Route path="monitors/:probeId" element={<ShowProbe />} />
 
-						<Route path="maintenances" element={<Maintenances />} />
+							<Route path="maintenances" element={<Maintenances />} />
 
-						<Route path="profile" element={<Profile />} />
+							<Route path="profile" element={<Profile />} />
+						</Route>
 					</Route>
 				</Route>
 
@@ -67,7 +81,7 @@ const router = createBrowserRouter(
 				<Route path="*" element={<Navigate to="/dashboard" replace />} />
 			</Route>
 
-			<Route path="/setup" element={<SetupPage />} />
+			<Route path="/setup" element={<SetupPage />} errorElement={<RouteErrorBoundary fullscreen />} />
 		</>
 	)
 );
@@ -75,14 +89,18 @@ const router = createBrowserRouter(
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-			<QueryClientProvider client={queryClient}>
-				<SetupProvider>
-					<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}>
-						<RouterProvider router={router} />
-					</Suspense>
-					<Toaster />
-				</SetupProvider>
-			</QueryClientProvider>
+			<AppErrorBoundary>
+				<QueryClientProvider client={queryClient}>
+					<SetupProvider>
+						<Suspense
+							fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}
+						>
+							<RouterProvider router={router} />
+						</Suspense>
+						<Toaster />
+					</SetupProvider>
+				</QueryClientProvider>
+			</AppErrorBoundary>
 		</ThemeProvider>
 	</StrictMode>
 );

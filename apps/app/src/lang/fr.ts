@@ -3,6 +3,20 @@ import type en from '@/lang/en.ts';
 // Typé sur `en` : une clé manquante ou en trop est une erreur de compilation.
 const fr: typeof en = {
 	errors: {
+		chunk: {
+			title: 'Une nouvelle version est disponible',
+			reloading: 'Uptime Kotlin a été mis à jour depuis l’ouverture de cet onglet. Rechargement de la page…',
+			stalled: 'Impossible de charger la nouvelle version. Vérifiez votre connexion, puis rechargez la page.',
+		},
+		crash: {
+			title: 'Une erreur est survenue',
+			description: 'Cette page a rencontré une erreur inattendue. Un rechargement suffit en général ; sinon, revenez au tableau de bord.',
+			details: 'Détails techniques',
+		},
+		actions: {
+			reload: 'Recharger',
+			dashboard: 'Retour au tableau de bord',
+		},
 		load: {
 			title: 'Impossible de charger ces données',
 			description: 'L’API n’a pas répondu. Elle redémarre peut-être, ou elle est injoignable depuis votre navigateur.',
