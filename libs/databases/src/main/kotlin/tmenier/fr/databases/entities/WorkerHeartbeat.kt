@@ -11,10 +11,11 @@ import java.time.Instant
 @Table(name = "worker_heartbeats")
 class WorkerHeartbeat : PanacheEntityBase {
     @Id
-    lateinit var region: String
-
-    @Column(name = "worker_id", nullable = false)
+    @Column(name = "worker_id")
     lateinit var workerId: String
+
+    @Column(name = "region", nullable = false)
+    lateinit var region: String
 
     @Column(name = "last_seen_at", nullable = false)
     lateinit var lastSeenAt: Instant
