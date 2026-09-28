@@ -1,11 +1,11 @@
-package tmenier.fr.health
+package tmenier.fr.schedulers.health
 
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.health.HealthCheck
 import org.eclipse.microprofile.health.HealthCheckResponse
 import org.eclipse.microprofile.health.Liveness
-import tmenier.fr.monitors.ProbeLoopHeartbeat
+import tmenier.fr.schedulers.queue.ProbeLoopHeartbeat
 import java.time.Duration
 import java.time.Instant
 

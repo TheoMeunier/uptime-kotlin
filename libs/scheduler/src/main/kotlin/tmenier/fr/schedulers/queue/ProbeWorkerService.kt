@@ -1,4 +1,4 @@
-package tmenier.fr.monitors
+package tmenier.fr.schedulers.queue
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus

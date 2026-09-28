@@ -88,7 +88,7 @@ services:
       - "8080:8080"
     environment:
       TZ: Europe/Paris
-      QUARKUS_SCHEDULER_STRATEGY: db-lock
+      SCHEDULER_STRATEGY: database
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
@@ -159,8 +159,13 @@ networks:
 
    3.4 Schedulers Configuration:
 
-    - `QUARKUS_SCHEDULER_STRATEGY` : scheduler strategy of the API (`db-lock`, or `none` if the workers produce the
-      checks).
+    - `SCHEDULER_STRATEGY` : `database` (the API runs the monitoring checks and the other background jobs itself),
+      or `none` when dedicated workers run them (see [Cluster mode](#cluster-mode)).
+    - `SCHEDULER_WORKER_CONCURRENCY` (default `4`) : checks run in parallel, and at most this many checks start per
+      second. Keep it under the datasource pool size.
+
+   `QUARKUS_SCHEDULER_STRATEGY=db-lock` from previous versions is still understood as `SCHEDULER_STRATEGY=database`
+   and logs a deprecation warning: replace it.
 
    3.5 Maintenance windows (set the same values on the API and the workers):
 
@@ -182,9 +187,9 @@ networks:
 
 ### Cluster mode
 
-The cluster mode allows you to run multiple API/Workers instances in parallel, distributing monitoring checks and
-notifications across them. Redis is used for shared state and distributed locking (preventing duplicate checks), while
-RabbitMQ handles task queuing between instances.
+By default the API runs everything. The cluster mode moves the background jobs (monitoring checks, notifications,
+maintenance windows, purges) to one or more workers. Both modes run the same engine: a job queue stored in
+PostgreSQL, which the workers share without running a check twice. No extra service is required.
 
 #### Add Workers
 
@@ -214,13 +219,14 @@ uptime-kotlin-worker:
 
 1. Cluster mode
 
-   On the **API**: `QUARKUS_SCHEDULER_STRATEGY` set to `db-lock`.
+   On the **API**: `SCHEDULER_STRATEGY` set to `none`, so that only the workers run the background jobs.
 
    On each **worker** (these are `SCHEDULER_*` variables, not `QUARKUS_SCHEDULER_*`):
 
     - `SCHEDULER_STRATEGY`: `database` to run checks from the queue, `none` (default) to stay idle.
-    - `SCHEDULER_WORKER_NAME`: name of the worker, unique for each instance.
-    - `SCHEDULER_WORKER_CONCURRENCY` (default `1`): checks run in parallel by this worker. Keep it under the datasource
+    - `SCHEDULER_WORKER_NAME`: name of the worker, unique for each instance. Checks queued under a name that no
+      running instance uses any more are picked up by the others after 30 seconds.
+    - `SCHEDULER_WORKER_CONCURRENCY` (default `4`): checks run in parallel by this worker. Keep it under the datasource
       pool size.
 
 ## Contributing

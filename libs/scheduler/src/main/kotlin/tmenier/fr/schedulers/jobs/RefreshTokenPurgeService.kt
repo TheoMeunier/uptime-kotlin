@@ -1,4 +1,4 @@
-package tmenier.fr.auth
+package tmenier.fr.schedulers.jobs
 
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
@@ -6,11 +6,6 @@ import jakarta.transaction.Transactional
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.RefreshTokenRepository
 
-/**
- * Expired refresh tokens are already rejected at refresh time, but they stay in the table until
- * something removes them. This drops them daily so the active session list only ever shows
- * sessions that can actually be resumed.
- */
 @ApplicationScoped
 class RefreshTokenPurgeService(
     private val refreshTokenRepository: RefreshTokenRepository,

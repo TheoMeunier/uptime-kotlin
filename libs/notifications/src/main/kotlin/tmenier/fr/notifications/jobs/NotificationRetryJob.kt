@@ -4,7 +4,7 @@ import io.quarkus.scheduler.Scheduled
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
-import org.eclipse.microprofile.config.inject.ConfigProperty
+import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.NotificationTaskRepository
 import tmenier.fr.notifications.NotificationDispatcher
@@ -18,13 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger
 class NotificationRetryJob(
     private val notificationTaskRepository: NotificationTaskRepository,
     private val notificationDispatcher: NotificationDispatcher,
+    private val schedulerStrategy: SchedulerStrategy,
 ) {
-    @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
-    lateinit var clusterStrategy: String
-
-    @ConfigProperty(name = "quarkus.scheduler.strategy", defaultValue = "none")
-    lateinit var standaloneStrategy: String
-
     private val workerId = "notification-${InetAddress.getLocalHost().hostName}"
     private val leaseDuration = Duration.ofMinutes(2)
     private val concurrency = 4
@@ -97,7 +92,7 @@ class NotificationRetryJob(
         notificationTaskRepository.deadLetterExpiredLeases()
     }
 
-    private fun enabled(): Boolean = clusterStrategy == "database" || standaloneStrategy == "db-lock"
+    private fun enabled(): Boolean = schedulerStrategy.runsBackgroundJobs
 
     @PreDestroy
     fun close() {

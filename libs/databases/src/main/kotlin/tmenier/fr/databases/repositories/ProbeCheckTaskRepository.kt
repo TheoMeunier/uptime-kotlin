@@ -55,19 +55,6 @@ class ProbeCheckTaskRepository(
     }
 
     @Transactional
-    fun claimDueStandaloneProbes(
-        now: LocalDateTime = LocalDateTime.now(),
-        limit: Int = 50,
-    ): List<UUID> {
-        val probes = lockDueProbes(now, limit)
-        probes.forEach { probe ->
-            val scheduledAt = probe.nextCheckAt ?: now
-            advanceAbsoluteSchedule(probe, scheduledAt, now)
-        }
-        return probes.map { it.id }
-    }
-
-    @Transactional
     fun claimPendingTasks(
         region: String,
         workerId: String,
@@ -90,7 +77,15 @@ class ProbeCheckTaskRepository(
                 WHERE id IN (
                     SELECT id
                     FROM probe_check_jobs
-                    WHERE region = :region
+                    WHERE (
+                          region = :region
+                          OR NOT EXISTS (
+                              SELECT 1
+                              FROM worker_heartbeats h
+                              WHERE h.region = probe_check_jobs.region
+                                AND h.last_seen_at > now() - make_interval(secs => :activeWindowSeconds)
+                          )
+                      )
                       AND available_at <= now()
                       AND delivery_attempts < max_delivery_attempts
                       AND (
@@ -110,6 +105,7 @@ class ProbeCheckTaskRepository(
                 ).setParameter("workerId", workerId)
                 .setParameter("leaseSeconds", leaseDuration.seconds)
                 .setParameter("region", region)
+                .setParameter("activeWindowSeconds", WorkerHeartbeatRepository.ACTIVE_WINDOW.seconds)
                 .setParameter("limit", limit)
                 .resultList as List<UUID>
 
@@ -267,30 +263,6 @@ class ProbeCheckTaskRepository(
             }
         em.persist(entity)
         return entity
-    }
-
-    private fun lockDueProbes(
-        now: LocalDateTime,
-        limit: Int,
-    ): List<ProbesEntity> {
-        @Suppress("UNCHECKED_CAST")
-        val ids =
-            em
-                .createNativeQuery(
-                    """
-                SELECT id
-                FROM probes
-                WHERE enabled = true
-                  AND (next_check_at IS NULL OR next_check_at <= :now)
-                ORDER BY next_check_at ASC NULLS FIRST
-                FOR UPDATE SKIP LOCKED
-                LIMIT :limit
-                """,
-                ).setParameter("now", now)
-                .setParameter("limit", limit)
-                .resultList as List<UUID>
-
-        return ids.map { em.find(ProbesEntity::class.java, it) }
     }
 
     private fun lockProbesWithoutActiveTask(limit: Int): List<ProbesEntity> {
