@@ -1,8 +1,9 @@
-package tmenier.fr.monitors
+package tmenier.fr.schedulers.queue
 
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.WorkerHeartbeatRepository
 import java.net.InetAddress
@@ -10,15 +11,17 @@ import java.net.InetAddress
 @ApplicationScoped
 class WorkerRegistry(
     private val workerHeartbeatRepository: WorkerHeartbeatRepository,
+    private val schedulerStrategy: SchedulerStrategy,
 ) {
     @ConfigProperty(name = "scheduler.worker.name", defaultValue = "default")
     private lateinit var myRegion: String
 
-    // Same identifier as the one used by ProbeWorker to claim tasks (claimed_by).
     private val workerId by lazy { "$myRegion-${InetAddress.getLocalHost().hostName}" }
 
     @Scheduled(every = "10s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun heartbeat() {
+        if (!schedulerStrategy.runsBackgroundJobs) return
+
         try {
             workerHeartbeatRepository.beat(workerId, myRegion)
         } catch (e: Exception) {

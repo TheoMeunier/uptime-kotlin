@@ -1,4 +1,4 @@
-package tmenier.fr.maintenances
+package tmenier.fr.schedulers.jobs
 
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped

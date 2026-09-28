@@ -84,6 +84,18 @@ Use the **Feature Request** issue template when available.
    ```
 4. Follow the instructions in the README to start the project locally
 
+### Backend tests
+
+The deployment tests (`backend/api/src/test/kotlin/tmenier/fr/deployments`) start the API with real background jobs,
+so they run against a dedicated database instead of the dev one. Create it once in the PostgreSQL of `compose.yaml`:
+
+```bash
+docker exec -it uptime_kotlin_database createdb -U uptime-kotlin uptime-kotlin-test
+./gradlew test
+```
+
+Point `UPTIME_TEST_JDBC_URL` at another JDBC URL to use a different database.
+
 ---
 
 ## Translations 🌍

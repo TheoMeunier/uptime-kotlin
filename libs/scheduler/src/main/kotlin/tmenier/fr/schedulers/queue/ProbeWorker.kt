@@ -1,10 +1,11 @@
-package tmenier.fr.monitors
+package tmenier.fr.schedulers.queue
 
 import io.quarkus.scheduler.Scheduled
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
 import java.net.InetAddress
@@ -19,15 +20,13 @@ class ProbeWorker(
     private val probeCheckTaskRepository: ProbeCheckTaskRepository,
     private val probeWorkerService: ProbeWorkerService,
     private val probeLoopHeartbeat: ProbeLoopHeartbeat,
+    private val schedulerStrategy: SchedulerStrategy,
 ) {
-    @ConfigProperty(name = "scheduler.strategy", defaultValue = "none")
-    lateinit var strategy: String
-
     @ConfigProperty(name = "scheduler.worker.name", defaultValue = "default")
     lateinit var region: String
 
-    @ConfigProperty(name = "scheduler.worker.concurrency", defaultValue = "1")
-    var concurrency: Int = 1
+    @ConfigProperty(name = "scheduler.worker.concurrency", defaultValue = "4")
+    var concurrency: Int = 4
 
     private val leaseDuration = Duration.ofMinutes(2)
     private val activeTasks = AtomicInteger()
@@ -44,7 +43,7 @@ class ProbeWorker(
                 Thread(runnable, "probe-worker-${threadSequence.incrementAndGet()}")
             }
         logger.info {
-            "Probe worker started: workerId=$workerId, region=$region, strategy=$strategy, " +
+            "Probe worker started: workerId=$workerId, region=$region, strategy=${schedulerStrategy.value}, " +
                 "concurrency=$concurrency, leaseDuration=${leaseDuration.seconds}s"
         }
     }
@@ -53,7 +52,7 @@ class ProbeWorker(
     fun executeDueTasks() {
         probeLoopHeartbeat.tick()
 
-        if (strategy != "database") return
+        if (!schedulerStrategy.runsBackgroundJobs) return
 
         val capacity = concurrency - activeTasks.get()
         if (capacity <= 0) return
@@ -108,7 +107,8 @@ class ProbeWorker(
 
     @Scheduled(every = "30s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun maintainLeases() {
-        if (strategy != "database") return
+        if (!schedulerStrategy.runsBackgroundJobs) return
+
         probeCheckTaskRepository.renewLeases(workerId, leaseDuration, activeTaskIds)
         probeCheckTaskRepository.deadLetterExpiredLeases()
     }

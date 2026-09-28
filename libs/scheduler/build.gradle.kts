@@ -4,6 +4,7 @@ dependencies {
     implementation(project(":libs:notifications"))
 
     implementation(libs.quarkus.scheduler)
+    implementation(libs.quarkus.smallrye.health)
     implementation(libs.quarkus.jdbc.mssql)
     implementation(libs.quarkus.jdbc.mysql)
     implementation(libs.quarkus.jdbc.mariadb)
