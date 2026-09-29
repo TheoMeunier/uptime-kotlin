@@ -10,7 +10,8 @@ const es: typeof en = {
 		},
 		crash: {
 			title: 'Algo ha salido mal',
-			description: 'Esta página ha encontrado un error inesperado. Recargar suele solucionarlo; si no, vuelva al panel.',
+			description:
+				'Esta página ha encontrado un error inesperado. Recargar suele solucionarlo; si no, vuelva al panel.',
 			details: 'Detalles técnicos',
 		},
 		actions: {

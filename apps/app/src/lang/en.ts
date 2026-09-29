@@ -7,7 +7,8 @@ const en = {
 		},
 		crash: {
 			title: 'Something went wrong',
-			description: 'This page hit an unexpected error. Reloading usually fixes it; otherwise, go back to the dashboard.',
+			description:
+				'This page hit an unexpected error. Reloading usually fixes it; otherwise, go back to the dashboard.',
 			details: 'Technical details',
 		},
 		actions: {

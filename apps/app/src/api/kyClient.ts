@@ -13,14 +13,14 @@ function refreshAccessToken() {
 }
 
 const api = ky.extend({
-	prefixUrl: '/api',
+	prefix: '/api',
 	timeout: 30000,
 	headers: {
 		'Content-Type': 'application/json',
 	},
 	hooks: {
 		beforeRequest: [
-			(request) => {
+			({ request }) => {
 				const token = authService.getAccessToken();
 
 				if (token) {
@@ -29,8 +29,8 @@ const api = ky.extend({
 			},
 		],
 		afterResponse: [
-			async (request, _, response) => {
-				if (response.status === 401) {
+			async ({ request, response, retryCount }) => {
+				if (response.status === 401 && retryCount === 0) {
 					const refreshed = await refreshAccessToken();
 
 					if (!refreshed) {
@@ -38,13 +38,16 @@ const api = ky.extend({
 					}
 
 					const token = authService.getAccessToken();
-					const retryRequest = new Request(request);
+					const headers = new Headers(request.headers);
 
 					if (token) {
-						retryRequest.headers.set('Authorization', `Bearer ${token}`);
+						headers.set('Authorization', `Bearer ${token}`);
 					}
 
-					return ky(retryRequest);
+					return ky.retry({
+						request: new Request(request, { headers }),
+						code: 'TOKEN_REFRESHED',
+					});
 				}
 
 				if (!response.ok) {

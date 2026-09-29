@@ -10,7 +10,8 @@ const fr: typeof en = {
 		},
 		crash: {
 			title: 'Une erreur est survenue',
-			description: 'Cette page a rencontré une erreur inattendue. Un rechargement suffit en général ; sinon, revenez au tableau de bord.',
+			description:
+				'Cette page a rencontré une erreur inattendue. Un rechargement suffit en général ; sinon, revenez au tableau de bord.',
 			details: 'Détails techniques',
 		},
 		actions: {

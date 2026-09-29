@@ -10,7 +10,8 @@ const de: typeof en = {
 		},
 		crash: {
 			title: 'Etwas ist schiefgelaufen',
-			description: 'Auf dieser Seite ist ein unerwarteter Fehler aufgetreten. Neu laden hilft meistens; andernfalls kehren Sie zum Dashboard zurück.',
+			description:
+				'Auf dieser Seite ist ein unerwarteter Fehler aufgetreten. Neu laden hilft meistens; andernfalls kehren Sie zum Dashboard zurück.',
 			details: 'Technische Details',
 		},
 		actions: {
