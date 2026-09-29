@@ -2,7 +2,6 @@ package tmenier.fr.schedulers.templates
 
 import java.time.Duration
 
-
 object ProbeTimeout {
     const val DEFAULT_SECONDS = 5
     const val MIN_SECONDS = 1
