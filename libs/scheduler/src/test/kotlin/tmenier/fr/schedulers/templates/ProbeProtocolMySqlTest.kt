@@ -80,6 +80,16 @@ class ProbeProtocolMySqlTest {
         assertTrue(result.message.contains("authentication failed"))
     }
 
+    @Test
+    fun `passes the probe timeout to the health check`() {
+        var received: Int? = null
+        val executor = ProbeProtocolMySql(MySqlHealthCheck { _, timeoutSeconds -> received = timeoutSeconds })
+
+        executor.execute(probe(timeout = 12), content(), true)
+
+        assertEquals(12, received)
+    }
+
     private fun content() =
         ProbeContent.MySql(
             connectionString = "mysql://monitor:secret@mysql.example.com:3306/application",
@@ -87,12 +97,12 @@ class ProbeProtocolMySqlTest {
             query = "SELECT 1",
         )
 
-    private fun probe() =
+    private fun probe(timeout: Int = 5) =
         ProbeDTO(
             id = UUID.randomUUID(),
             name = "MySQL test",
             interval = 60,
-            timeout = 5,
+            timeout = timeout,
             retry = 1,
             intervalRetry = 1,
             enabled = true,

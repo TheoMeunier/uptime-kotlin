@@ -47,7 +47,7 @@ class QueueFixtures(
                 id = UUID.randomUUID()
                 name = "it-$region-$port"
                 interval = intervalSeconds
-                timeout = 1_000
+                timeout = 5
                 this.retry = retry
                 intervalRetry = intervalRetrySeconds
                 enabled = true

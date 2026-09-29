@@ -25,7 +25,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
                         content.url,
                         content.tcpPort,
                     ),
-                    probe.timeout,
+                    timeoutOf(probe).toMillis().toInt(),
                 )
                 return ProbeResult(
                     status = ProbeMonitorLogStatus.SUCCESS,

@@ -67,6 +67,16 @@ class ProbeProtocolKafkaTest {
         assertTrue(result.message.contains("topic not found"))
     }
 
+    @Test
+    fun `passes the probe timeout to the health check`() {
+        var received: Int? = null
+        val executor = ProbeProtocolKafka(KafkaHealthCheck { _, timeoutSeconds -> received = timeoutSeconds })
+
+        executor.execute(probe(timeout = 12), content(), true)
+
+        assertEquals(12, received)
+    }
+
     private fun content() =
         ProbeContent.Kafka(
             brokers = "kafka-1:9092,kafka-2:9092",
@@ -76,12 +86,12 @@ class ProbeProtocolKafkaTest {
             allowAutoTopicCreation = false,
         )
 
-    private fun probe() =
+    private fun probe(timeout: Int = 5) =
         ProbeDTO(
             id = UUID.randomUUID(),
             name = "Kafka test",
             interval = 60,
-            timeout = 5,
+            timeout = timeout,
             retry = 1,
             intervalRetry = 1,
             enabled = true,

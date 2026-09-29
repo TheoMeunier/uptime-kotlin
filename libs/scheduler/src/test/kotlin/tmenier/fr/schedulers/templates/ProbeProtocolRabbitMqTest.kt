@@ -96,6 +96,16 @@ class ProbeProtocolRabbitMqTest {
         assertTrue(result.message.contains("authentication failed"))
     }
 
+    @Test
+    fun `passes the probe timeout to the health check`() {
+        var received: Int? = null
+        val executor = ProbeProtocolRabbitMq(RabbitMqHealthCheck { _, timeoutSeconds -> received = timeoutSeconds })
+
+        executor.execute(probe(timeout = 12), content(), true)
+
+        assertEquals(12, received)
+    }
+
     private fun content() =
         ProbeContent.RabbitMq(
             managementNodes = "https://rabbitmq.example.com:15672",
@@ -103,12 +113,12 @@ class ProbeProtocolRabbitMqTest {
             password = "secret",
         )
 
-    private fun probe() =
+    private fun probe(timeout: Int = 5) =
         ProbeDTO(
             id = UUID.randomUUID(),
             name = "RabbitMQ test",
             interval = 60,
-            timeout = 5,
+            timeout = timeout,
             retry = 1,
             intervalRetry = 1,
             enabled = true,
