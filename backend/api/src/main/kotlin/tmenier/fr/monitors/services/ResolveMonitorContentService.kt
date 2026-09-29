@@ -164,7 +164,7 @@ class ResolveMonitorContentService(
         val source = supplied ?: existing ?: throw BadRequestException(requiredMessage)
         val plainText = encryptionService.decryptIfEncrypted(source)
         val encrypted =
-            if (supplied == null && encryptionService.isEncrypted(source)) {
+            if (supplied == null && encryptionService.isEncryptedWithCurrentKey(source)) {
                 source
             } else {
                 encryptionService.encrypt(plainText)
