@@ -93,6 +93,16 @@ class ProbeProtocolRedisTest {
         assertTrue(result.message.contains("authentication failed"))
     }
 
+    @Test
+    fun `passes the probe timeout to the health check`() {
+        var received: Int? = null
+        val executor = ProbeProtocolRedis(RedisHealthCheck { _, timeoutSeconds -> received = timeoutSeconds })
+
+        executor.execute(probe(timeout = 12), content(), true)
+
+        assertEquals(12, received)
+    }
+
     private fun content() =
         ProbeContent.Redis(
             connectionString = "redis://monitor:secret@redis.example.com:6379/0",
@@ -100,12 +110,12 @@ class ProbeProtocolRedisTest {
             command = "PING",
         )
 
-    private fun probe() =
+    private fun probe(timeout: Int = 5) =
         ProbeDTO(
             id = UUID.randomUUID(),
             name = "Redis test",
             interval = 60,
-            timeout = 5,
+            timeout = timeout,
             retry = 1,
             intervalRetry = 1,
             enabled = true,

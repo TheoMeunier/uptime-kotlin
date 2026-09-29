@@ -34,7 +34,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
                     Thread.sleep(delay)
                 }
 
-                val (reachable, pingTime) = systemPing(cleanUrl, 5)
+                val (reachable, pingTime) = systemPing(cleanUrl, timeoutSeconds(probe))
                 pingResults.add(reachable)
 
                 if (reachable) {
@@ -95,7 +95,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
 
     private fun systemPing(
         host: String,
-        timeoutSeconds: Int = 5,
+        timeoutSeconds: Int,
     ): Pair<Boolean, Long> {
         val startTime = System.currentTimeMillis()
 

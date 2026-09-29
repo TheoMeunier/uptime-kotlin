@@ -20,7 +20,7 @@ class ProbeProtocolRabbitMq(
         val start = now()
 
         return try {
-            healthCheck.check(content, CONNECTION_TIMEOUT_SECONDS)
+            healthCheck.check(content, timeoutSeconds(probe))
             val responseTime = getResponseTime(start)
             ProbeResult(
                 status = ProbeMonitorLogStatus.SUCCESS,
@@ -49,8 +49,4 @@ class ProbeProtocolRabbitMq(
         } else {
             ProbeMonitorLogStatus.WARNING
         }
-
-    private companion object {
-        const val CONNECTION_TIMEOUT_SECONDS = 5
-    }
 }

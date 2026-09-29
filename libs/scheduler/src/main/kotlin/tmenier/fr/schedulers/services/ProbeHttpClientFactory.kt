@@ -8,6 +8,7 @@ fun interface ProbeHttpClientFactory {
     fun create(
         followRedirects: Boolean,
         ignoreCertificateErrors: Boolean,
+        connectTimeout: Duration,
     ): HttpClient
 }
 
@@ -18,19 +19,16 @@ class DefaultProbeHttpClientFactory(
     override fun create(
         followRedirects: Boolean,
         ignoreCertificateErrors: Boolean,
+        connectTimeout: Duration,
     ): HttpClient {
         val builder =
             HttpClient
                 .newBuilder()
-                .connectTimeout(CONNECT_TIMEOUT)
+                .connectTimeout(connectTimeout)
                 .followRedirects(if (followRedirects) HttpClient.Redirect.NORMAL else HttpClient.Redirect.NEVER)
         if (ignoreCertificateErrors) {
             builder.sslContext(sslCertificateService.createInsecureSSLContext())
         }
         return builder.build()
-    }
-
-    private companion object {
-        val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(5)
     }
 }

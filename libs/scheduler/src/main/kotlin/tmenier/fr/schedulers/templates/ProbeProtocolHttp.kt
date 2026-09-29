@@ -33,6 +33,7 @@ class ProbeProtocolHttp(
         val startedAt = now()
         var tls = TlsInspection.NONE
         val clients = mutableMapOf<Boolean, HttpClient>()
+        val timeout = timeoutOf(probe)
 
         return try {
             val steps = content.steps.ifEmpty { listOf(content.asSingleStep()) }
@@ -45,9 +46,9 @@ class ProbeProtocolHttp(
                 val followRedirects = step.followRedirects ?: content.followRedirects
                 val client =
                     clients.getOrPut(followRedirects) {
-                        httpClientFactory.create(followRedirects, content.ignoreCertificateErrors)
+                        httpClientFactory.create(followRedirects, content.ignoreCertificateErrors, timeout)
                     }
-                val response = executeStep(client, content, step)
+                val response = executeStep(client, content, step, timeout)
                 val latency = getResponseTime(stepStartedAt)
                 lastStatusCode = response.statusCode()
                 lastBody = response.body()
@@ -94,8 +95,9 @@ class ProbeProtocolHttp(
         client: HttpClient,
         content: ProbeContent.Http,
         step: ProbeContent.HttpStep,
+        timeout: Duration,
     ): HttpResponse<String> {
-        val request = HttpRequest.newBuilder().uri(URI(step.url)).timeout(Duration.ofSeconds(5))
+        val request = HttpRequest.newBuilder().uri(URI(step.url)).timeout(timeout)
         (content.headers + step.headers).forEach(request::header)
         applyAuthentication(request, step.authentication ?: content.authentication)
         val publisher = step.body?.let(HttpRequest.BodyPublishers::ofString) ?: HttpRequest.BodyPublishers.noBody()

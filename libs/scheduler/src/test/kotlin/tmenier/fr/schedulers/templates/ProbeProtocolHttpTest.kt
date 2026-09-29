@@ -20,6 +20,7 @@ import tmenier.fr.schedulers.services.TlsCertificateInspector
 import java.net.InetSocketAddress
 import java.net.http.HttpClient
 import java.nio.charset.StandardCharsets
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.Base64
 import java.util.UUID
@@ -220,6 +221,29 @@ class ProbeProtocolHttpTest {
     }
 
     @Test
+    fun `honours the probe timeout against a slow server`() {
+        server =
+            HttpServer.create(InetSocketAddress(0), 0).apply {
+                createContext("/very-slow") { exchange ->
+                    Thread.sleep(3_000)
+                    exchange.sendResponseHeaders(200, -1)
+                    exchange.close()
+                }
+                start()
+            }
+        val factory = RecordingHttpClientFactory()
+        val content = defaultContent().copy(url = url("/very-slow"))
+
+        val startedAt = System.nanoTime()
+        val result = executor(factory).execute(probe(content, timeout = 1), content, true)
+        val elapsedMs = Duration.ofNanos(System.nanoTime() - startedAt).toMillis()
+
+        assertEquals(ProbeMonitorLogStatus.FAILURE, result.status)
+        assertTrue(elapsedMs < 2_500, "expected the 1 s timeout to fire, took ${elapsedMs}ms")
+        assertEquals(listOf(Duration.ofSeconds(1)), factory.connectTimeouts)
+    }
+
+    @Test
     fun `stops a scenario after the first failing step`() {
         val secondStepCalls = AtomicInteger()
         server =
@@ -396,13 +420,16 @@ class ProbeProtocolHttpTest {
         private val delegate = DefaultProbeHttpClientFactory(SslCertificateService())
         val clients = mutableListOf<HttpClient>()
         val redirectPolicies = mutableListOf<Boolean>()
+        val connectTimeouts = mutableListOf<Duration>()
 
         override fun create(
             followRedirects: Boolean,
             ignoreCertificateErrors: Boolean,
+            connectTimeout: Duration,
         ): HttpClient {
             redirectPolicies += followRedirects
-            return delegate.create(followRedirects, ignoreCertificateErrors).also(clients::add)
+            connectTimeouts += connectTimeout
+            return delegate.create(followRedirects, ignoreCertificateErrors, connectTimeout).also(clients::add)
         }
     }
 
@@ -424,23 +451,25 @@ class ProbeProtocolHttpTest {
             httpCodeAllowed = listOf(HttpCodeEnum.OK),
         )
 
-    private fun probe(content: ProbeContent.Http) =
-        ProbeDTO(
-            id = UUID.randomUUID(),
-            name = "HTTP test",
-            interval = 60,
-            timeout = 5,
-            retry = 1,
-            intervalRetry = 1,
-            enabled = true,
-            protocol = ProbeProtocol.HTTP,
-            description = null,
-            lastRun = null,
-            status = ProbeMonitorLogStatus.SUCCESS,
-            content = content,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
-        )
+    private fun probe(
+        content: ProbeContent.Http,
+        timeout: Int = 5,
+    ) = ProbeDTO(
+        id = UUID.randomUUID(),
+        name = "HTTP test",
+        interval = 60,
+        timeout = timeout,
+        retry = 1,
+        intervalRetry = 1,
+        enabled = true,
+        protocol = ProbeProtocol.HTTP,
+        description = null,
+        lastRun = null,
+        status = ProbeMonitorLogStatus.SUCCESS,
+        content = content,
+        createdAt = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now(),
+    )
 
     private fun url(path: String) = "http://localhost:${server?.address?.port ?: 0}$path"
 }

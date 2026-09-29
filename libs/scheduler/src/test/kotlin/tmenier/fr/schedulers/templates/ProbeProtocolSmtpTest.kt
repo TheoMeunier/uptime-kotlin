@@ -99,6 +99,16 @@ class ProbeProtocolSmtpTest {
         assertTrue(result.message.contains("certificate expired"))
     }
 
+    @Test
+    fun `passes the probe timeout to the health check`() {
+        var received: Int? = null
+        val executor = ProbeProtocolSmtp(SmtpHealthCheck { _, timeoutSeconds -> received = timeoutSeconds })
+
+        executor.execute(probe(timeout = 12), content(), true)
+
+        assertEquals(12, received)
+    }
+
     private fun content() =
         ProbeContent.Smtp(
             hostname = "smtp.example.com",
@@ -106,12 +116,12 @@ class ProbeProtocolSmtpTest {
             security = SmtpSecurity.STARTTLS,
         )
 
-    private fun probe() =
+    private fun probe(timeout: Int = 5) =
         ProbeDTO(
             id = UUID.randomUUID(),
             name = "SMTP test",
             interval = 60,
-            timeout = 5,
+            timeout = timeout,
             retry = 1,
             intervalRetry = 1,
             enabled = true,
