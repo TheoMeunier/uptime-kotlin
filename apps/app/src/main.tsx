@@ -92,9 +92,7 @@ createRoot(document.getElementById('root')!).render(
 			<AppErrorBoundary>
 				<QueryClientProvider client={queryClient}>
 					<SetupProvider>
-						<Suspense
-							fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}
-						>
+						<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}>
 							<RouterProvider router={router} />
 						</Suspense>
 						<Toaster />
