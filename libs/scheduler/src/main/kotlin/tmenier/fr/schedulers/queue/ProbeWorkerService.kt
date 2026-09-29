@@ -38,12 +38,12 @@ class ProbeWorkerService(
             probe.status == ProbeMonitorLogStatus.FAILURE ||
                 task.attemptNumber >= probe.retry + 1
 
-        logger.info {
+        logger.debug {
             "Executing ${probe.protocol} Probe Check task ${task.id}: probe=${probe.id}, " +
                 "attempt=${task.attemptNumber}/${probe.retry + 1}, lastAttempt=$isLastAttempt"
         }
         val result = typedHandler.execute(probe, probe.content, isLastAttempt)
-        logger.info {
+        logger.debug {
             "Probe Check task ${task.id} produced status=${result.status}, " +
                 "responseTime=${result.responseTime}ms"
         }
