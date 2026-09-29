@@ -143,7 +143,8 @@ networks:
 
    3.1 Encrypted variables:
 
-    - `ENCRYPTION_MASTER_KEY` : The master key used to encrypt sensitive data
+    - `ENCRYPTION_MASTER_KEY` : The master key used to encrypt sensitive data. Required, at least 32 bytes
+      (`openssl rand -base64 32`). The application refuses to start without it.
 
    3.2 PostgreSQL Configuration:
 
