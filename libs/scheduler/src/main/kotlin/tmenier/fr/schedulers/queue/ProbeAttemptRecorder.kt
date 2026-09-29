@@ -51,6 +51,7 @@ class ProbeAttemptRecorder(
             return
         }
 
+        val previousStatus = probe.status
         val durableStatus =
             ProbeAttemptPolicy.durableStatus(
                 resultStatus = result.status,
@@ -81,9 +82,16 @@ class ProbeAttemptRecorder(
             return
         }
 
-        logger.info {
+        logger.debug {
             "Persisted Probe Check task $taskId: probe=${probe.id}, attempt=${task.attemptNumber}, " +
                 "status=$durableStatus; deleted completed queue row"
+        }
+
+        if (previousStatus != durableStatus) {
+            logger.info {
+                "Probe ${probe.id} status changed $previousStatus -> $durableStatus " +
+                    "(task=$taskId, attempt=${task.attemptNumber}, region=${task.region})"
+            }
         }
 
         if (durableStatus == ProbeMonitorLogStatus.WARNING) {

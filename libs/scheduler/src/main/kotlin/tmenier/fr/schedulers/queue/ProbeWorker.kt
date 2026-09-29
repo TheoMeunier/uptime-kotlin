@@ -6,6 +6,7 @@ import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import tmenier.fr.common.config.SchedulerStrategy
+import tmenier.fr.common.enums.probes.QueueJobStatus
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
 import java.net.InetAddress
@@ -71,7 +72,7 @@ class ProbeWorker(
             }
 
         if (tasks.isNotEmpty()) {
-            logger.info {
+            logger.debug {
                 "Claimed ${tasks.size} Probe Check task(s): " +
                     tasks.joinToString { task ->
                         "${task.id}(probe=${task.probeId},attempt=${task.attemptNumber})"
@@ -84,19 +85,32 @@ class ProbeWorker(
             activeTaskIds.add(task.id)
             executor.submit {
                 try {
-                    logger.info {
+                    logger.debug {
                         "Starting Probe Check task ${task.id}: probe=${task.probeId}, " +
                             "attempt=${task.attemptNumber}, region=${task.region}"
                     }
                     probeWorkerService.execute(task, workerId)
-                    logger.info { "Finished Probe Check task ${task.id}" }
+                    logger.debug { "Finished Probe Check task ${task.id}" }
                 } catch (error: Exception) {
                     logger.error(error) { "Technical failure executing Probe Check task ${task.id}" }
-                    probeCheckTaskRepository.markTechnicalFailure(
-                        taskId = task.id,
-                        workerId = workerId,
-                        message = error.message ?: "Unknown Probe Check processing error",
-                    )
+                    val outcome =
+                        probeCheckTaskRepository.markTechnicalFailure(
+                            taskId = task.id,
+                            workerId = workerId,
+                            message = error.message ?: "Unknown Probe Check processing error",
+                        )
+                    when (outcome) {
+                        QueueJobStatus.DEAD ->
+                            logger.warn {
+                                "Probe Check task ${task.id} moved to dead-letter: probe=${task.probeId}, " +
+                                    "maximum technical delivery attempts reached"
+                            }
+                        QueueJobStatus.PENDING ->
+                            logger.info {
+                                "Probe Check task ${task.id} rescheduled after technical failure: probe=${task.probeId}"
+                            }
+                        else -> Unit
+                    }
                 } finally {
                     activeTaskIds.remove(task.id)
                     activeTasks.decrementAndGet()
@@ -110,7 +124,10 @@ class ProbeWorker(
         if (!schedulerStrategy.runsBackgroundJobs) return
 
         probeCheckTaskRepository.renewLeases(workerId, leaseDuration, activeTaskIds)
-        probeCheckTaskRepository.deadLetterExpiredLeases()
+        val deadLettered = probeCheckTaskRepository.deadLetterExpiredLeases()
+        if (deadLettered > 0) {
+            logger.warn { "Moved $deadLettered Probe Check task(s) with expired leases to dead-letter" }
+        }
     }
 
     @PreDestroy

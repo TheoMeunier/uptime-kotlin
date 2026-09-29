@@ -131,13 +131,13 @@ class ProbeCheckTaskRepository(
         workerId: String,
         message: String,
         now: Instant = Instant.now(),
-    ) {
-        val task = findByIdForUpdate(taskId) ?: return
-        if (task.status != QueueJobStatus.LEASED || task.claimedBy != workerId) return
+    ): QueueJobStatus? {
+        val task = findByIdForUpdate(taskId) ?: return null
+        if (task.status != QueueJobStatus.LEASED || task.claimedBy != workerId) return null
         val probe = em.find(ProbesEntity::class.java, task.probeId)
         if (probe == null || !probe.enabled) {
             deleteTask(task)
-            return
+            return null
         }
 
         val nextAttempt = task.deliveryAttempts + 1
@@ -148,16 +148,18 @@ class ProbeCheckTaskRepository(
 
         if (nextAttempt >= task.maxDeliveryAttempts) {
             task.status = QueueJobStatus.DEAD
-            return
+            return QueueJobStatus.DEAD
         }
 
         val backoffSeconds = 5L * (1L shl nextAttempt.coerceAtMost(6))
         task.status = QueueJobStatus.PENDING
         task.availableAt = now.plusSeconds(backoffSeconds)
+        return QueueJobStatus.PENDING
     }
 
+    /** @return the number of leased tasks moved to DEAD. */
     @Transactional
-    fun deadLetterExpiredLeases() {
+    fun deadLetterExpiredLeases(): Int =
         em
             .createNativeQuery(
                 """
@@ -171,7 +173,6 @@ class ProbeCheckTaskRepository(
               AND delivery_attempts + 1 >= max_delivery_attempts
             """,
             ).executeUpdate()
-    }
 
     @Transactional
     fun renewLeases(
