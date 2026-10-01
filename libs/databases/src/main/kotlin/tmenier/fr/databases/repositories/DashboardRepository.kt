@@ -222,7 +222,8 @@ class DashboardRepository(
                 .createNativeQuery(sql, Tuple::class.java)
                 .setParameter("since", since)
                 .setMaxResults(limit)
-                .resultList as List<Tuple>
+                .resultList
+                .filterIsInstance<Tuple>()
 
         val statuses = ProbeMonitorLogStatus.entries
 
