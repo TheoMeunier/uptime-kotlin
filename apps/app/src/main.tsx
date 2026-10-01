@@ -1,4 +1,4 @@
-import { lazy, StrictMode, Suspense } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './assets/index.css';
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router';
@@ -15,6 +15,17 @@ import { ThemeProvider } from 'next-themes';
 import AppErrorBoundary from '@/components/molecules/app-error-boundary.tsx';
 import RouteErrorBoundary from '@/components/molecules/route-error-boundary.tsx';
 import { reloadOnce } from '@/lib/chunk-error.ts';
+import {
+	CreateProbe,
+	Dashboard,
+	EditProbe,
+	Login,
+	Maintenances,
+	ProbesStatus,
+	Profile,
+	SetupPage,
+	ShowProbe,
+} from '@/pages/lazy-pages.ts';
 
 // Build de prod : Vite émet cet événement quand un import dynamique (ou ses dépendances
 // préchargées) échoue, typiquement un chunk supprimé par un déploiement. On recharge avant que
@@ -24,19 +35,9 @@ window.addEventListener('vite:preloadError', (event) => {
 	if (reloadOnce()) event.preventDefault();
 });
 
-const Dashboard = lazy(() => import('@/pages/dashboard.tsx'));
-const Login = lazy(() => import('@/pages/auth/login.tsx'));
-const CreateProbe = lazy(() => import('@/pages/probes/create-probe.tsx'));
-const EditProbe = lazy(() => import('@/pages/probes/edit-probe.tsx'));
-const ShowProbe = lazy(() => import('@/pages/probes/show-probe.tsx').then((module) => ({ default: module.ShowProbe })));
-const Profile = lazy(() => import('@/pages/profile/profile.tsx'));
-const ProbesStatus = lazy(() => import('@/pages/probes/probes-status.tsx'));
-const Maintenances = lazy(() => import('@/pages/maintenances/maintenances.tsx'));
-const SetupPage = lazy(() => import('@/pages/setup/setup-page.tsx'));
-
 const DEFAULT_STALE_TIME_MS = 10_000;
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			staleTime: DEFAULT_STALE_TIME_MS,
