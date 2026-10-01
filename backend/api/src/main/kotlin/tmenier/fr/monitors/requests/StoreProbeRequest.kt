@@ -21,6 +21,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
 import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.common.validations.UrlOrIp
+import tmenier.fr.databases.dtos.LogRetention
 import java.util.UUID
 
 interface OnCreate : Default
@@ -81,6 +82,12 @@ abstract class BaseStoreProbeRequest {
     @AssertTrue(message = "Alert repeat must be 0 (disabled) or at least 60 seconds")
     @JsonIgnore
     fun isAlertRepeatValid(): Boolean = alertRepeatSeconds == 0 || alertRepeatSeconds >= 60
+
+    var logRetentionDays: Int? = null
+
+    @AssertTrue(message = "Log retention must be empty (inherit), 0 (keep forever) or between 30 and 3650 days")
+    @JsonIgnore
+    fun isLogRetentionValid(): Boolean = LogRetention.isValidOverride(logRetentionDays)
 }
 
 @RegisterForReflection

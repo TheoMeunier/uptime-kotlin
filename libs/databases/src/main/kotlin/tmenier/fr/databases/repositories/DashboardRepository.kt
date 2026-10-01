@@ -77,11 +77,11 @@ class DashboardRepository(
     fun findDownProbesWithDowntime(): List<DownProbeDto> {
         val jpql =
             """
-            SELECT p.id, p.name, MAX(pml.runAt), p.createdAt
+            SELECT p.id, p.name, MAX(pml.runAt), p.createdAt, p.failingSince
             FROM ProbesEntity p
             LEFT JOIN p.probesMonitorLogs pml WITH pml.status = 0
             WHERE p.enabled = true AND p.status = 3
-            GROUP BY p.id, p.name, p.createdAt
+            GROUP BY p.id, p.name, p.createdAt, p.failingSince
             """.trimIndent()
 
         val results = em.createQuery(jpql, Tuple::class.java).resultList
@@ -93,9 +93,11 @@ class DashboardRepository(
             val name = row[1] as String
             val lastSuccess = row[2] as LocalDateTime?
             val createdAt = row[3] as LocalDateTime
+            val failingSince = row[4] as Instant?
 
-            val since = lastSuccess ?: createdAt
-            val duration = Duration.between(since, now)
+            val duration =
+                failingSince?.let { Duration.between(it, Instant.now()) }
+                    ?: Duration.between(lastSuccess ?: createdAt, now)
 
             DownProbeDto(
                 id = id,
@@ -237,11 +239,7 @@ class DashboardRepository(
         }
     }
 
-    /**
-     * A native query hands back whatever the JDBC driver produced for a timestamp column, and that
-     * varies: the PostgreSQL driver returns a LocalDateTime here, others still return a
-     * java.sql.Timestamp. Accept both rather than betting on one.
-     */
+
     private fun Tuple.readTimestamp(column: String): LocalDateTime =
         when (val value = this.get(column)) {
             is LocalDateTime -> value

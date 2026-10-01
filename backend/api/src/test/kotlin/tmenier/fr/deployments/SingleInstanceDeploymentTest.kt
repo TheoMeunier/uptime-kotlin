@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.notifications.jobs.NotificationRetryJob
 import tmenier.fr.schedulers.jobs.MaintenanceMaterialiserService
+import tmenier.fr.schedulers.jobs.ProbeLogRetentionService
 import tmenier.fr.schedulers.jobs.RefreshTokenPurgeService
 import java.time.Duration
 import java.time.Instant
@@ -86,6 +87,7 @@ class SingleInstanceDeploymentTest {
         listOf(
             MaintenanceMaterialiserService::class.java,
             RefreshTokenPurgeService::class.java,
+            ProbeLogRetentionService::class.java,
             NotificationRetryJob::class.java,
         ).forEach { job ->
             assertNotNull(Arc.container().instance(job).get(), "${job.simpleName} must run in a single-instance deployment")

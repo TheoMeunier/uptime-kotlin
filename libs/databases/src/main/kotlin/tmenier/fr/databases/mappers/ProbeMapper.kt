@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
@@ -148,6 +149,7 @@ object ProbeMapper {
             content = ProbeContentMapper.toEntity(dto.content).first
             alertedStatus = ProbeMonitorLogStatus.SUCCESS
             alertRepeatSeconds = dto.alertRepeatSeconds
+            logRetentionDays = dto.logRetentionDays
         }
 
     fun toDto(entity: ProbesEntity): ProbeDTO =
@@ -164,6 +166,7 @@ object ProbeMapper {
             lastRun = entity.lastRun,
             status = entity.status,
             alertRepeatSeconds = entity.alertRepeatSeconds,
+            logRetentionDays = entity.logRetentionDays,
             tlsExpiresAt = entity.tlsExpiresAt,
             tlsCheckedAt = entity.tlsCheckedAt,
             content = ProbeContentMapper.toDto(entity),
@@ -200,6 +203,7 @@ object ProbeMapper {
                     lastRun = entity.lastRun,
                     status = entity.status,
                     alertRepeatSeconds = entity.alertRepeatSeconds,
+                    logRetentionDays = entity.logRetentionDays,
                     tlsExpiresAt = entity.tlsExpiresAt,
                     tlsCheckedAt = entity.tlsCheckedAt,
                     createdAt = entity.createdAt,
@@ -228,6 +232,7 @@ object ProbeMapper {
                     lastRun = entity.lastRun,
                     status = entity.status,
                     alertRepeatSeconds = entity.alertRepeatSeconds,
+                    logRetentionDays = entity.logRetentionDays,
                     tlsExpiresAt = entity.tlsExpiresAt,
                     tlsCheckedAt = entity.tlsCheckedAt,
                     createdAt = entity.createdAt,
@@ -261,6 +266,7 @@ object ProbeMapper {
                     lastRun = entity.lastRun,
                     status = entity.status,
                     alertRepeatSeconds = entity.alertRepeatSeconds,
+                    logRetentionDays = entity.logRetentionDays,
                     tlsExpiresAt = entity.tlsExpiresAt,
                     tlsCheckedAt = entity.tlsCheckedAt,
                     content = ProbeContentMapper.redactSecrets(content),
@@ -294,7 +300,9 @@ object ProbeMapper {
 
         val downSince =
             if (entity.status == ProbeMonitorLogStatus.FAILURE) {
-                metrics?.lastSuccessAt ?: entity.createdAt
+                entity.failingSince?.let(MonitoringClock::toLocal)
+                    ?: metrics?.lastSuccessAt
+                    ?: entity.createdAt
             } else {
                 null
             }

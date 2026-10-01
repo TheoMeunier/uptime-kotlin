@@ -74,6 +74,7 @@ data class ProbeDTO(
     val lastRun: LocalDateTime?,
     val status: ProbeMonitorLogStatus,
     val alertRepeatSeconds: Int = 0,
+    val logRetentionDays: Int? = null,
     val content: ProbeContent,
     val regionsOrder: List<String>? = null,
     val url: String? = null,
@@ -95,6 +96,7 @@ data class StoreProbeDto(
     val description: String?,
     val content: ProbeContent,
     val alertRepeatSeconds: Int = 0,
+    val logRetentionDays: Int? = null,
 )
 
 @RegisterForReflection

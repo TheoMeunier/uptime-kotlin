@@ -188,6 +188,7 @@ class ProbeRepository(
         entity.description = dto.description
         entity.content = ProbeContentMapper.toEntity(dto.content).first
         applyAlertRepeat(entity, dto.alertRepeatSeconds)
+        entity.logRetentionDays = dto.logRetentionDays
 
         entity.notifications.clear()
         attach(notifications, entity)
