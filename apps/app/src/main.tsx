@@ -5,9 +5,10 @@ import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterP
 import { ProtectedRouteProvider } from '@/features/auth/contexts/protected-route-provider.tsx';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from '@/components/layouts/layout.tsx';
-import i18n from './lang/i18n.ts';
+import './lang/i18n.ts';
 import { SetupProvider } from '@/features/setup/contexts/setup-context.tsx';
 import { SetupAppProvider } from '@/features/setup/contexts/setup-app-provider.tsx';
+import LoaderPage from '@/features/setup/components/loader-page.tsx';
 import { toast } from 'sonner';
 import { getApiErrorMessage } from '@/api/api-error.ts';
 import { Toaster } from '@/components/atoms/sonner.tsx';
@@ -27,10 +28,6 @@ import {
 	ShowProbe,
 } from '@/pages/lazy-pages.ts';
 
-// Build de prod : Vite émet cet événement quand un import dynamique (ou ses dépendances
-// préchargées) échoue, typiquement un chunk supprimé par un déploiement. On recharge avant que
-// React ne voie l'erreur ; si la garde anti-boucle refuse, l'erreur suit son cours jusqu'au
-// RouteErrorBoundary, qui affiche un bouton « Recharger ».
 window.addEventListener('vite:preloadError', (event) => {
 	if (reloadOnce()) event.preventDefault();
 });
@@ -61,7 +58,6 @@ const router = createBrowserRouter(
 			<Route path="/" element={<SetupAppProvider />} errorElement={<RouteErrorBoundary fullscreen />}>
 				<Route path="/" element={<ProtectedRouteProvider />}>
 					<Route path="/" element={<Layout />}>
-						{/* Route sans chemin : une page qui plante garde la sidebar et le header. */}
 						<Route errorElement={<RouteErrorBoundary />}>
 							<Route path="/dashboard" element={<Dashboard />} />
 
@@ -93,7 +89,7 @@ createRoot(document.getElementById('root')!).render(
 			<AppErrorBoundary>
 				<QueryClientProvider client={queryClient}>
 					<SetupProvider>
-						<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">{i18n.t('app.loading_short')}</div>}>
+						<Suspense fallback={<LoaderPage />}>
 							<RouterProvider router={router} />
 						</Suspense>
 						<Toaster />
