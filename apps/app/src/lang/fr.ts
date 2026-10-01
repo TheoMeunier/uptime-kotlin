@@ -571,6 +571,38 @@ const fr: typeof en = {
 			new_monitor: 'Nouvelle sonde',
 		},
 	},
+	retention: {
+		tab: 'Rétention des données',
+		title: 'Rétention de l’historique des sondes',
+		description:
+			'Durée de conservation des résultats de vérification. Les résultats plus anciens sont supprimés chaque nuit à 03:30. Chaque sonde peut remplacer cette valeur.',
+		label: {
+			default: 'Conserver l’historique',
+			probe: 'Conserver l’historique',
+			custom_days: 'Nombre de jours',
+		},
+		option: {
+			inherit: 'Par défaut ({{value}})',
+			forever: 'Sans limite',
+			days: '{{count}} jours',
+			custom: 'Personnalisé…',
+		},
+		description_probe:
+			'Les résultats plus anciens sont supprimés chaque nuit. Les uptimes 24 h / 7 j / 30 j demandent au moins 30 jours.',
+		description_default:
+			'S’applique à toutes les sondes sans durée propre. Minimum 30 jours, pour que l’uptime 30 jours reste juste.',
+		validation: 'La rétention doit être comprise entre 30 et 3650 jours',
+		alerts: {
+			updated: 'Rétention mise à jour',
+		},
+		confirm: {
+			title: 'Raccourcir l’historique ?',
+			description:
+				'{{count}} résultat(s) de plus de {{days}} jours seront définitivement supprimés lors de la prochaine purge nocturne.',
+			oldest: 'Plus ancien résultat conservé aujourd’hui : {{date}}',
+			confirm: 'Raccourcir',
+		},
+	},
 };
 
 export default fr;

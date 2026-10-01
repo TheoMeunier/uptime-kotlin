@@ -567,6 +567,38 @@ const es: typeof en = {
 			new_monitor: 'Nuevo monitor',
 		},
 	},
+	retention: {
+		tab: 'Retención de datos',
+		title: 'Retención del historial de monitores',
+		description:
+			'Durante cuánto tiempo se conservan los resultados de las comprobaciones. Los más antiguos se eliminan cada noche a las 03:30. Cada monitor puede sustituir este valor.',
+		label: {
+			default: 'Conservar el historial',
+			probe: 'Conservar el historial',
+			custom_days: 'Número de días',
+		},
+		option: {
+			inherit: 'Por defecto ({{value}})',
+			forever: 'Sin límite',
+			days: '{{count}} días',
+			custom: 'Personalizado…',
+		},
+		description_probe:
+			'Los resultados más antiguos se eliminan cada noche. Los uptimes de 24 h / 7 d / 30 d necesitan al menos 30 días.',
+		description_default:
+			'Se aplica a todos los monitores sin retención propia. Mínimo 30 días, para que el uptime de 30 días siga siendo correcto.',
+		validation: 'La retención debe estar entre 30 y 3650 días',
+		alerts: {
+			updated: 'Retención actualizada',
+		},
+		confirm: {
+			title: '¿Acortar el historial?',
+			description:
+				'{{count}} resultado(s) con más de {{days}} días se eliminarán definitivamente en la próxima purga nocturna.',
+			oldest: 'Resultado más antiguo conservado hoy: {{date}}',
+			confirm: 'Acortar',
+		},
+	},
 };
 
 export default es;
