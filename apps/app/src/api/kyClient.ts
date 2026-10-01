@@ -15,6 +15,7 @@ function refreshAccessToken() {
 const api = ky.extend({
 	prefix: '/api',
 	timeout: 30000,
+	parseJson: (text) => (text === '' ? undefined : JSON.parse(text)),
 	headers: {
 		'Content-Type': 'application/json',
 	},
