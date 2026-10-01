@@ -239,7 +239,6 @@ class DashboardRepository(
         }
     }
 
-
     private fun Tuple.readTimestamp(column: String): LocalDateTime =
         when (val value = this.get(column)) {
             is LocalDateTime -> value
