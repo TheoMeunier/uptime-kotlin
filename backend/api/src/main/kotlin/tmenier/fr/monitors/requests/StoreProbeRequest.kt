@@ -48,8 +48,8 @@ abstract class BaseStoreProbeRequest {
     lateinit var name: String
 
     @field:NotNull(message = "Interval is required")
-    @field:Min(value = 1, message = "Interval must be at least 1 second")
-    @field:Positive(message = "Interval must be greater than 0")
+    @field:Min(value = 10, message = "Interval must be at least 10 seconds")
+    @field:Max(value = 3600, message = "Interval must be at most 3600 seconds")
     var interval: Int? = null
 
     @field:NotNull(message = "Protocol is required")
@@ -63,7 +63,7 @@ abstract class BaseStoreProbeRequest {
 
     @field:NotNull(message = "Interval Retry is required")
     @field:Min(value = 1, message = "Interval Retry must be at least 1 second")
-    @field:Positive(message = "Interval Retry must be greater than 0")
+    @field:Max(value = 3600, message = "Interval Retry must be at most 3600 seconds")
     var intervalRetry: Int? = null
 
     @field:NotNull(message = "Active is required")

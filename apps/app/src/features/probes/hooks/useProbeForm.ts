@@ -9,7 +9,7 @@ const baseStoreProbeSchema = z.object({
 	name: z.string().min(3).max(255),
 	interval: z.number().min(10).max(3600),
 	retry: z.number().min(1).max(10).optional(),
-	interval_retry: z.number().min(0).max(3600).optional(),
+	interval_retry: z.number().min(1).max(3600),
 	enabled: z.boolean().optional(),
 	alert_repeat_seconds: z
 		.number()
