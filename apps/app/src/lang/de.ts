@@ -569,6 +569,38 @@ const de: typeof en = {
 			new_monitor: 'Neuer Monitor',
 		},
 	},
+	retention: {
+		tab: 'Datenaufbewahrung',
+		title: 'Aufbewahrung des Monitor-Verlaufs',
+		description:
+			'Wie lange Prüfergebnisse aufbewahrt werden. Ältere Ergebnisse werden jede Nacht um 03:30 gelöscht. Jeder Monitor kann diesen Wert überschreiben.',
+		label: {
+			default: 'Verlauf aufbewahren',
+			probe: 'Verlauf aufbewahren',
+			custom_days: 'Anzahl der Tage',
+		},
+		option: {
+			inherit: 'Standard ({{value}})',
+			forever: 'Unbegrenzt',
+			days: '{{count}} Tage',
+			custom: 'Benutzerdefiniert…',
+		},
+		description_probe:
+			'Ältere Ergebnisse werden jede Nacht gelöscht. Die Uptimes für 24 h / 7 T / 30 T benötigen mindestens 30 Tage.',
+		description_default:
+			'Gilt für alle Monitore ohne eigene Aufbewahrung. Mindestens 30 Tage, damit die 30-Tage-Uptime korrekt bleibt.',
+		validation: 'Die Aufbewahrung muss zwischen 30 und 3650 Tagen liegen',
+		alerts: {
+			updated: 'Aufbewahrung aktualisiert',
+		},
+		confirm: {
+			title: 'Verlauf verkürzen?',
+			description:
+				'{{count}} Prüfergebnis(se) älter als {{days}} Tage werden bei der nächsten nächtlichen Bereinigung endgültig gelöscht.',
+			oldest: 'Ältestes heute aufbewahrtes Ergebnis: {{date}}',
+			confirm: 'Verkürzen',
+		},
+	},
 };
 
 export default de;

@@ -560,6 +560,38 @@ const en = {
 			new_monitor: 'New monitor',
 		},
 	},
+	retention: {
+		tab: 'Data retention',
+		title: 'Monitor history retention',
+		description:
+			'How long check results are kept. Older results are deleted every night at 03:30. Each monitor can override this value.',
+		label: {
+			default: 'Keep history for',
+			probe: 'Keep history for',
+			custom_days: 'Number of days',
+		},
+		option: {
+			inherit: 'Default ({{value}})',
+			forever: 'Forever',
+			days: '{{count}} days',
+			custom: 'Custom…',
+		},
+		description_probe:
+			'Check results older than this are deleted every night. 24h / 7d / 30d uptimes need at least 30 days.',
+		description_default:
+			'Applies to every monitor that has no retention of its own. Minimum 30 days, so that the 30-day uptime stays accurate.',
+		validation: 'Retention must be at least 30 days and at most 3650 days',
+		alerts: {
+			updated: 'Retention updated',
+		},
+		confirm: {
+			title: 'Shorten the history?',
+			description:
+				'{{count}} check result(s) older than {{days}} days will be permanently deleted at the next nightly purge.',
+			oldest: 'Oldest result kept today: {{date}}',
+			confirm: 'Shorten',
+		},
+	},
 };
 
 export default en;
