@@ -36,15 +36,15 @@ export default function PageBreadcrumb() {
 	if (crumbs.length === 0) return null;
 
 	return (
-		<Breadcrumb>
-			<BreadcrumbList className="sm:gap-1.5">
+		<Breadcrumb className="min-w-0 flex-1">
+			<BreadcrumbList className="flex-nowrap sm:gap-1.5">
 				{crumbs.map((crumb, index) => {
 					const isLast = index === crumbs.length - 1;
 					const label = crumb.key ? t(crumb.key) : crumb.label;
 
 					return (
 						<Fragment key={`${crumb.key ?? crumb.label ?? 'crumb'}-${index}`}>
-							<BreadcrumbItem className="max-w-[10rem] sm:max-w-xs">
+							<BreadcrumbItem className="max-w-[10rem] min-w-0 sm:max-w-xs">
 								{crumb.pending ? (
 									<Skeleton className="h-4 w-24" />
 								) : isLast || !crumb.to ? (
@@ -55,7 +55,7 @@ export default function PageBreadcrumb() {
 									</BreadcrumbLink>
 								)}
 							</BreadcrumbItem>
-							{!isLast && <BreadcrumbSeparator />}
+							{!isLast && <BreadcrumbSeparator className="shrink-0" />}
 						</Fragment>
 					);
 				})}

@@ -33,9 +33,9 @@ export default function EditProbe() {
 
 	return (
 		<>
-			<header className="mb-6">
+			<header className="mb-6 min-w-0">
 				<h1 className="text-2xl font-semibold tracking-tight">{t('monitors.title.update')}</h1>
-				<p className="text-muted-foreground mt-1 text-sm">{data.probe.name}</p>
+				<p className="text-muted-foreground mt-1 text-sm wrap-anywhere">{data.probe.name}</p>
 			</header>
 
 			<FormUpdateProbe data={flattenedData} probeId={params.probeId!} />

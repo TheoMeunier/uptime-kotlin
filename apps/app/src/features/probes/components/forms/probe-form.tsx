@@ -118,7 +118,7 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 			<UnsavedChangesGuard when={form.formState.isDirty && !isLoading} />
 
 			<div className="grid gap-6 lg:grid-cols-3">
-				<div className="flex flex-col gap-6 lg:col-span-2">
+				<div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
 					<FormSection title={t('monitors.section.target')} icon={Activity}>
 						<Field>
 							<FieldLabel htmlFor="protocol">{t('monitors.label.protocol')}</FieldLabel>
@@ -203,7 +203,7 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 					)}
 				</div>
 
-				<div className="flex flex-col gap-6">
+				<div className="flex min-w-0 flex-col gap-6">
 					<FormSection
 						title={t('notifications.title.notifications')}
 						description={t('monitors.section.notifications_description')}
