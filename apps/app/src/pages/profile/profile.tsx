@@ -1,17 +1,19 @@
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Bell, Lock, SlidersHorizontal, User } from 'lucide-react';
+import { Bell, Database, Lock, SlidersHorizontal, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UpdateProfileForm from '@/features/profile/components/forms/update-profile-form.tsx';
 import UpdatePasswordProfileForm from '@/features/profile/components/forms/update-password-profile-form.tsx';
 import ListingNotification from '@/features/notifications/components/listing-notification.tsx';
 import PreferencesForm from '@/features/profile/components/forms/preferences-form.tsx';
+import LogRetentionForm from '@/features/settings/components/forms/log-retention-form.tsx';
 
 const SECTIONS = [
 	{ id: 'account', labelKey: 'profile.tabs.account', icon: User },
 	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock },
 	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell },
 	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal },
+	{ id: 'retention', labelKey: 'retention.tab', icon: Database },
 ] as const;
 
 export default function Profile() {
@@ -56,6 +58,7 @@ export default function Profile() {
 				{active === 'password' && <UpdatePasswordProfileForm />}
 				{active === 'notifications' && <ListingNotification />}
 				{active === 'preferences' && <PreferencesForm />}
+				{active === 'retention' && <LogRetentionForm />}
 			</div>
 		</div>
 	);

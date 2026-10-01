@@ -28,6 +28,7 @@ export const ProbeResponseSchema = z.object({
 	retry: z.number(),
 	interval_retry: z.number(),
 	alert_repeat_seconds: z.number().optional().default(0),
+	log_retention_days: z.number().nullable().optional().default(null),
 	enabled: z.boolean(),
 	protocol: z.enum(ProbeProtocol),
 	description: z.string().nullable(),

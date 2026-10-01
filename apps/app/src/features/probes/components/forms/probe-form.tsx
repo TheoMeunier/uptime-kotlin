@@ -16,8 +16,13 @@ import { buildProbeFieldsConfig } from '@/features/probes/components/config/prob
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
 import UnsavedChangesGuard from '@/components/molecules/forms/unsaved-changes-guard.tsx';
-import { type ComponentType, type ReactNode, useMemo } from 'react';
-import type { FieldPath, FieldPathValue } from 'react-hook-form';
+import { type ComponentType, type ReactNode, useMemo, useState } from 'react';
+import { Controller, type FieldPath, type FieldPathValue } from 'react-hook-form';
+import LogRetentionSelect from '@/features/settings/components/log-retention-select.tsx';
+import RetentionReductionDialog from '@/features/settings/components/retention-reduction-dialog.tsx';
+import useLogRetentionSettings from '@/features/settings/hooks/useLogRetentionSettings.ts';
+import type { LogRetentionPreview } from '@/features/settings/schemas/log-retention.schema.ts';
+import { usePreviewProbeLogRetention } from '@/features/settings/hooks/useLogRetentionPreview.ts';
 
 type ProbeFormMode = 'create' | 'edit';
 
@@ -27,6 +32,7 @@ interface ProbeFormProps {
 	cancelLink: string;
 	onSubmit: (values: StoreProbeSchema) => void;
 	isLoading?: boolean;
+	probeId?: string;
 }
 
 function FormSection({
@@ -56,10 +62,36 @@ function FormSection({
 	);
 }
 
-export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, onSubmit }: ProbeFormProps) {
+export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, onSubmit, probeId }: ProbeFormProps) {
 	const { t } = useTranslation();
 	const { form, errors } = useProbeForm({ defaultValues });
 	const protocol = form.watch('protocol');
+	const { data: retentionSettings } = useLogRetentionSettings();
+	const { preview: previewRetention } = usePreviewProbeLogRetention(probeId);
+	const [retentionConfirmation, setRetentionConfirmation] = useState<{
+		preview: LogRetentionPreview;
+		values: StoreProbeSchema;
+	} | null>(null);
+
+	const submit = async (values: StoreProbeSchema) => {
+		const retention = values.log_retention_days ?? null;
+		const initialRetention = defaultValues.log_retention_days ?? null;
+
+		if (mode === 'edit' && probeId && retention !== initialRetention) {
+			try {
+				const preview = await previewRetention(retention);
+				if (preview.logs_to_delete > 0) {
+					setRetentionConfirmation({ preview, values });
+					return;
+				}
+			} catch {
+				// Preview unavailable: the backend still validates the value, and
+				// nothing is deleted before the nightly purge.
+			}
+		}
+
+		onSubmit(values);
+	};
 
 	const PROBE_FIELDS_CONFIG = useMemo(() => buildProbeFieldsConfig(t), [t]);
 	const dynamicFields = protocol ? PROBE_FIELDS_CONFIG[protocol] : PROBE_FIELDS_CONFIG[ProbeProtocol.HTTP];
@@ -82,7 +114,7 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 	};
 
 	return (
-		<form onSubmit={form.handleSubmit(onSubmit)}>
+		<form onSubmit={form.handleSubmit(submit)}>
 			<UnsavedChangesGuard when={form.formState.isDirty && !isLoading} />
 
 			<div className="grid gap-6 lg:grid-cols-3">
@@ -208,6 +240,25 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 							))}
 
 						<Field>
+							<FieldLabel htmlFor="log_retention_days">{t('retention.label.probe')}</FieldLabel>
+							<Controller
+								control={form.control}
+								name="log_retention_days"
+								render={({ field }) => (
+									<LogRetentionSelect
+										id="log_retention_days"
+										value={field.value}
+										onChange={field.onChange}
+										allowInherit
+										inheritedDays={retentionSettings?.log_retention_days ?? null}
+									/>
+								)}
+							/>
+							<FieldDescription>{t('retention.description_probe')}</FieldDescription>
+							<FieldError>{errors.log_retention_days?.message}</FieldError>
+						</Field>
+
+						<Field>
 							<FieldLabel htmlFor="description">{t('form.label.description')}</FieldLabel>
 							<Textarea {...form.register('description')} id="description" rows={4} />
 							<FieldError>{errors.description?.message}</FieldError>
@@ -226,6 +277,17 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 					})}
 				</Button>
 			</div>
+
+			<RetentionReductionDialog
+				preview={retentionConfirmation?.preview ?? null}
+				isPending={isLoading}
+				onCancel={() => setRetentionConfirmation(null)}
+				onConfirm={() => {
+					const values = retentionConfirmation?.values;
+					setRetentionConfirmation(null);
+					if (values) onSubmit(values);
+				}}
+			/>
 		</form>
 	);
 }
