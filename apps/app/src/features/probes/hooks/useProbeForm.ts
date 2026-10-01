@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import HttpStatusCode from '@/features/probes/enums/http-status-code.ts';
 import i18n from '@/lang/i18n.ts';
+import { isValidRetentionDays, LOG_RETENTION_KEEP_FOREVER } from '@/features/settings/schemas/log-retention.schema.ts';
 
 const baseStoreProbeSchema = z.object({
 	name: z.string().min(3).max(255),
@@ -17,6 +18,14 @@ const baseStoreProbeSchema = z.object({
 		.refine((value) => value === 0 || value >= 60, {
 			error: () => i18n.t('validation.alert_repeat_seconds'),
 		})
+		.optional(),
+	log_retention_days: z
+		.number()
+		.int()
+		.refine((value) => value === LOG_RETENTION_KEEP_FOREVER || isValidRetentionDays(value), {
+			error: () => i18n.t('retention.validation'),
+		})
+		.nullable()
 		.optional(),
 	description: z
 		.string()

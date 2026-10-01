@@ -49,6 +49,7 @@ function FormUpdateProbe({ data, probeId }: { data: ProbeGetUpdateResponse; prob
 	return (
 		<ProbeForm
 			mode="edit"
+			probeId={probeId}
 			defaultValues={data}
 			cancelLink={`/monitors/${probeId}`}
 			onSubmit={onsubmit}
