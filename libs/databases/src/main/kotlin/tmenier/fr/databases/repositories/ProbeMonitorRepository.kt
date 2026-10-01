@@ -2,6 +2,7 @@ package tmenier.fr.databases.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.persistence.EntityManager
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
@@ -11,6 +12,7 @@ import java.util.UUID
 @ApplicationScoped
 class ProbeMonitorRepository(
     private val probeRepository: ProbeRepository,
+    private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbesMonitorsLogEntity, UUID> {
     fun countByProbeAndPeriod(
         probeId: UUID,
@@ -68,6 +70,56 @@ class ProbeMonitorRepository(
     fun deleteByProbe(probeId: UUID): Long = delete("probe.id = ?1", probeId)
 
     fun existsByCheckTaskId(checkTaskId: UUID): Boolean = count("checkTaskId = ?1", checkTaskId) > 0
+
+    fun deleteExpiredBatch(
+        now: LocalDateTime,
+        batchSize: Int,
+    ): Int =
+        em
+            .createNativeQuery(
+                """
+                DELETE FROM probes_monitors_logs
+                WHERE ctid IN (
+                    SELECT l.ctid
+                    FROM probes_monitors_logs l
+                    JOIN probes p ON p.id = l.probe_id
+                    CROSS JOIN instance_settings s
+                    WHERE s.id = 1
+                      AND COALESCE(p.log_retention_days, s.log_retention_days, 0) > 0
+                      AND l.run_at < CAST(:now AS timestamp)
+                          - make_interval(days => COALESCE(p.log_retention_days, s.log_retention_days))
+                    LIMIT :batch
+                )
+                """.trimIndent(),
+            ).setParameter("now", now)
+            .setParameter("batch", batchSize)
+            .executeUpdate()
+
+    fun countOlderThanForProbe(
+        probeId: UUID,
+        cutoff: LocalDateTime,
+    ): Long = count("probe.id = ?1 AND runAt < ?2", probeId, cutoff)
+
+    fun countOlderThanForInheritingProbes(cutoff: LocalDateTime): Long = count("probe.logRetentionDays IS NULL AND runAt < ?1", cutoff)
+
+    fun countForProbe(probeId: UUID): Long = count("probe.id = ?1", probeId)
+
+    fun countForInheritingProbes(): Long = count("probe.logRetentionDays IS NULL")
+
+    fun oldestRunAtForProbe(probeId: UUID): LocalDateTime? =
+        em
+            .createQuery(
+                "SELECT MIN(l.runAt) FROM ProbesMonitorsLogEntity l WHERE l.probe.id = :probeId",
+                LocalDateTime::class.java,
+            ).setParameter("probeId", probeId)
+            .singleResult
+
+    fun oldestRunAtForInheritingProbes(): LocalDateTime? =
+        em
+            .createQuery(
+                "SELECT MIN(l.runAt) FROM ProbesMonitorsLogEntity l WHERE l.probe.logRetentionDays IS NULL",
+                LocalDateTime::class.java,
+            ).singleResult
 
     companion object {
         const val MAX_POINTS: Int = 500

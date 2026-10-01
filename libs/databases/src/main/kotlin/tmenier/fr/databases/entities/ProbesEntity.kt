@@ -66,6 +66,9 @@ class ProbesEntity : PanacheEntityBase {
     @Column(name = "failing_since")
     var failingSince: Instant? = null
 
+    @Column(name = "log_retention_days")
+    var logRetentionDays: Int? = null
+
     @Column(nullable = false)
     var protocol: ProbeProtocol = ProbeProtocol.HTTP
 
