@@ -40,6 +40,8 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
                         address: InetAddress,
                         port: Int,
                     ): StandardDnsQueryResult? = super.query(message, dnsServerAddress, content.dnsPort)
+                }.apply {
+                    setTimeout(timeoutOf(probe).toMillis().toInt())
                 }
 
             val recordType =
