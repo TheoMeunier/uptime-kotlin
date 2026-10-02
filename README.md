@@ -4,8 +4,15 @@
 </a>
 
 <h2 align="center">Uptime Kotlin</h2>
-[![Release](https://img.shields.io/github/v/release/TheoMeunier/uptime-kotlin)](https://github.com/TheoMeunier/uptime-kotlin/releases)
-[![License](https://img.shields.io/github/license/TheoMeunier/uptime-kotlin)](LICENSE)
+
+<p align="center">
+  <a href="https://github.com/TheoMeunier/uptime-kotlin/releases">
+    <img src="https://img.shields.io/github/v/release/TheoMeunier/uptime-kotlin" alt="Release">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/TheoMeunier/uptime-kotlin" alt="License">
+  </a>
+</p>
 
 <p align="center">
 <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
