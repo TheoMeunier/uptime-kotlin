@@ -12,6 +12,12 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/github/license/TheoMeunier/uptime-kotlin" alt="License">
   </a>
+<a href="https://github.com/TheoMeunier/uptime-kotlin/actions/workflows/back-ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/TheoMeunier/uptime-kotlin/back-ci.yml?branch=main&label=backend" alt="Backend CI">
+  </a>
+  <a href="https://github.com/TheoMeunier/uptime-kotlin/actions/workflows/app-ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/TheoMeunier/uptime-kotlin/app-ci.yml?branch=main&label=frontend" alt="Frontend CI">
+  </a>
 </p>
 
 <p align="center">
@@ -85,8 +91,6 @@ services:
     image: ghcr.io/theomeunier/uptime-kotlin/app:latest
     container_name: uptime_kotlin_app
     restart: unless-stopped
-    ports:
-      - "80:80"
     networks:
       - app_network
 
@@ -115,6 +119,8 @@ services:
     image: nginx:alpine
     container_name: uptime_kotlin_reverse_proxy
     restart: unless-stopped
+    ports:
+      - "8080:8080"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
@@ -210,7 +216,7 @@ uptime-kotlin-worker:
     MAINTENANCE_MAX_DURATION_HOURS: "24"
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: change-me
-    QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
+    QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
     ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
   depends_on:
     - uptime-kotlin-api
