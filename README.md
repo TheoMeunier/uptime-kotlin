@@ -3,18 +3,21 @@
 <img src="docs/images/logo-ui.png" alt="Logo" width="150" height="150">
 </a>
 
-<h2 align="center">Uptime Kotlin</h3>
-  <p align="center">
-    <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-  </p>
+<h2 align="center">Uptime Kotlin</h2>
+[![Release](https://img.shields.io/github/v/release/TheoMeunier/uptime-kotlin)](https://github.com/TheoMeunier/uptime-kotlin/releases)
+[![License](https://img.shields.io/github/license/TheoMeunier/uptime-kotlin)](LICENSE)
+
+<p align="center">
+<a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+·
+<a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+</p>
 </div>
 
 ## About The Project
 
-A simple, lightweight, and self-hostable uptime monitoring tool, built and optimized for cloud deployment. Ideal for
-monitoring service availability without relying on external solutions.
+Self-hosted uptime monitoring for HTTP, TCP, DNS, databases, Kafka, RabbitMQ and more. Public status pages,
+multi-channel notifications, and a worker-based cluster mode to scale your checks.
 
 <table>
   <tr>
@@ -84,14 +87,12 @@ services:
     image: ghcr.io/theomeunier/uptime-kotlin/api:latest
     container_name: uptime_kotlin_api
     restart: unless-stopped
-    ports:
-      - "8080:8080"
     environment:
       TZ: Europe/Paris
       SCHEDULER_STRATEGY: database
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
-      QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
+      QUARKUS_DATASOURCE_PASSWORD: change-me
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
       ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
       MP_JWT_VERIFY_PUBLICKEY_LOCATION: /certs/publicKey.pem
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
@@ -107,8 +108,6 @@ services:
     image: nginx:alpine
     container_name: uptime_kotlin_reverse_proxy
     restart: unless-stopped
-    ports:
-      - "8888:80"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
@@ -124,15 +123,12 @@ services:
     environment:
       POSTGRES_DB: uptime-kotlin
       POSTGRES_USER: uptime-kotlin
-      POSTGRES_PASSWORD: uptime-kotlin
+      POSTGRES_PASSWORD: change-me
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./storage-db:/var/lib/postgresql/data
     networks:
       - app_network
-    # Uncomment to reach the database from your host, and change POSTGRES_PASSWORD first.
-    # ports:
-    #   - "5432:5432"
 
 networks:
   app_network:
@@ -206,17 +202,17 @@ uptime-kotlin-worker:
     MAINTENANCE_HORIZON_DAYS: "90"
     MAINTENANCE_MAX_DURATION_HOURS: "24"
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
-    QUARKUS_DATASOURCE_PASSWORD: uptime-kotlin
+    QUARKUS_DATASOURCE_PASSWORD: change-me
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://uptime_database:5432/uptime-kotlin
-    ENCRYPTION_MASTER_KEY: superKeyMasterSensileData0123456789
+    ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
   depends_on:
-    - uptime_kotlin_api
+    - uptime-kotlin-api
   networks:
     - app_network
 
 ```
 
-#### Configure the` variable environnement` file
+#### Configure the `variable environnement` file
 
 1. Cluster mode
 
