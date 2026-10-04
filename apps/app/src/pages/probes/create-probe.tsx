@@ -88,7 +88,7 @@ function CreateProbeForm({
 	defaultValues: Parameters<typeof ProbeForm>[0]['defaultValues'];
 	cancelLink: string;
 }) {
-	const { isLoading, onsubmit } = useStoreMonitor();
+	const { isLoading, onsubmit, error } = useStoreMonitor();
 
 	return (
 		<ProbeForm
@@ -96,6 +96,7 @@ function CreateProbeForm({
 			onSubmit={onsubmit}
 			cancelLink={cancelLink}
 			isLoading={isLoading}
+			serverError={error}
 			defaultValues={defaultValues}
 		/>
 	);

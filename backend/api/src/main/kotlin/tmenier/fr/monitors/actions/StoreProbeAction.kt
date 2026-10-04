@@ -2,8 +2,10 @@ package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
+import tmenier.fr.common.exceptions.common.BadRequestException
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.NotificationRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.services.ResolveMonitorContentService
@@ -13,12 +15,19 @@ import java.util.UUID
 class StoreProbeAction(
     private val probeRepository: ProbeRepository,
     private val getProbeContentService: ResolveMonitorContentService,
+    private val notificationRepository: NotificationRepository,
 ) {
     @Transactional
     fun execute(
         payload: BaseStoreProbeRequest,
         probeId: UUID? = null,
     ) {
+        if (payload.notifications.isEmpty() && !notificationRepository.hasDefault()) {
+            throw BadRequestException(
+                "At least one notification is required: select a channel, or mark one as default.",
+            )
+        }
+
         val isUpdate = probeId != null
         val existingProbe =
             probeId?.let {

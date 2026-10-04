@@ -118,6 +118,7 @@ const de: typeof en = {
 	},
 
 	validation: {
+		summary: 'Bitte vor dem Speichern korrigieren:',
 		passwords_mismatch: 'Die Passwörter stimmen nicht überein',
 		password_must_differ: 'Das neue Passwort muss sich vom aktuellen unterscheiden',
 		password_required: 'Passwort ist erforderlich',
@@ -276,6 +277,7 @@ const de: typeof en = {
 			retry: 'Wiederholungen',
 			interval_retry: 'Abstand zwischen Wiederholungen (s)',
 			alert_repeat_seconds: 'Alarm erneut senden alle (s)',
+			notifications: 'Benachrichtigungen',
 			remove_confirmation: 'Namen des Monitors bestätigen',
 		},
 		tls: {

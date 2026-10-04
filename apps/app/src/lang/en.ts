@@ -113,6 +113,7 @@ const en = {
 	},
 
 	validation: {
+		summary: 'Fix the following before saving:',
 		passwords_mismatch: 'Passwords do not match',
 		password_must_differ: 'New password must be different from the current password',
 		password_required: 'Password is required',
@@ -270,6 +271,7 @@ const en = {
 			retry: 'Retries',
 			interval_retry: 'Retry interval (s)',
 			alert_repeat_seconds: 'Resend alert every (s)',
+			notifications: 'Notifications',
 			remove_confirmation: 'Confirm the monitor name',
 		},
 		tls: {

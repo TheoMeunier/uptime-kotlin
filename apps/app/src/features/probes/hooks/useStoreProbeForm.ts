@@ -30,5 +30,6 @@ export function useStoreMonitor() {
 	return {
 		onsubmit,
 		isLoading: mutation.isPending,
+		error: mutation.error,
 	};
 }
