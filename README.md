@@ -49,7 +49,7 @@ multi-channel notifications, and a worker-based cluster mode to scale your check
   stays down (per-monitor interval, disabled by default)
 - Public status pages for your users
 - JWT authentication with encrypted data
-- Docker-ready deployment
+- Docker-ready deployment (amd64 and native ARM64 images)
 
 ### Built With
 
@@ -74,6 +74,9 @@ chmod 644 privateKey.pem publicKey.pem
 ```
 
 2. Create a `compose.yaml` file
+
+> [!TIP]
+> Deploying on an ARM64 host (Raspberry Pi, AWS Graviton, ...)? See [ARM64](#arm64) for the image names to use.
 
 Download the Nginx reverse proxy configuration into a `docker/` folder next to your `compose.yaml`:
 
@@ -238,6 +241,37 @@ uptime-kotlin-worker:
       running instance uses any more are picked up by the others after 30 seconds.
     - `SCHEDULER_WORKER_CONCURRENCY` (default `4`): checks run in parallel by this worker. Keep it under the datasource
       pool size.
+
+### ARM64
+
+The API and the worker are also published as native ARM64 images, for any ARM64 host (Raspberry Pi, AWS Graviton,
+Ampere servers, Apple Silicon, ...). Use the `compose.yaml` from [Getting Started](#getting-started) and only swap
+these two images; `nginx` and `postgres` are multi-architecture and run as is.
+
+| Component | amd64                                      | arm64                                            |
+|-----------|--------------------------------------------|--------------------------------------------------|
+| API       | `ghcr.io/theomeunier/uptime-kotlin/api`    | `ghcr.io/theomeunier/uptime-kotlin/api-arm64`    |
+| Worker    | `ghcr.io/theomeunier/uptime-kotlin/worker` | `ghcr.io/theomeunier/uptime-kotlin/worker-arm64` |
+
+> [!IMPORTANT]
+> The host must run a 64-bit OS: `uname -m` must print `aarch64` (or `arm64`). 32-bit ARM (`armv7l`) is not
+> supported, e.g. a Raspberry Pi running a 32-bit OS.
+> The `app` (frontend) image is currently published for amd64 only.
+
+<details>
+<summary>Troubleshooting & building the images yourself</summary>
+
+- `exec format error` when a container starts: the image was built for another architecture. Check that the image
+  name ends with `-arm64`.
+- To build the images locally, use an ARM64 machine (Apple Silicon Mac, ARM Linux) with JDK 21 and Docker (at least
+  6 GB of RAM for Docker, native compilation is memory hungry):
+
+  ```bash
+  ./scripts/build-arm64.sh          # build the images locally
+  ./scripts/build-arm64.sh --save   # also export them to dist-docker/, to copy them to the target host
+  ```
+
+</details>
 
 ## Contributing
 

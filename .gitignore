@@ -48,3 +48,6 @@ publicKey.pem
 rsaPrivateKey.pem
 
 .vite
+
+# ARM docker exports
+dist-docker/
