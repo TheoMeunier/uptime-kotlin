@@ -25,6 +25,14 @@ inputs:
     required: false
     default: 'true'
     description: "push the image to the registry"
+  container-build:
+    required: false
+    default: 'false'
+    description: "build the native executable inside the Quarkus Mandrel builder image (glibc aligned with UBI 9)"
+  artifact-name:
+    required: false
+    default: ''
+    description: "uploaded artifact name (defaults to backend-<name>-native)"
 
 runs:
   using: 'composite'
@@ -37,12 +45,12 @@ runs:
 
     - name: Build native executable
       shell: bash
-      run: ./gradlew ${{ inputs.project-path-build }}:assemble -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false -Dquarkus.native.container-build=false --no-daemon
+      run: ./gradlew ${{ inputs.project-path-build }}:assemble -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false -Dquarkus.native.container-build=${{ inputs.container-build }} --no-daemon
 
     - name: Upload artifact
       uses: actions/upload-artifact@v7
       with:
-        name: backend-${{ inputs.name }}-native
+        name: ${{ inputs.artifact-name || format('backend-{0}-native', inputs.name) }}
         path: ./backend/${{ inputs.name }}/build/*-runner
         retention-days: 7
 
