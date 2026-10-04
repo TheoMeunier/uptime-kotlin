@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*.*.*'
+    branches:
+      - feat/add-native-arm64-images   # à retirer avant le merge
 
 jobs:
   api-build-native:
