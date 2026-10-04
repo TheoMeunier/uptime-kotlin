@@ -117,6 +117,7 @@ const fr: typeof en = {
 	},
 
 	validation: {
+		summary: 'Corrigez ces points avant d’enregistrer :',
 		passwords_mismatch: 'Les mots de passe ne correspondent pas',
 		password_must_differ: 'Le nouveau mot de passe doit être différent de l’actuel',
 		password_required: 'Le mot de passe est obligatoire',
@@ -276,6 +277,7 @@ const fr: typeof en = {
 			retry: 'Tentatives',
 			interval_retry: 'Intervalle entre les tentatives (s)',
 			alert_repeat_seconds: 'Renvoyer l’alerte toutes les (s)',
+			notifications: 'Notifications',
 			remove_confirmation: 'Confirmez le nom de la sonde',
 		},
 		tls: {

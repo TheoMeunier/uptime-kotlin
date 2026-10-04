@@ -32,5 +32,6 @@ export default function useUpdateMonitor(probeId: string) {
 	return {
 		onsubmit,
 		isLoading: mutation.isPending,
+		error: mutation.error,
 	};
 }

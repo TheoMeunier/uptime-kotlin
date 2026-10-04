@@ -16,13 +16,15 @@ import { buildProbeFieldsConfig } from '@/features/probes/components/config/prob
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
 import UnsavedChangesGuard from '@/components/molecules/forms/unsaved-changes-guard.tsx';
-import { type ComponentType, type ReactNode, useMemo, useState } from 'react';
+import { type ComponentType, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Controller, type FieldPath, type FieldPathValue } from 'react-hook-form';
 import LogRetentionSelect from '@/features/settings/components/log-retention-select.tsx';
 import RetentionReductionDialog from '@/features/settings/components/retention-reduction-dialog.tsx';
 import useLogRetentionSettings from '@/features/settings/hooks/useLogRetentionSettings.ts';
 import type { LogRetentionPreview } from '@/features/settings/schemas/log-retention.schema.ts';
 import { usePreviewProbeLogRetention } from '@/features/settings/hooks/useLogRetentionPreview.ts';
+import FormErrorSummary from '@/components/molecules/forms/form-error-summary.tsx';
+import { applyServerViolations } from '@/lib/apply-server-violations.ts';
 
 type ProbeFormMode = 'create' | 'edit';
 
@@ -33,6 +35,7 @@ interface ProbeFormProps {
 	onSubmit: (values: StoreProbeSchema) => void;
 	isLoading?: boolean;
 	probeId?: string;
+	serverError?: unknown;
 }
 
 function FormSection({
@@ -62,10 +65,22 @@ function FormSection({
 	);
 }
 
-export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, onSubmit, probeId }: ProbeFormProps) {
+export default function ProbeForm({
+	mode,
+	defaultValues,
+	cancelLink,
+	isLoading,
+	onSubmit,
+	probeId,
+	serverError,
+}: ProbeFormProps) {
 	const { t } = useTranslation();
 	const { form, errors } = useProbeForm({ defaultValues });
 	const protocol = form.watch('protocol');
+
+	useEffect(() => {
+		applyServerViolations(form, serverError);
+	}, [form, serverError]);
 	const { data: retentionSettings } = useLogRetentionSettings();
 	const { preview: previewRetention } = usePreviewProbeLogRetention(probeId);
 	const [retentionConfirmation, setRetentionConfirmation] = useState<{
@@ -210,6 +225,7 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 						icon={Bell}
 					>
 						<FormSelectNotification form={form} name="notifications" />
+						<FieldError>{errors.notifications?.message}</FieldError>
 						<CreateNotificationDialogue />
 
 						<Field>
@@ -278,6 +294,10 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 					</FormSection>
 				</div>
 			</div>
+
+			{form.formState.submitCount > 0 && (
+				<FormErrorSummary errors={errors} labelPrefixes={['monitors.label.', 'form.label.']} />
+			)}
 
 			<div className="bg-background/95 border-border sticky bottom-0 mt-6 flex items-center justify-end gap-3 border-t py-4 backdrop-blur">
 				<Button variant="outline" asChild>

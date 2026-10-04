@@ -44,7 +44,7 @@ export default function EditProbe() {
 }
 
 function FormUpdateProbe({ data, probeId }: { data: ProbeGetUpdateResponse; probeId: string }) {
-	const { isLoading, onsubmit } = useUpdateMonitor(probeId);
+	const { isLoading, onsubmit, error } = useUpdateMonitor(probeId);
 
 	return (
 		<ProbeForm
@@ -54,6 +54,7 @@ function FormUpdateProbe({ data, probeId }: { data: ProbeGetUpdateResponse; prob
 			cancelLink={`/monitors/${probeId}`}
 			onSubmit={onsubmit}
 			isLoading={isLoading}
+			serverError={error}
 		/>
 	);
 }

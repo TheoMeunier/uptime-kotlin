@@ -14,7 +14,12 @@ class NotificationRepository : PanacheRepositoryBase<NotificationsChannelEntity,
     override fun findById(id: UUID): NotificationsChannelEntity =
         find("id = ?1", id).firstResult() ?: throw NotFoundException("Notification channel not found: $id")
 
-    fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> = find("id in ?1 OR isDefault", ids).list()
+    fun findByIds(ids: List<UUID>): List<NotificationsChannelEntity> =
+        if (ids.isEmpty()) findDefaults() else find("id in ?1 OR isDefault", ids).list()
+
+    fun findDefaults(): List<NotificationsChannelEntity> = find("isDefault", true).list()
+
+    fun hasDefault(): Boolean = count("isDefault", true) > 0
 
     fun getAll(): List<NotificationsChannelEntity> = findAll().list()
 

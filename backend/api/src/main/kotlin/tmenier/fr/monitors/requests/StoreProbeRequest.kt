@@ -72,7 +72,7 @@ abstract class BaseStoreProbeRequest {
     @field:Size(min = 10, message = "Description must be at least 10 characters long")
     var description: String? = null
 
-    @field:Size(min = 1, message = "At least one notification is required")
+
     val notifications: List<UUID> = emptyList()
 
     @field:Min(value = 0, message = "Alert repeat must be 0 or a positive number of seconds")

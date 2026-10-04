@@ -116,6 +116,7 @@ const es: typeof en = {
 	},
 
 	validation: {
+		summary: 'Corrija lo siguiente antes de guardar:',
 		passwords_mismatch: 'Las contraseñas no coinciden',
 		password_must_differ: 'La nueva contraseña debe ser distinta de la actual',
 		password_required: 'La contraseña es obligatoria',
@@ -274,6 +275,7 @@ const es: typeof en = {
 			retry: 'Reintentos',
 			interval_retry: 'Intervalo entre reintentos (s)',
 			alert_repeat_seconds: 'Reenviar la alerta cada (s)',
+			notifications: 'Notificaciones',
 			remove_confirmation: 'Confirme el nombre del monitor',
 		},
 		tls: {
