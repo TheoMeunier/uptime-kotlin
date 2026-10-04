@@ -120,7 +120,7 @@ services:
     container_name: uptime_kotlin_reverse_proxy
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8080:80"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
