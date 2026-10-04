@@ -349,6 +349,7 @@ const fr: typeof en = {
 		},
 		placeholder: {
 			name_monitor: 'API de production',
+			alert_repeat_seconds: '0 — désactivé',
 			username: 'Nom d’utilisateur',
 			password: 'Mot de passe',
 			bearer_token: 'Jeton Bearer',

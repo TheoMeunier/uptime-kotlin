@@ -350,6 +350,7 @@ const de: typeof en = {
 		},
 		placeholder: {
 			name_monitor: 'Produktions-API',
+			alert_repeat_seconds: '0 — deaktiviert',
 			username: 'Benutzername',
 			password: 'Passwort',
 			bearer_token: 'Bearer-Token',

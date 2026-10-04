@@ -214,12 +214,24 @@ export default function ProbeForm({ mode, defaultValues, cancelLink, isLoading, 
 
 						<Field>
 							<FieldLabel htmlFor="alert_repeat_seconds">{t('monitors.label.alert_repeat_seconds')}</FieldLabel>
-							<Input
-								{...form.register('alert_repeat_seconds', { valueAsNumber: true })}
-								id="alert_repeat_seconds"
-								type="number"
-								min={0}
-								step={60}
+							{/* 0 = resend disabled: shown as an empty field so the placeholder says it. */}
+							<Controller
+								control={form.control}
+								name="alert_repeat_seconds"
+								render={({ field }) => (
+									<Input
+										id="alert_repeat_seconds"
+										type="number"
+										min={0}
+										step={60}
+										name={field.name}
+										ref={field.ref}
+										onBlur={field.onBlur}
+										placeholder={t('monitors.placeholder.alert_repeat_seconds')}
+										value={field.value ? field.value : ''}
+										onChange={(e) => field.onChange(e.target.value === '' ? 0 : e.target.valueAsNumber)}
+									/>
+								)}
 							/>
 							<FieldDescription>{t('monitors.description.alert_repeat_seconds')}</FieldDescription>
 							<FieldError>{errors.alert_repeat_seconds?.message}</FieldError>

@@ -343,6 +343,7 @@ const en = {
 		},
 		placeholder: {
 			name_monitor: 'Production API',
+			alert_repeat_seconds: '0 — disabled',
 			username: 'Username',
 			password: 'Password',
 			bearer_token: 'Bearer token',

@@ -348,6 +348,7 @@ const es: typeof en = {
 		},
 		placeholder: {
 			name_monitor: 'API de producción',
+			alert_repeat_seconds: '0 — desactivado',
 			username: 'Nombre de usuario',
 			password: 'Contraseña',
 			bearer_token: 'Token Bearer',
