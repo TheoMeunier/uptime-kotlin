@@ -1,9 +1,3 @@
-# syntax=docker/dockerfile:1.7
-#
-# Image tout-en-un (front + API + tâches de fond), mode natif (Mandrel).
-# Build depuis la racine du dépôt (compter ~8 Go de RAM pour Docker) :
-#   docker build -f docker/all-in-one/Dockerfile.native -t uptime-kotlin:native .
-
 ARG MANDREL_IMAGE=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
 
 FROM node:25-alpine AS front
