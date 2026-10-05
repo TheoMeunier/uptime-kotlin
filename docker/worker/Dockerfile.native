@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1.7
+#
+# Image worker (tâches de fond du mode cluster), mode natif (Mandrel).
+# Build depuis la racine du dépôt (compter ~8 Go de RAM pour Docker) :
+#   docker build -f docker/worker/Dockerfile.native -t uptime-kotlin-worker:native .
+
+ARG MANDREL_IMAGE=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+
+FROM ${MANDREL_IMAGE} AS back
+USER root
+WORKDIR /project
+COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY gradle/ gradle/
+COPY libs/ libs/
+COPY backend/ backend/
+RUN --mount=type=cache,target=/root/.gradle \
+    ./gradlew :backend:worker:assemble -x test --no-daemon \
+      -Dquarkus.native.enabled=true \
+      -Dquarkus.package.jar.enabled=false \
+      -Dquarkus.native.container-build=false
+
+FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --from=back --chown=1001:root --chmod=0755 /project/backend/worker/build/*-runner /work/application
+
+EXPOSE 8082
+USER 1001
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
