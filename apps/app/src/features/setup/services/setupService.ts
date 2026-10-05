@@ -1,3 +1,4 @@
+import { createApiError } from '@/api/api-error.ts';
 import type { StoreCreateFirstUserSchemaType } from '@/features/setup/hooks/useFirstUserApplicationForm.ts';
 
 const profileService = {
@@ -19,6 +20,10 @@ const profileService = {
 			},
 			body: JSON.stringify(data),
 		});
+
+		if (!response.ok) {
+			throw await createApiError(response, 'Unable to create the first user.');
+		}
 
 		return response.json();
 	},
