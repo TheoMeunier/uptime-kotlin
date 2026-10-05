@@ -42,11 +42,9 @@ class FrontendRouter {
         }
     }
 
-    private fun isBackendPath(path: String): Boolean =
-        BACKEND_PREFIXES.any { path == it || path.startsWith("$it/") }
+    private fun isBackendPath(path: String): Boolean = BACKEND_PREFIXES.any { path == it || path.startsWith("$it/") }
 
-    private fun isFrontendEmbedded(): Boolean =
-        Thread.currentThread().contextClassLoader.getResource(INDEX_RESOURCE) != null
+    private fun isFrontendEmbedded(): Boolean = Thread.currentThread().contextClassLoader.getResource(INDEX_RESOURCE) != null
 
     companion object {
         private const val INDEX_RESOURCE = "META-INF/resources/index.html"
