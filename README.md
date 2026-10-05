@@ -61,19 +61,7 @@ multi-channel notifications, and a worker-based cluster mode to scale your check
 
 ## Getting Started
 
-1. Create keys for JWT token with `openssl`:
-
-```bash
-mkdir certs/ && cd certs
-
-openssl genrsa -out rsaPrivateKey.pem 2048
-openssl rsa -pubout -in rsaPrivateKey.pem -out publicKey.pem
-openssl pkcs8 -topk8 -nocrypt -inform pem -in rsaPrivateKey.pem -outform pem -out privateKey.pem
-
-chmod 644 privateKey.pem publicKey.pem
-```
-
-2. Create a `compose.yaml` file
+1. Create a `compose.yaml` file
 
 > [!TIP]
 > Deploying on an ARM64 host (Raspberry Pi, AWS Graviton, ...)? See [ARM64](#arm64) for the image names to use.
@@ -108,11 +96,7 @@ services:
       QUARKUS_DATASOURCE_PASSWORD: change-me
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
       ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
-      MP_JWT_VERIFY_PUBLICKEY_LOCATION: /certs/publicKey.pem
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
-      SMALLRYE_JWT_SIGN_KEY_LOCATION: /certs/privateKey.pem
-    volumes:
-      - ./certs:/certs
     depends_on:
       - postgres
     networks:
@@ -151,26 +135,34 @@ networks:
     driver: bridge
 ```
 
-3. Configure the `variable environnement` file
+2. Configure the `variable environnement` file
 
-   3.1 Encrypted variables:
+   2.1 Encrypted variables:
 
     - `ENCRYPTION_MASTER_KEY` : The master key used to encrypt sensitive data. Required, at least 32 bytes
       (`openssl rand -base64 32`). The application refuses to start without it.
 
-   3.2 PostgreSQL Configuration:
+   2.2 PostgreSQL Configuration:
 
     - `QUARKUS_DATASOURCE_USERNAME` : The username of your PostgreSQL database
     - `QUARKUS_DATASOURCE_PASSWORD` : The password of your PostgreSQL database
     - `QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://[host][:port][/database]` : The URL of your PostgreSQL database
 
-   3.3 JWT Configuration:
+   2.3 JWT Configuration:
+
+    - `MP_JWT_VERIFY_ISSUER` : The issuer of the JWT token
+
+   The API signs its tokens with an RSA key pair that it generates on first start and stores in the database, the
+   private key encrypted with `ENCRYPTION_MASTER_KEY`. Every API instance reads the same pair, so nothing has to be
+   shared between them. Changing `ENCRYPTION_MASTER_KEY` therefore makes the stored key unreadable: the API refuses
+   to start until the previous key is restored.
+
+   To use your own keys instead (or keep the ones of an existing installation), set both variables and mount the files:
 
     - `MP_JWT_VERIFY_PUBLICKEY_LOCATION` : The location of the public key used to verify the JWT token
-    - `MP_JWT_VERIFY_ISSUER` : The issuer of the JWT token
-    - `SMALLRYE_JWT_SIGN_KEY_LOCATION` : The location of the private key used to sign the JWT token
+    - `SMALLRYE_JWT_SIGN_KEY_LOCATION` : The location of the private key (PKCS#8) used to sign the JWT token
 
-   3.4 Schedulers Configuration:
+   2.4 Schedulers Configuration:
 
     - `SCHEDULER_STRATEGY` : `database` (the API runs the monitoring checks and the other background jobs itself),
       or `none` when dedicated workers run them (see [Cluster mode](#cluster-mode)).
@@ -180,19 +172,19 @@ networks:
    `QUARKUS_SCHEDULER_STRATEGY=db-lock` from previous versions is still understood as `SCHEDULER_STRATEGY=database`
    and logs a deprecation warning: replace it.
 
-   3.5 Maintenance windows (set the same values on the API and the workers):
+   2.5 Maintenance windows (set the same values on the API and the workers):
 
     - `MAINTENANCE_HORIZON_DAYS` (default `90`) : how far ahead recurring windows are unrolled into occurrences.
     - `MAINTENANCE_MAX_DURATION_HOURS` (default `24`) : longest window the API accepts.
 
 
-4. Start the application with docker-compose
+3. Start the application with docker-compose
 
 ```bash
    docker compose up -d
 ```
 
-5. Access the application
+4. Access the application
 
 ```bash
    http://localhost:8888
