@@ -12,9 +12,6 @@ permissions:
   contents: read
   packages: write
 
-env:
-  IMAGE: ghcr.io/${{ github.repository }}
-
 jobs:
   build:
     name: All-in-one native (${{ matrix.platform }})
@@ -31,6 +28,9 @@ jobs:
             runner: ubuntu-24.04-arm
 
     steps:
+      - name: Set lowercase image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
@@ -85,6 +85,9 @@ jobs:
     needs: build
 
     steps:
+      - name: Set lowercase image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
