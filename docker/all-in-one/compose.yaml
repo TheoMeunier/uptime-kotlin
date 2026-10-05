@@ -7,7 +7,7 @@ services:
     build:
       context: ../..
       dockerfile: docker/all-in-one/Dockerfile.native
-    image: uptime-kotlin:all-in-one
+    image: uptime-kotlin:local
     restart: unless-stopped
     ports:
       - "8090:8080"

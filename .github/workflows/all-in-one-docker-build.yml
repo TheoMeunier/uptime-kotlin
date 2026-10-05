@@ -13,7 +13,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}/all-in-one
+  IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
   build:
