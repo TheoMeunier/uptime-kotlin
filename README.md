@@ -49,7 +49,7 @@ multi-channel notifications, and a worker-based cluster mode to scale your check
   stays down (per-monitor interval, disabled by default)
 - Public status pages for your users
 - JWT authentication with encrypted data
-- Docker-ready deployment (amd64 and native ARM64 images)
+- Single Docker image for amd64 and ARM64, a few tens of MB of RAM
 
 ### Built With
 
@@ -61,60 +61,27 @@ multi-channel notifications, and a worker-based cluster mode to scale your check
 
 ## Getting Started
 
+Uptime Kotlin ships as a single Docker image: the web interface, the API and the background jobs (monitoring
+checks, notifications, maintenance windows, purges) run in one process. Only PostgreSQL runs next to it. The image
+is published for amd64 and arm64, and Docker pulls the one that matches your host.
+
 1. Create a `compose.yaml` file
-
-> [!TIP]
-> Deploying on an ARM64 host (Raspberry Pi, AWS Graviton, ...)? See [ARM64](#arm64) for the image names to use.
-
-Download the Nginx reverse proxy configuration into a `docker/` folder next to your `compose.yaml`:
-
-```bash
-mkdir -p docker && curl -o docker/nginx.conf \
-  https://raw.githubusercontent.com/TheoMeunier/uptime-kotlin/main/docker/nginx.conf
-```
-
-The reverse proxy is not optional: the frontend calls the API with relative URLs (`/api/...`), so both must
-answer on the same origin. Only Nginx publishes a port — the app and the API are reached through it.
 
 ```yml
 services:
-  uptime-kotlin-app:
-    image: ghcr.io/theomeunier/uptime-kotlin/app:latest
-    container_name: uptime_kotlin_app
+  uptime-kotlin:
+    image: ghcr.io/theomeunier/uptime-kotlin:latest
+    container_name: uptime_kotlin
     restart: unless-stopped
-    networks:
-      - app_network
-
-  uptime-kotlin-api:
-    image: ghcr.io/theomeunier/uptime-kotlin/api:latest
-    container_name: uptime_kotlin_api
-    restart: unless-stopped
+    ports:
+      - "8080:8080"
     environment:
       TZ: Europe/Paris
-      SCHEDULER_STRATEGY: database
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: change-me
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
       ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
-    depends_on:
-      - postgres
-    networks:
-      - app_network
-
-  nginx:
-    image: nginx:alpine
-    container_name: uptime_kotlin_reverse_proxy
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    volumes:
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - uptime-kotlin-api
-      - uptime-kotlin-app
-    networks:
-      - app_network
 
   postgres:
     image: postgres:17.4-alpine
@@ -127,13 +94,11 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./storage-db:/var/lib/postgresql/data
-    networks:
-      - app_network
-
-networks:
-  app_network:
-    driver: bridge
 ```
+
+> [!TIP]
+> Keep a memory limit (`mem_limit`). The image is a native executable whose heap is sized from the memory it can
+> see: around 50 MB with a 512 MB limit, but it can grow to several hundred MB on a host without limit.
 
 2. Configure the `variable environnement` file
 
@@ -152,10 +117,10 @@ networks:
 
     - `MP_JWT_VERIFY_ISSUER` : The issuer of the JWT token
 
-   The API signs its tokens with an RSA key pair that it generates on first start and stores in the database, the
-   private key encrypted with `ENCRYPTION_MASTER_KEY`. Every API instance reads the same pair, so nothing has to be
-   shared between them. Changing `ENCRYPTION_MASTER_KEY` therefore makes the stored key unreadable: the API refuses
-   to start until the previous key is restored.
+   The application signs its tokens with an RSA key pair that it generates on first start and stores in the
+   database, the private key encrypted with `ENCRYPTION_MASTER_KEY`. Every instance reads the same pair, so nothing
+   has to be shared between them. Changing `ENCRYPTION_MASTER_KEY` therefore makes the stored key unreadable: the
+   application refuses to start until the previous key is restored.
 
    To use your own keys instead (or keep the ones of an existing installation), set both variables and mount the files:
 
@@ -164,18 +129,18 @@ networks:
 
    2.4 Schedulers Configuration:
 
-    - `SCHEDULER_STRATEGY` : `database` (the API runs the monitoring checks and the other background jobs itself),
-      or `none` when dedicated workers run them (see [Cluster mode](#cluster-mode)).
+    - `SCHEDULER_STRATEGY` (default `database`) : `database` to run the monitoring checks and the other background
+      jobs in the same process, or `none` when dedicated workers run them (see [Cluster mode](#cluster-mode)).
     - `SCHEDULER_WORKER_CONCURRENCY` (default `4`) : checks run in parallel, and at most this many checks start per
       second. Keep it under the datasource pool size.
 
    `QUARKUS_SCHEDULER_STRATEGY=db-lock` from previous versions is still understood as `SCHEDULER_STRATEGY=database`
    and logs a deprecation warning: replace it.
 
-   2.5 Maintenance windows (set the same values on the API and the workers):
+   2.5 Maintenance windows (set the same values on the application and the workers):
 
     - `MAINTENANCE_HORIZON_DAYS` (default `90`) : how far ahead recurring windows are unrolled into occurrences.
-    - `MAINTENANCE_MAX_DURATION_HOURS` (default `24`) : longest window the API accepts.
+    - `MAINTENANCE_MAX_DURATION_HOURS` (default `24`) : longest window the application accepts.
 
 
 3. Start the application with docker-compose
@@ -187,14 +152,23 @@ networks:
 4. Access the application
 
 ```bash
-   http://localhost:8888
+   http://localhost:8080
 ```
+
+> [!NOTE]
+> Behind your own reverse proxy (Traefik, Caddy, Nginx, ...), forward every path to port `8080` of the container:
+> the web interface and the API (`/api/...`) answer on the same origin. Probe exports and log purges can take several
+> minutes on a large history, so allow a read timeout of about 300 seconds.
 
 ### Cluster mode
 
-By default the API runs everything. The cluster mode moves the background jobs (monitoring checks, notifications,
-maintenance windows, purges) to one or more workers. Both modes run the same engine: a job queue stored in
-PostgreSQL, which the workers share without running a check twice. No extra service is required.
+By default the application runs everything. The cluster mode moves the background jobs (monitoring checks,
+notifications, maintenance windows, purges) to one or more workers. Both modes run the same engine: a job queue stored
+in PostgreSQL, which the workers share without running a check twice. No extra service is required.
+
+The cluster uses the same `uptime-kotlin` image as above, with `SCHEDULER_STRATEGY` set to `none`: it then only
+serves the web interface and the API. You can run several instances of it behind a load balancer, since the JWT keys
+are shared through the database.
 
 #### Add Workers
 
@@ -202,6 +176,8 @@ PostgreSQL, which the workers share without running a check twice. No extra serv
 uptime-kotlin-worker:
   image: ghcr.io/theomeunier/uptime-kotlin/worker:latest
   container_name: uptime_kotlin_worker
+  restart: unless-stopped
+  mem_limit: 512m
   environment:
     TZ: Europe/Paris
     SCHEDULER_STRATEGY: database
@@ -214,56 +190,69 @@ uptime-kotlin-worker:
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
     ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
   depends_on:
-    - uptime-kotlin-api
-  networks:
-    - app_network
-
+    - uptime-kotlin
 ```
+
+The worker has no web interface and no API: it only needs to reach PostgreSQL and the services it monitors.
 
 #### Configure the `variable environnement` file
 
 1. Cluster mode
 
-   On the **API**: `SCHEDULER_STRATEGY` set to `none`, so that only the workers run the background jobs.
+   On the **`uptime-kotlin`** service: `SCHEDULER_STRATEGY` set to `none`, so that only the workers run the
+   background jobs.
 
    On each **worker** (these are `SCHEDULER_*` variables, not `QUARKUS_SCHEDULER_*`):
 
-    - `SCHEDULER_STRATEGY`: `database` to run checks from the queue, `none` (default) to stay idle.
+    - `SCHEDULER_STRATEGY`: `database` to run checks from the queue, `none` to stay idle.
     - `SCHEDULER_WORKER_NAME`: name of the worker, unique for each instance. Checks queued under a name that no
       running instance uses any more are picked up by the others after 30 seconds.
     - `SCHEDULER_WORKER_CONCURRENCY` (default `4`): checks run in parallel by this worker. Keep it under the datasource
       pool size.
 
-### ARM64
+### Images and platforms
 
-The API and the worker are also published as native ARM64 images, for any ARM64 host (Raspberry Pi, AWS Graviton,
-Ampere servers, Apple Silicon, ...). Use the `compose.yaml` from [Getting Started](#getting-started) and only swap
-these two images; `nginx` and `postgres` are multi-architecture and run as is.
+| Image                                      | Role                                                 |
+|--------------------------------------------|------------------------------------------------------|
+| `ghcr.io/theomeunier/uptime-kotlin`        | Web interface, API and background jobs (or API only) |
+| `ghcr.io/theomeunier/uptime-kotlin/worker` | Background jobs for the cluster mode                 |
 
-| Component | amd64                                      | arm64                                            |
-|-----------|--------------------------------------------|--------------------------------------------------|
-| API       | `ghcr.io/theomeunier/uptime-kotlin/api`    | `ghcr.io/theomeunier/uptime-kotlin/api-arm64`    |
-| Worker    | `ghcr.io/theomeunier/uptime-kotlin/worker` | `ghcr.io/theomeunier/uptime-kotlin/worker-arm64` |
+Both are native executables published for `linux/amd64` and `linux/arm64` (Raspberry Pi, AWS Graviton, Ampere
+servers, Apple Silicon, ...) under the same name: there is no image to swap on an ARM64 host.
 
 > [!IMPORTANT]
-> The host must run a 64-bit OS: `uname -m` must print `aarch64` (or `arm64`). 32-bit ARM (`armv7l`) is not
+> The host must run a 64-bit OS: `uname -m` must print `x86_64`, `aarch64` or `arm64`. 32-bit ARM (`armv7l`) is not
 > supported, e.g. a Raspberry Pi running a 32-bit OS.
-> The `app` (frontend) image is currently published for amd64 only.
 
 <details>
-<summary>Troubleshooting & building the images yourself</summary>
+<summary>Building the images yourself</summary>
 
-- `exec format error` when a container starts: the image was built for another architecture. Check that the image
-  name ends with `-arm64`.
-- To build the images locally, use an ARM64 machine (Apple Silicon Mac, ARM Linux) with JDK 21 and Docker (at least
-  6 GB of RAM for Docker, native compilation is memory hungry):
+From the root of the repository, with Docker (at least 8 GB of RAM for Docker, native compilation is memory hungry).
+The images are built for the architecture of the machine that builds them:
 
-  ```bash
-  ./scripts/build-arm64.sh          # build the images locally
-  ./scripts/build-arm64.sh --save   # also export them to dist-docker/, to copy them to the target host
-  ```
+```bash
+docker build -f docker/all-in-one/Dockerfile.native -t uptime-kotlin:local .
+docker build -f docker/worker/Dockerfile.native -t uptime-kotlin-worker:local .
+```
+
+`docker compose -f docker/all-in-one/compose.yaml up --build` builds the image and starts it with PostgreSQL on
+`http://localhost:8090`.
 
 </details>
+
+### Migrating from the `app` + `api` + Nginx setup
+
+The `app`, `api` and `api-arm64` images are deprecated: they are still published for a few releases, then they will
+be removed. `worker-arm64` is no longer published, `worker` now covers both architectures.
+
+1. In your `compose.yaml`, replace the `uptime-kotlin-app`, `uptime-kotlin-api` and `nginx` services with the
+   `uptime-kotlin` service from [Getting Started](#getting-started). Keep the environment variables of your former
+   `api` service, including `SCHEDULER_STRATEGY`.
+2. Publish port `8080` of the `uptime-kotlin` container (or point your reverse proxy to it) instead of the Nginx port.
+   The `docker/nginx.conf` file is no longer needed.
+3. On an ARM64 host, replace `worker-arm64` with `worker`.
+4. Run `docker compose up -d`. The database is unchanged and the JWT keys are read from it (or from your key files if
+   you set `MP_JWT_VERIFY_PUBLICKEY_LOCATION` and `SMALLRYE_JWT_SIGN_KEY_LOCATION`), so users stay signed in.
 
 ## Contributing
 

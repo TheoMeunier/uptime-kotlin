@@ -1,11 +1,11 @@
-name: All-in-one docker build and push
+name: Docker images build and push
 
 on:
   push:
     tags:
       - 'v*.*.*'
     branches:
-      - feat/all-in-one-image   # à retirer avant le merge
+      - feat/multi-arch-images  # à retirer avant le merge
   workflow_dispatch:
 
 permissions:
@@ -14,26 +14,32 @@ permissions:
 
 jobs:
   build:
-    name: All-in-one native (${{ matrix.platform }})
+    name: ${{ matrix.image }} native (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
 
     strategy:
       fail-fast: false
       matrix:
+        image: [ uptime-kotlin, worker ]
+        platform: [ linux/amd64, linux/arm64 ]
         include:
+          - image: uptime-kotlin
+            suffix: ''
+            dockerfile: docker/all-in-one/Dockerfile.native
+          - image: worker
+            suffix: /worker
+            dockerfile: docker/worker/Dockerfile.native
           - platform: linux/amd64
             runner: ubuntu-latest
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
 
     steps:
-      - name: Set lowercase image name
-        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
-
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}${{ matrix.suffix }}" >> "$GITHUB_ENV"
           echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v7
@@ -58,12 +64,12 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: docker/all-in-one/Dockerfile.native
+          file: ${{ matrix.dockerfile }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=gha,scope=all-in-one-${{ env.PLATFORM_PAIR }}
-          cache-to: type=gha,mode=max,scope=all-in-one-${{ env.PLATFORM_PAIR }}
+          cache-from: type=gha,scope=${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
 
       - name: Export digest
         run: |
@@ -74,25 +80,36 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v7
         with:
-          name: all-in-one-digests-${{ env.PLATFORM_PAIR }}
+          name: digests-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
           retention-days: 1
 
   merge:
-    name: All-in-one multi-arch manifest
+    name: ${{ matrix.image }} multi-arch manifest
     runs-on: ubuntu-latest
     needs: build
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: uptime-kotlin
+            suffix: ''
+            description: Uptime Kotlin all-in-one image (frontend, API and background jobs)
+          - image: worker
+            suffix: /worker
+            description: Uptime Kotlin worker (background jobs for the cluster mode)
+
     steps:
-      - name: Set lowercase image name
-        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - name: Prepare
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}${{ matrix.suffix }}" >> "$GITHUB_ENV"
 
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
           path: ${{ runner.temp }}/digests
-          pattern: all-in-one-digests-*
+          pattern: digests-${{ matrix.image }}-*
           merge-multiple: true
 
       - name: Login to GitHub Container Registry
@@ -121,7 +138,7 @@ jobs:
         run: |
           docker buildx imagetools create \
             --annotation "index:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
-            --annotation "index:org.opencontainers.image.description=Uptime Kotlin all-in-one image (frontend, API and background jobs)" \
+            --annotation "index:org.opencontainers.image.description=${{ matrix.description }}" \
             --annotation "index:org.opencontainers.image.revision=${{ github.sha }}" \
             $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
             $(printf '${{ env.IMAGE }}@sha256:%s ' *)

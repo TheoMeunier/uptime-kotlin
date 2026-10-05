@@ -23,23 +23,6 @@ jobs:
           registry-token: ${{ secrets.GH_TOKEN }}
           context: ./backend/api
 
-  worker-monitor-build-native:
-    name: worker monitor native build and push docker image
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Worker monitor native build
-        uses: ./.github/actions/backend/build-push-docker-native
-        with:
-          name: worker
-          docker-image: worker
-          dockerfile-path: ./backend/worker/src/main/docker/Dockerfile.native
-          project-path-build: :backend:worker
-          registry-token: ${{ secrets.GH_TOKEN }}
-          context: ./backend/worker
-
   api-build-native-arm64:
     name: api native arm64 build and push docker image
     runs-on: ubuntu-24.04-arm
@@ -57,23 +40,4 @@ jobs:
           project-path-build: :backend:api
           registry-token: ${{ secrets.GH_TOKEN }}
           context: ./backend/api
-          container-build: 'true'
-
-  worker-monitor-build-native-arm64:
-    name: worker monitor native arm64 build and push docker image
-    runs-on: ubuntu-24.04-arm
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Worker monitor native arm64 build
-        uses: ./.github/actions/backend/build-push-docker-native
-        with:
-          name: worker
-          docker-image: worker-arm64
-          artifact-name: backend-worker-native-arm64
-          dockerfile-path: ./backend/worker/src/main/docker/Dockerfile.native
-          project-path-build: :backend:worker
-          registry-token: ${{ secrets.GH_TOKEN }}
-          context: ./backend/worker
           container-build: 'true'

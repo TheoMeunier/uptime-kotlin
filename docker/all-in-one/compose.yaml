@@ -9,6 +9,7 @@ services:
       dockerfile: docker/all-in-one/Dockerfile.native
     image: uptime-kotlin:local
     restart: unless-stopped
+    mem_limit: 512m
     ports:
       - "8090:8080"
     environment:
