@@ -1,9 +1,3 @@
-# syntax=docker/dockerfile:1.7
-#
-# Image worker (tâches de fond du mode cluster), mode natif (Mandrel).
-# Build depuis la racine du dépôt (compter ~8 Go de RAM pour Docker) :
-#   docker build -f docker/worker/Dockerfile.native -t uptime-kotlin-worker:native .
-
 ARG MANDREL_IMAGE=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
 
 FROM ${MANDREL_IMAGE} AS back
