@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-    branches:
-      - feat/multi-arch-images  # à retirer avant le merge
   workflow_dispatch:
 
 permissions:
