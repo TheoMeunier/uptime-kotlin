@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-    branches:
-      - feat/add-native-arm64-images   # à retirer avant le merge
 
 jobs:
   api-build-native:
@@ -25,23 +23,6 @@ jobs:
           registry-token: ${{ secrets.GH_TOKEN }}
           context: ./backend/api
 
-  api-build-jvm:
-    name: api jvm build and push docker image
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: API jvm build
-        uses: ./.github/actions/backend/build-push-docker-jvm
-        with:
-          name: api
-          docker-image: api-jvm
-          dockerfile-path: ./backend/api/src/main/docker/Dockerfile.jvm
-          project-path-build: :backend:api
-          registry-token: ${{ secrets.GH_TOKEN }}
-          context: ./backend/api
-
   worker-monitor-build-native:
     name: worker monitor native build and push docker image
     runs-on: ubuntu-latest
@@ -55,23 +36,6 @@ jobs:
           name: worker
           docker-image: worker
           dockerfile-path: ./backend/worker/src/main/docker/Dockerfile.native
-          project-path-build: :backend:worker
-          registry-token: ${{ secrets.GH_TOKEN }}
-          context: ./backend/worker
-
-  worker-monitor-build-jvm:
-    name: worker monitor jvm build and push docker image
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Worker monitor jvm build
-        uses: ./.github/actions/backend/build-push-docker-jvm
-        with:
-          name: worker
-          docker-image: worker-jvm
-          dockerfile-path: ./backend/worker/src/main/docker/Dockerfile.jvm
           project-path-build: :backend:worker
           registry-token: ${{ secrets.GH_TOKEN }}
           context: ./backend/worker
