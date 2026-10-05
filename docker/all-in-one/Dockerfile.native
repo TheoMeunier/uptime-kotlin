@@ -1,0 +1,42 @@
+# syntax=docker/dockerfile:1.7
+#
+# Image tout-en-un (front + API + tâches de fond), mode natif (Mandrel).
+# Build depuis la racine du dépôt (compter ~8 Go de RAM pour Docker) :
+#   docker build -f docker/all-in-one/Dockerfile.native -t uptime-kotlin:native .
+
+ARG MANDREL_IMAGE=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21
+
+FROM node:25-alpine AS front
+WORKDIR /app
+COPY apps/app/package.json apps/app/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
+COPY apps/app/ ./
+RUN npm run build
+
+FROM ${MANDREL_IMAGE} AS back
+USER root
+WORKDIR /project
+COPY gradlew settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY gradle/ gradle/
+COPY libs/ libs/
+COPY backend/ backend/
+COPY --from=front /app/dist/ backend/api/src/main/resources/META-INF/resources/
+RUN --mount=type=cache,target=/root/.gradle \
+    ./gradlew :backend:api:assemble -x test --no-daemon \
+      -Dquarkus.native.enabled=true \
+      -Dquarkus.package.jar.enabled=false \
+      -Dquarkus.native.container-build=false
+
+FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --from=back --chown=1001:root --chmod=0755 /project/backend/api/build/*-runner /work/application
+
+ENV SCHEDULER_STRATEGY=database
+
+EXPOSE 8080
+USER 1001
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

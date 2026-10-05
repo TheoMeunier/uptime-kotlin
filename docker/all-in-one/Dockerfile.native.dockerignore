@@ -1,0 +1,11 @@
+**/node_modules
+**/build
+**/dist
+**/.gradle
+**/.kotlin
+.git
+.idea
+storage-db
+apps/app/e2e
+apps/app/test-results
+apps/app/playwright-report
