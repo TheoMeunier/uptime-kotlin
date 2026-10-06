@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.databases.dtos.NotificationContent
+import tmenier.fr.notifications.NotificationDateFormatter
 import tmenier.fr.notifications.NotificationHttpClient
 import java.net.InetSocketAddress
 import java.net.http.HttpTimeoutException
@@ -57,10 +58,10 @@ class NotificationHttpTimeoutTest {
         assertTimesOut { DiscordNotificationService(http).sendTest(NotificationContent.Discord(url, null)) }
 
     @Test
-    fun `slack gives up on a receiver that never answers`() = assertTimesOut { SlackNotificationService(http).sendTest(NotificationContent.Slack(url, null)) }
+    fun `slack gives up on a receiver that never answers`() = assertTimesOut { SlackNotificationService(http, NotificationDateFormatter("UTC")).sendTest(NotificationContent.Slack(url, null)) }
 
     @Test
-    fun `teams gives up on a receiver that never answers`() = assertTimesOut { TeamsNotificationService(http).sendTest(NotificationContent.Teams(url, null)) }
+    fun `teams gives up on a receiver that never answers`() = assertTimesOut { TeamsNotificationService(http, NotificationDateFormatter("UTC")).sendTest(NotificationContent.Teams(url, null)) }
 
     @Test
     fun `generic webhook gives up on a receiver that never answers`() =

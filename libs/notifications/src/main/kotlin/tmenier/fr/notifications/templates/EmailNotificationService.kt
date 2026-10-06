@@ -14,6 +14,7 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.NotificationDateFormatter
 import tmenier.fr.notifications.resolvers.OutageWindow
 import java.time.Duration
 
@@ -22,6 +23,7 @@ class EmailNotificationService(
     private val vertx: Vertx,
     private val logger: Logger,
     private val encryptionService: EncryptionService,
+    private val dates: NotificationDateFormatter,
 ) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Mail> {
     override fun sendSuccess(
         content: NotificationContent.Mail,
@@ -42,7 +44,7 @@ class EmailNotificationService(
                         "Status: SUCCESS",
                         downtime?.let { "Downtime: ${it.toHumanReadable()}" },
                         "Response Time: ${result.responseTime}ms",
-                        "Timestamp: ${result.runAt}",
+                        "Timestamp: ${dates.format(result.runAt)}",
                     ).joinToString("\n"),
                 )
 
@@ -71,7 +73,7 @@ class EmailNotificationService(
                     Monitor: ${probe.name}
                     Status: FAILURE
                     Error: ${result.message}
-                    Timestamp: ${result.runAt}
+                    Timestamp: ${dates.format(result.runAt)}
                     """.trimIndent(),
                 )
 
@@ -101,7 +103,7 @@ class EmailNotificationService(
                     Monitor: ${probe.name}
                     Status: FAILURE (still down, reminder #$reminderIndex)
                     Error: ${result.message}
-                    Timestamp: ${result.runAt}
+                    Timestamp: ${dates.format(result.runAt)}
                     """.trimIndent(),
                 )
 
