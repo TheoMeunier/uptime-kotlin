@@ -26,14 +26,14 @@ class ProbeProtocolRedis(
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = responseTime,
                 message = "Redis command successful in ${responseTime}ms",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (error: Exception) {
             ProbeResult(
                 status = failureStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "Redis command failed: ${error.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

@@ -26,14 +26,14 @@ class ProbeProtocolKafka(
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = responseTime,
                 message = "Kafka message produced successfully in ${responseTime}ms",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (error: Exception) {
             ProbeResult(
                 status = failureStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "Kafka producer failed: ${error.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.StoreProbeDto
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 class ProbeMapperTest {
@@ -59,8 +59,8 @@ class ProbeMapperTest {
                             ),
                     ),
                 ).apply {
-                    createdAt = LocalDateTime.now()
-                    updatedAt = LocalDateTime.now()
+                    createdAt = Instant.now()
+                    updatedAt = Instant.now()
                 }
 
         val content =
@@ -95,8 +95,8 @@ class ProbeMapperTest {
                             ),
                     ),
                 ).apply {
-                    createdAt = LocalDateTime.now()
-                    updatedAt = LocalDateTime.now()
+                    createdAt = Instant.now()
+                    updatedAt = Instant.now()
                 }
 
         val content =

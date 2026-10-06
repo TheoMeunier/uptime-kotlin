@@ -16,7 +16,7 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.ServerSocket
 import java.nio.charset.StandardCharsets
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -130,7 +130,7 @@ class ProbeProtocolSmtpTest {
             lastRun = null,
             status = ProbeMonitorLogStatus.SUCCESS,
             content = content(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
+            createdAt = Instant.now(),
+            updatedAt = Instant.now(),
         )
 }

@@ -21,7 +21,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 class ResolveMonitorContentServiceTest {
@@ -105,8 +105,8 @@ class ResolveMonitorContentServiceTest {
                         host = "localhost:5432/application",
                         query = "SELECT 1",
                     ),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now(),
+                createdAt = Instant.now(),
+                updatedAt = Instant.now(),
             )
 
         val content =
@@ -178,8 +178,8 @@ class ResolveMonitorContentServiceTest {
                         host = "old-host:5432/application",
                         query = "SELECT 1",
                     ),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now(),
+                createdAt = Instant.now(),
+                updatedAt = Instant.now(),
             )
 
         val content =
@@ -289,8 +289,8 @@ class ResolveMonitorContentServiceTest {
                         username = "monitor",
                         password = encrypted,
                     ),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now(),
+                createdAt = Instant.now(),
+                updatedAt = Instant.now(),
             )
 
         val content =

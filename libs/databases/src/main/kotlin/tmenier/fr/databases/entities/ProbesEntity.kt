@@ -20,7 +20,6 @@ import org.hibernate.type.SqlTypes
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
@@ -76,7 +75,7 @@ class ProbesEntity : PanacheEntityBase {
     var description: String? = null
 
     @Column(name = "last_run")
-    var lastRun: LocalDateTime? = null
+    var lastRun: Instant? = null
 
     @Column(name = "tls_expires_at")
     var tlsExpiresAt: Instant? = null
@@ -93,7 +92,7 @@ class ProbesEntity : PanacheEntityBase {
     var regionsOrder: JsonNode = JsonNodeFactory.instance.arrayNode()
 
     @Column(name = "next_check_at")
-    var nextCheckAt: LocalDateTime? = null
+    var nextCheckAt: Instant? = null
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinTable(
@@ -105,11 +104,11 @@ class ProbesEntity : PanacheEntityBase {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    lateinit var createdAt: LocalDateTime
+    lateinit var createdAt: Instant
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    lateinit var updatedAt: LocalDateTime
+    lateinit var updatedAt: Instant
 
     @OneToMany(mappedBy = "probe", cascade = [CascadeType.REMOVE])
     var probesMonitorLogs: MutableList<ProbesMonitorsLogEntity> = mutableListOf()

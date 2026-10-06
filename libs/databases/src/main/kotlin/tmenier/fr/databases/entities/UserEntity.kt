@@ -8,7 +8,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @Entity
@@ -29,7 +29,7 @@ class UserEntity : PanacheEntityBase {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    lateinit var createdAt: LocalDateTime
+    lateinit var createdAt: Instant
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
     var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()

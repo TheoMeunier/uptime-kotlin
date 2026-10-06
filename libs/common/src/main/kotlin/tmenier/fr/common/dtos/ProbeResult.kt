@@ -3,14 +3,13 @@ package tmenier.fr.common.dtos
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import java.time.Instant
-import java.time.LocalDateTime
 
 @RegisterForReflection
 data class ProbeResult(
     val status: ProbeMonitorLogStatus,
     val responseTime: Long,
     val message: String,
-    val runAt: LocalDateTime,
+    val runAt: Instant,
     val statusCode: Int? = null,
     val responseBody: String? = null,
     val tlsExpiresAt: Instant? = null,

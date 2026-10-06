@@ -2,17 +2,17 @@ package tmenier.fr.databases.mappers
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.databases.entities.RefreshTokenEntity
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @RegisterForReflection
 data class RefreshTokenDto(
     val id: UUID,
     val token: UUID,
-    val expiredAt: LocalDateTime,
+    val expiredAt: Instant,
     val user: UserDto,
-    val createdAt: LocalDateTime,
-    val lastUsedAt: LocalDateTime? = null,
+    val createdAt: Instant,
+    val lastUsedAt: Instant? = null,
     val userAgent: String? = null,
     val ipAddress: String? = null,
 )

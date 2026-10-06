@@ -17,13 +17,10 @@ import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import tmenier.fr.databases.repositories.InstanceSettingsRepository
 import tmenier.fr.schedulers.jobs.ProbeLogRetentionService
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
-/**
- * Runs against the API-only profile: no background job competes with the purge
- * triggered here by hand.
- */
 @QuarkusTest
 @TestProfile(ApiOnlyProfile::class)
 class ProbeLogRetentionTest {
@@ -33,7 +30,7 @@ class ProbeLogRetentionTest {
     @Inject
     lateinit var retention: ProbeLogRetentionService
 
-    private val now = LocalDateTime.now()
+    private val now = Instant.now()
     private val ages = listOf(1L, 29L, 45L, 100L, 400L)
     private val probes = mutableListOf<UUID>()
 
@@ -117,7 +114,7 @@ class RetentionFixtures(
     fun probeWithLogs(
         override: Int?,
         ageInDays: List<Long>,
-        now: LocalDateTime,
+        now: Instant,
     ): UUID {
         val probe =
             ProbesEntity().apply {
@@ -141,7 +138,7 @@ class RetentionFixtures(
                     status = ProbeMonitorLogStatus.SUCCESS
                     message = "it"
                     this.probe = probe
-                    runAt = now.minusDays(days)
+                    runAt = now.minus(days, ChronoUnit.DAYS)
                 },
             )
         }

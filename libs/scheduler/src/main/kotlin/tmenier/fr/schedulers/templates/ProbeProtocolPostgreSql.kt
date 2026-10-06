@@ -26,14 +26,14 @@ class ProbeProtocolPostgreSql(
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = responseTime,
                 message = "PostgreSQL connection successful in ${responseTime}ms",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (error: Exception) {
             ProbeResult(
                 status = failureStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "PostgreSQL connection failed: ${error.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

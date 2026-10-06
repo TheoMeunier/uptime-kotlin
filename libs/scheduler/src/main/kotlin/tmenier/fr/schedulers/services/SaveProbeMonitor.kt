@@ -3,7 +3,6 @@ package tmenier.fr.schedulers.services
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
-import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
 import tmenier.fr.databases.mappers.ProbeMapper
@@ -12,7 +11,7 @@ import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.notifications.resolvers.OutageWindow
 import tmenier.fr.notifications.services.NotificationService
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @ApplicationScoped
@@ -25,7 +24,7 @@ class SaveProbeMonitor(
     @Transactional
     fun saveProbeMonitorLog(
         probeId: UUID,
-        runAt: LocalDateTime,
+        runAt: Instant,
         result: ProbeResult,
         checkTaskId: UUID = UUID.randomUUID(),
     ): Boolean {
@@ -34,17 +33,16 @@ class SaveProbeMonitor(
         val probe = probeRepository.findByIdForUpdate(probeId)
         if (!probe.enabled) return false
 
-        val at = MonitoringClock.toInstant(runAt)
         val underMaintenance =
             maintenanceOccurrenceRepository.isProbeUnderMaintenance(
                 probeId = probe.id,
-                at = at,
+                at = runAt,
             )
 
         val alertedStatus = probe.alertedStatus
         val outageStart = probe.failingSince
         probe.status = result.status
-        probe.failingSince = OutageWindow.startAfter(outageStart, result.status, at)
+        probe.failingSince = OutageWindow.startAfter(outageStart, result.status, runAt)
         probe.lastRun = runAt
 
         result.tlsCheckedAt?.let { probe.tlsCheckedAt = it }
@@ -74,7 +72,7 @@ class SaveProbeMonitor(
             probe = probe,
             checkTaskId = checkTaskId,
             result = result,
-            at = at,
+            at = runAt,
             outageStart = outageStart,
         )
 

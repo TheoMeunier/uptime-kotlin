@@ -19,7 +19,8 @@ import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Path("/api/probes/{probeId}")
@@ -48,7 +49,8 @@ class ShowProbeResource(
             throw BadRequestException("hours must be one of: 1, 3, 6, 24, 168")
         }
 
-        val from = LocalDateTime.now().minusHours(hours)
+        val now = MonitoringClock.now()
+        val from = now.minus(hours, ChronoUnit.HOURS)
         val monitors =
             probeMonitorRepository.findByProbeAfter(
                 probeId = probeId,
@@ -56,7 +58,6 @@ class ShowProbeResource(
             )
         val uptimes = computeUptimes(probeId)
 
-        val now = MonitoringClock.now()
         val maintenance =
             maintenanceOccurrenceRepository
                 .findMaintenanceStateByProbe(
@@ -66,7 +67,7 @@ class ShowProbeResource(
         val maintenancePeriods =
             maintenanceOccurrenceRepository.findByProbeBetween(
                 probeId = probeId,
-                from = MonitoringClock.toInstant(from),
+                from = from,
                 to = now,
             )
 
@@ -83,18 +84,18 @@ class ShowProbeResource(
     }
 
     private fun computeUptimes(probeId: UUID): ProbeUptimeDTO {
-        val now = LocalDateTime.now()
+        val now = MonitoringClock.now()
         return ProbeUptimeDTO(
-            h24 = computeUptime(probeId, now.minusHours(24), now),
-            d7 = computeUptime(probeId, now.minusDays(7), now),
-            d30 = computeUptime(probeId, now.minusDays(30), now),
+            h24 = computeUptime(probeId, now.minus(24, ChronoUnit.HOURS), now),
+            d7 = computeUptime(probeId, now.minus(7, ChronoUnit.DAYS), now),
+            d30 = computeUptime(probeId, now.minus(30, ChronoUnit.DAYS), now),
         )
     }
 
     private fun computeUptime(
         probeId: UUID,
-        from: LocalDateTime,
-        to: LocalDateTime,
+        from: Instant,
+        to: Instant,
     ): Double {
         val total = probeMonitorRepository.countByProbeAndPeriod(probeId, from, to)
         val success = probeMonitorRepository.countSuccessByProbeAndPeriod(probeId, from, to)

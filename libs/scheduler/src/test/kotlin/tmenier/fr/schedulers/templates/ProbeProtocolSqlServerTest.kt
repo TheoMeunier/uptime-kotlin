@@ -10,7 +10,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.schedulers.services.JdbcSqlServerHealthCheck
 import tmenier.fr.schedulers.services.SqlServerHealthCheck
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 class ProbeProtocolSqlServerTest {
@@ -114,7 +114,7 @@ class ProbeProtocolSqlServerTest {
             lastRun = null,
             status = ProbeMonitorLogStatus.SUCCESS,
             content = content(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
+            createdAt = Instant.now(),
+            updatedAt = Instant.now(),
         )
 }

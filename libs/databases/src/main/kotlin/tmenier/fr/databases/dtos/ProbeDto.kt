@@ -5,7 +5,6 @@ import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 
 @RegisterForReflection
@@ -32,7 +31,7 @@ data class ProbeStatusDTO(
     val probe: ProbeListDTO,
     val monitors: List<ProbeMonitorDTO>,
     val uptimes: ProbeUptimeDTO? = null,
-    val downSince: LocalDateTime? = null,
+    val downSince: Instant? = null,
     val downDuration: String? = null,
     val maintenance: ProbeMaintenanceDto? = null,
     val nextMaintenance: ProbeMaintenanceDto? = null,
@@ -43,7 +42,7 @@ data class ProbeStatusDTO(
 data class ProbeStatusMetrics(
     val probeId: UUID,
     val uptimes: ProbeUptimeDTO,
-    val lastSuccessAt: LocalDateTime?,
+    val lastSuccessAt: Instant?,
     val maintenance: ProbeMaintenanceState? = null,
     val maintenanceSeconds: Long = 0L,
 )
@@ -71,7 +70,7 @@ data class ProbeDTO(
     val enabled: Boolean,
     val protocol: ProbeProtocol,
     val description: String?,
-    val lastRun: LocalDateTime?,
+    val lastRun: Instant?,
     val status: ProbeMonitorLogStatus,
     val alertRepeatSeconds: Int = 0,
     val logRetentionDays: Int? = null,
@@ -80,8 +79,8 @@ data class ProbeDTO(
     val url: String? = null,
     val tlsExpiresAt: Instant? = null,
     val tlsCheckedAt: Instant? = null,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
+    val createdAt: Instant,
+    val updatedAt: Instant,
 )
 
 @RegisterForReflection
@@ -103,7 +102,7 @@ data class StoreProbeDto(
 data class UpdateLastRunDto(
     val id: UUID,
     val status: ProbeMonitorLogStatus?,
-    val lastRun: LocalDateTime,
+    val lastRun: Instant,
 )
 
 @RegisterForReflection
@@ -124,7 +123,7 @@ data class ProbeUptimeDTO(
 data class ProbesStatusFingerprint(
     val enabledProbes: Long,
     val failingProbes: Long,
-    val lastProbeUpdateAt: LocalDateTime?,
+    val lastProbeUpdateAt: Instant?,
     val logsInWindow: Long,
-    val lastLogAt: LocalDateTime?,
+    val lastLogAt: Instant?,
 )

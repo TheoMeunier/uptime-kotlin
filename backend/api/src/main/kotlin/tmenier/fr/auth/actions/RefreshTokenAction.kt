@@ -7,7 +7,7 @@ import tmenier.fr.auth.services.JwtService
 import tmenier.fr.auth.services.SessionContextService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.databases.repositories.RefreshTokenRepository
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @ApplicationScoped
@@ -23,7 +23,7 @@ class RefreshTokenAction(
 
         val rt = refreshTokenRepository.findByRefreshToken(submittedToken)
 
-        if (rt.expiredAt.isBefore(LocalDateTime.now())) {
+        if (rt.expiredAt.isBefore(Instant.now())) {
             refreshTokenRepository.revokeByRefreshToken(rt.token)
             throw InvalidCredentialsException()
         }

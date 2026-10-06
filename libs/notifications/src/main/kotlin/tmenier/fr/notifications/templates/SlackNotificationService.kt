@@ -13,13 +13,14 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @ApplicationScoped
 class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Slack> {
     private val client = HttpClient.newHttpClient()
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)
 
     override fun sendSuccess(
         content: NotificationContent.Slack,
@@ -78,7 +79,7 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
                 "Test notification",
                 "Test notification",
                 "#0078D4",
-                LocalDateTime.now(),
+                Instant.now(),
                 ProbeMonitorLogStatus.SUCCESS,
             ),
         )
@@ -90,12 +91,12 @@ class SlackNotificationService : tmenier.fr.notifications.TypedNotificationInter
         title: String,
         message: String,
         color: String,
-        runAt: LocalDateTime,
+        runAt: Instant,
         status: ProbeMonitorLogStatus,
     ): String {
         val escapedTitle = escapeJson(title)
         val escapedMessage = escapeJson(message)
-        val formattedDate = runAt.format(dateFormatter)
+        val formattedDate = dateFormatter.format(runAt)
 
         // Déterminer l'emoji selon le statut
         val emoji =

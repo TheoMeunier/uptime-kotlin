@@ -14,9 +14,7 @@ import tmenier.fr.databases.dtos.SparklinePoint
 import java.sql.Timestamp
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
@@ -47,8 +45,7 @@ class DashboardRepository(
     }
 
     fun get24hResponseMetrics(): ResponseMetrics24h {
-        val since: LocalDateTime =
-            LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+        val since = Instant.now().minus(24, ChronoUnit.HOURS)
 
         val jpql =
             """
@@ -86,13 +83,13 @@ class DashboardRepository(
 
         val results = em.createQuery(jpql, Tuple::class.java).resultList
 
-        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val now = Instant.now()
 
         return results.map { row ->
             val id = (row[0] as UUID)
             val name = row[1] as String
-            val lastSuccess = row[2] as LocalDateTime?
-            val createdAt = row[3] as LocalDateTime
+            val lastSuccess = row[2] as Instant?
+            val createdAt = row[3] as Instant
             val failingSince = row[4] as Instant?
 
             val duration =
@@ -108,7 +105,7 @@ class DashboardRepository(
     }
 
     fun getLatencySparkline(): List<SparklinePoint> {
-        val since = LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+        val since = Instant.now().minus(24, ChronoUnit.HOURS)
 
         val jpql =
             """
@@ -130,14 +127,14 @@ class DashboardRepository(
 
         return results.map { row ->
             SparklinePoint(
-                bucket = row[0] as LocalDateTime,
+                bucket = toInstant(row[0], "bucket"),
                 value = (row[1] as Number).toDouble(),
             )
         }
     }
 
     fun getIncidentBars(): List<IncidentBar> {
-        val since = LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+        val since = Instant.now().minus(24, ChronoUnit.HOURS)
 
         val jpql =
             """
@@ -160,7 +157,7 @@ class DashboardRepository(
 
         return results.map { row ->
             IncidentBar(
-                hour = row[0] as LocalDateTime,
+                hour = toInstant(row[0], "hour"),
                 upCount = (row[1] as Number).toLong(),
                 downCount = (row[2] as Number).toLong(),
             )
@@ -168,7 +165,7 @@ class DashboardRepository(
     }
 
     fun getChecksSparkline(): List<SparklinePoint> {
-        val since = LocalDateTime.now(ZoneOffset.UTC).minus(24, ChronoUnit.HOURS)
+        val since = Instant.now().minus(24, ChronoUnit.HOURS)
 
         val jpql =
             """
@@ -190,14 +187,14 @@ class DashboardRepository(
 
         return results.map { row ->
             SparklinePoint(
-                bucket = row[0] as LocalDateTime,
+                bucket = toInstant(row[0], "bucket"),
                 value = (row[1] as Number).toDouble(),
             )
         }
     }
 
     fun getRecentEvents(limit: Int = 15): List<ProbeEventDto> {
-        val since = LocalDateTime.now(ZoneOffset.UTC).minus(7, ChronoUnit.DAYS)
+        val since = Instant.now().minus(7, ChronoUnit.DAYS)
 
         val sql =
             """
@@ -235,17 +232,19 @@ class DashboardRepository(
                 probeName = row.get("probe_name") as String,
                 status = statuses.getOrNull(ordinal)?.name ?: ProbeMonitorLogStatus.FAILURE.name,
                 message = row.get("message") as? String ?: "",
-                runAt = row.readTimestamp("run_at"),
+                runAt = toInstant(row.get("run_at"), "run_at"),
             )
         }
     }
 
-    private fun Tuple.readTimestamp(column: String): LocalDateTime =
-        when (val value = this.get(column)) {
-            is LocalDateTime -> value
-            is Timestamp -> value.toLocalDateTime()
-            is OffsetDateTime -> value.toLocalDateTime()
-            is Instant -> LocalDateTime.ofInstant(value, ZoneOffset.UTC)
+    private fun toInstant(
+        value: Any?,
+        column: String,
+    ): Instant =
+        when (value) {
+            is Instant -> value
+            is OffsetDateTime -> value.toInstant()
+            is Timestamp -> value.toInstant()
             else -> error("Unsupported timestamp type for column '$column': ${value?.javaClass?.name}")
         }
 }

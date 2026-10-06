@@ -8,7 +8,7 @@ import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
-import java.time.LocalDateTime
+import java.time.Instant
 
 @ApplicationScoped
 class ProbeWorkerService(
@@ -51,7 +51,7 @@ class ProbeWorkerService(
             taskId = task.id,
             workerId = workerId,
             result = result,
-            completedAt = LocalDateTime.now(),
+            completedAt = Instant.now(),
         )
     }
 }

@@ -12,8 +12,7 @@ import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.databases.repositories.WorkerHeartbeatRepository
 import tmenier.fr.schedulers.services.ProbeAttemptPolicy
 import tmenier.fr.schedulers.services.SaveProbeMonitor
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.Instant
 import java.util.UUID
 
 @ApplicationScoped
@@ -28,7 +27,7 @@ class ProbeAttemptRecorder(
         taskId: UUID,
         workerId: String,
         result: ProbeResult,
-        completedAt: LocalDateTime,
+        completedAt: Instant,
     ) {
         val task =
             probeCheckTaskRepository.findByIdForUpdate(taskId)
@@ -103,12 +102,8 @@ class ProbeAttemptRecorder(
                         region = nextRegion,
                         attemptNumber = task.attemptNumber + 1,
                         scheduleAt = completedAt.plusSeconds(probe.intervalRetry.toLong()),
-                        availableAt =
-                            completedAt
-                                .plusSeconds(probe.intervalRetry.toLong())
-                                .atZone(ZoneId.systemDefault())
-                                .toInstant(),
-                        previousFailedAt = completedAt.atZone(ZoneId.systemDefault()).toInstant(),
+                        availableAt = completedAt.plusSeconds(probe.intervalRetry.toLong()),
+                        previousFailedAt = completedAt,
                     ),
                 )
             logger.info {

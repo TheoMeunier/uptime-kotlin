@@ -16,8 +16,6 @@ import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeCheckTaskMapper
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.UUID
 import kotlin.math.max
 
@@ -28,7 +26,7 @@ class ProbeCheckTaskRepository(
     @Transactional
     fun ensureScheduledProbeChecks(
         defaultRegion: String,
-        now: LocalDateTime = LocalDateTime.now(),
+        now: Instant = Instant.now(),
         limit: Int = 50,
     ): Int {
         val probes = lockProbesWithoutActiveTask(limit)
@@ -45,7 +43,7 @@ class ProbeCheckTaskRepository(
                     region = configuredRegion ?: defaultRegion,
                     attemptNumber = 1,
                     scheduleAt = scheduledAt,
-                    availableAt = scheduledAt.atZone(ZoneId.systemDefault()).toInstant(),
+                    availableAt = scheduledAt,
                 ),
             )
             enqueued++
@@ -221,7 +219,7 @@ class ProbeCheckTaskRepository(
     @Transactional
     fun requestImmediateCheck(
         probeId: UUID,
-        now: LocalDateTime = LocalDateTime.now(),
+        now: Instant = Instant.now(),
     ): ImmediateCheckOutcome {
         val probe =
             em.find(ProbesEntity::class.java, probeId, LockModeType.PESSIMISTIC_WRITE)
@@ -238,7 +236,7 @@ class ProbeCheckTaskRepository(
 
         when (decision) {
             ImmediateCheckDecision.PULL_JOB_FORWARD ->
-                activeJob!!.availableAt = now.atZone(ZoneId.systemDefault()).toInstant()
+                activeJob!!.availableAt = now
 
             ImmediateCheckDecision.PULL_PROBE_SCHEDULE_FORWARD ->
                 probe.nextCheckAt = now
@@ -293,8 +291,8 @@ class ProbeCheckTaskRepository(
 
     private fun nextUnprocessedSchedule(
         probe: ProbesEntity,
-        fallback: LocalDateTime,
-    ): LocalDateTime {
+        fallback: Instant,
+    ): Instant {
         val intervalSeconds = max(1, probe.interval).toLong()
         val lastRun = probe.lastRun ?: return probe.nextCheckAt ?: fallback
         var scheduledAt = probe.nextCheckAt ?: fallback
@@ -308,8 +306,8 @@ class ProbeCheckTaskRepository(
 
     private fun advanceAbsoluteSchedule(
         probe: ProbesEntity,
-        scheduledAt: LocalDateTime,
-        now: LocalDateTime,
+        scheduledAt: Instant,
+        now: Instant,
     ) {
         val intervalSeconds = max(1, probe.interval).toLong()
         var next = scheduledAt.plusSeconds(intervalSeconds)

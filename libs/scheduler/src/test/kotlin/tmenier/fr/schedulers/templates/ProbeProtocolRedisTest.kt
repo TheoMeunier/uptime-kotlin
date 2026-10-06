@@ -10,7 +10,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.schedulers.services.RedisHealthCheck
 import tmenier.fr.schedulers.services.SocketRedisHealthCheck
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 class ProbeProtocolRedisTest {
@@ -124,7 +124,7 @@ class ProbeProtocolRedisTest {
             lastRun = null,
             status = ProbeMonitorLogStatus.SUCCESS,
             content = content(),
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
+            createdAt = Instant.now(),
+            updatedAt = Instant.now(),
         )
 }

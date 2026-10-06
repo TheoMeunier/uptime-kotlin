@@ -30,5 +30,5 @@ data class LogRetentionPreviewDto(
     val retentionDays: Int?,
     val logsToDelete: Long,
     val totalLogs: Long,
-    val oldestLogAt: java.time.LocalDateTime?,
+    val oldestLogAt: java.time.Instant?,
 )

@@ -31,7 +31,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
                     status = ProbeMonitorLogStatus.SUCCESS,
                     responseTime = getResponseTime(start),
                     message = "TCP connection successful in ${getResponseTime(start)}ms",
-                    runAt = getRunAt(start),
+                    runAt = start,
                 )
             }
         } catch (e: Exception) {
@@ -39,7 +39,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
                 status = getStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "TCP connection failed: ${e.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

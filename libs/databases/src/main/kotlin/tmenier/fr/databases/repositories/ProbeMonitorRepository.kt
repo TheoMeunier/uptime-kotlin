@@ -6,7 +6,7 @@ import jakarta.persistence.EntityManager
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @ApplicationScoped
@@ -16,14 +16,14 @@ class ProbeMonitorRepository(
 ) : PanacheRepositoryBase<ProbesMonitorsLogEntity, UUID> {
     fun countByProbeAndPeriod(
         probeId: UUID,
-        from: LocalDateTime,
-        to: LocalDateTime,
+        from: Instant,
+        to: Instant,
     ): Long = count("probe.id = ?1 AND runAt >= ?2 AND runAt <= ?3 AND underMaintenance = false", probeId, from, to)
 
     fun countSuccessByProbeAndPeriod(
         probeId: UUID,
-        from: LocalDateTime,
-        to: LocalDateTime,
+        from: Instant,
+        to: Instant,
     ): Long =
         count(
             "probe.id = ?1 AND status = ?2 AND runAt >= ?3 AND runAt <= ?4 AND underMaintenance = false",
@@ -35,7 +35,7 @@ class ProbeMonitorRepository(
 
     fun findByProbeAfter(
         probeId: UUID,
-        after: LocalDateTime,
+        after: Instant,
         limit: Int = MAX_POINTS,
     ): List<ProbesMonitorsLogEntity> =
         find(
@@ -72,7 +72,7 @@ class ProbeMonitorRepository(
     fun existsByCheckTaskId(checkTaskId: UUID): Boolean = count("checkTaskId = ?1", checkTaskId) > 0
 
     fun deleteExpiredBatch(
-        now: LocalDateTime,
+        now: Instant,
         batchSize: Int,
     ): Int =
         em
@@ -86,8 +86,8 @@ class ProbeMonitorRepository(
                     CROSS JOIN instance_settings s
                     WHERE s.id = 1
                       AND COALESCE(p.log_retention_days, s.log_retention_days, 0) > 0
-                      AND l.run_at < CAST(:now AS timestamp)
-                          - make_interval(days => COALESCE(p.log_retention_days, s.log_retention_days))
+                      AND l.run_at < CAST(:now AS timestamptz)
+                          - make_interval(secs => COALESCE(p.log_retention_days, s.log_retention_days) * 86400)
                     LIMIT :batch
                 )
                 """.trimIndent(),
@@ -97,28 +97,28 @@ class ProbeMonitorRepository(
 
     fun countOlderThanForProbe(
         probeId: UUID,
-        cutoff: LocalDateTime,
+        cutoff: Instant,
     ): Long = count("probe.id = ?1 AND runAt < ?2", probeId, cutoff)
 
-    fun countOlderThanForInheritingProbes(cutoff: LocalDateTime): Long = count("probe.logRetentionDays IS NULL AND runAt < ?1", cutoff)
+    fun countOlderThanForInheritingProbes(cutoff: Instant): Long = count("probe.logRetentionDays IS NULL AND runAt < ?1", cutoff)
 
     fun countForProbe(probeId: UUID): Long = count("probe.id = ?1", probeId)
 
     fun countForInheritingProbes(): Long = count("probe.logRetentionDays IS NULL")
 
-    fun oldestRunAtForProbe(probeId: UUID): LocalDateTime? =
+    fun oldestRunAtForProbe(probeId: UUID): Instant? =
         em
             .createQuery(
                 "SELECT MIN(l.runAt) FROM ProbesMonitorsLogEntity l WHERE l.probe.id = :probeId",
-                LocalDateTime::class.java,
+                Instant::class.java,
             ).setParameter("probeId", probeId)
             .singleResult
 
-    fun oldestRunAtForInheritingProbes(): LocalDateTime? =
+    fun oldestRunAtForInheritingProbes(): Instant? =
         em
             .createQuery(
                 "SELECT MIN(l.runAt) FROM ProbesMonitorsLogEntity l WHERE l.probe.logRetentionDays IS NULL",
-                LocalDateTime::class.java,
+                Instant::class.java,
             ).singleResult
 
     companion object {

@@ -14,7 +14,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
 
 @ApplicationScoped
 class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Webhook> {
@@ -71,7 +71,7 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
             buildPayload(
                 "Test",
                 "Test notification",
-                LocalDateTime.now(),
+                Instant.now(),
                 ProbeMonitorLogStatus.SUCCESS,
                 NotificationEvent.NONE,
             ),
@@ -83,7 +83,7 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
     private fun buildPayload(
         name: String,
         message: String,
-        runAt: LocalDateTime,
+        runAt: Instant,
         status: ProbeMonitorLogStatus,
         event: NotificationEvent,
         reminderIndex: Int = 0,

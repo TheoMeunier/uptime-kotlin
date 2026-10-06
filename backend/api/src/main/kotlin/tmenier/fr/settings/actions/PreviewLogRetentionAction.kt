@@ -5,7 +5,8 @@ import tmenier.fr.databases.dtos.LogRetention
 import tmenier.fr.databases.dtos.LogRetentionPreviewDto
 import tmenier.fr.databases.repositories.InstanceSettingsRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @ApplicationScoped
@@ -44,5 +45,5 @@ class PreviewLogRetentionAction(
         )
     }
 
-    private fun cutoff(days: Int): LocalDateTime = LocalDateTime.now().minusDays(days.toLong())
+    private fun cutoff(days: Int): Instant = Instant.now().minus(days.toLong(), ChronoUnit.DAYS)
 }

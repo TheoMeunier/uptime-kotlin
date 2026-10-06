@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
-import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
@@ -23,7 +22,7 @@ import tmenier.fr.databases.entities.MaintenanceOccurrenceEntity
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
 
 object ProbeContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
@@ -300,7 +299,7 @@ object ProbeMapper {
 
         val downSince =
             if (entity.status == ProbeMonitorLogStatus.FAILURE) {
-                entity.failingSince?.let(MonitoringClock::toLocal)
+                entity.failingSince
                     ?: metrics?.lastSuccessAt
                     ?: entity.createdAt
             } else {
@@ -310,7 +309,7 @@ object ProbeMapper {
         return ProbeStatusDTO(
             uptimes = metrics?.uptimes,
             downSince = downSince,
-            downDuration = downSince?.let { Duration.between(it, LocalDateTime.now()).toHumanReadable() },
+            downDuration = downSince?.let { Duration.between(it, Instant.now()).toHumanReadable() },
             maintenance = metrics?.maintenance?.current,
             nextMaintenance = metrics?.maintenance?.next,
             maintenanceDuration =

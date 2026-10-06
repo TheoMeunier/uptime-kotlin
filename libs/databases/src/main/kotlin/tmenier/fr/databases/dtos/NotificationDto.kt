@@ -2,7 +2,7 @@ package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @RegisterForReflection
@@ -28,5 +28,5 @@ data class ShowNotificationsDto(
     val notificationType: NotificationChannelsEnum,
     val isDefault: Boolean,
     val content: NotificationContent,
-    val createdAt: LocalDateTime,
+    val createdAt: Instant,
 )

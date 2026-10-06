@@ -14,7 +14,6 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.ProbeDTO
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 
 class TlsCertificateInspectorTest {
@@ -132,7 +131,7 @@ class TlsCertificateInspectorTest {
             status = ProbeMonitorLogStatus.SUCCESS,
             content = content(),
             tlsCheckedAt = tlsCheckedAt,
-            createdAt = LocalDateTime.now(),
-            updatedAt = LocalDateTime.now(),
+            createdAt = Instant.now(),
+            updatedAt = Instant.now(),
         )
 }
