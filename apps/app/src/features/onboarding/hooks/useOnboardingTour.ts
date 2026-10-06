@@ -16,20 +16,10 @@ function writeLocal(email: string) {
 	try {
 		localStorage.setItem(STORAGE_PREFIX + email, 'true');
 	} catch {
-		// Stockage indisponible (navigation privée…) : le serveur reste la source de vérité.
+		// Storage is probably full, ignore.
 	}
 }
 
-/**
- * Visite guidée de première connexion.
- *
- * Le fait d'avoir terminé (ou passé) la visite est retenu à deux endroits :
- * - dans le navigateur, pour ne pas dépendre d'un aller-retour réseau ;
- * - côté serveur, par utilisateur, pour ne pas la revoir sur un autre appareil.
- *
- * La visite ne démarre d'elle-même que si **aucun** des deux ne la marque comme vue.
- * Si un seul des deux le sait, l'autre est resynchronisé.
- */
 export default function useOnboardingTour(email: string) {
 	const queryClient = useQueryClient();
 	const queryKey = ['onboarding', email];
