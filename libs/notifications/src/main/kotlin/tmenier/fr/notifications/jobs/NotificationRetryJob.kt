@@ -10,7 +10,6 @@ import tmenier.fr.databases.repositories.NotificationTaskRepository
 import tmenier.fr.notifications.NotificationDispatcher
 import java.net.InetAddress
 import java.time.Duration
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -22,16 +21,19 @@ class NotificationRetryJob(
 ) {
     private val workerId = "notification-${InetAddress.getLocalHost().hostName}"
     private val leaseDuration = Duration.ofMinutes(2)
+
+    private val maxDeliveryDuration = Duration.ofSeconds(60)
     private val concurrency = 4
     private val activeDeliveries = AtomicInteger()
-    private val activeDeliveryIds = ConcurrentHashMap.newKeySet<java.util.UUID>()
+    private val watchdog = DeliveryWatchdog(maxDeliveryDuration)
     private val executor = Executors.newFixedThreadPool(concurrency)
 
     @PostConstruct
     fun started() {
         logger.info {
             "Notification worker started: workerId=$workerId, enabled=${enabled()}, " +
-                "concurrency=$concurrency, leaseDuration=${leaseDuration.seconds}s"
+                "concurrency=$concurrency, leaseDuration=${leaseDuration.seconds}s, " +
+                "maxDeliveryDuration=${maxDeliveryDuration.seconds}s"
         }
     }
 
@@ -56,8 +58,8 @@ class NotificationRetryJob(
 
         ids.forEach { id ->
             activeDeliveries.incrementAndGet()
-            activeDeliveryIds.add(id)
             executor.submit {
+                watchdog.started(id)
                 try {
                     logger.info { "Starting notification delivery $id" }
                     val delivery = notificationTaskRepository.findByIdWithRelations(id)
@@ -72,13 +74,14 @@ class NotificationRetryJob(
                     notificationTaskRepository.markSent(id)
                     logger.info { "Notification delivery $id sent" }
                 } catch (error: Exception) {
+                    Thread.interrupted()
                     logger.warn(error) { "Notification delivery $id failed" }
                     notificationTaskRepository.markFailedAndReschedule(
                         id = id,
                         errorMessage = error.message ?: "Unknown notification delivery error",
                     )
                 } finally {
-                    activeDeliveryIds.remove(id)
+                    watchdog.finished(id)
                     activeDeliveries.decrementAndGet()
                 }
             }
@@ -88,7 +91,14 @@ class NotificationRetryJob(
     @Scheduled(every = "30s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun maintainLeases() {
         if (!enabled()) return
-        notificationTaskRepository.renewLeases(workerId, leaseDuration, activeDeliveryIds)
+        val overdue = watchdog.interruptOverdue()
+        if (overdue.isNotEmpty()) {
+            logger.warn {
+                "Interrupted ${overdue.size} notification delivery(ies) running for more than " +
+                    "${maxDeliveryDuration.seconds}s: ${overdue.joinToString()}"
+            }
+        }
+        notificationTaskRepository.renewLeases(workerId, leaseDuration, watchdog.renewable())
         notificationTaskRepository.deadLetterExpiredLeases()
     }
 

@@ -7,19 +7,18 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.NotificationHttpClient
 import tmenier.fr.notifications.resolvers.OutageWindow
-import java.net.URI
-import java.net.http.HttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @ApplicationScoped
-class TeamsNotificationService : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Teams> {
-    private val client = HttpClient.newHttpClient()
+class TeamsNotificationService(
+    private val http: NotificationHttpClient,
+) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Teams> {
     private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)
 
     override fun sendSuccess(
@@ -129,14 +128,13 @@ class TeamsNotificationService : tmenier.fr.notifications.TypedNotificationInter
     ) {
         try {
             val request =
-                HttpRequest
-                    .newBuilder()
-                    .uri(URI.create(content.webhookUrl))
+                http
+                    .request(content.webhookUrl)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build()
 
-            val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+            val response = http.send(request)
 
             logger.info { "Teams API response: ${response.statusCode()}" }
 
