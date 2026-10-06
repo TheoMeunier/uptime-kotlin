@@ -10,7 +10,6 @@ interface ProbeMonitorChartBarProps {
 	monitors: Monitor[];
 	probeStatus: string;
 	barCount?: number;
-	/* Variante basse et serree pour les lignes de la page de statut en liste. */
 	compact?: boolean;
 }
 
@@ -22,7 +21,6 @@ export default function ProbeMonitorChartBar({
 }: ProbeMonitorChartBarProps) {
 	const { t, i18n } = useTranslation();
 
-	/* Les secondes comptent ici : deux checks consecutifs peuvent tomber dans la meme minute. */
 	const formatBarTime = (value: string) => formatTime(value, i18n.language, { withSeconds: true });
 	const formatBarDate = (value: string) => formatDayLong(value, i18n.language);
 
@@ -78,10 +76,6 @@ export default function ProbeMonitorChartBar({
 	return (
 		<div className="w-full">
 			<div className={`flex w-full items-end ${compact ? 'h-6 gap-[2px]' : 'my-3 h-8 gap-[3px]'}`}>
-				{/*
-				 * Slots with no check at all. Much lighter than the paused colour: "we never
-				 * looked" and "we deliberately stopped looking" are different facts.
-				 */}
 				{Array.from({ length: emptyBars }).map((_, i) => (
 					<div key={`empty-${i}`} className={`bg-status-nodata ${barHeight} flex-1 rounded-[2px]`} />
 				))}
