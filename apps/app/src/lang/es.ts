@@ -167,6 +167,14 @@ const es: typeof en = {
 				maintenance_one: '1 servicio en mantenimiento',
 				maintenance_other: '{{count}} servicios en mantenimiento',
 			},
+			layout: {
+				label: 'Vista',
+				grid: 'Cuadrícula',
+				list: 'Lista',
+				columns: {
+					service: 'Servicio',
+				},
+			},
 			empty: {
 				title: 'Todavía no hay ningún monitor',
 				description: 'Añada un monitor para empezar a vigilar su infraestructura.',

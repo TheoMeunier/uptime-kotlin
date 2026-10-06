@@ -164,6 +164,14 @@ const en = {
 				maintenance_one: '1 service under maintenance',
 				maintenance_other: '{{count}} services under maintenance',
 			},
+			layout: {
+				label: 'Display',
+				grid: 'Grid',
+				list: 'List',
+				columns: {
+					service: 'Service',
+				},
+			},
 			empty: {
 				title: 'No monitor yet',
 				description: 'Add a monitor to start watching your infrastructure.',
