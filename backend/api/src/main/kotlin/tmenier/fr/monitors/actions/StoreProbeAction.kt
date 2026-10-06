@@ -39,6 +39,7 @@ class StoreProbeAction(
                 id = probeId ?: UUID.randomUUID(),
                 name = payload.name,
                 interval = payload.interval!!,
+                timeout = payload.timeout,
                 intervalRetry = payload.intervalRetry!!,
                 retry = payload.retry!!,
                 protocol = payload.protocol,

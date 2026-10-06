@@ -122,6 +122,7 @@ const fr: typeof en = {
 		password_must_differ: 'Le nouveau mot de passe doit être différent de l’actuel',
 		password_required: 'Le mot de passe est obligatoire',
 		alert_repeat_seconds: 'Utilisez 0 pour désactiver, ou au moins 60 secondes',
+		timeout_interval: 'Le délai d’expiration doit être inférieur à l’intervalle',
 		recurrence_until_after_start: 'La récurrence doit se terminer après sa première occurrence',
 	},
 
@@ -209,6 +210,14 @@ const fr: typeof en = {
 			schedule: 'Planification',
 			schedule_description:
 				'À quelle fréquence la sonde s’exécute, et comment elle réessaie avant de lever une alerte.',
+			schedule_check: 'Vérification',
+			schedule_check_description:
+				'Une vérification à chaque intervalle, abandonnée si aucune réponse n’arrive dans le délai.',
+			schedule_retry: 'En cas d’échec',
+			schedule_retry_description:
+				'Nouvelles tentatives, et temps entre chacune, avant de marquer le service hors service et de notifier.',
+			unit_seconds: 's',
+			unit_times: 'fois',
 			settings: 'Paramètres',
 			notifications_description: 'Canaux alertés quand cette sonde tombe.',
 		},
@@ -272,10 +281,11 @@ const fr: typeof en = {
 			rabbitmq_username: 'Nom d’utilisateur RabbitMQ',
 			rabbitmq_password: 'Mot de passe RabbitMQ',
 			protocol: 'Protocole de la sonde',
-			interval: 'Intervalle de vérification (s)',
+			interval: 'Intervalle',
+			timeout: 'Délai d’expiration',
 			name_monitor: 'Nom de la sonde',
 			retry: 'Tentatives',
-			interval_retry: 'Intervalle entre les tentatives (s)',
+			interval_retry: 'Espacement',
 			alert_repeat_seconds: 'Renvoyer l’alerte toutes les (s)',
 			notifications: 'Notifications',
 			remove_confirmation: 'Confirmez le nom de la sonde',
@@ -332,7 +342,6 @@ const fr: typeof en = {
 				'« SMTPS » teste le SMTP/TLS implicite ; « Ignorer TLS » se connecte en clair ; « STARTTLS » se connecte, envoie STARTTLS et vérifie le certificat du serveur. Aucune de ces vérifications n’envoie de courriel.',
 			rabbitmq_management_nodes:
 				'Saisissez les URL des nœuds de management RabbitMQ, protocole et port compris, séparées par des virgules. Exemple : https://node1.rabbitmq.com:15672',
-			internal_retry: 'Nombre de tentatives avant que le service soit marqué hors service et qu’une notification parte',
 			alert_repeat_seconds:
 				'Tant que la sonde reste hors service, l’alerte est rejouée sur les mêmes canaux à cet intervalle. 0 n’envoie qu’une seule notification, comme auparavant. Minimum 60 s.',
 			check_interval: 'Vérification toutes les {{ interval }} secondes',

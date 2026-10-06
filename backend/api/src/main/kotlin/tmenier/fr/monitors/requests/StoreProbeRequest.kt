@@ -61,6 +61,14 @@ abstract class BaseStoreProbeRequest {
     @field:Positive(message = "Retry must be greater than 0")
     var retry: Int? = null
 
+    @field:Min(value = 1, message = "Timeout must be at least 1 second")
+    @field:Max(value = 120, message = "Timeout must be at most 120 seconds")
+    var timeout: Int = 5
+
+    @AssertTrue(message = "Timeout must be shorter than the interval")
+    @JsonIgnore
+    fun isTimeoutShorterThanInterval(): Boolean = interval == null || timeout < interval!!
+
     @field:NotNull(message = "Interval Retry is required")
     @field:Min(value = 1, message = "Interval Retry must be at least 1 second")
     @field:Max(value = 3600, message = "Interval Retry must be at most 3600 seconds")

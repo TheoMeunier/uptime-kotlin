@@ -36,7 +36,7 @@ class ProbesEntity : PanacheEntityBase {
     var interval: Int = 0
 
     @Column(nullable = false)
-    var timeout: Int = 0
+    var timeout: Int = 5
 
     @Column(name = "retry", nullable = false)
     var retry: Int = 0

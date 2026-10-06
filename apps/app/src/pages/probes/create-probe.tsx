@@ -17,7 +17,7 @@ const DEFAULT_VALUES = {
 	interval: 60,
 	interval_retry: 60,
 	retry: 3,
-	timeout: 30,
+	timeout: 5,
 	alert_repeat_seconds: 0,
 	enabled: true,
 	notifications: [],
