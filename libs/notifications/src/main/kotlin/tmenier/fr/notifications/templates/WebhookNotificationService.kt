@@ -9,17 +9,15 @@ import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
-import java.net.URI
-import java.net.http.HttpClient
+import tmenier.fr.notifications.NotificationHttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.time.Duration
 import java.time.Instant
 
 @ApplicationScoped
-class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Webhook> {
-    private val client = HttpClient.newHttpClient()
-
+class WebhookNotificationService(
+    private val http: NotificationHttpClient,
+) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Webhook> {
     override fun sendSuccess(
         content: NotificationContent.Webhook,
         probe: ProbeDTO,
@@ -92,10 +90,6 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
         val escapedName = name.replace("\"", "\\\"").replace("\n", "\\n")
         val escapedMessage = message.replace("\"", "\\\"").replace("\n", "\\n")
 
-        // `event`, `reminderIndex` and `downtimeSeconds` are additive: a receiver
-        // that only reads `status` keeps working, one that wants to deduplicate a
-        // repeated alert or chart outage lengths now can. `downtimeSeconds` is
-        // null except on a RECOVERY whose outage start is known.
         return """
             {
                 "name": "$escapedName",
@@ -124,13 +118,12 @@ class WebhookNotificationService : tmenier.fr.notifications.TypedNotificationInt
                 }
 
             val requestBuilder =
-                HttpRequest
-                    .newBuilder()
-                    .uri(URI.create(content.url))
+                http
+                    .request(content.url)
                     .header("Content-Type", "application/json")
                     .method(content.method.toString().uppercase(), bodyPublisher)
 
-            val response = client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString())
+            val response = http.send(requestBuilder.build())
 
             logger.info { "Webhook response: ${response.statusCode()} - ${response.body()}" }
 

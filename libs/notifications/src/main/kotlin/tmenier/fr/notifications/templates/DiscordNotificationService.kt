@@ -7,18 +7,16 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.NotificationHttpClient
 import tmenier.fr.notifications.resolvers.OutageWindow
-import java.net.URI
-import java.net.http.HttpClient
 import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.time.Duration
 import java.time.Instant
 
 @ApplicationScoped
-class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Discord> {
-    private val client = HttpClient.newHttpClient()
-
+class DiscordNotificationService(
+    private val http: NotificationHttpClient,
+) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Discord> {
     override fun sendSuccess(
         content: NotificationContent.Discord,
         probe: ProbeDTO,
@@ -105,14 +103,13 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
             logger.debug { "Payload: $jsonPayload" }
 
             val request =
-                HttpRequest
-                    .newBuilder()
-                    .uri(URI.create(content.webhookUrl))
+                http
+                    .request(content.webhookUrl)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build()
 
-            val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+            val response = http.send(request)
 
             logger.info { "Discord API response: ${response.statusCode()}" }
 
