@@ -6,7 +6,15 @@ const ADMIN = {
 	password: process.env.E2E_PASSWORD ?? 'e2e-password-123',
 };
 
+const ONBOARDING_KEY = `uptime-kotlin.onboarding.completed.${ADMIN.email}`;
+
+/** Ces parcours ne testent pas la visite guidée : elle est marquée comme vue avant le chargement. */
+async function skipOnboarding(page: Page) {
+	await page.addInitScript((key) => window.localStorage.setItem(key, 'true'), ONBOARDING_KEY);
+}
+
 async function completeSetupIfNeeded(page: Page) {
+	await skipOnboarding(page);
 	await page.goto('/');
 	await page.waitForURL(/\/(setup|login|dashboard)/);
 
@@ -119,4 +127,29 @@ test('leaving a monitor form with unsaved changes asks for confirmation', async 
 	await page.getByRole('link', { name: 'Cancel' }).click();
 	await dialog.getByRole('button', { name: 'Leave without saving' }).click();
 	await page.waitForURL(/\/dashboard/);
+});
+
+test('the guided tour can be replayed from the profile menu', async ({ page }) => {
+	await completeSetupIfNeeded(page);
+	await login(page);
+
+	await page.getByRole('button', { name: ADMIN.email }).click();
+	await page.getByRole('menuitem', { name: 'User guide' }).click();
+
+	const tour = page.getByRole('dialog', { name: 'Welcome to Uptime Kotlin' });
+	await expect(tour).toBeVisible();
+	await expect(tour.getByText('Step 1 of 9')).toBeVisible();
+
+	await tour.getByRole('button', { name: "Let's go" }).click();
+	await expect(page.getByRole('dialog', { name: 'Create a monitor' })).toBeVisible();
+
+	await page.keyboard.press('ArrowRight');
+	await expect(page.getByRole('dialog', { name: 'Dashboard' })).toBeVisible();
+
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('dialog', { name: 'Dashboard' })).toBeHidden();
+
+	// Passée une fois, la visite ne revient pas d'elle-même au rechargement.
+	await page.reload();
+	await expect(page.getByText(/^Step \d+ of 9$/)).toHaveCount(0);
 });

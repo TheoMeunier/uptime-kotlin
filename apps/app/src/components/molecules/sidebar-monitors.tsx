@@ -67,7 +67,7 @@ export default function SidebarMonitors({ probes, isLoading }: SidebarMonitorsPr
 	const isFiltering = query.trim().length > 0;
 
 	return (
-		<SidebarGroup className="flex min-h-0 flex-1 flex-col">
+		<SidebarGroup className="flex min-h-0 flex-1 flex-col" data-tour="monitors">
 			<SidebarGroupLabel className="text-muted-foreground flex items-center justify-between px-2 py-1 text-xs font-semibold">
 				<span>{t('layout.sidebar.monitors')}</span>
 				{!isLoading && total > 0 && (
