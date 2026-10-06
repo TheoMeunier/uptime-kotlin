@@ -274,7 +274,6 @@ function StatusGridCard({ item }: { item: StatusItem }) {
 	);
 }
 
-
 const LIST_COLUMNS = 'lg:grid lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:items-center lg:gap-8';
 const LIST_BAR_COUNT = 60;
 
