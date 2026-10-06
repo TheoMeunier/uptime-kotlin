@@ -25,6 +25,14 @@ object NotificationContentMapper {
         return objectMapper.treeToValue(node, contentClass(notification.type))
     }
 
+    /** Tokens never leave the API: the edit form leaves the field empty to keep the stored one. */
+    fun withoutTokens(content: NotificationContent): NotificationContent =
+        when (content) {
+            is NotificationContent.Telegram -> content.copy(botToken = "")
+            is NotificationContent.Ntfy -> content.copy(accessToken = null)
+            else -> content
+        }
+
     private fun contentClass(type: NotificationChannelsEnum): Class<out NotificationContent> =
         when (type) {
             NotificationChannelsEnum.DISCORD -> NotificationContent.Discord::class.java
@@ -33,6 +41,7 @@ object NotificationContentMapper {
             NotificationChannelsEnum.MAIL -> NotificationContent.Mail::class.java
             NotificationChannelsEnum.WEBHOOK -> NotificationContent.Webhook::class.java
             NotificationChannelsEnum.TELEGRAM -> NotificationContent.Telegram::class.java
+            NotificationChannelsEnum.NTFY -> NotificationContent.Ntfy::class.java
         }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
@@ -44,6 +53,7 @@ object NotificationContentMapper {
                 is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
                 is NotificationContent.Webhook -> NotificationChannelsEnum.WEBHOOK
                 is NotificationContent.Telegram -> NotificationChannelsEnum.TELEGRAM
+                is NotificationContent.Ntfy -> NotificationChannelsEnum.NTFY
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 
@@ -82,7 +92,7 @@ object NotificationMapper {
             id = entity.id,
             name = entity.name,
             notificationType = entity.type,
-            content = NotificationContentMapper.toDTO(entity, false),
+            content = NotificationContentMapper.withoutTokens(NotificationContentMapper.toDTO(entity, false)),
             isDefault = entity.isDefault,
             createdAt = entity.createdAt,
         )

@@ -12,6 +12,8 @@ export interface FieldConfig {
 	searchable?: boolean;
 	closeOnSelect?: boolean;
 	options?: MultiSelectOption[] | MultiSelectGroup[] | readonly string[];
+	// Shown only when editing an existing channel.
+	update_only?: boolean;
 }
 
 export interface NotificationTypeConfig {

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.notifications.NotificationDateFormatter
@@ -19,6 +20,7 @@ import java.time.Instant
 class TelegramNotificationServiceTest {
     private lateinit var server: HttpServer
     private val http = NotificationHttpClient(Duration.ofSeconds(2), Duration.ofSeconds(2))
+    private val encryption = EncryptionService("0123456789abcdef0123456789abcdef")
     private lateinit var service: TelegramNotificationService
 
     private var status = 200
@@ -40,7 +42,12 @@ class TelegramNotificationServiceTest {
         }
         server.start()
         service =
-            TelegramNotificationService(http, NotificationDateFormatter("UTC"), "http://127.0.0.1:${server.address.port}/")
+            TelegramNotificationService(
+                http,
+                NotificationDateFormatter("UTC"),
+                encryption,
+                "http://127.0.0.1:${server.address.port}/",
+            )
     }
 
     @AfterEach
@@ -58,6 +65,13 @@ class TelegramNotificationServiceTest {
         assertTrue(body.contains("\"chat_id\":\"-1001234567890\""), body)
         assertTrue(body.contains("\"parse_mode\":\"HTML\""), body)
         assertFalse(body.contains("message_thread_id"), body)
+    }
+
+    @Test
+    fun `decrypts a stored token before calling the API`() {
+        service.sendTest(content.copy(botToken = encryption.encrypt(content.botToken)))
+
+        assertEquals("/bot123456:ABC-def_ghi/sendMessage", lastPath)
     }
 
     @Test

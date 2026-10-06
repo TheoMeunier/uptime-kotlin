@@ -7,4 +7,5 @@ enum class NotificationChannelsEnum {
     SLACK,
     WEBHOOK,
     TELEGRAM,
+    NTFY,
 }

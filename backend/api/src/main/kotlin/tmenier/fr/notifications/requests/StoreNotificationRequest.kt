@@ -8,13 +8,15 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import jakarta.validation.groups.Default
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 
-interface OnCreate
+// Extending Default keeps the unscoped constraints (URL, e-mail, patterns) active on create and update.
+interface OnCreate : Default
 
-interface OnUpdate
+interface OnUpdate : Default
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "notification_type", visible = true)
 @JsonSubTypes(
@@ -24,6 +26,7 @@ interface OnUpdate
     JsonSubTypes.Type(value = ValidNotificationChannelSlackRequest::class, name = "SLACK"),
     JsonSubTypes.Type(value = ValidNotificationChannelWebhookRequest::class, name = "WEBHOOK"),
     JsonSubTypes.Type(value = ValidNotificationChannelTelegramRequest::class, name = "TELEGRAM"),
+    JsonSubTypes.Type(value = ValidNotificationChannelNtfyRequest::class, name = "NTFY"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -67,14 +70,27 @@ data class ValidNotificationChannelSlackRequest(
 
 @RegisterForReflection
 data class ValidNotificationChannelTelegramRequest(
-    @field:NotBlank(message = "Bot token is required")
-    @field:Pattern(regexp = "^\\d+:[A-Za-z0-9_-]+$", message = "Invalid bot token format")
-    val botToken: String,
+    // Left empty on update to keep the stored token, which the API never sends back.
+    @field:NotBlank(message = "Bot token is required", groups = [OnCreate::class])
+    @field:Pattern(regexp = "^(\\d+:[A-Za-z0-9_-]+)?$", message = "Invalid bot token format")
+    val botToken: String? = null,
     @field:NotBlank(message = "Chat id is required")
     @field:Pattern(regexp = "^(-?\\d+|@[A-Za-z][A-Za-z0-9_]{3,})$", message = "Invalid chat id")
     val chatId: String,
     @field:Min(1)
     val messageThreadId: Long? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelNtfyRequest(
+    @field:NotBlank(message = "Server URL is required")
+    @field:URL(message = "Invalid URL format")
+    val serverUrl: String,
+    @field:NotBlank(message = "Topic is required")
+    @field:Pattern(regexp = "^[-_A-Za-z0-9]{1,64}$", message = "Invalid topic")
+    val topic: String,
+    val accessToken: String? = null,
+    val removeAccessToken: Boolean? = false,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

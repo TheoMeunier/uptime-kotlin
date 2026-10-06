@@ -67,6 +67,10 @@ const fr: typeof en = {
 			bot_token: 'Jeton du bot',
 			chat_id: 'ID du chat',
 			message_thread_id: 'ID du sujet (facultatif)',
+			server_url: 'URL du serveur',
+			topic: 'Sujet (topic)',
+			access_token: 'Jeton d’accès (facultatif)',
+			remove_access_token: 'Supprimer le jeton d’accès',
 		},
 		placeholder: {
 			email: 'jean.dupont@exemple.com',
@@ -77,9 +81,14 @@ const fr: typeof en = {
 			bot_name: 'Uptime Kotlin',
 		},
 		description: {
-			bot_token: 'Fourni par @BotFather lors de la création du bot.',
+			bot_token:
+				'Fourni par @BotFather lors de la création du bot. En modification, laissez vide pour garder le jeton actuel.',
 			chat_id: 'ID numérique (négatif pour un groupe ou un canal) ou @nomducanal. Le bot doit être membre du chat.',
 			message_thread_id: 'Pour poster dans un sujet précis d’un groupe à sujets.',
+			server_url: 'https://ntfy.sh, ou l’adresse de votre serveur ntfy auto-hébergé.',
+			topic: 'Lettres, chiffres, - et _. Sur ntfy.sh, un sujet est public : choisissez un nom difficile à deviner.',
+			access_token:
+				'Uniquement pour un sujet protégé (jeton tk_…). En modification, laissez vide pour garder le jeton actuel.',
 			password: 'Au moins 8 caractères',
 		},
 	},
@@ -132,6 +141,7 @@ const fr: typeof en = {
 		recurrence_until_after_start: 'La récurrence doit se terminer après sa première occurrence',
 		telegram_bot_token: 'Jeton invalide (format attendu : 123456789:AAH…)',
 		telegram_chat_id: 'ID de chat invalide (nombre ou @nomducanal)',
+		ntfy_topic: 'Sujet invalide (lettres, chiffres, - et _, 64 caractères max.)',
 	},
 
 	select: {

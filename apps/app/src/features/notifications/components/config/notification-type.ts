@@ -57,6 +57,35 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				description: t('form.description.message_thread_id'),
 			},
 		],
+		[NotificationTypeEnum.NTFY]: [
+			{
+				name: 'server_url',
+				label: t('form.label.server_url'),
+				input_type: 'text',
+				placeholder: 'https://ntfy.sh',
+				description: t('form.description.server_url'),
+			},
+			{
+				name: 'topic',
+				label: t('form.label.topic'),
+				input_type: 'text',
+				placeholder: 'uptime-kotlin-alerts',
+				description: t('form.description.topic'),
+			},
+			{
+				name: 'access_token',
+				label: t('form.label.access_token'),
+				input_type: 'password',
+				placeholder: 'tk_...',
+				description: t('form.description.access_token'),
+			},
+			{
+				name: 'remove_access_token',
+				label: t('form.label.remove_access_token'),
+				input_type: 'switch',
+				update_only: true,
+			},
+		],
 		[NotificationTypeEnum.MAIL]: [
 			{
 				name: 'hostname',

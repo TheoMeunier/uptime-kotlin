@@ -33,7 +33,12 @@ class NotificationHttpClient(
     fun postJson(
         url: String,
         json: String,
-    ): HttpRequest = request(url).POST(HttpRequest.BodyPublishers.ofString(json)).build()
+        headers: Map<String, String> = emptyMap(),
+    ): HttpRequest =
+        request(url)
+            .apply { headers.forEach { (name, value) -> header(name, value) } }
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build()
 
     fun send(request: HttpRequest): HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 

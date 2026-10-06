@@ -24,15 +24,29 @@ const webhookNotificationSchema = baseStoreNotificationSchema.extend({
 
 const telegramNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('TELEGRAM'),
+	// Empty on update keeps the stored token, which the API never sends back.
 	bot_token: z
 		.string()
 		.trim()
-		.regex(/^\d+:[A-Za-z0-9_-]+$/, i18n.t('validation.telegram_bot_token')),
+		.regex(/^(\d+:[A-Za-z0-9_-]+)?$/, i18n.t('validation.telegram_bot_token'))
+		.nullable()
+		.optional(),
 	chat_id: z
 		.string()
 		.trim()
 		.regex(/^(-?\d+|@[A-Za-z][A-Za-z0-9_]{3,})$/, i18n.t('validation.telegram_chat_id')),
 	message_thread_id: z.number().int().min(1).optional().nullable(),
+});
+
+const ntfyNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('NTFY'),
+	server_url: z.url(),
+	topic: z
+		.string()
+		.trim()
+		.regex(/^[-_A-Za-z0-9]{1,64}$/, i18n.t('validation.ntfy_topic')),
+	access_token: z.string().trim().optional().nullable(),
+	remove_access_token: z.boolean().optional(),
 });
 
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
@@ -53,6 +67,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	chatWebhookSchema('SLACK'),
 	webhookNotificationSchema,
 	telegramNotificationSchema,
+	ntfyNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';
@@ -79,6 +94,14 @@ export default function useNotificationForm(
 
 function createNotificationSchema(mode: NotificationFormMode) {
 	return storeNotificationSchema.superRefine((data, ctx) => {
+		if (mode === 'create' && data.notification_type === 'TELEGRAM' && !data.bot_token) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: i18n.t('validation.telegram_bot_token'),
+				path: ['bot_token'],
+			});
+		}
+
 		if (mode === 'create' && data.notification_type === 'MAIL' && !data.password) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
