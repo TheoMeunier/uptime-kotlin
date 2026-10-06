@@ -118,6 +118,19 @@ class GotifyNotificationServiceTest {
     }
 
     @Test
+    fun `control characters and backslashes in the probe message are escaped`() {
+        service.sendFailure(
+            content(),
+            probe,
+            result(ProbeMonitorLogStatus.FAILURE).copy(message = "bell\u0007 path C:\\tmp"),
+        )
+
+        val body = received.single().body
+        assertTrue(body.contains("""bell\u0007 path C:\\tmp"""), body)
+        assertTrue(body.none { it < ' ' && it != '\n' }, body)
+    }
+
+    @Test
     fun `a trailing slash or a sub-path on the server URL is respected`() {
         service.sendTest(content(url = "$serverUrl/gotify/"))
 

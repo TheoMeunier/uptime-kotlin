@@ -87,7 +87,7 @@ class GotifyNotificationService(
 
     override fun getNotificationType() = NotificationChannelsEnum.GOTIFY.name
 
-    internal fun buildPayload(
+    private fun buildPayload(
         title: String,
         message: String,
         runAt: Instant,
@@ -101,7 +101,7 @@ class GotifyNotificationService(
         }
         """.trimIndent()
 
-    internal fun messageUrl(serverUrl: String): String = "${serverUrl.trimEnd('/')}/message"
+    private fun messageUrl(serverUrl: String): String = "${serverUrl.trimEnd('/')}/message"
 
     private fun sendGotifyMessage(
         content: NotificationContent.Gotify,
@@ -134,11 +134,18 @@ class GotifyNotificationService(
         }
     }
 
+    // Every control character must be escaped: a raw one makes Gotify reject the message with HTTP 400.
     private fun escapeJson(text: String): String =
-        text
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r")
-            .replace("\t", "\\t")
+        buildString(text.length) {
+            for (char in text) {
+                when (char) {
+                    '\\' -> append("\\\\")
+                    '"' -> append("\\\"")
+                    '\n' -> append("\\n")
+                    '\r' -> append("\\r")
+                    '\t' -> append("\\t")
+                    else -> if (char < ' ') append("\\u%04x".format(char.code)) else append(char)
+                }
+            }
+        }
 }
