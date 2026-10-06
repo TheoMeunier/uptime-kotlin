@@ -172,6 +172,14 @@ const de: typeof en = {
 				maintenance_one: '1 Dienst in Wartung',
 				maintenance_other: '{{count}} Dienste in Wartung',
 			},
+			layout: {
+				label: 'Ansicht',
+				grid: 'Raster',
+				list: 'Liste',
+				columns: {
+					service: 'Dienst',
+				},
+			},
 			empty: {
 				title: 'Noch kein Monitor',
 				description: 'Legen Sie einen Monitor an, um Ihre Infrastruktur zu überwachen.',

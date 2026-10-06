@@ -10,9 +10,16 @@ interface ProbeMonitorChartBarProps {
 	monitors: Monitor[];
 	probeStatus: string;
 	barCount?: number;
+	/* Variante basse et serree pour les lignes de la page de statut en liste. */
+	compact?: boolean;
 }
 
-export default function ProbeMonitorChartBar({ monitors, probeStatus, barCount = 40 }: ProbeMonitorChartBarProps) {
+export default function ProbeMonitorChartBar({
+	monitors,
+	probeStatus,
+	barCount = 40,
+	compact = false,
+}: ProbeMonitorChartBarProps) {
 	const { t, i18n } = useTranslation();
 
 	/* Les secondes comptent ici : deux checks consecutifs peuvent tomber dans la meme minute. */
@@ -65,17 +72,18 @@ export default function ProbeMonitorChartBar({ monitors, probeStatus, barCount =
 	const bars = allBars.slice(-barCount);
 	const emptyBars = barCount - bars.length;
 
-	const barBase = 'h-8 flex-1 rounded-[2px] transition-opacity hover:opacity-60';
+	const barHeight = compact ? 'h-6' : 'h-8';
+	const barBase = `${barHeight} flex-1 rounded-[2px] transition-opacity hover:opacity-60`;
 
 	return (
 		<div className="w-full">
-			<div className="my-3 flex h-8 w-full items-end gap-[3px]">
+			<div className={`flex w-full items-end ${compact ? 'h-6 gap-[2px]' : 'my-3 h-8 gap-[3px]'}`}>
 				{/*
 				 * Slots with no check at all. Much lighter than the paused colour: "we never
 				 * looked" and "we deliberately stopped looking" are different facts.
 				 */}
 				{Array.from({ length: emptyBars }).map((_, i) => (
-					<div key={`empty-${i}`} className="bg-status-nodata h-8 flex-1 rounded-[2px]" />
+					<div key={`empty-${i}`} className={`bg-status-nodata ${barHeight} flex-1 rounded-[2px]`} />
 				))}
 
 				{bars.map((item) => {

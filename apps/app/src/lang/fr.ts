@@ -170,6 +170,14 @@ const fr: typeof en = {
 				maintenance_one: '1 service en maintenance',
 				maintenance_other: '{{count}} services en maintenance',
 			},
+			layout: {
+				label: 'Affichage',
+				grid: 'Grille',
+				list: 'Liste',
+				columns: {
+					service: 'Service',
+				},
+			},
 			empty: {
 				title: 'Aucune sonde pour l’instant',
 				description: 'Ajoutez une sonde pour commencer à surveiller votre infrastructure.',
