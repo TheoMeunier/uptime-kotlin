@@ -10,6 +10,7 @@ import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTeamsRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
@@ -56,9 +57,24 @@ class ResolveNotificationContentService(
 
             is ValidNotificationChannelTelegramRequest ->
                 NotificationContent.Telegram(
-                    botToken = request.botToken.trim(),
+                    botToken =
+                        requireNotNull(resolveToken(request.botToken, existingContent<NotificationContent.Telegram>(existingNotification)?.botToken)) {
+                            "Bot token is required"
+                        },
                     chatId = request.chatId.trim(),
                     messageThreadId = request.messageThreadId,
+                )
+
+            is ValidNotificationChannelNtfyRequest ->
+                NotificationContent.Ntfy(
+                    serverUrl = request.serverUrl.trim(),
+                    topic = request.topic.trim(),
+                    accessToken =
+                        if (request.removeAccessToken == true) {
+                            null
+                        } else {
+                            resolveToken(request.accessToken, existingContent<NotificationContent.Ntfy>(existingNotification)?.accessToken)
+                        },
                 )
 
             is ValidNotificationChannelMailRequest ->
@@ -79,6 +95,22 @@ class ResolveNotificationContentService(
 
             else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
         }
+
+    /**
+     * Encrypts a newly typed token; an empty field keeps the stored one, since the API never sends tokens back.
+     * A token stored before encryption existed is encrypted on its way through.
+     */
+    private fun resolveToken(
+        incoming: String?,
+        stored: String?,
+    ): String? {
+        incoming?.trim()?.ifBlank { null }?.let { return encryptionService.encrypt(it) }
+        return stored?.let {
+            if (encryptionService.isEncryptedWithCurrentKey(it)) it else encryptionService.encrypt(encryptionService.decryptIfEncrypted(it))
+        }
+    }
+
+    private inline fun <reified T : NotificationContent> existingContent(existing: NotificationDto?): T? = existing?.content as? T
 
     private fun resolvePassword(
         incomingPassword: String?,

@@ -10,6 +10,7 @@ import FormFieldNotification from '@/features/notifications/components/forms/for
 import { Separator } from '@radix-ui/react-select';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import { Button } from '@/components/atoms/button.tsx';
+import type { FieldConfig } from '@/features/notifications/types/notification.type.ts';
 import useNotificationTesting from '@/features/notifications/hooks/useNotificationTesting.ts';
 import useNotificationForm, {
 	type NotificationFormMode,
@@ -32,9 +33,11 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 
 	const NOTIFICATION_FIELDS_CONFIG = useMemo(() => buildNotificationFieldsConfig(t), [t]);
 
-	const dynamicFields = notificationType
-		? NOTIFICATION_FIELDS_CONFIG[notificationType]
-		: NOTIFICATION_FIELDS_CONFIG[NotificationTypeEnum.DISCORD];
+	const dynamicFields: FieldConfig[] = (
+		notificationType
+			? NOTIFICATION_FIELDS_CONFIG[notificationType]
+			: NOTIFICATION_FIELDS_CONFIG[NotificationTypeEnum.DISCORD]
+	).filter((field: FieldConfig) => mode === 'update' || !field.update_only);
 
 	const handleTestNotifications = (e: React.FormEvent) => {
 		e.preventDefault();

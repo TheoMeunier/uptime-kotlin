@@ -63,6 +63,10 @@ const en = {
 			bot_token: 'Bot token',
 			chat_id: 'Chat ID',
 			message_thread_id: 'Topic ID (optional)',
+			server_url: 'Server URL',
+			topic: 'Topic',
+			access_token: 'Access token (optional)',
+			remove_access_token: 'Remove the access token',
 		},
 		placeholder: {
 			email: 'john.doe@exemple.com',
@@ -73,9 +77,12 @@ const en = {
 			bot_name: 'Uptime Kotlin',
 		},
 		description: {
-			bot_token: 'Given by @BotFather when you create the bot.',
+			bot_token: 'Given by @BotFather when you create the bot. When editing, leave empty to keep the current token.',
 			chat_id: 'Numeric ID (negative for groups and channels) or @channelname. The bot must be a member of the chat.',
 			message_thread_id: 'To post in a specific topic of a forum group.',
+			server_url: 'https://ntfy.sh, or the address of your self-hosted ntfy server.',
+			topic: 'Letters, digits, - and _. On ntfy.sh topics are public: pick a name that is hard to guess.',
+			access_token: 'Only for a protected topic (tk_… token). When editing, leave empty to keep the current token.',
 			password: 'Must be at least 8 characters long',
 		},
 	},
@@ -128,6 +135,7 @@ const en = {
 		recurrence_until_after_start: 'The recurrence must end after its first occurrence',
 		telegram_bot_token: 'Invalid token (expected format: 123456789:AAH…)',
 		telegram_chat_id: 'Invalid chat ID (a number or @channelname)',
+		ntfy_topic: 'Invalid topic (letters, digits, - and _, 64 characters max)',
 	},
 
 	select: {

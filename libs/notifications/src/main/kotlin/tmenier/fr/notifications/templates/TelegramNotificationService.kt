@@ -3,6 +3,7 @@ package tmenier.fr.notifications.templates
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.databases.dtos.NotificationContent
@@ -19,6 +20,7 @@ import java.time.Instant
 class TelegramNotificationService(
     private val http: NotificationHttpClient,
     private val dates: NotificationDateFormatter,
+    private val encryption: EncryptionService,
     @param:ConfigProperty(name = "notifications.telegram.api-url", defaultValue = "https://api.telegram.org")
     apiUrl: String,
 ) : TypedNotificationInterfaces<NotificationContent.Telegram> {
@@ -91,7 +93,8 @@ class TelegramNotificationService(
         content: NotificationContent.Telegram,
         text: String,
     ) {
-        val request = http.postJson("$apiUrl/bot${content.botToken}/sendMessage", buildPayload(content, text))
+        val botToken = encryption.decryptIfEncrypted(content.botToken)
+        val request = http.postJson("$apiUrl/bot$botToken/sendMessage", buildPayload(content, text))
         http.deliver("Telegram", request, ::describe)
     }
 

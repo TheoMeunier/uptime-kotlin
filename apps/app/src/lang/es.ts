@@ -66,6 +66,10 @@ const es: typeof en = {
 			bot_token: 'Token del bot',
 			chat_id: 'ID del chat',
 			message_thread_id: 'ID del tema (opcional)',
+			server_url: 'URL del servidor',
+			topic: 'Tema (topic)',
+			access_token: 'Token de acceso (opcional)',
+			remove_access_token: 'Eliminar el token de acceso',
 		},
 		placeholder: {
 			email: 'juan.perez@ejemplo.com',
@@ -76,9 +80,12 @@ const es: typeof en = {
 			bot_name: 'Uptime Kotlin',
 		},
 		description: {
-			bot_token: 'Lo proporciona @BotFather al crear el bot.',
+			bot_token: 'Lo proporciona @BotFather al crear el bot. Al editar, déjelo vacío para conservar el token actual.',
 			chat_id: 'ID numérico (negativo para grupos y canales) o @nombredelcanal. El bot debe ser miembro del chat.',
 			message_thread_id: 'Para publicar en un tema concreto de un grupo con temas.',
+			server_url: 'https://ntfy.sh, o la dirección de su servidor ntfy autoalojado.',
+			topic: 'Letras, dígitos, - y _. En ntfy.sh los temas son públicos: elija un nombre difícil de adivinar.',
+			access_token: 'Solo para un tema protegido (token tk_…). Al editar, déjelo vacío para conservar el token actual.',
 			password: 'Al menos 8 caracteres',
 		},
 	},
@@ -131,6 +138,7 @@ const es: typeof en = {
 		recurrence_until_after_start: 'La recurrencia debe terminar después de su primera repetición',
 		telegram_bot_token: 'Token no válido (formato esperado: 123456789:AAH…)',
 		telegram_chat_id: 'ID de chat no válido (un número o @nombredelcanal)',
+		ntfy_topic: 'Tema no válido (letras, dígitos, - y _, máx. 64 caracteres)',
 	},
 
 	select: {

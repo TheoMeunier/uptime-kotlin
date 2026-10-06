@@ -38,6 +38,13 @@ sealed interface NotificationContent {
     ) : NotificationContent
 
     @RegisterForReflection
+    data class Ntfy(
+        val serverUrl: String,
+        val topic: String,
+        val accessToken: String? = null,
+    ) : NotificationContent
+
+    @RegisterForReflection
     data class Mail(
         val hostname: String,
         val port: Int,

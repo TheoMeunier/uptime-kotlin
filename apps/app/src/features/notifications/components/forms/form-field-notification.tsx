@@ -100,6 +100,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 				type={field.input_type}
 				placeholder={field.placeholder}
 				defaultValue={field.default_value}
+				autoComplete={field.input_type === 'password' ? 'new-password' : undefined}
 			/>
 			{field.description && <FieldDescription>{field.description}</FieldDescription>}
 			<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
