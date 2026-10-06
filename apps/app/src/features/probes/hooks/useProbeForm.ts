@@ -8,6 +8,7 @@ import { isValidRetentionDays, LOG_RETENTION_KEEP_FOREVER } from '@/features/set
 const baseStoreProbeSchema = z.object({
 	name: z.string().min(3).max(255),
 	interval: z.number().min(10).max(3600),
+	timeout: z.number().int().min(1).max(120),
 	retry: z.number().min(1).max(10).optional(),
 	interval_retry: z.number().min(1).max(3600),
 	enabled: z.boolean().optional(),
@@ -139,19 +140,24 @@ const rabbitMqProbeSchema = baseStoreProbeSchema.extend({
 	password: z.string().min(1),
 });
 
-export const storeProbeSchema = z.discriminatedUnion('protocol', [
-	httpProbeSchema,
-	tcpProbeSchema,
-	pingProbeSchema,
-	dnsProbeSchema,
-	postgreSqlProbeSchema,
-	sqlServerProbeSchema,
-	mySqlProbeSchema,
-	redisProbeSchema,
-	smtpProbeSchema,
-	kafkaProbeSchema,
-	rabbitMqProbeSchema,
-]);
+export const storeProbeSchema = z
+	.discriminatedUnion('protocol', [
+		httpProbeSchema,
+		tcpProbeSchema,
+		pingProbeSchema,
+		dnsProbeSchema,
+		postgreSqlProbeSchema,
+		sqlServerProbeSchema,
+		mySqlProbeSchema,
+		redisProbeSchema,
+		smtpProbeSchema,
+		kafkaProbeSchema,
+		rabbitMqProbeSchema,
+	])
+	.refine((probe) => probe.timeout < probe.interval, {
+		path: ['timeout'],
+		error: () => i18n.t('validation.timeout_interval'),
+	});
 
 export type StoreProbeSchema = z.infer<typeof storeProbeSchema>;
 

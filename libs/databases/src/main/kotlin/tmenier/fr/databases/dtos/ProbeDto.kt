@@ -88,6 +88,7 @@ data class StoreProbeDto(
     val id: UUID,
     val name: String,
     val interval: Int,
+    val timeout: Int,
     val intervalRetry: Int,
     val retry: Int,
     val protocol: ProbeProtocol,

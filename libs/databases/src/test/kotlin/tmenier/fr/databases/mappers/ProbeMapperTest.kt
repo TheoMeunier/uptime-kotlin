@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.StoreProbeDto
 import java.time.Instant
 import java.util.UUID
@@ -18,6 +19,7 @@ class ProbeMapperTest {
                     id = UUID.randomUUID(),
                     name = "PostgreSQL monitor",
                     interval = 60,
+                    timeout = 5,
                     intervalRetry = 60,
                     retry = 3,
                     protocol = ProbeProtocol.POSTGRESQL,
@@ -38,6 +40,27 @@ class ProbeMapperTest {
     }
 
     @Test
+    fun `keeps the configured timeout on a new probe`() {
+        val entity =
+            ProbeMapper.toEntity(
+                StoreProbeDto(
+                    id = UUID.randomUUID(),
+                    name = "Slow API",
+                    interval = 60,
+                    timeout = 30,
+                    intervalRetry = 60,
+                    retry = 3,
+                    protocol = ProbeProtocol.SMTP,
+                    enabled = true,
+                    description = null,
+                    content = ProbeContent.Smtp(hostname = "smtp.example.com", port = 587, security = SmtpSecurity.STARTTLS),
+                ),
+            )
+
+        assertEquals(30, entity.timeout)
+    }
+
+    @Test
     fun `redacts encrypted connection string from probe responses`() {
         val entity =
             ProbeMapper
@@ -46,6 +69,7 @@ class ProbeMapperTest {
                         id = UUID.randomUUID(),
                         name = "PostgreSQL monitor",
                         interval = 60,
+                        timeout = 5,
                         intervalRetry = 60,
                         retry = 3,
                         protocol = ProbeProtocol.POSTGRESQL,
@@ -82,6 +106,7 @@ class ProbeMapperTest {
                         id = UUID.randomUUID(),
                         name = "PostgreSQL monitor",
                         interval = 60,
+                        timeout = 5,
                         intervalRetry = 60,
                         retry = 3,
                         protocol = ProbeProtocol.POSTGRESQL,

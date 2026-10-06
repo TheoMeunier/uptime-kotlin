@@ -123,6 +123,7 @@ const de: typeof en = {
 		password_must_differ: 'Das neue Passwort muss sich vom aktuellen unterscheiden',
 		password_required: 'Passwort ist erforderlich',
 		alert_repeat_seconds: '0 zum Deaktivieren, sonst mindestens 60 Sekunden',
+		timeout_interval: 'Das Timeout muss kürzer als das Intervall sein',
 		recurrence_until_after_start: 'Die Wiederholung muss nach ihrem ersten Auftreten enden',
 	},
 
@@ -210,6 +211,14 @@ const de: typeof en = {
 			schedule: 'Zeitplan',
 			schedule_description:
 				'Wie oft die Prüfung läuft und wie oft sie wiederholt wird, bevor ein Alarm ausgelöst wird.',
+			schedule_check: 'Prüfung',
+			schedule_check_description:
+				'Eine Prüfung pro Intervall, abgebrochen, wenn innerhalb des Timeouts keine Antwort kommt.',
+			schedule_retry: 'Bei Fehlschlag',
+			schedule_retry_description:
+				'Wie viele Wiederholungen und wie lange dazwischen, bevor der Dienst als ausgefallen gilt und benachrichtigt wird.',
+			unit_seconds: 's',
+			unit_times: 'mal',
 			settings: 'Einstellungen',
 			notifications_description: 'Kanäle, die bei einem Ausfall dieses Monitors benachrichtigt werden.',
 		},
@@ -272,10 +281,11 @@ const de: typeof en = {
 			rabbitmq_username: 'RabbitMQ-Benutzername',
 			rabbitmq_password: 'RabbitMQ-Passwort',
 			protocol: 'Protokoll des Monitors',
-			interval: 'Prüfintervall (s)',
+			interval: 'Intervall',
+			timeout: 'Timeout',
 			name_monitor: 'Name des Monitors',
 			retry: 'Wiederholungen',
-			interval_retry: 'Abstand zwischen Wiederholungen (s)',
+			interval_retry: 'Abstand',
 			alert_repeat_seconds: 'Alarm erneut senden alle (s)',
 			notifications: 'Benachrichtigungen',
 			remove_confirmation: 'Namen des Monitors bestätigen',
@@ -332,8 +342,6 @@ const de: typeof en = {
 				'„SMTPS“ prüft implizites SMTP/TLS; „TLS ignorieren“ verbindet im Klartext; „STARTTLS“ verbindet, sendet STARTTLS und prüft das Serverzertifikat. Keine dieser Prüfungen versendet eine E-Mail.',
 			rabbitmq_management_nodes:
 				'Geben Sie die URLs der RabbitMQ-Management-Knoten samt Protokoll und Port an, durch Kommas getrennt. Beispiel: https://node1.rabbitmq.com:15672',
-			internal_retry:
-				'Anzahl der Wiederholungen, bevor der Dienst als ausgefallen gilt und eine Benachrichtigung ausgeht',
 			alert_repeat_seconds:
 				'Solange der Monitor ausgefallen bleibt, wird der Alarm in diesem Abstand erneut über dieselben Kanäle gesendet. 0 sendet wie bisher nur eine einzige Benachrichtigung. Minimum 60 s.',
 			check_interval: 'Prüfung alle {{ interval }} Sekunden',

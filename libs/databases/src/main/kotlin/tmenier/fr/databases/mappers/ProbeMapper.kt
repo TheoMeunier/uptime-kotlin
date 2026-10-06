@@ -140,6 +140,7 @@ object ProbeMapper {
             id = dto.id
             name = dto.name
             interval = dto.interval
+            timeout = dto.timeout
             retry = dto.retry
             intervalRetry = dto.intervalRetry
             enabled = dto.enabled

@@ -118,6 +118,7 @@ const en = {
 		password_must_differ: 'New password must be different from the current password',
 		password_required: 'Password is required',
 		alert_repeat_seconds: 'Use 0 to disable, or at least 60 seconds',
+		timeout_interval: 'The timeout must be shorter than the interval',
 		recurrence_until_after_start: 'The recurrence must end after its first occurrence',
 	},
 
@@ -204,6 +205,13 @@ const en = {
 			target: 'What to monitor',
 			schedule: 'Schedule',
 			schedule_description: 'How often the probe runs, and how it retries before raising an alert.',
+			schedule_check: 'Check',
+			schedule_check_description: 'One check per interval, abandoned if no answer arrives within the timeout.',
+			schedule_retry: 'On failure',
+			schedule_retry_description:
+				'How many retries, and how long between them, before the service is marked down and a notification is sent.',
+			unit_seconds: 's',
+			unit_times: 'times',
 			settings: 'Settings',
 			notifications_description: 'Channels alerted when this monitor goes down.',
 		},
@@ -266,10 +274,11 @@ const en = {
 			rabbitmq_username: 'RabbitMQ username',
 			rabbitmq_password: 'RabbitMQ password',
 			protocol: 'Monitor protocol',
-			interval: 'Check interval (s)',
+			interval: 'Interval',
+			timeout: 'Timeout',
 			name_monitor: 'Monitor name',
 			retry: 'Retries',
-			interval_retry: 'Retry interval (s)',
+			interval_retry: 'Retry delay',
 			alert_repeat_seconds: 'Resend alert every (s)',
 			notifications: 'Notifications',
 			remove_confirmation: 'Confirm the monitor name',
@@ -326,7 +335,6 @@ const en = {
 				"'SMTPS' tests implicit SMTP/TLS; 'Ignore TLS' connects in plain text; 'STARTTLS' connects, sends STARTTLS and verifies the server certificate. None of these checks sends an email.",
 			rabbitmq_management_nodes:
 				'Enter RabbitMQ management node URLs including protocol and port, separated by commas. Example: https://node1.rabbitmq.com:15672',
-			internal_retry: 'Maximum retries before the service is marked as down and a notification is sent',
 			alert_repeat_seconds:
 				'While the monitor stays down, announce the alert again on the same channels at this interval. 0 sends a single notification, as before. Minimum 60 s.',
 			check_interval: 'Check every {{ interval }} seconds',

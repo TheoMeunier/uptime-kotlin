@@ -121,6 +121,7 @@ const es: typeof en = {
 		password_must_differ: 'La nueva contraseña debe ser distinta de la actual',
 		password_required: 'La contraseña es obligatoria',
 		alert_repeat_seconds: 'Use 0 para desactivar, o al menos 60 segundos',
+		timeout_interval: 'El tiempo de espera debe ser menor que el intervalo',
 		recurrence_until_after_start: 'La recurrencia debe terminar después de su primera repetición',
 	},
 
@@ -208,6 +209,14 @@ const es: typeof en = {
 			schedule: 'Planificación',
 			schedule_description:
 				'Con qué frecuencia se ejecuta la comprobación y cómo reintenta antes de lanzar una alerta.',
+			schedule_check: 'Comprobación',
+			schedule_check_description:
+				'Una comprobación por intervalo, abandonada si no llega respuesta dentro del tiempo de espera.',
+			schedule_retry: 'En caso de fallo',
+			schedule_retry_description:
+				'Cuántos reintentos, y cuánto esperar entre ellos, antes de marcar el servicio como caído y notificar.',
+			unit_seconds: 's',
+			unit_times: 'veces',
 			settings: 'Ajustes',
 			notifications_description: 'Canales avisados cuando este monitor cae.',
 		},
@@ -270,10 +279,11 @@ const es: typeof en = {
 			rabbitmq_username: 'Nombre de usuario de RabbitMQ',
 			rabbitmq_password: 'Contraseña de RabbitMQ',
 			protocol: 'Protocolo del monitor',
-			interval: 'Intervalo de comprobación (s)',
+			interval: 'Intervalo',
+			timeout: 'Tiempo de espera',
 			name_monitor: 'Nombre del monitor',
 			retry: 'Reintentos',
-			interval_retry: 'Intervalo entre reintentos (s)',
+			interval_retry: 'Espaciado',
 			alert_repeat_seconds: 'Reenviar la alerta cada (s)',
 			notifications: 'Notificaciones',
 			remove_confirmation: 'Confirme el nombre del monitor',
@@ -330,7 +340,6 @@ const es: typeof en = {
 				'«SMTPS» prueba SMTP/TLS implícito; «Ignorar TLS» conecta en texto plano; «STARTTLS» conecta, envía STARTTLS y verifica el certificado del servidor. Ninguna de estas comprobaciones envía un correo.',
 			rabbitmq_management_nodes:
 				'Introduzca las URL de los nodos de gestión de RabbitMQ, con protocolo y puerto, separadas por comas. Ejemplo: https://node1.rabbitmq.com:15672',
-			internal_retry: 'Número de reintentos antes de marcar el servicio como caído y enviar una notificación',
 			alert_repeat_seconds:
 				'Mientras el monitor siga caído, la alerta se reenvía por los mismos canales con este intervalo. 0 envía una sola notificación, como antes. Mínimo 60 s.',
 			check_interval: 'Comprobación cada {{ interval }} segundos',

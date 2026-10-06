@@ -16,7 +16,8 @@ import { buildProbeFieldsConfig } from '@/features/probes/components/config/prob
 import { Link } from 'react-router';
 import HttpAdvancedFieldsForm from '@/features/probes/components/forms/http-advanced-fields-form.tsx';
 import UnsavedChangesGuard from '@/components/molecules/forms/unsaved-changes-guard.tsx';
-import { type ComponentType, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ComponentProps, type ComponentType, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { cn } from '@/lib/utils';
 import { Controller, type FieldPath, type FieldPathValue } from 'react-hook-form';
 import LogRetentionSelect from '@/features/settings/components/log-retention-select.tsx';
 import RetentionReductionDialog from '@/features/settings/components/retention-reduction-dialog.tsx';
@@ -36,6 +37,42 @@ interface ProbeFormProps {
 	isLoading?: boolean;
 	probeId?: string;
 	serverError?: unknown;
+}
+
+/** Sub-block of the schedule section: a titled pair of related fields, separated from the next by a rule. */
+function ScheduleGroup({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+	return (
+		<div className="flex flex-col gap-4 py-5 first:pt-0 last:pb-0">
+			<div className="flex flex-col gap-1">
+				<p className="text-sm font-medium">{title}</p>
+				<p className="text-muted-foreground text-xs leading-relaxed">{description}</p>
+			</div>
+			<div className="grid grid-cols-2 items-start gap-3">{children}</div>
+		</div>
+	);
+}
+
+/** Number input with its unit shown inside the field, so labels stay short. */
+function InputWithUnit({ unit, className, ...props }: ComponentProps<typeof Input> & { unit: string }) {
+	return (
+		<div className="relative">
+			<Input
+				type="number"
+				inputMode="numeric"
+				className={cn(
+					'pr-12 tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+					className
+				)}
+				{...props}
+			/>
+			<span
+				aria-hidden="true"
+				className="text-muted-foreground pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs"
+			>
+				{unit}
+			</span>
+		</div>
+	);
 }
 
 function FormSection({
@@ -174,39 +211,69 @@ export default function ProbeForm({
 						description={t('monitors.section.schedule_description')}
 						icon={Clock}
 					>
-						<div className="grid gap-4 sm:grid-cols-3">
-							<Field>
-								<FieldLabel htmlFor="interval">{t('monitors.label.interval')}</FieldLabel>
-								<Input
-									{...form.register('interval', { valueAsNumber: true })}
-									id="interval"
-									type="number"
-									min={10}
-									required
-								/>
-								<FieldError>{errors.interval?.message}</FieldError>
-							</Field>
+						<div className="flex flex-col divide-y">
+							<ScheduleGroup
+								title={t('monitors.section.schedule_check')}
+								description={t('monitors.section.schedule_check_description')}
+							>
+								<Field>
+									<FieldLabel htmlFor="interval">{t('monitors.label.interval')}</FieldLabel>
+									<InputWithUnit
+										{...form.register('interval', { valueAsNumber: true })}
+										id="interval"
+										unit={t('monitors.section.unit_seconds')}
+										min={10}
+										max={3600}
+										required
+									/>
+									<FieldError>{errors.interval?.message}</FieldError>
+								</Field>
 
-							<Field>
-								<FieldLabel htmlFor="retry">{t('monitors.label.retry')}</FieldLabel>
-								<Input {...form.register('retry', { valueAsNumber: true })} id="retry" type="number" min={0} required />
-								<FieldError>{errors.retry?.message}</FieldError>
-							</Field>
+								<Field>
+									<FieldLabel htmlFor="timeout">{t('monitors.label.timeout')}</FieldLabel>
+									<InputWithUnit
+										{...form.register('timeout', { valueAsNumber: true })}
+										id="timeout"
+										unit={t('monitors.section.unit_seconds')}
+										min={1}
+										max={120}
+										required
+									/>
+									<FieldError>{errors.timeout?.message}</FieldError>
+								</Field>
+							</ScheduleGroup>
 
-							<Field>
-								<FieldLabel htmlFor="interval_retry">{t('monitors.label.interval_retry')}</FieldLabel>
-								<Input
-									{...form.register('interval_retry', { valueAsNumber: true })}
-									id="interval_retry"
-									type="number"
-									min={0}
-									required
-								/>
-								<FieldError>{errors.interval_retry?.message}</FieldError>
-							</Field>
+							<ScheduleGroup
+								title={t('monitors.section.schedule_retry')}
+								description={t('monitors.section.schedule_retry_description')}
+							>
+								<Field>
+									<FieldLabel htmlFor="retry">{t('monitors.label.retry')}</FieldLabel>
+									<InputWithUnit
+										{...form.register('retry', { valueAsNumber: true })}
+										id="retry"
+										unit={t('monitors.section.unit_times')}
+										min={1}
+										max={10}
+										required
+									/>
+									<FieldError>{errors.retry?.message}</FieldError>
+								</Field>
+
+								<Field>
+									<FieldLabel htmlFor="interval_retry">{t('monitors.label.interval_retry')}</FieldLabel>
+									<InputWithUnit
+										{...form.register('interval_retry', { valueAsNumber: true })}
+										id="interval_retry"
+										unit={t('monitors.section.unit_seconds')}
+										min={1}
+										max={3600}
+										required
+									/>
+									<FieldError>{errors.interval_retry?.message}</FieldError>
+								</Field>
+							</ScheduleGroup>
 						</div>
-
-						<FieldDescription>{t('monitors.description.internal_retry')}</FieldDescription>
 					</FormSection>
 
 					{protocol === ProbeProtocol.HTTP && (

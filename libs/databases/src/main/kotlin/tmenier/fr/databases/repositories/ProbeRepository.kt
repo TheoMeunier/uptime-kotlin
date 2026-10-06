@@ -181,6 +181,7 @@ class ProbeRepository(
         val entity = findById(dto.id)
         entity.name = dto.name
         entity.interval = dto.interval
+        entity.timeout = dto.timeout
         entity.intervalRetry = dto.intervalRetry
         entity.retry = dto.retry
         entity.protocol = dto.protocol
