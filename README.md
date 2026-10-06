@@ -104,6 +104,9 @@ services:
     - `SCHEDULER_WORKER_CONCURRENCY` (default `4`): checks run in parallel.
     - `MAINTENANCE_HORIZON_DAYS` (default `90`) and `MAINTENANCE_MAX_DURATION_HOURS` (default `24`): maintenance
       windows, same values on the application and the workers.
+    - `NOTIFICATIONS_DISPLAY_TIMEZONE` (default `UTC`): zone of the dates shown in Slack, Teams and e-mail
+      notifications (IANA name, e.g. `Europe/Paris`), same value on the application and the workers. Webhook
+      payloads stay in UTC (ISO-8601).
 
    <details>
    <summary>Use your own JWT keys</summary>

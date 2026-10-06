@@ -7,20 +7,18 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.NotificationDateFormatter
 import tmenier.fr.notifications.NotificationHttpClient
 import tmenier.fr.notifications.resolvers.OutageWindow
 import java.net.http.HttpRequest
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 @ApplicationScoped
 class TeamsNotificationService(
     private val http: NotificationHttpClient,
+    private val dates: NotificationDateFormatter,
 ) : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Teams> {
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC)
-
     override fun sendSuccess(
         content: NotificationContent.Teams,
         probe: ProbeDTO,
@@ -95,7 +93,7 @@ class TeamsNotificationService(
     ): String {
         val escapedTitle = escapeJson(title)
         val escapedMessage = escapeJson(message)
-        val formattedDate = dateFormatter.format(runAt)
+        val formattedDate = dates.format(runAt)
 
         return """
             {
