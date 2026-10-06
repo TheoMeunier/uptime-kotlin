@@ -89,14 +89,14 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = getResponseTime(start),
                 message = "DNS lookup successful: $description in ${getResponseTime(start)} ms",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (e: Exception) {
             ProbeResult(
                 status = getStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "DNS lookup failed: ${e.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

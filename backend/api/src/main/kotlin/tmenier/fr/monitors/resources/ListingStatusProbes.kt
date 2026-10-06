@@ -15,7 +15,7 @@ import tmenier.fr.databases.repositories.ProbeRepository
 import java.security.MessageDigest
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Base64
 
 @Path("/api/probes/status")
@@ -67,7 +67,7 @@ class ListingStatusProbes(
     }
 
     private fun fingerprint(now: Instant): String {
-        val probes = probeRepository.getStatusFingerprint(since = LocalDateTime.now().minusHours(LAST_HOUR))
+        val probes = probeRepository.getStatusFingerprint(since = Instant.now().minus(LAST_HOUR, ChronoUnit.HOURS))
         val maintenance =
             maintenanceOccurrenceRepository.getStatusFingerprint(
                 from = now.minus(Duration.ofDays(UPTIME_WINDOW_DAYS)),

@@ -71,7 +71,7 @@ class ProbeProtocolHttp(
                 status = getStatus(true, isLastAttempt, probe),
                 responseTime = getResponseTime(startedAt),
                 message = messages.joinToString("; "),
-                runAt = getRunAt(startedAt),
+                runAt = startedAt,
                 statusCode = lastStatusCode,
                 responseBody = lastBody,
                 tlsExpiresAt = tls.expiresAt,
@@ -82,7 +82,7 @@ class ProbeProtocolHttp(
                 status = getStatus(false, isLastAttempt, probe),
                 responseTime = getResponseTime(startedAt),
                 message = "HTTP check failed: ${e.message}",
-                runAt = getRunAt(startedAt),
+                runAt = startedAt,
                 tlsExpiresAt = tls.expiresAt,
                 tlsCheckedAt = tls.checkedAt,
             )

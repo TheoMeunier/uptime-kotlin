@@ -17,7 +17,6 @@ import tmenier.fr.schedulers.jobs.ProbeLogRetentionService
 import tmenier.fr.schedulers.jobs.RefreshTokenPurgeService
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 
 @QuarkusTest
@@ -68,7 +67,7 @@ class SingleInstanceDeploymentTest {
         val retry = awaitRetry(probeId, within = Duration.ofSeconds(10))
         assertEquals("PENDING", retry.status)
         assertTrue(
-            retry.availableAt.isAfter(LocalDateTime.now().plusSeconds(200)),
+            retry.availableAt.isAfter(Instant.now().plusSeconds(200)),
             "the retry waits interval_retry (300s): available at ${retry.availableAt}",
         )
     }

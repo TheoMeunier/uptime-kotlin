@@ -8,7 +8,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @Entity
@@ -26,13 +26,13 @@ class RefreshTokenEntity : PanacheEntityBase {
     lateinit var refreshToken: UUID
 
     @Column(name = "expired_at", nullable = false)
-    lateinit var expiredAt: LocalDateTime
+    lateinit var expiredAt: Instant
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    lateinit var createdAt: LocalDateTime
+    lateinit var createdAt: Instant
 
     @Column(name = "last_used_at")
-    var lastUsedAt: LocalDateTime? = null
+    var lastUsedAt: Instant? = null
 
     @Column(name = "user_agent", length = 512)
     var userAgent: String? = null

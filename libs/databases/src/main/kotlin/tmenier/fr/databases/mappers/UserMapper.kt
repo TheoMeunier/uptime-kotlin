@@ -2,7 +2,7 @@ package tmenier.fr.databases.mappers
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.databases.entities.UserEntity
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @RegisterForReflection
@@ -11,7 +11,7 @@ data class UserDto(
     val name: String,
     val email: String,
     val password: String,
-    val createdAt: LocalDateTime? = null,
+    val createdAt: Instant? = null,
 )
 
 object UserMapper {
@@ -30,6 +30,6 @@ object UserMapper {
             name = userDto.name
             email = userDto.email
             password = userDto.password
-            createdAt = userDto.createdAt ?: LocalDateTime.now()
+            createdAt = userDto.createdAt ?: Instant.now()
         }
 }

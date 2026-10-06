@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 @Entity
@@ -33,7 +33,7 @@ class ProbesMonitorsLogEntity : PanacheEntityBase {
     lateinit var probe: ProbesEntity
 
     @Column(name = "run_at", nullable = false, updatable = false)
-    lateinit var runAt: LocalDateTime
+    lateinit var runAt: Instant
 
     @Column(name = "probe_check_job_id", updatable = false)
     var checkTaskId: UUID? = null

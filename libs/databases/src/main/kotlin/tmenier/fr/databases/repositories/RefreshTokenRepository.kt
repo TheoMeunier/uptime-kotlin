@@ -9,7 +9,8 @@ import tmenier.fr.databases.mappers.RefreshTokenDto
 import tmenier.fr.databases.mappers.RefreshTokenMapper
 import tmenier.fr.databases.mappers.UserDto
 import tmenier.fr.databases.mappers.UserMapper
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @ApplicationScoped
@@ -25,7 +26,7 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
             "user.id = ?1 and expiredAt > ?2",
             Sort.by("createdAt", Sort.Direction.Descending),
             userId,
-            LocalDateTime.now(),
+            Instant.now(),
         ).list().map(RefreshTokenMapper::fromEntity)
 
     fun storeRefreshToken(
@@ -41,8 +42,8 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
                 this.id = id
                 this.user = UserMapper.toEntity(userDto)
                 this.refreshToken = refreshToken
-                createdAt = LocalDateTime.now()
-                expiredAt = LocalDateTime.now().plusDays(REFRESH_TOKEN_LIFETIME_DAYS)
+                createdAt = Instant.now()
+                expiredAt = Instant.now().plus(REFRESH_TOKEN_LIFETIME_DAYS, ChronoUnit.DAYS)
                 this.userAgent = userAgent?.take(USER_AGENT_MAX_LENGTH)
                 this.ipAddress = ipAddress?.take(IP_ADDRESS_MAX_LENGTH)
             }.persist()
@@ -56,13 +57,13 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
         userAgent: String? = null,
         ipAddress: String? = null,
     ): Boolean {
-        val now = LocalDateTime.now()
+        val now = Instant.now()
 
         return update(
             "refreshToken = ?1, lastUsedAt = ?2, expiredAt = ?3, userAgent = ?4, ipAddress = ?5 where id = ?6",
             newRefreshToken,
             now,
-            now.plusDays(REFRESH_TOKEN_LIFETIME_DAYS),
+            now.plus(REFRESH_TOKEN_LIFETIME_DAYS, ChronoUnit.DAYS),
             userAgent?.take(USER_AGENT_MAX_LENGTH),
             ipAddress?.take(IP_ADDRESS_MAX_LENGTH),
             id,
@@ -78,7 +79,7 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
 
     fun revokeAllForUser(userId: UUID): Long = delete("user.id = ?1", userId)
 
-    fun purgeExpired(now: LocalDateTime = LocalDateTime.now()): Long = delete("expiredAt <= ?1", now)
+    fun purgeExpired(now: Instant = Instant.now()): Long = delete("expiredAt <= ?1", now)
 
     companion object {
         const val REFRESH_TOKEN_LIFETIME_DAYS = 3L

@@ -21,7 +21,7 @@ import java.net.InetSocketAddress
 import java.net.http.HttpClient
 import java.nio.charset.StandardCharsets
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.Base64
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
@@ -467,8 +467,8 @@ class ProbeProtocolHttpTest {
         lastRun = null,
         status = ProbeMonitorLogStatus.SUCCESS,
         content = content,
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now(),
+        createdAt = Instant.now(),
+        updatedAt = Instant.now(),
     )
 
     private fun url(path: String) = "http://localhost:${server?.address?.port ?: 0}$path"

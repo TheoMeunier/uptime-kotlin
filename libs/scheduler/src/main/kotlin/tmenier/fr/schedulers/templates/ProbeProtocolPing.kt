@@ -72,14 +72,14 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
                 status = status,
                 responseTime = avgResponseTime,
                 message = message,
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (e: Exception) {
             ProbeResult(
                 status = if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING,
                 responseTime = getResponseTime(start),
                 message = "Ping failed: ${e.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

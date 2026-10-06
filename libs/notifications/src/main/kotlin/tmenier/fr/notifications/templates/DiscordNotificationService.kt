@@ -13,7 +13,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
-import java.time.LocalDateTime
+import java.time.Instant
 
 @ApplicationScoped
 class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInterfaces<NotificationContent.Discord> {
@@ -59,7 +59,7 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
     override fun sendTest(content: NotificationContent.Discord) {
         sendDiscordEmbed(
             content,
-            buildEmbed("Test", "Test notification", 0x0000FF, LocalDateTime.now(), ProbeMonitorLogStatus.SUCCESS),
+            buildEmbed("Test", "Test notification", 0x0000FF, Instant.now(), ProbeMonitorLogStatus.SUCCESS),
         )
     }
 
@@ -69,7 +69,7 @@ class DiscordNotificationService : tmenier.fr.notifications.TypedNotificationInt
         title: String,
         description: String,
         color: Int,
-        runAt: LocalDateTime,
+        runAt: Instant,
         status: ProbeMonitorLogStatus,
         reminderIndex: Int = 0,
         headlineSuffix: String = "",

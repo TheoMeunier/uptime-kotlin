@@ -11,18 +11,17 @@ import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
 import tmenier.fr.databases.repositories.WorkerHeartbeatRepository
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 
 data class ProbeRun(
-    val runAt: LocalDateTime,
+    val runAt: Instant,
     val jobId: UUID?,
 )
 
 data class QueuedCheck(
     val attempt: Int,
     val status: String,
-    val availableAt: LocalDateTime,
+    val availableAt: Instant,
 )
 
 /** Direct database access for the deployment tests: create Probes, read what the engine did. */
@@ -55,7 +54,7 @@ class QueueFixtures(
                 protocol = ProbeProtocol.TCP
                 content = objectMapper.valueToTree(mapOf("url" to "127.0.0.1", "tcpPort" to port))
                 regionsOrder = objectMapper.valueToTree(listOf(region))
-                nextCheckAt = LocalDateTime.now()
+                nextCheckAt = Instant.now()
             }
         em.persist(probe)
         return probe.id
@@ -74,7 +73,7 @@ class QueueFixtures(
                     probeId = probeId,
                     region = jobRegion,
                     attemptNumber = 1,
-                    scheduleAt = LocalDateTime.now(),
+                    scheduleAt = Instant.now(),
                     availableAt = Instant.now(),
                 ),
             )
@@ -96,19 +95,19 @@ class QueueFixtures(
         rows(
             "SELECT run_at, probe_check_job_id FROM probes_monitors_logs WHERE probe_id = :id ORDER BY run_at",
             probeId,
-        ).map { ProbeRun(toLocalDateTime(it[0]), it[1] as UUID?) }
+        ).map { ProbeRun(toInstant(it[0]), it[1] as UUID?) }
 
     @Transactional
     fun queuedChecks(probeId: UUID): List<QueuedCheck> =
         rows(
             "SELECT probe_attempt, status, available_at FROM probe_check_jobs WHERE probe_id = :id ORDER BY probe_attempt",
             probeId,
-        ).map { QueuedCheck((it[0] as Number).toInt(), it[1].toString(), toLocalDateTime(it[2])) }
+        ).map { QueuedCheck((it[0] as Number).toInt(), it[1].toString(), toInstant(it[2])) }
 
     @Transactional
     fun heartbeatsInRegion(
         region: String,
-        since: java.time.Instant,
+        since: Instant,
     ): Long =
         (
             em
@@ -128,12 +127,11 @@ class QueueFixtures(
             .setParameter("id", probeId)
             .resultList as List<Array<Any?>>
 
-    private fun toLocalDateTime(value: Any?): LocalDateTime =
+    private fun toInstant(value: Any?): Instant =
         when (value) {
-            is LocalDateTime -> value
-            is java.sql.Timestamp -> value.toLocalDateTime()
-            is java.time.Instant -> LocalDateTime.ofInstant(value, java.time.ZoneId.systemDefault())
-            is java.time.OffsetDateTime -> value.atZoneSameInstant(java.time.ZoneId.systemDefault()).toLocalDateTime()
+            is Instant -> value
+            is java.time.OffsetDateTime -> value.toInstant()
+            is java.sql.Timestamp -> value.toInstant()
             else -> error("Unexpected timestamp type ${value?.javaClass}")
         }
 }

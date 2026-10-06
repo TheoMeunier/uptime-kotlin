@@ -6,7 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.AdvisoryLockRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
-import java.time.LocalDateTime
+import java.time.Instant
 
 @ApplicationScoped
 class ProbeLogRetentionService(
@@ -16,7 +16,7 @@ class ProbeLogRetentionService(
     @Scheduled(cron = "0 30 3 * * ?", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun purgeExpiredLogs() {
         try {
-            val purged = purge(LocalDateTime.now())
+            val purged = purge(Instant.now())
             if (purged > 0) {
                 logger.info { "Purged $purged probe log(s) past their retention" }
             }
@@ -26,7 +26,7 @@ class ProbeLogRetentionService(
     }
 
     fun purge(
-        now: LocalDateTime,
+        now: Instant,
         batchSize: Int = BATCH_SIZE,
         maxPerRun: Int = MAX_PER_RUN,
     ): Int {

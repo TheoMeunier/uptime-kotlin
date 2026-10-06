@@ -26,14 +26,14 @@ class ProbeProtocolRabbitMq(
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = responseTime,
                 message = "RabbitMQ management nodes healthy in ${responseTime}ms",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (error: Exception) {
             ProbeResult(
                 status = failureStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "RabbitMQ health check failed: ${error.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

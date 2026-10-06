@@ -10,7 +10,6 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import tmenier.fr.common.enums.probes.QueueJobStatus
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
@@ -34,7 +33,7 @@ class ProbeCheckTaskEntity : PanacheEntityBase {
     var status: QueueJobStatus = QueueJobStatus.PENDING
 
     @Column(name = "scheduled_at", nullable = false)
-    lateinit var scheduledAt: LocalDateTime
+    lateinit var scheduledAt: Instant
 
     @Column(name = "available_at", nullable = false)
     lateinit var availableAt: Instant
@@ -59,5 +58,5 @@ class ProbeCheckTaskEntity : PanacheEntityBase {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    lateinit var createdAt: LocalDateTime
+    lateinit var createdAt: Instant
 }

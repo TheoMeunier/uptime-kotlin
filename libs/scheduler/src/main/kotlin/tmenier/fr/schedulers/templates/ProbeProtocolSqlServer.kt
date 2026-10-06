@@ -26,14 +26,14 @@ class ProbeProtocolSqlServer(
                 status = ProbeMonitorLogStatus.SUCCESS,
                 responseTime = responseTime,
                 message = "Microsoft SQL Server connection successful in ${responseTime}ms",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         } catch (error: Exception) {
             ProbeResult(
                 status = failureStatus(isLastAttempt, probe),
                 responseTime = getResponseTime(start),
                 message = "Microsoft SQL Server connection failed: ${error.message}",
-                runAt = getRunAt(start),
+                runAt = start,
             )
         }
     }

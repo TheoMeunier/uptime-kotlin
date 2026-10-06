@@ -19,7 +19,7 @@ import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
 import java.time.Instant
-import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @ApplicationScoped
@@ -51,14 +51,14 @@ class ProbeRepository(
     private fun findProbesWithLastHourLogs(): List<ProbesEntity> =
         find(
             "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ORDER BY p.name ASC",
-            LocalDateTime.now().minusHours(1),
+            Instant.now().minus(1, ChronoUnit.HOURS),
         ).list().sortedBy { it.name.lowercase() }
 
     fun getProbesStatusMetrics(): Map<UUID, ProbeStatusMetrics> {
-        val now = LocalDateTime.now()
-        val since24h = now.minusHours(24)
-        val since7d = now.minusDays(7)
-        val since30d = now.minusDays(30)
+        val now = Instant.now()
+        val since24h = now.minus(24, ChronoUnit.HOURS)
+        val since7d = now.minus(7, ChronoUnit.DAYS)
+        val since30d = now.minus(30, ChronoUnit.DAYS)
 
         val jpql =
             """
@@ -97,12 +97,12 @@ class ProbeRepository(
                             d7 = ratio(row[4], row[3]),
                             d30 = ratio(row[6], row[5]),
                         ),
-                    lastSuccessAt = row[7] as LocalDateTime?,
+                    lastSuccessAt = row[7] as Instant?,
                 )
         }
     }
 
-    fun getStatusFingerprint(since: LocalDateTime): ProbesStatusFingerprint {
+    fun getStatusFingerprint(since: Instant): ProbesStatusFingerprint {
         val probes =
             em
                 .createQuery(
@@ -132,9 +132,9 @@ class ProbeRepository(
         return ProbesStatusFingerprint(
             enabledProbes = asLong(probes[0]),
             failingProbes = asLong(probes[1]),
-            lastProbeUpdateAt = probes[2] as LocalDateTime?,
+            lastProbeUpdateAt = probes[2] as Instant?,
             logsInWindow = asLong(logs[0]),
-            lastLogAt = logs[1] as LocalDateTime?,
+            lastLogAt = logs[1] as Instant?,
         )
     }
 
@@ -203,7 +203,7 @@ class ProbeRepository(
     ) {
         val entity = findById(probeId)
         entity.status = status
-        entity.updatedAt = LocalDateTime.now()
+        entity.updatedAt = Instant.now()
         entity.persist()
     }
 
@@ -232,7 +232,7 @@ class ProbeRepository(
         probe.nextAlertAt = null
         probe.alertRepeatCount = 0
         probe.failingSince = null
-        probe.nextCheckAt = if (dto.enabled) LocalDateTime.now() else null
+        probe.nextCheckAt = if (dto.enabled) Instant.now() else null
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)
         }
