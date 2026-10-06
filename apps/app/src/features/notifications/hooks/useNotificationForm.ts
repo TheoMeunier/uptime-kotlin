@@ -24,7 +24,6 @@ const webhookNotificationSchema = baseStoreNotificationSchema.extend({
 
 const telegramNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('TELEGRAM'),
-	// Empty on update keeps the stored token, which the API never sends back.
 	bot_token: z
 		.string()
 		.trim()
