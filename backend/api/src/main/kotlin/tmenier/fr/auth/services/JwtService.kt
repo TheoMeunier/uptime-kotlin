@@ -20,16 +20,23 @@ class JwtService {
         userId: UUID,
         username: String,
         email: String,
-    ): String =
-        Jwt
+    ): String {
+        val now = Instant.now()
+
+        return Jwt
             .claims()
             .subject(userId.toString())
             .issuer(jwtIssuer)
-            .issuedAt(Instant.now())
-            .expiresAt(Instant.now().plus(Duration.ofHours(10)))
+            .issuedAt(now)
+            .expiresAt(now.plus(ACCESS_TOKEN_LIFETIME))
             .claim("name", username)
             .claim("email", email)
             .sign(keyProvider.privateKey)
+    }
 
     fun generateRefreshToken(): UUID = UUID.randomUUID()
+
+    companion object {
+        val ACCESS_TOKEN_LIFETIME: Duration = Duration.ofMinutes(15)
+    }
 }

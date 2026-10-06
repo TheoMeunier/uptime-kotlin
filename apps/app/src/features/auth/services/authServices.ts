@@ -4,6 +4,8 @@ import { auth } from '@/features/auth/enums/auth-enum.ts';
 import jwtDecode from '@/lib/jwt-decode.ts';
 import { createApiError } from '@/api/api-error.ts';
 
+const REFRESH_LOCK = 'uptime-auth-refresh';
+
 interface User {
 	username: string;
 	email: string;
@@ -47,10 +49,6 @@ const authService = {
 		localStorage.setItem('user', JSON.stringify({ username, email }));
 	},
 
-	/**
-	 * Drops the local credentials only. Used on paths where the refresh token is already known to be
-	 * rejected by the server, so there is nothing left to revoke.
-	 */
 	clearSession() {
 		localStorage.removeItem(auth.TOKEN);
 		localStorage.removeItem(auth.REFRESH_TOKEN);
@@ -58,11 +56,6 @@ const authService = {
 		localStorage.removeItem('user');
 	},
 
-	/**
-	 * Revokes the refresh token server side before clearing the local credentials, so the session
-	 * cannot be resumed from a copy of the token. The local state is cleared even when the call
-	 * fails: the user asked to be logged out of this browser either way.
-	 */
 	async logout(): Promise<void> {
 		const refresh = this.getRefreshToken();
 
@@ -88,6 +81,22 @@ const authService = {
 			return false;
 		}
 
+		if (!navigator.locks) {
+			return this.refreshWith(refresh);
+		}
+
+		return navigator.locks.request(REFRESH_LOCK, () => {
+			const current = this.getRefreshToken();
+
+			if (current && current !== refresh) {
+				return true;
+			}
+
+			return this.refreshWith(refresh);
+		});
+	},
+
+	async refreshWith(refresh: string): Promise<boolean> {
 		try {
 			const res = await fetch(`/api/auth/refresh`, {
 				method: 'POST',

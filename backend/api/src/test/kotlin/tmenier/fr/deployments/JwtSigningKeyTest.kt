@@ -15,6 +15,7 @@ import tmenier.fr.auth.services.JwtService
 import tmenier.fr.databases.repositories.JwtSigningKeyRepository
 import tmenier.fr.databases.repositories.StoredJwtSigningKey
 import java.time.Instant
+import java.util.Base64
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -42,6 +43,17 @@ class JwtSigningKeyTest {
             .get("/api/probes")
             .then()
             .statusCode(200)
+    }
+
+    @Test
+    fun `an access token is only valid for fifteen minutes`() {
+        val token = jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com")
+        val payload = String(Base64.getUrlDecoder().decode(token.split('.')[1]))
+
+        val issuedAt = Regex("\"iat\":(\\d+)").find(payload)!!.groupValues[1].toLong()
+        val expiresAt = Regex("\"exp\":(\\d+)").find(payload)!!.groupValues[1].toLong()
+
+        assertEquals(15 * 60L, expiresAt - issuedAt)
     }
 
     @Test
