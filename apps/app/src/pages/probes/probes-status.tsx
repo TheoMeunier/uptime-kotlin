@@ -22,7 +22,6 @@ type StatusLayout = 'grid' | 'list';
 
 const LAYOUT_STORAGE_KEY = 'uptime-kotlin.status-layout';
 
-/* Choix propre a chaque visiteur : la page est publique, il n'y a pas de compte ou le ranger. */
 function readStoredLayout(): StatusLayout {
 	try {
 		return localStorage.getItem(LAYOUT_STORAGE_KEY) === 'list' ? 'list' : 'grid';
@@ -35,13 +34,12 @@ function storeLayout(layout: StatusLayout) {
 	try {
 		localStorage.setItem(LAYOUT_STORAGE_KEY, layout);
 	} catch {
-		/* Stockage indisponible (navigation privee) : le choix vaut pour la session en cours. */
+		// Storage
 	}
 }
 
 type StatusItem = ProbeStatusShowResponse[number];
 
-/* Grille et liste prennent la meme lecture des 30 jours, sinon un meme service changerait de couleur. */
 function uptimeTone(value: number) {
 	const state = uptimeState(value);
 
@@ -123,7 +121,6 @@ export default function ProbesStatus() {
 							<p className="text-sm sm:text-base text-muted-foreground mt-1">{t('pages.status_page.subtitle')}</p>
 						</div>
 
-						{/* The status page is public and has no app chrome: the selector has to live here. */}
 						<div className="ml-auto flex items-center gap-1 self-start">
 							<ToggleGroup
 								type="single"
@@ -135,7 +132,6 @@ export default function ProbesStatus() {
 									storeLayout(value);
 								}}
 								aria-label={t('pages.status_page.layout.label')}
-								/* Sous md les deux dispositions donnent la meme colonne : inutile d'encombrer l'en-tete. */
 								className="bg-muted/60 hidden rounded-lg p-1 md:flex"
 							>
 								<ToggleGroupItem
@@ -278,17 +274,10 @@ function StatusGridCard({ item }: { item: StatusItem }) {
 	);
 }
 
-/*
- * Une carte basse par service, avec des colonnes alignees d'une carte a l'autre. La legende du temps
- * est donnee une fois dans l'en-tete plutot que repetee sous chaque carte.
- */
+
 const LIST_COLUMNS = 'lg:grid lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:items-center lg:gap-8';
 const LIST_BAR_COUNT = 60;
 
-/*
- * Liseré de couleur seulement quand il y a quelque chose a regarder : un service sain reste neutre,
- * comme partout ailleurs dans l'application (voir lib/status.ts).
- */
 function attentionAccent(item: StatusItem): string | null {
 	if (item.maintenance) return 'bg-status-maintenance';
 	if (item.probe.status === ProbeStatusEnum.FAILURE) return 'bg-status-down';
@@ -297,7 +286,6 @@ function attentionAccent(item: StatusItem): string | null {
 	return null;
 }
 
-/* Le schema https:// n'apprend rien au visiteur et mange la moitie de la colonne. */
 function displayTarget(url: string) {
 	return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 }
@@ -307,7 +295,6 @@ function StatusList({ items }: { items: StatusItem[] }) {
 
 	return (
 		<div>
-			{/* Bordure transparente : meme largeur utile que les cartes, donc colonnes alignees au pixel. */}
 			<div
 				className={`text-muted-foreground hidden border-x border-transparent px-5 pb-2 text-xs font-medium ${LIST_COLUMNS}`}
 			>
@@ -327,10 +314,6 @@ function StatusList({ items }: { items: StatusItem[] }) {
 	);
 }
 
-/*
- * Pas de badge ni de chiffre : les barres portent l'historique et le liseré signale ce qui demande
- * de l'attention.
- */
 function StatusListRow({ item }: { item: StatusItem }) {
 	const { t } = useTranslation();
 
