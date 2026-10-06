@@ -1,9 +1,7 @@
 import NotificationTypeEnum from '@/features/notifications/enums/notification-type-enum.ts';
 import type { TFunction } from 'i18next';
 
-// Fabrique, et non constante : voir probe-type.ts.
 export function buildNotificationFieldsConfig(t: TFunction) {
-	// Discord, Teams and Slack only differ by the shape of their webhook URL.
 	const chatWebhookFields = (placeholder: string) => [
 		{
 			name: 'webhook_url',

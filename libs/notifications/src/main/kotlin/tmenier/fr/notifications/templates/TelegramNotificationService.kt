@@ -15,12 +15,6 @@ import tmenier.fr.notifications.resolvers.OutageWindow
 import java.time.Duration
 import java.time.Instant
 
-/**
- * Sends alerts through the Telegram Bot API (`sendMessage`, HTML parse mode).
- *
- * The bot token is part of the request URL: it is never logged nor put in an
- * exception message.
- */
 @ApplicationScoped
 class TelegramNotificationService(
     private val http: NotificationHttpClient,
@@ -101,7 +95,6 @@ class TelegramNotificationService(
         http.deliver("Telegram", request, ::describe)
     }
 
-    /** Keeps Telegram's own `description` ("Bad Request: chat not found"…), which is what the user can act on. */
     private fun describe(body: String): String = DESCRIPTION.find(body)?.groupValues?.get(1) ?: body.take(200)
 
     private fun escapeHtml(text: String): String =
@@ -111,7 +104,6 @@ class TelegramNotificationService(
             .replace(">", "&gt;")
 
     companion object {
-        // Telegram rejects messages over 4096 characters; the probe detail is the only unbounded part.
         private const val MAX_DETAIL_LENGTH = 3000
         private val DESCRIPTION = Regex("\"description\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"")
     }
