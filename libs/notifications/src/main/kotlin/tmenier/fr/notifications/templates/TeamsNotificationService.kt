@@ -4,13 +4,12 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
-import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.JsonText
 import tmenier.fr.notifications.NotificationDateFormatter
 import tmenier.fr.notifications.NotificationHttpClient
 import tmenier.fr.notifications.resolvers.OutageWindow
-import java.net.http.HttpRequest
 import java.time.Duration
 import java.time.Instant
 
@@ -91,8 +90,8 @@ class TeamsNotificationService(
         runAt: Instant,
         status: ProbeMonitorLogStatus,
     ): String {
-        val escapedTitle = escapeJson(title)
-        val escapedMessage = escapeJson(message)
+        val escapedTitle = JsonText.escape(title)
+        val escapedMessage = JsonText.escape(message)
         val formattedDate = dates.format(runAt)
 
         return """
@@ -123,34 +122,5 @@ class TeamsNotificationService(
     private fun sendTeamsNotification(
         content: NotificationContent.Teams,
         jsonPayload: String,
-    ) {
-        try {
-            val request =
-                http
-                    .request(content.webhookUrl)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build()
-
-            val response = http.send(request)
-
-            logger.info { "Teams API response: ${response.statusCode()}" }
-
-            if (response.statusCode() !in setOf(200, 204)) {
-                throw IllegalStateException("Teams returned HTTP ${response.statusCode()}: ${response.body()}")
-            }
-            logger.info { "Teams notification sent successfully" }
-        } catch (e: Exception) {
-            logger.error(e) { "Exception while sending Teams notification: ${e.message}" }
-            throw e
-        }
-    }
-
-    private fun escapeJson(text: String): String =
-        text
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r")
-            .replace("\t", "\\t")
+    ) = http.deliver("Teams", http.postJson(content.webhookUrl, jsonPayload))
 }

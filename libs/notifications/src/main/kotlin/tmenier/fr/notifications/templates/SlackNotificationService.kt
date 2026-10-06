@@ -4,13 +4,12 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
-import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.JsonText
 import tmenier.fr.notifications.NotificationDateFormatter
 import tmenier.fr.notifications.NotificationHttpClient
 import tmenier.fr.notifications.resolvers.OutageWindow
-import java.net.http.HttpRequest
 import java.time.Duration
 import java.time.Instant
 
@@ -91,8 +90,8 @@ class SlackNotificationService(
         runAt: Instant,
         status: ProbeMonitorLogStatus,
     ): String {
-        val escapedTitle = escapeJson(title)
-        val escapedMessage = escapeJson(message)
+        val escapedTitle = JsonText.escape(title)
+        val escapedMessage = JsonText.escape(message)
         val formattedDate = dates.format(runAt)
 
         val emoji =
@@ -146,34 +145,5 @@ class SlackNotificationService(
     private fun sendSlackNotification(
         content: NotificationContent.Slack,
         jsonPayload: String,
-    ) {
-        try {
-            val request =
-                http
-                    .request(content.webhookUrl)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build()
-
-            val response = http.send(request)
-
-            logger.info { "Slack API response: ${response.statusCode()}" }
-
-            if (response.statusCode() != 200) {
-                throw IllegalStateException("Slack returned HTTP ${response.statusCode()}: ${response.body()}")
-            }
-            logger.info { "Slack notification sent successfully" }
-        } catch (e: Exception) {
-            logger.error(e) { "Exception while sending Slack notification: ${e.message}" }
-            throw e
-        }
-    }
-
-    private fun escapeJson(text: String): String =
-        text
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r")
-            .replace("\t", "\\t")
+    ) = http.deliver("Slack", http.postJson(content.webhookUrl, jsonPayload))
 }

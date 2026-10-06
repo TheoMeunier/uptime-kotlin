@@ -6,9 +6,9 @@ import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.enums.notifications.NotificationEvent
-import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.JsonText
 import tmenier.fr.notifications.NotificationHttpClient
 import java.net.http.HttpRequest
 import java.time.Duration
@@ -87,8 +87,8 @@ class WebhookNotificationService(
         reminderIndex: Int = 0,
         downtime: Duration? = null,
     ): String {
-        val escapedName = name.replace("\"", "\\\"").replace("\n", "\\n")
-        val escapedMessage = message.replace("\"", "\\\"").replace("\n", "\\n")
+        val escapedName = JsonText.escape(name)
+        val escapedMessage = JsonText.escape(message)
 
         return """
             {
@@ -107,33 +107,11 @@ class WebhookNotificationService(
         content: NotificationContent.Webhook,
         jsonPayload: String,
     ) {
-        try {
-            logger.info { "Sending Webhook notification to: ${content.url.take(50)}... [${content.method}]" }
-            logger.debug { "Payload: $jsonPayload" }
-
-            val bodyPublisher =
-                when (content.method) {
-                    HttpMethodEnum.GET -> HttpRequest.BodyPublishers.noBody()
-                    else -> HttpRequest.BodyPublishers.ofString(jsonPayload)
-                }
-
-            val requestBuilder =
-                http
-                    .request(content.url)
-                    .header("Content-Type", "application/json")
-                    .method(content.method.toString().uppercase(), bodyPublisher)
-
-            val response = http.send(requestBuilder.build())
-
-            logger.info { "Webhook response: ${response.statusCode()} - ${response.body()}" }
-
-            if (response.statusCode() !in 200..299) {
-                throw IllegalStateException("Webhook returned HTTP ${response.statusCode()}: ${response.body()}")
+        val body =
+            when (content.method) {
+                HttpMethodEnum.GET -> HttpRequest.BodyPublishers.noBody()
+                else -> HttpRequest.BodyPublishers.ofString(jsonPayload)
             }
-            logger.info { "Webhook notification sent successfully" }
-        } catch (e: Exception) {
-            logger.error(e) { "Exception while sending Webhook notification: ${e.message}" }
-            throw e
-        }
+        http.deliver("Webhook", http.request(content.url).method(content.method.name, body).build())
     }
 }

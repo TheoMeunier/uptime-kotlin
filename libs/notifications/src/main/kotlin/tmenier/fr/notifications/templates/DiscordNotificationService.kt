@@ -4,12 +4,11 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
-import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
+import tmenier.fr.notifications.JsonText
 import tmenier.fr.notifications.NotificationHttpClient
 import tmenier.fr.notifications.resolvers.OutageWindow
-import java.net.http.HttpRequest
 import java.time.Duration
 import java.time.Instant
 
@@ -72,8 +71,8 @@ class DiscordNotificationService(
         reminderIndex: Int = 0,
         headlineSuffix: String = "",
     ): String {
-        val escapedTitle = title.replace("\"", "\\\"").replace("\n", "\\n")
-        val escapedDescription = description.replace("\"", "\\\"").replace("\n", "\\n")
+        val escapedTitle = JsonText.escape(title)
+        val escapedDescription = JsonText.escape(description)
         val headline =
             if (reminderIndex > 0) {
                 "Your service $escapedTitle is STILL $status (reminder #$reminderIndex)"
@@ -97,29 +96,5 @@ class DiscordNotificationService(
     private fun sendDiscordEmbed(
         content: NotificationContent.Discord,
         jsonPayload: String,
-    ) {
-        try {
-            logger.info { "Sending Discord notification to: ${content.webhookUrl.take(50)}..." }
-            logger.debug { "Payload: $jsonPayload" }
-
-            val request =
-                http
-                    .request(content.webhookUrl)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build()
-
-            val response = http.send(request)
-
-            logger.info { "Discord API response: ${response.statusCode()}" }
-
-            if (response.statusCode() !in setOf(200, 204)) {
-                throw IllegalStateException("Discord returned HTTP ${response.statusCode()}: ${response.body()}")
-            }
-            logger.info { "Discord notification sent successfully" }
-        } catch (e: Exception) {
-            logger.error(e) { "Exception while sending Discord notification: ${e.message}" }
-            throw e
-        }
-    }
+    ) = http.deliver("Discord", http.postJson(content.webhookUrl, jsonPayload))
 }

@@ -19,30 +19,21 @@ object NotificationContentMapper {
     fun toDTO(
         notification: NotificationsChannelEntity,
         isPassword: Boolean = true,
-    ): NotificationContent =
-        when (notification.type) {
-            NotificationChannelsEnum.DISCORD -> {
-                objectMapper.treeToValue(notification.content, NotificationContent.Discord::class.java)
-            }
+    ): NotificationContent {
+        val node = notification.content
+        if (notification.type == NotificationChannelsEnum.MAIL && isPassword) (node as ObjectNode).remove("password")
+        return objectMapper.treeToValue(node, contentClass(notification.type))
+    }
 
-            NotificationChannelsEnum.TEAMS -> {
-                objectMapper.treeToValue(notification.content, NotificationContent.Teams::class.java)
-            }
-
-            NotificationChannelsEnum.SLACK -> {
-                objectMapper.treeToValue(notification.content, NotificationContent.Slack::class.java)
-            }
-
-            NotificationChannelsEnum.MAIL -> {
-                val node = notification.content as ObjectNode
-                if (isPassword) node.remove("password")
-                objectMapper.treeToValue(node, NotificationContent.Mail::class.java)
-            }
-
-            NotificationChannelsEnum.WEBHOOK -> {
-                objectMapper.treeToValue(notification.content, NotificationContent.Webhook::class.java)
-            }
-        } as NotificationContent
+    private fun contentClass(type: NotificationChannelsEnum): Class<out NotificationContent> =
+        when (type) {
+            NotificationChannelsEnum.DISCORD -> NotificationContent.Discord::class.java
+            NotificationChannelsEnum.TEAMS -> NotificationContent.Teams::class.java
+            NotificationChannelsEnum.SLACK -> NotificationContent.Slack::class.java
+            NotificationChannelsEnum.MAIL -> NotificationContent.Mail::class.java
+            NotificationChannelsEnum.WEBHOOK -> NotificationContent.Webhook::class.java
+            NotificationChannelsEnum.TELEGRAM -> NotificationContent.Telegram::class.java
+        }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
         val type =
@@ -52,6 +43,7 @@ object NotificationContentMapper {
                 is NotificationContent.Slack -> NotificationChannelsEnum.SLACK
                 is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
                 is NotificationContent.Webhook -> NotificationChannelsEnum.WEBHOOK
+                is NotificationContent.Telegram -> NotificationChannelsEnum.TELEGRAM
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 

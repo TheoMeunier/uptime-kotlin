@@ -31,6 +31,13 @@ sealed interface NotificationContent {
     ) : NotificationContent
 
     @RegisterForReflection
+    data class Telegram(
+        val botToken: String,
+        val chatId: String,
+        val messageThreadId: Long? = null,
+    ) : NotificationContent
+
+    @RegisterForReflection
     data class Mail(
         val hostname: String,
         val port: Int,
