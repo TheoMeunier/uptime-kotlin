@@ -6,4 +6,7 @@ enum class NotificationChannelsEnum {
     TEAMS,
     SLACK,
     WEBHOOK,
+
+    // Stored by ordinal in notifications_channels.type: append new channels, never reorder.
+    GOTIFY,
 }

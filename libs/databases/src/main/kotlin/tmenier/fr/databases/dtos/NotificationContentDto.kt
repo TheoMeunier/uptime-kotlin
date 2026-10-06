@@ -42,4 +42,16 @@ sealed interface NotificationContent {
         val to: String,
         val cc: List<String>? = null,
     ) : NotificationContent
+
+    /** [token] holds the Gotify application token encrypted with EncryptionService. */
+    @RegisterForReflection
+    data class Gotify(
+        val serverUrl: String,
+        val token: String? = null,
+        val priority: Int = DEFAULT_GOTIFY_PRIORITY,
+    ) : NotificationContent {
+        companion object {
+            const val DEFAULT_GOTIFY_PRIORITY = 5
+        }
+    }
 }

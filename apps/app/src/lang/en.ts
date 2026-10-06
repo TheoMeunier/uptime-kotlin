@@ -60,6 +60,9 @@ const en = {
 			enabled: 'Enabled',
 			method: 'Method',
 			bot_name: 'Bot name',
+			server_url: 'Server URL',
+			app_token: 'Application token',
+			priority: 'Priority',
 		},
 		placeholder: {
 			email: 'john.doe@exemple.com',
@@ -71,6 +74,8 @@ const en = {
 		},
 		description: {
 			password: 'Must be at least 8 characters long',
+			app_token: 'Created in Gotify under Apps. Leave blank to keep the current token.',
+			gotify_priority: '0 to 10. Gotify clients show priority 8 and above as urgent.',
 		},
 	},
 
@@ -117,6 +122,7 @@ const en = {
 		passwords_mismatch: 'Passwords do not match',
 		password_must_differ: 'New password must be different from the current password',
 		password_required: 'Password is required',
+		token_required: 'Application token is required',
 		alert_repeat_seconds: 'Use 0 to disable, or at least 60 seconds',
 		timeout_interval: 'The timeout must be shorter than the interval',
 		recurrence_until_after_start: 'The recurrence must end after its first occurrence',

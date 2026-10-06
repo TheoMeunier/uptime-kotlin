@@ -42,7 +42,18 @@ object NotificationContentMapper {
             NotificationChannelsEnum.WEBHOOK -> {
                 objectMapper.treeToValue(notification.content, NotificationContent.Webhook::class.java)
             }
+
+            NotificationChannelsEnum.GOTIFY -> {
+                objectMapper.treeToValue(notification.content, NotificationContent.Gotify::class.java)
+            }
         } as NotificationContent
+
+    /** Strips the secrets that must never be sent back to the browser. */
+    fun redactSecrets(content: NotificationContent): NotificationContent =
+        when (content) {
+            is NotificationContent.Gotify -> content.copy(token = null)
+            else -> content
+        }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
         val type =
@@ -52,6 +63,7 @@ object NotificationContentMapper {
                 is NotificationContent.Slack -> NotificationChannelsEnum.SLACK
                 is NotificationContent.Mail -> NotificationChannelsEnum.MAIL
                 is NotificationContent.Webhook -> NotificationChannelsEnum.WEBHOOK
+                is NotificationContent.Gotify -> NotificationChannelsEnum.GOTIFY
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 
@@ -90,7 +102,7 @@ object NotificationMapper {
             id = entity.id,
             name = entity.name,
             notificationType = entity.type,
-            content = NotificationContentMapper.toDTO(entity, false),
+            content = NotificationContentMapper.redactSecrets(NotificationContentMapper.toDTO(entity, false)),
             isDefault = entity.isDefault,
             createdAt = entity.createdAt,
         )

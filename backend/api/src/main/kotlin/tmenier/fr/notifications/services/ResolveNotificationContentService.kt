@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.encryption.EncryptionService
+import tmenier.fr.common.exceptions.common.BadRequestException
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTeamsRequest
@@ -53,6 +55,13 @@ class ResolveNotificationContentService(
                     method = request.method,
                 )
 
+            is ValidNotificationChannelGotifyRequest ->
+                NotificationContent.Gotify(
+                    serverUrl = request.serverUrl,
+                    token = resolveGotifyToken(request.token, existingNotification),
+                    priority = request.priority ?: NotificationContent.Gotify.DEFAULT_GOTIFY_PRIORITY,
+                )
+
             is ValidNotificationChannelMailRequest ->
                 NotificationContent.Mail(
                     hostname = request.hostname,
@@ -71,6 +80,17 @@ class ResolveNotificationContentService(
 
             else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
         }
+
+    /** A blank token on update keeps the stored one: the API never sends it back to the browser. */
+    private fun resolveGotifyToken(
+        incomingToken: String?,
+        existingNotification: NotificationDto?,
+    ): String {
+        incomingToken?.takeIf(String::isNotBlank)?.let { return encryptionService.encrypt(it) }
+
+        return (existingNotification?.content as? NotificationContent.Gotify)?.token
+            ?: throw BadRequestException("Gotify application token is required")
+    }
 
     private fun resolvePassword(
         incomingPassword: String?,

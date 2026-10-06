@@ -60,6 +60,30 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				options: ['POST', 'GET'],
 			},
 		],
+		[NotificationTypeEnum.GOTIFY]: [
+			{
+				name: 'server_url',
+				label: t('form.label.server_url'),
+				input_type: 'text',
+				placeholder: 'https://gotify.example.com',
+			},
+			{
+				name: 'token',
+				label: t('form.label.app_token'),
+				input_type: 'password',
+				placeholder: '********',
+				description: t('form.description.app_token'),
+			},
+			{
+				name: 'priority',
+				label: t('form.label.priority'),
+				input_type: 'number',
+				placeholder: '5',
+				min: 0,
+				max: 10,
+				description: t('form.description.gotify_priority'),
+			},
+		],
 		[NotificationTypeEnum.MAIL]: [
 			{
 				name: 'hostname',

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -22,6 +23,7 @@ interface OnUpdate
     JsonSubTypes.Type(value = ValidNotificationChannelMailRequest::class, name = "MAIL"),
     JsonSubTypes.Type(value = ValidNotificationChannelSlackRequest::class, name = "SLACK"),
     JsonSubTypes.Type(value = ValidNotificationChannelWebhookRequest::class, name = "WEBHOOK"),
+    JsonSubTypes.Type(value = ValidNotificationChannelGotifyRequest::class, name = "GOTIFY"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -54,6 +56,18 @@ data class ValidNotificationChannelWebhookRequest(
     @field:URL(message = "Invalid URL format")
     val url: String,
     val method: HttpMethodEnum,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelGotifyRequest(
+    @field:NotBlank(message = "Server URL is required")
+    @field:URL(message = "Invalid URL format")
+    val serverUrl: String,
+    @field:NotBlank(message = "Application token is required", groups = [OnCreate::class])
+    var token: String? = null,
+    @field:Min(0, message = "Priority must be between 0 and 10")
+    @field:Max(10, message = "Priority must be between 0 and 10")
+    var priority: Int? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

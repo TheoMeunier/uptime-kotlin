@@ -64,6 +64,9 @@ const fr: typeof en = {
 			enabled: 'Activé',
 			method: 'Méthode',
 			bot_name: 'Nom du bot',
+			server_url: 'URL du serveur',
+			app_token: "Jeton d'application",
+			priority: 'Priorité',
 		},
 		placeholder: {
 			email: 'jean.dupont@exemple.com',
@@ -75,6 +78,8 @@ const fr: typeof en = {
 		},
 		description: {
 			password: 'Au moins 8 caractères',
+			app_token: 'Créé dans Gotify, onglet Apps. Laisser vide pour conserver le jeton actuel.',
+			gotify_priority: 'De 0 à 10. Les clients Gotify affichent les priorités 8 et plus comme urgentes.',
 		},
 	},
 
@@ -121,6 +126,7 @@ const fr: typeof en = {
 		passwords_mismatch: 'Les mots de passe ne correspondent pas',
 		password_must_differ: 'Le nouveau mot de passe doit être différent de l’actuel',
 		password_required: 'Le mot de passe est obligatoire',
+		token_required: "Le jeton d'application est obligatoire",
 		alert_repeat_seconds: 'Utilisez 0 pour désactiver, ou au moins 60 secondes',
 		timeout_interval: 'Le délai d’expiration doit être inférieur à l’intervalle',
 		recurrence_until_after_start: 'La récurrence doit se terminer après sa première occurrence',

@@ -63,6 +63,9 @@ const es: typeof en = {
 			enabled: 'Activado',
 			method: 'Método',
 			bot_name: 'Nombre del bot',
+			server_url: 'URL del servidor',
+			app_token: 'Token de aplicación',
+			priority: 'Prioridad',
 		},
 		placeholder: {
 			email: 'juan.perez@ejemplo.com',
@@ -74,6 +77,8 @@ const es: typeof en = {
 		},
 		description: {
 			password: 'Al menos 8 caracteres',
+			app_token: 'Se crea en Gotify, en Apps. Déjalo vacío para conservar el token actual.',
+			gotify_priority: 'De 0 a 10. Los clientes de Gotify muestran la prioridad 8 o superior como urgente.',
 		},
 	},
 
@@ -120,6 +125,7 @@ const es: typeof en = {
 		passwords_mismatch: 'Las contraseñas no coinciden',
 		password_must_differ: 'La nueva contraseña debe ser distinta de la actual',
 		password_required: 'La contraseña es obligatoria',
+		token_required: 'El token de aplicación es obligatorio',
 		alert_repeat_seconds: 'Use 0 para desactivar, o al menos 60 segundos',
 		timeout_interval: 'El tiempo de espera debe ser menor que el intervalo',
 		recurrence_until_after_start: 'La recurrencia debe terminar después de su primera repetición',

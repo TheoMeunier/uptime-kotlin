@@ -32,6 +32,13 @@ const webhookNotificationSchema = baseStoreNotificationSchema.extend({
 	method: z.enum(['POST', 'GET']),
 });
 
+const gotifyNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('GOTIFY'),
+	server_url: z.url(),
+	token: z.string().max(255).nullish(),
+	priority: z.number().int().min(0).max(10).optional(),
+});
+
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
 	hostname: z.url(),
@@ -49,6 +56,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	teamsNotificationSchema,
 	slackNotificationSchema,
 	webhookNotificationSchema,
+	gotifyNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';
@@ -80,6 +88,15 @@ function createNotificationSchema(mode: NotificationFormMode) {
 				code: z.ZodIssueCode.custom,
 				message: i18n.t('validation.password_required'),
 				path: ['password'],
+			});
+		}
+
+		// On update a blank token keeps the stored one: the API never sends it back.
+		if (mode === 'create' && data.notification_type === 'GOTIFY' && !data.token) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: i18n.t('validation.token_required'),
+				path: ['token'],
 			});
 		}
 	});

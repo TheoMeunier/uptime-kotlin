@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.notifications.NotificationHttpClient
@@ -66,6 +67,14 @@ class NotificationHttpTimeoutTest {
     fun `generic webhook gives up on a receiver that never answers`() =
         assertTimesOut {
             WebhookNotificationService(http).sendTest(NotificationContent.Webhook(HttpMethodEnum.POST, url))
+        }
+
+    @Test
+    fun `gotify gives up on a receiver that never answers`() =
+        assertTimesOut {
+            val encryption = EncryptionService("test-only-master-key-do-not-use-in-production")
+            GotifyNotificationService(http, encryption)
+                .sendTest(NotificationContent.Gotify(url, encryption.encrypt("app-token")))
         }
 
     @Test
