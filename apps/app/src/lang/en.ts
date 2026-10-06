@@ -546,6 +546,64 @@ const en = {
 		last_7_days: 'Last 7 days',
 	},
 
+	onboarding: {
+		progress: 'Step {{current}} of {{total}}',
+		actions: {
+			start: "Let's go",
+			next: 'Next',
+			previous: 'Back',
+			skip: 'Skip tour',
+			finish: 'Done',
+			create_monitor: 'Create my first monitor',
+		},
+		steps: {
+			welcome: {
+				title: 'Welcome to Uptime Kotlin',
+				description:
+					'A quick tour of the interface — about a minute. You can replay this guide at any time from your profile menu.',
+			},
+			new_monitor: {
+				title: 'Create a monitor',
+				description:
+					'A monitor regularly checks that a service answers: website (HTTP), TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka or RabbitMQ. Start here.',
+			},
+			dashboard: {
+				title: 'Dashboard',
+				description: 'The big picture: monitors up and down, average uptime, response times and the latest events.',
+			},
+			monitors: {
+				title: 'Your monitors',
+				description:
+					'Every monitor is listed here with its live status. Open one to see its history and response times, or run a check right away. Use the filter once the list grows.',
+			},
+			maintenances: {
+				title: 'Maintenance',
+				description:
+					'Schedule a maintenance window before planned work: alerts stay silent and uptime is not counted against you, while checks keep running.',
+			},
+			status_page: {
+				title: 'Status page',
+				description:
+					'A public page, no sign-in required, to share with your users so they can see how your services are doing.',
+			},
+			header: {
+				title: 'Freshness and theme',
+				description:
+					'Data refreshes on its own every minute; this indicator shows the last update. Next to it, switch between light and dark themes.',
+			},
+			settings: {
+				title: 'Settings',
+				description:
+					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, ntfy, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
+			},
+			done: {
+				title: "You're all set",
+				description:
+					'The most useful next step: create your first monitor, then attach a notification so you get alerted.',
+			},
+		},
+	},
+
 	layout: {
 		breadcrumb: {
 			monitor: 'Monitor',
@@ -581,6 +639,7 @@ const en = {
 			},
 			settings: 'Settings',
 			logout: 'Logout',
+			guide: 'User guide',
 			dashboard: 'Dashboard',
 			status_page: 'Status page',
 			maintenances: 'Maintenance',

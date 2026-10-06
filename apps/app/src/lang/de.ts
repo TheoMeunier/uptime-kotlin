@@ -558,6 +558,65 @@ const de: typeof en = {
 		last_7_days: 'Letzte 7 Tage',
 	},
 
+	onboarding: {
+		progress: 'Schritt {{current}} von {{total}}',
+		actions: {
+			start: 'Los geht’s',
+			next: 'Weiter',
+			previous: 'Zurück',
+			skip: 'Tour überspringen',
+			finish: 'Fertig',
+			create_monitor: 'Ersten Monitor erstellen',
+		},
+		steps: {
+			welcome: {
+				title: 'Willkommen bei Uptime Kotlin',
+				description:
+					'Ein kurzer Rundgang durch die Oberfläche – etwa eine Minute. Sie können diese Anleitung jederzeit über Ihr Profilmenü erneut starten.',
+			},
+			new_monitor: {
+				title: 'Monitor erstellen',
+				description:
+					'Ein Monitor prüft regelmäßig, ob ein Dienst antwortet: Website (HTTP), TCP-Port, Ping, DNS, Datenbanken (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka oder RabbitMQ. Beginnen Sie hier.',
+			},
+			dashboard: {
+				title: 'Dashboard',
+				description:
+					'Der Überblick: verfügbare und ausgefallene Monitore, durchschnittliche Verfügbarkeit, Antwortzeiten und die letzten Ereignisse.',
+			},
+			monitors: {
+				title: 'Ihre Monitore',
+				description:
+					'Alle Monitore werden hier mit ihrem Live-Status aufgelistet. Öffnen Sie einen, um Verlauf und Antwortzeiten zu sehen oder sofort eine Prüfung auszulösen. Der Filter hilft, wenn die Liste wächst.',
+			},
+			maintenances: {
+				title: 'Wartung',
+				description:
+					'Planen Sie vor Arbeiten ein Wartungsfenster: Alarme bleiben stumm und die Verfügbarkeit wird nicht angerechnet, die Prüfungen laufen aber weiter.',
+			},
+			status_page: {
+				title: 'Statusseite',
+				description:
+					'Eine öffentliche Seite ohne Anmeldung, die Sie mit Ihren Nutzern teilen können, um den Zustand Ihrer Dienste zu zeigen.',
+			},
+			header: {
+				title: 'Aktualität und Design',
+				description:
+					'Die Daten werden jede Minute automatisch aktualisiert; diese Anzeige zeigt die letzte Aktualisierung. Daneben wechseln Sie zwischen hellem und dunklem Design.',
+			},
+			settings: {
+				title: 'Einstellungen',
+				description:
+					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
+			},
+			done: {
+				title: 'Alles bereit',
+				description:
+					'Der nützlichste nächste Schritt: Erstellen Sie Ihren ersten Monitor und verknüpfen Sie ihn mit einer Benachrichtigung.',
+			},
+		},
+	},
+
 	layout: {
 		breadcrumb: {
 			monitor: 'Monitor',
@@ -593,6 +652,7 @@ const de: typeof en = {
 			},
 			settings: 'Einstellungen',
 			logout: 'Abmelden',
+			guide: 'Benutzerhandbuch',
 			dashboard: 'Übersicht',
 			status_page: 'Statusseite',
 			maintenances: 'Wartung',

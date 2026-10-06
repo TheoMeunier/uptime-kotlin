@@ -31,6 +31,9 @@ class UserEntity : PanacheEntityBase {
     @Column(name = "created_at", nullable = false, updatable = false)
     lateinit var createdAt: Instant
 
+    @Column(name = "onboarding_completed_at")
+    var onboardingCompletedAt: Instant? = null
+
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
     var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()
 }

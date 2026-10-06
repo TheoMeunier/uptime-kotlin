@@ -12,7 +12,7 @@ import {
 	SidebarTrigger,
 } from '@/components/atoms/sidebar.tsx';
 import { Button } from '@/components/atoms/button.tsx';
-import { Activity, BadgeCheck, ChevronsUpDown, Home, LogOut, Plus, Wrench } from 'lucide-react';
+import { Activity, BadgeCheck, ChevronsUpDown, Compass, Home, LogOut, Plus, Wrench } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { useMemo } from 'react';
@@ -40,6 +40,8 @@ import ThemeToggle from '@/components/molecules/theme-toggle.tsx';
 import LastUpdated from '@/components/molecules/last-updated.tsx';
 import SidebarMonitors from '@/components/molecules/sidebar-monitors.tsx';
 import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
+import GuidedTour from '@/features/onboarding/components/guided-tour.tsx';
+import useOnboardingTour from '@/features/onboarding/hooks/useOnboardingTour.ts';
 
 export default function Layout() {
 	const { t } = useTranslation();
@@ -47,6 +49,7 @@ export default function Layout() {
 	const user = authServices.getUser();
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
+	const tour = useOnboardingTour(user.email);
 
 	const { data, isLoading, dataUpdatedAt } = useQuery({
 		queryKey: ['probes'],
@@ -87,23 +90,23 @@ export default function Layout() {
 
 				<SidebarContent className="flex min-h-0 flex-col gap-4 overflow-hidden p-2">
 					<SidebarGroupContent className="shrink-0">
-						<Button asChild className="flex w-full items-center gap-2 p-3 font-medium">
+						<Button asChild className="flex w-full items-center gap-2 p-3 font-medium" data-tour="new-monitor">
 							<Link to={'/monitors/new'}>
 								<Plus size={18} /> {t('layout.sidebar.new_monitor')}
 							</Link>
 						</Button>
 						<SidebarMenuItem className="mt-6 space-y-2">
-							<SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard')}>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard')} data-tour="dashboard">
 								<Link to={'/dashboard'}>
 									<Home size={18} /> {t('layout.sidebar.dashboard')}
 								</Link>
 							</SidebarMenuButton>
-							<SidebarMenuButton asChild isActive={pathname.startsWith('/maintenances')}>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/maintenances')} data-tour="maintenances">
 								<Link to={'/maintenances'}>
 									<Wrench size={18} /> {t('layout.sidebar.maintenances')}
 								</Link>
 							</SidebarMenuButton>
-							<SidebarMenuButton asChild isActive={pathname.startsWith('/status')}>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/status')} data-tour="status-page">
 								<Link to={'/status'}>
 									<Activity size={18} /> {t('layout.sidebar.status_page')}
 								</Link>
@@ -121,6 +124,7 @@ export default function Layout() {
 								<DropdownMenuTrigger asChild>
 									<SidebarMenuButton
 										size="lg"
+										data-tour="user-menu"
 										className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 									>
 										<Avatar className="h-8 w-8 rounded-lg">
@@ -159,6 +163,11 @@ export default function Layout() {
 											</DropdownMenuItem>
 										</Link>
 
+										<DropdownMenuItem onSelect={tour.start}>
+											<Compass />
+											{t('layout.sidebar.guide')}
+										</DropdownMenuItem>
+
 										<DropdownMenuItem onClick={logout}>
 											<LogOut />
 											{t('layout.sidebar.logout')}
@@ -177,7 +186,7 @@ export default function Layout() {
 					<Separator orientation="vertical" className="mr-1 data-[orientation=vertical]:h-4" />
 					<PageBreadcrumb />
 
-					<div className="ml-auto flex shrink-0 items-center gap-2">
+					<div className="ml-auto flex shrink-0 items-center gap-2" data-tour="header-tools">
 						<LastUpdated at={dataUpdatedAt} />
 						<ThemeToggle />
 					</div>
@@ -186,6 +195,8 @@ export default function Layout() {
 					<Outlet />
 				</main>
 			</SidebarInset>
+
+			{tour.open && <GuidedTour onClose={tour.close} />}
 		</SidebarProvider>
 	);
 }

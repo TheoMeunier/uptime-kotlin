@@ -554,6 +554,64 @@ const es: typeof en = {
 		last_7_days: 'Últimos 7 días',
 	},
 
+	onboarding: {
+		progress: 'Paso {{current}} de {{total}}',
+		actions: {
+			start: 'Empezar',
+			next: 'Siguiente',
+			previous: 'Atrás',
+			skip: 'Omitir la guía',
+			finish: 'Terminar',
+			create_monitor: 'Crear mi primer monitor',
+		},
+		steps: {
+			welcome: {
+				title: 'Bienvenido a Uptime Kotlin',
+				description:
+					'Un recorrido rápido por la interfaz, alrededor de un minuto. Puede volver a abrir esta guía en cualquier momento desde el menú de su perfil.',
+			},
+			new_monitor: {
+				title: 'Crear un monitor',
+				description:
+					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka o RabbitMQ. Empiece por aquí.',
+			},
+			dashboard: {
+				title: 'Panel',
+				description:
+					'La vista general: monitores operativos y caídos, disponibilidad media, tiempos de respuesta y últimos eventos.',
+			},
+			monitors: {
+				title: 'Sus monitores',
+				description:
+					'Todos sus monitores aparecen aquí con su estado en tiempo real. Abra uno para ver su historial y tiempos de respuesta, o lanzar una comprobación inmediata. El filtro ayuda cuando la lista crece.',
+			},
+			maintenances: {
+				title: 'Mantenimiento',
+				description:
+					'Programe una ventana de mantenimiento antes de una intervención: las alertas quedan en silencio y la disponibilidad no se descuenta, pero las comprobaciones continúan.',
+			},
+			status_page: {
+				title: 'Página de estado',
+				description:
+					'Una página pública, sin inicio de sesión, para compartir con sus usuarios y mostrarles el estado de sus servicios.',
+			},
+			header: {
+				title: 'Actualización y tema',
+				description:
+					'Los datos se actualizan solos cada minuto; este indicador muestra la última actualización. Al lado, cambie entre tema claro y oscuro.',
+			},
+			settings: {
+				title: 'Ajustes',
+				description:
+					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
+			},
+			done: {
+				title: 'Todo listo',
+				description: 'Lo más útil ahora: crear su primer monitor y asociarle una notificación para recibir alertas.',
+			},
+		},
+	},
+
 	layout: {
 		breadcrumb: {
 			monitor: 'Monitor',
@@ -589,6 +647,7 @@ const es: typeof en = {
 			},
 			settings: 'Ajustes',
 			logout: 'Cerrar sesión',
+			guide: 'Guía de uso',
 			dashboard: 'Panel',
 			status_page: 'Página de estado',
 			maintenances: 'Mantenimiento',

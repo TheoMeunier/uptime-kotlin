@@ -560,6 +560,65 @@ const fr: typeof en = {
 		last_7_days: 'Derniers 7 jours',
 	},
 
+	onboarding: {
+		progress: 'Étape {{current}} sur {{total}}',
+		actions: {
+			start: 'C’est parti',
+			next: 'Suivant',
+			previous: 'Précédent',
+			skip: 'Passer le guide',
+			finish: 'Terminer',
+			create_monitor: 'Créer ma première sonde',
+		},
+		steps: {
+			welcome: {
+				title: 'Bienvenue sur Uptime Kotlin',
+				description:
+					'Un rapide tour de l’interface, environ une minute. Vous pourrez relancer ce guide à tout moment depuis le menu de votre profil.',
+			},
+			new_monitor: {
+				title: 'Créer une sonde',
+				description:
+					'Une sonde vérifie régulièrement qu’un service répond : site web (HTTP), port TCP, ping, DNS, bases de données (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka ou RabbitMQ. Commencez par là.',
+			},
+			dashboard: {
+				title: 'Tableau de bord',
+				description:
+					'La vue d’ensemble : sondes opérationnelles et en échec, disponibilité moyenne, temps de réponse et derniers événements.',
+			},
+			monitors: {
+				title: 'Vos sondes',
+				description:
+					'Toutes vos sondes sont listées ici avec leur état en temps réel. Ouvrez-en une pour voir son historique et ses temps de réponse, ou lancer une vérification immédiate. Le filtre aide quand la liste s’allonge.',
+			},
+			maintenances: {
+				title: 'Maintenance',
+				description:
+					'Planifiez une fenêtre de maintenance avant une intervention : les alertes restent silencieuses et la disponibilité n’est pas décomptée, mais les vérifications continuent.',
+			},
+			status_page: {
+				title: 'Page de statut',
+				description:
+					'Une page publique, sans connexion, à partager avec vos utilisateurs pour leur montrer l’état de vos services.',
+			},
+			header: {
+				title: 'Fraîcheur et thème',
+				description:
+					'Les données se rafraîchissent seules chaque minute ; cet indicateur montre la dernière mise à jour. À côté, basculez entre thème clair et sombre.',
+			},
+			settings: {
+				title: 'Paramètres',
+				description:
+					'Votre compte, votre mot de passe et surtout les notifications — Discord, Slack, Teams, Telegram, ntfy, e-mail ou webhook — pour être prévenu dès qu’un service tombe. La langue, la rétention des journaux et ce guide s’y trouvent aussi.',
+			},
+			done: {
+				title: 'Vous êtes prêt',
+				description:
+					'Le plus utile maintenant : créer votre première sonde, puis lui associer une notification pour être alerté.',
+			},
+		},
+	},
+
 	layout: {
 		breadcrumb: {
 			monitor: 'Sonde',
@@ -595,6 +654,7 @@ const fr: typeof en = {
 			},
 			settings: 'Paramètres',
 			logout: 'Se déconnecter',
+			guide: 'Guide d’utilisation',
 			dashboard: 'Tableau de bord',
 			status_page: 'Page de statut',
 			maintenances: 'Maintenance',

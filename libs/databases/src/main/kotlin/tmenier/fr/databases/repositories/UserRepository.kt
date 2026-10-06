@@ -6,6 +6,7 @@ import jakarta.ws.rs.NotFoundException
 import tmenier.fr.databases.entities.UserEntity
 import tmenier.fr.databases.mappers.UserDto
 import tmenier.fr.databases.mappers.UserMapper
+import java.time.Instant
 import java.util.UUID
 
 @ApplicationScoped
@@ -46,5 +47,19 @@ class UserRepository : PanacheRepository<UserEntity> {
 
         userEntity.password = password
         userEntity.persist()
+    }
+
+    fun isOnboardingCompleted(userId: UUID): Boolean = findById(userId).onboardingCompletedAt != null
+
+    fun markOnboardingCompleted(
+        userId: UUID,
+        at: Instant,
+    ) {
+        val userEntity = findById(userId)
+
+        if (userEntity.onboardingCompletedAt == null) {
+            userEntity.onboardingCompletedAt = at
+            userEntity.persist()
+        }
     }
 }
