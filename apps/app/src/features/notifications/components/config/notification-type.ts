@@ -3,49 +3,26 @@ import type { TFunction } from 'i18next';
 
 // Fabrique, et non constante : voir probe-type.ts.
 export function buildNotificationFieldsConfig(t: TFunction) {
+	// Discord, Teams and Slack only differ by the shape of their webhook URL.
+	const chatWebhookFields = (placeholder: string) => [
+		{
+			name: 'webhook_url',
+			label: t('form.label.webhook_url'),
+			input_type: 'text',
+			placeholder,
+		},
+		{
+			name: 'username',
+			label: t('form.label.bot_name'),
+			input_type: 'text',
+			placeholder: t('form.placeholder.bot_name'),
+		},
+	];
+
 	return {
-		[NotificationTypeEnum.DISCORD]: [
-			{
-				name: 'webhook_url',
-				label: t('form.label.webhook_url'),
-				input_type: 'text',
-				placeholder: 'https://discord.com/api/webhooks/...',
-			},
-			{
-				name: 'username',
-				label: t('form.label.bot_name'),
-				input_type: 'text',
-				placeholder: t('form.placeholder.bot_name'),
-			},
-		],
-		[NotificationTypeEnum.TEAMS]: [
-			{
-				name: 'webhook_url',
-				label: t('form.label.webhook_url'),
-				input_type: 'text',
-				placeholder: 'https://microsoft-teams.com/api/webhooks/...',
-			},
-			{
-				name: 'username',
-				label: t('form.label.bot_name'),
-				input_type: 'text',
-				placeholder: t('form.placeholder.bot_name'),
-			},
-		],
-		[NotificationTypeEnum.SLACK]: [
-			{
-				name: 'webhook_url',
-				label: t('form.label.webhook_url'),
-				input_type: 'text',
-				placeholder: 'https://hooks.slack.com/services/...',
-			},
-			{
-				name: 'username',
-				label: t('form.label.bot_name'),
-				input_type: 'text',
-				placeholder: t('form.placeholder.bot_name'),
-			},
-		],
+		[NotificationTypeEnum.DISCORD]: chatWebhookFields('https://discord.com/api/webhooks/...'),
+		[NotificationTypeEnum.TEAMS]: chatWebhookFields('https://microsoft-teams.com/api/webhooks/...'),
+		[NotificationTypeEnum.SLACK]: chatWebhookFields('https://hooks.slack.com/services/...'),
 		[NotificationTypeEnum.WEBHOOK]: [
 			{
 				name: 'url',
@@ -58,6 +35,28 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				label: t('form.label.method'),
 				input_type: 'select',
 				options: ['POST', 'GET'],
+			},
+		],
+		[NotificationTypeEnum.TELEGRAM]: [
+			{
+				name: 'bot_token',
+				label: t('form.label.bot_token'),
+				input_type: 'password',
+				placeholder: '123456789:AAH...',
+				description: t('form.description.bot_token'),
+			},
+			{
+				name: 'chat_id',
+				label: t('form.label.chat_id'),
+				input_type: 'text',
+				placeholder: '-1001234567890',
+				description: t('form.description.chat_id'),
+			},
+			{
+				name: 'message_thread_id',
+				label: t('form.label.message_thread_id'),
+				input_type: 'number',
+				description: t('form.description.message_thread_id'),
 			},
 		],
 		[NotificationTypeEnum.MAIL]: [

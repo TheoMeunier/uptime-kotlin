@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
@@ -22,6 +23,7 @@ interface OnUpdate
     JsonSubTypes.Type(value = ValidNotificationChannelMailRequest::class, name = "MAIL"),
     JsonSubTypes.Type(value = ValidNotificationChannelSlackRequest::class, name = "SLACK"),
     JsonSubTypes.Type(value = ValidNotificationChannelWebhookRequest::class, name = "WEBHOOK"),
+    JsonSubTypes.Type(value = ValidNotificationChannelTelegramRequest::class, name = "TELEGRAM"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -61,6 +63,18 @@ data class ValidNotificationChannelSlackRequest(
     @field:URL(message = "Invalid URL format")
     val webhookUrl: String,
     var username: String? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelTelegramRequest(
+    @field:NotBlank(message = "Bot token is required")
+    @field:Pattern(regexp = "^\\d+:[A-Za-z0-9_-]+$", message = "Invalid bot token format")
+    val botToken: String,
+    @field:NotBlank(message = "Chat id is required")
+    @field:Pattern(regexp = "^(-?\\d+|@[A-Za-z][A-Za-z0-9_]{3,})$", message = "Invalid chat id")
+    val chatId: String,
+    @field:Min(1)
+    val messageThreadId: Long? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

@@ -4,6 +4,7 @@ enum NotificationTypeEnum {
 	TEAMS = 'TEAMS',
 	SLACK = 'SLACK',
 	WEBHOOK = 'WEBHOOK',
+	TELEGRAM = 'TELEGRAM',
 }
 
 export default NotificationTypeEnum;

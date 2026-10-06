@@ -63,6 +63,9 @@ const es: typeof en = {
 			enabled: 'Activado',
 			method: 'Método',
 			bot_name: 'Nombre del bot',
+			bot_token: 'Token del bot',
+			chat_id: 'ID del chat',
+			message_thread_id: 'ID del tema (opcional)',
 		},
 		placeholder: {
 			email: 'juan.perez@ejemplo.com',
@@ -73,6 +76,9 @@ const es: typeof en = {
 			bot_name: 'Uptime Kotlin',
 		},
 		description: {
+			bot_token: 'Lo proporciona @BotFather al crear el bot.',
+			chat_id: 'ID numérico (negativo para grupos y canales) o @nombredelcanal. El bot debe ser miembro del chat.',
+			message_thread_id: 'Para publicar en un tema concreto de un grupo con temas.',
 			password: 'Al menos 8 caracteres',
 		},
 	},
@@ -123,6 +129,8 @@ const es: typeof en = {
 		alert_repeat_seconds: 'Use 0 para desactivar, o al menos 60 segundos',
 		timeout_interval: 'El tiempo de espera debe ser menor que el intervalo',
 		recurrence_until_after_start: 'La recurrencia debe terminar después de su primera repetición',
+		telegram_bot_token: 'Token no válido (formato esperado: 123456789:AAH…)',
+		telegram_chat_id: 'ID de chat no válido (un número o @nombredelcanal)',
 	},
 
 	select: {

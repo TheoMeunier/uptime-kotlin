@@ -12,6 +12,7 @@ import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTeamsRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelWebhookRequest
 
 @ApplicationScoped
@@ -51,6 +52,13 @@ class ResolveNotificationContentService(
                 NotificationContent.Webhook(
                     url = request.url,
                     method = request.method,
+                )
+
+            is ValidNotificationChannelTelegramRequest ->
+                NotificationContent.Telegram(
+                    botToken = request.botToken.trim(),
+                    chatId = request.chatId.trim(),
+                    messageThreadId = request.messageThreadId,
                 )
 
             is ValidNotificationChannelMailRequest ->

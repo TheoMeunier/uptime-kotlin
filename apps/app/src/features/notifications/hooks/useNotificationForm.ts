@@ -8,28 +8,31 @@ const baseStoreNotificationSchema = z.object({
 	is_default: z.boolean().optional(),
 });
 
-const discordNotificationSchema = baseStoreNotificationSchema.extend({
-	notification_type: z.literal('DISCORD'),
-	webhook_url: z.url(),
-	username: z.string().min(3).max(255),
-});
-
-const teamsNotificationSchema = baseStoreNotificationSchema.extend({
-	notification_type: z.literal('TEAMS'),
-	webhook_url: z.url(),
-	username: z.string().min(3).max(255),
-});
-
-const slackNotificationSchema = baseStoreNotificationSchema.extend({
-	notification_type: z.literal('SLACK'),
-	webhook_url: z.url(),
-	username: z.string().min(3).max(255),
-});
+function chatWebhookSchema<T extends 'DISCORD' | 'TEAMS' | 'SLACK'>(type: T) {
+	return baseStoreNotificationSchema.extend({
+		notification_type: z.literal(type),
+		webhook_url: z.url(),
+		username: z.string().min(3).max(255),
+	});
+}
 
 const webhookNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('WEBHOOK'),
 	url: z.url(),
 	method: z.enum(['POST', 'GET']),
+});
+
+const telegramNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('TELEGRAM'),
+	bot_token: z
+		.string()
+		.trim()
+		.regex(/^\d+:[A-Za-z0-9_-]+$/, i18n.t('validation.telegram_bot_token')),
+	chat_id: z
+		.string()
+		.trim()
+		.regex(/^(-?\d+|@[A-Za-z][A-Za-z0-9_]{3,})$/, i18n.t('validation.telegram_chat_id')),
+	message_thread_id: z.number().int().min(1).optional().nullable(),
 });
 
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
@@ -44,11 +47,12 @@ const MailNotificationSchema = baseStoreNotificationSchema.extend({
 });
 
 export const storeNotificationSchema = z.discriminatedUnion('notification_type', [
-	discordNotificationSchema,
+	chatWebhookSchema('DISCORD'),
 	MailNotificationSchema,
-	teamsNotificationSchema,
-	slackNotificationSchema,
+	chatWebhookSchema('TEAMS'),
+	chatWebhookSchema('SLACK'),
 	webhookNotificationSchema,
+	telegramNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';

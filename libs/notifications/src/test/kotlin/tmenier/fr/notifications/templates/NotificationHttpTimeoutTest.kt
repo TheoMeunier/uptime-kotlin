@@ -17,10 +17,6 @@ import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 
-/**
- * A receiver that accepts the request and never answers must make every
- * webhook-based channel fail fast instead of blocking the worker forever.
- */
 class NotificationHttpTimeoutTest {
     private lateinit var server: HttpServer
     private val release = CountDownLatch(1)
@@ -67,6 +63,13 @@ class NotificationHttpTimeoutTest {
     fun `teams gives up on a receiver that never answers`() =
         assertTimesOut {
             TeamsNotificationService(http, NotificationDateFormatter("UTC")).sendTest(NotificationContent.Teams(url, null))
+        }
+
+    @Test
+    fun `telegram gives up on a receiver that never answers`() =
+        assertTimesOut {
+            TelegramNotificationService(http, NotificationDateFormatter("UTC"), "http://127.0.0.1:${server.address.port}")
+                .sendTest(NotificationContent.Telegram("1:token", "42"))
         }
 
     @Test
