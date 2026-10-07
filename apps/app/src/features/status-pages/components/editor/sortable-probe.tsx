@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils';
 
 interface SortableProbeProps {
 	id: string;
-	/* Undefined when the probe was deleted since the page was loaded. */
 	probe?: EditorProbe;
 	onRemove: () => void;
 }

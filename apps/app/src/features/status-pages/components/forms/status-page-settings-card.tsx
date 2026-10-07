@@ -12,7 +12,6 @@ import { fromApiLayout, toApiLayout } from '@/features/status-pages/lib/status-l
 interface StatusPageSettingsCardProps {
 	form: ReturnType<typeof useStatusPageForm>;
 	isSaving: boolean;
-	/* An existing page with nothing to save keeps its button disabled. */
 	canSave: boolean;
 	showUnsaved: boolean;
 }

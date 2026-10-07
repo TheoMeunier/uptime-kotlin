@@ -18,11 +18,6 @@ import {
 	probeIdOf,
 } from '@/features/status-pages/lib/dnd-ids.ts';
 
-/*
- * Reordering groups, reordering probes inside a group, and moving a probe to another group.
- * Crossing groups happens on hover so the target list makes room under the pointer; reordering
- * is committed on drop.
- */
 export default function useGroupsDragAndDrop(groups: EditorGroup[], onChange: (groups: EditorGroup[]) => void) {
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),

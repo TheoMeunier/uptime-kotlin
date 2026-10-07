@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 
 const LIST_BAR_COUNT = 60;
 
-/* No badge and no figure: the bars carry the history, the accent flags what needs a look. */
 export default function StatusListRow({ item }: { item: StatusItem }) {
 	const { t } = useTranslation();
 	const accent = attentionAccent(item);

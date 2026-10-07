@@ -23,7 +23,6 @@ interface ConfirmDialogueProps {
 	isPending?: boolean;
 }
 
-/* Irreversible actions only: the confirm button is always the destructive one. */
 export default function ConfirmDialogue({
 	trigger,
 	icon: Icon,

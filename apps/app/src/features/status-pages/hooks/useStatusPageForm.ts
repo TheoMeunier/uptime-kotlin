@@ -47,15 +47,10 @@ function toPayload(values: StatusPageFormValues): StatusPagePayload {
 	};
 }
 
-/*
- * Local state, not react-hook-form: the groups are a nested, reorderable structure that the drag and
- * drop rewrites wholesale. Dirtiness compares payloads, so a drag that ends where it started is clean.
- */
 export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 	const { t } = useTranslation();
 	const [values, setValues] = useState(() => initialValues(page));
 	const [savedPayload, setSavedPayload] = useState(() => JSON.stringify(toPayload(initialValues(page))));
-	/* An existing page keeps its address: renaming it must not silently break shared links. */
 	const [slugEdited, setSlugEdited] = useState(Boolean(page));
 	const [submitted, setSubmitted] = useState(false);
 
@@ -79,7 +74,6 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 		values,
 		errors,
 		isDirty,
-		/* Errors show once the user tried to save, or as soon as they type an address. */
 		showErrors: submitted,
 		setTitle: (title: string) =>
 			setValues((current) => ({ ...current, title, slug: slugEdited ? current.slug : slugify(title) })),
@@ -90,10 +84,6 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 		setDescription: (description: string) => update({ description }),
 		setDefaultLayout: (defaultLayout: StatusPageLayoutValue) => update({ defaultLayout }),
 		setGroups: (groups: EditorGroup[]) => update({ groups }),
-		/*
-		 * `onSaved` runs in the same tick as the form becomes clean, so a navigation it triggers is not
-		 * caught by the unsaved-changes guard.
-		 */
 		handleSubmit:
 			<T>(onSubmit: (payload: StatusPagePayload) => Promise<T>, onSaved?: (result: T) => void) =>
 			(event: React.FormEvent) => {
@@ -107,9 +97,7 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 						setSavedPayload(snapshot);
 						onSaved?.(result);
 					})
-					.catch(() => {
-						// Already reported by the mutation cache; the form stays dirty so nothing is lost.
-					});
+					.catch(() => {});
 			},
 	};
 }

@@ -5,10 +5,6 @@ interface DragHandleProps extends React.ComponentProps<'button'> {
 	label: string;
 }
 
-/*
- * The only part of a draggable row that starts a drag: inputs and buttons next to it keep working,
- * and keyboard users get a focusable target. Spread the drag library's attributes and listeners on it.
- */
 export default function DragHandle({ label, className, ...props }: DragHandleProps) {
 	return (
 		<button

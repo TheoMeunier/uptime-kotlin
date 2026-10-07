@@ -13,7 +13,6 @@ interface StatusPageListProps {
 	isLoading: boolean;
 }
 
-/* The built-in `/status` comes first: it always exists and cannot be edited or deleted. */
 export default function StatusPageList({ pages, isLoading }: StatusPageListProps) {
 	const { t } = useTranslation();
 

@@ -18,7 +18,6 @@ export function uptimeTone(value: number) {
 	return 'text-foreground';
 }
 
-/* Colour only when something needs a look: a healthy service stays neutral (see lib/status.ts). */
 export function attentionAccent(item: StatusItem): string | null {
 	if (item.maintenance) return 'bg-status-maintenance';
 	if (item.probe.status === ProbeStatusEnum.FAILURE) return 'bg-status-down';
@@ -31,7 +30,6 @@ export function isDown(item: StatusItem) {
 	return !item.maintenance && item.probe.status === ProbeStatusEnum.FAILURE;
 }
 
-/* The https:// scheme tells a visitor nothing and eats half the column. */
 export function displayTarget(url: string) {
 	return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 }
@@ -42,7 +40,6 @@ export interface Verdict {
 	total: number;
 }
 
-/* Probes under maintenance are left out of the verdict: planned work is not an incident. */
 export function summarize(items: StatusItem[]) {
 	const watched = items.filter((item) => !item.maintenance);
 	const total = watched.length;

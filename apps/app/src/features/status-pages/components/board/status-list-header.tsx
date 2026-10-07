@@ -3,10 +3,6 @@ import StatusTimeLegend from '@/features/status-pages/components/board/status-ti
 import { LIST_COLUMNS } from '@/features/status-pages/components/board/layout-classes.ts';
 import { cn } from '@/lib/utils';
 
-/*
- * Column header of a list section. A named group takes the first column, so no second heading is
- * stacked above it. Transparent side borders keep the same inner width as the rows.
- */
 export default function StatusListHeader({ name }: { name?: string | null }) {
 	const { t } = useTranslation();
 

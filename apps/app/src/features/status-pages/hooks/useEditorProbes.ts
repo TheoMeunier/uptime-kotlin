@@ -4,7 +4,6 @@ import probeService from '@/features/probes/services/probeService.ts';
 import type { EditorProbe } from '@/features/status-pages/lib/editor.ts';
 import type { StatusPageDetail } from '@/features/status-pages/schemas/status-page.schema.ts';
 
-/* Every probe the editor can show: the page's own first (they carry their URL), then all the others. */
 export default function useEditorProbes(page: StatusPageDetail | undefined) {
 	const { data: allProbes } = useQuery({ queryKey: ['probes'], queryFn: () => probeService.getProbes() });
 

@@ -9,7 +9,6 @@ function storageKey(scope?: string) {
 	return scope ? `${STORAGE_PREFIX}.${scope}` : STORAGE_PREFIX;
 }
 
-/* Visitor's own choice, per page: the admin's default only applies until the visitor picks. */
 export function readStoredLayout(scope?: string): StatusLayout | null {
 	try {
 		const value = localStorage.getItem(storageKey(scope));
@@ -23,7 +22,7 @@ export function storeLayout(layout: StatusLayout, scope?: string) {
 	try {
 		localStorage.setItem(storageKey(scope), layout);
 	} catch {
-		// Private browsing: the choice lasts for the session only.
+		return;
 	}
 }
 

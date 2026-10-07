@@ -16,7 +16,6 @@ interface StatusBoardProps {
 	onLayoutChange: (layout: StatusLayout) => void;
 }
 
-/* A whole public status page: `/status` passes a single untitled section, `/status/<slug>` its groups. */
 export default function StatusBoard({ title, subtitle, sections, layout, onLayoutChange }: StatusBoardProps) {
 	const items = useMemo(() => sections.flatMap((section) => section.items), [sections]);
 	const visibleSections = sections.filter((section) => section.items.length > 0);

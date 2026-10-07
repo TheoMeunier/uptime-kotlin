@@ -5,7 +5,6 @@ import type { StatusSection } from '@/features/status-pages/lib/status-item.ts';
 export default function StatusList({ section }: { section: StatusSection }) {
 	return (
 		<section>
-			{/* Below lg the column header is hidden: the group name falls back to a plain heading. */}
 			{section.name && (
 				<h2 className="text-foreground mb-3 text-lg font-semibold tracking-tight lg:hidden">{section.name}</h2>
 			)}

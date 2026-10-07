@@ -5,7 +5,6 @@ import { Button } from '@/components/atoms/button.tsx';
 
 interface StatusPageEditorHeaderProps {
 	title: string;
-	/* Saved address of the page; the "view" button only appears once it exists. */
 	slug?: string;
 }
 

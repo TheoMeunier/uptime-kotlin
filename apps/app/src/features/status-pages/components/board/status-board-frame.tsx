@@ -1,4 +1,3 @@
-/* The page frame of a public status page, without its header: used for loading errors. */
 export default function StatusBoardFrame({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="bg-background min-h-screen">

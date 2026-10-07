@@ -6,7 +6,6 @@ interface PrefixedInputProps extends Omit<React.ComponentProps<'input'>, 'prefix
 	containerClassName?: string;
 }
 
-/* A text input with a fixed, non-editable prefix drawn inside the same border (URL paths, units…). */
 export default function PrefixedInput({ prefix, className, containerClassName, ...props }: PrefixedInputProps) {
 	return (
 		<div
