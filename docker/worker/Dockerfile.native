@@ -20,7 +20,8 @@ RUN microdnf install -y iputils glibc-common \
     && cp /usr/bin/ping /out/usr/bin/ping \
     && ldd /usr/bin/ping | awk '/=> \// {print $3}' \
        | grep -vE '/(libc|libm|libpthread|libdl|ld-linux[^/]*)\.so' \
-       | xargs -r -I{} cp --parents -L {} /out/
+       | while read -r lib; do cp --parents -L "$lib" /out/; done \
+    && ls -lR /out
 
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work/
