@@ -68,7 +68,7 @@ class StatusSnapshotService(
                     maintenance.lastWindowUpdateAt,
                     bucket,
                 ) + extra
-                ).joinToString("|")
+            ).joinToString("|")
 
         return Base64
             .getUrlEncoder()

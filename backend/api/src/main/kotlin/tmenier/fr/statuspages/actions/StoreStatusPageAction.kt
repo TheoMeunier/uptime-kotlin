@@ -50,7 +50,7 @@ class StoreStatusPageAction(
         if (statusPageRepository.isSlugTaken(slug, excludingId = statusPageId)) {
             throw BadRequestException("The address /status/$slug is already used by another status page")
         }
-        
+
         val probeIds = payload.groups.flatMap { it.probeIds }
         if (probeIds.size != probeIds.toSet().size) {
             throw BadRequestException("A monitor can only appear once on a status page")

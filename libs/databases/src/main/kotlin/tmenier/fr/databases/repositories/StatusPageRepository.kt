@@ -60,7 +60,7 @@ class StatusPageRepository(
 
         return entity
     }
-    
+
     private fun replaceGroups(
         page: StatusPageEntity,
         groups: List<StoreStatusPageGroupDto>,
