@@ -287,6 +287,7 @@ const fr: typeof en = {
 			ignore_certificate_errors: 'Ignorer les erreurs TLS / SSL pour les sites HTTPS',
 			http_code_allowed: 'Codes de statut acceptés',
 			dns_record: 'Enregistrement DNS',
+			ping_ip: 'Adresse IP',
 			ping_heartbeat_interval: 'Intervalle de battement',
 			ping_max_packet: 'Perte de paquets maximale',
 			ping_size: 'Taille des paquets',

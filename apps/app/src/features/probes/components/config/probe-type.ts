@@ -118,13 +118,15 @@ export function buildProbeFieldsConfig(t: TFunction) {
 			fields: [
 				{
 					name: 'ip',
-					label: t('form.label.url'),
+					label: t('monitors.label.ping_ip'),
 					input_type: 'text',
+					placeholder: '192.168.1.1',
 				},
 				{
 					name: 'ping_heartbeat_interval',
 					label: t('monitors.label.ping_heartbeat_interval'),
 					input_type: 'number',
+					default_value: 60,
 				},
 			],
 			advanced_fields: [
@@ -142,7 +144,7 @@ export function buildProbeFieldsConfig(t: TFunction) {
 				},
 				{
 					name: 'ping_delay',
-					label: t('monitors.label.ping_size'),
+					label: t('monitors.label.ping_delay'),
 					input_type: 'number',
 					default_value: 2,
 				},

@@ -283,6 +283,7 @@ const es: typeof en = {
 			ignore_certificate_errors: 'Ignorar los errores TLS / SSL en sitios HTTPS',
 			http_code_allowed: 'Códigos de estado aceptados',
 			dns_record: 'Registro DNS',
+			ping_ip: 'Dirección IP',
 			ping_heartbeat_interval: 'Intervalo de latido',
 			ping_max_packet: 'Pérdida máxima de paquetes',
 			ping_size: 'Tamaño de los paquetes',

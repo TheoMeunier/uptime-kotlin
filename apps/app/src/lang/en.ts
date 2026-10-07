@@ -278,6 +278,7 @@ const en = {
 			ignore_certificate_errors: 'Ignore TLS / SSL errors for HTTS websites',
 			http_code_allowed: 'Accepted Status Codes',
 			dns_record: 'DNS record',
+			ping_ip: 'IP address',
 			ping_heartbeat_interval: 'Heartbeat interval',
 			ping_max_packet: 'Max packet loss',
 			ping_size: 'Packet size',
