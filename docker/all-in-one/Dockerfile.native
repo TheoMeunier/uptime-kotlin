@@ -21,12 +21,22 @@ RUN --mount=type=cache,target=/root/.gradle \
       -Dquarkus.package.jar.enabled=false \
       -Dquarkus.native.container-build=false
 
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7 AS ping
+RUN microdnf install -y iputils glibc-common \
+    && microdnf clean all \
+    && mkdir -p /out/usr/bin \
+    && cp /usr/bin/ping /out/usr/bin/ping \
+    && ldd /usr/bin/ping | awk '/=> \// {print $3}' \
+       | grep -vE '/(libc|libm|libpthread|libdl|ld-linux[^/]*)\.so' \
+       | xargs -r -I{} cp --parents -L {} /out/
+
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work/
 RUN chown 1001 /work \
     && chmod "g+rwX" /work \
     && chown 1001:root /work
 COPY --from=back --chown=1001:root --chmod=0755 /project/backend/api/build/*-runner /work/application
+COPY --from=ping /out/ /
 
 ENV SCHEDULER_STRATEGY=database
 

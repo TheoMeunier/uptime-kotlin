@@ -8,6 +8,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeDTO
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
 
@@ -61,11 +62,11 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
 
             val message =
                 if (status == ProbeMonitorLogStatus.SUCCESS) {
-                    "Ping successful to ${content.ip}: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
+                    "Ping successful to $cleanUrl: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
                 } else if (successfulPings > 0) {
-                    "Ping warning to ${content.ip}: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
+                    "Ping warning to $cleanUrl: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
                 } else {
-                    "Ping failed to ${content.ip}: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
+                    "Ping failed to $cleanUrl: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
                 }
 
             ProbeResult(
@@ -104,7 +105,12 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
 
             val processBuilder = ProcessBuilder(command)
             processBuilder.redirectErrorStream(true)
-            val process = processBuilder.start()
+            val process =
+                try {
+                    processBuilder.start()
+                } catch (e: IOException) {
+                    throw PingUnavailableException("ping command is not available on the worker (${e.message})", e)
+                }
 
             val output = StringBuilder()
             BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
@@ -129,6 +135,8 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
             }
 
             Pair(success, responseTime)
+        } catch (e: PingUnavailableException) {
+            throw e
         } catch (e: Exception) {
             logger.error { "Ping failed for $host: ${e.message}" }
             val responseTime = System.currentTimeMillis() - startTime
@@ -136,3 +144,8 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
         }
     }
 }
+
+private class PingUnavailableException(
+    message: String,
+    cause: Throwable,
+) : RuntimeException(message, cause)
