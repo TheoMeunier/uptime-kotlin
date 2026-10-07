@@ -6,11 +6,13 @@ import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.common.utils.logger
+import tmenier.fr.common.utils.shutdownGracefully
 import tmenier.fr.databases.repositories.NotificationTaskRepository
 import tmenier.fr.notifications.NotificationDispatcher
 import java.net.InetAddress
 import java.time.Duration
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicInteger
 
 @ApplicationScoped
@@ -27,6 +29,10 @@ class NotificationRetryJob(
     private val activeDeliveries = AtomicInteger()
     private val watchdog = DeliveryWatchdog(maxDeliveryDuration)
     private val executor = Executors.newFixedThreadPool(concurrency)
+    private val shutdownTimeout = Duration.ofSeconds(30)
+
+    @Volatile
+    private var stopping = false
 
     @PostConstruct
     fun started() {
@@ -39,7 +45,7 @@ class NotificationRetryJob(
 
     @Scheduled(every = "1s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun dispatchDueDeliveries() {
-        if (!enabled()) return
+        if (!enabled() || stopping) return
 
         val capacity = concurrency - activeDeliveries.get()
         if (capacity <= 0) return
@@ -58,32 +64,37 @@ class NotificationRetryJob(
 
         ids.forEach { id ->
             activeDeliveries.incrementAndGet()
-            executor.submit {
-                watchdog.started(id)
-                try {
-                    logger.info { "Starting notification delivery $id" }
-                    val delivery = notificationTaskRepository.findByIdWithRelations(id)
-                    notificationDispatcher.dispatch(
-                        delivery.notification,
-                        delivery.probe,
-                        delivery.payload,
-                        delivery.event,
-                        delivery.reminderIndex,
-                        delivery.downtime,
-                    )
-                    notificationTaskRepository.markSent(id)
-                    logger.info { "Notification delivery $id sent" }
-                } catch (error: Exception) {
-                    Thread.interrupted()
-                    logger.warn(error) { "Notification delivery $id failed" }
-                    notificationTaskRepository.markFailedAndReschedule(
-                        id = id,
-                        errorMessage = error.message ?: "Unknown notification delivery error",
-                    )
-                } finally {
-                    watchdog.finished(id)
-                    activeDeliveries.decrementAndGet()
+            try {
+                executor.submit {
+                    watchdog.started(id)
+                    try {
+                        logger.info { "Starting notification delivery $id" }
+                        val delivery = notificationTaskRepository.findByIdWithRelations(id)
+                        notificationDispatcher.dispatch(
+                            delivery.notification,
+                            delivery.probe,
+                            delivery.payload,
+                            delivery.event,
+                            delivery.reminderIndex,
+                            delivery.downtime,
+                        )
+                        notificationTaskRepository.markSent(id)
+                        logger.info { "Notification delivery $id sent" }
+                    } catch (error: Exception) {
+                        Thread.interrupted()
+                        logger.warn(error) { "Notification delivery $id failed" }
+                        notificationTaskRepository.markFailedAndReschedule(
+                            id = id,
+                            errorMessage = error.message ?: "Unknown notification delivery error",
+                        )
+                    } finally {
+                        watchdog.finished(id)
+                        activeDeliveries.decrementAndGet()
+                    }
                 }
+            } catch (_: RejectedExecutionException) {
+                activeDeliveries.decrementAndGet()
+                logger.warn { "Notification delivery $id not started: worker is stopping, lease will expire" }
             }
         }
     }
@@ -106,6 +117,8 @@ class NotificationRetryJob(
 
     @PreDestroy
     fun close() {
-        executor.shutdownNow()
+        stopping = true
+        logger.info { "Stopping notification worker $workerId with ${activeDeliveries.get()} active delivery(ies)" }
+        executor.shutdownGracefully("Notification worker $workerId", shutdownTimeout)
     }
 }
