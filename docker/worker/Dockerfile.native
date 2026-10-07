@@ -14,13 +14,15 @@ RUN --mount=type=cache,target=/root/.gradle \
       -Dquarkus.native.container-build=false
 
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7 AS ping
-RUN microdnf install -y iputils glibc-common \
+RUN microdnf install -y iputils glibc-common libcap \
     && microdnf clean all \
     && mkdir -p /out/usr/bin /out/usr/lib64 \
     && cp /usr/bin/ping /out/usr/bin/ping \
     && ldd /usr/bin/ping | awk '/=> \// {print $3}' \
        | grep -vE '/(libc|libm|libpthread|libdl|ld-linux[^/]*)\.so' \
        | while read -r lib; do cp -L "$lib" /out/usr/lib64/; done \
+    && setcap cap_net_raw+ep /out/usr/bin/ping \
+    && getcap /out/usr/bin/ping \
     && ls -lR /out
 
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0

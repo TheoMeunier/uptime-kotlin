@@ -38,5 +38,6 @@ class StoreStatusPageGroupRequest {
     @field:Size(max = 255, message = "Group name must be at most 255 characters")
     var name: String? = null
 
+    @field:Size(max = 200, message = "A group holds at most 200 probes")
     var probeIds: List<UUID> = emptyList()
 }
