@@ -13,7 +13,6 @@ interface GroupProbeListProps {
 	onRemove: (probeId: string) => void;
 }
 
-/* The probes of one group. The whole list is a drop zone, so an empty group can still receive one. */
 export default function GroupProbeList({ groupKey, probeIds, probes, onRemove }: GroupProbeListProps) {
 	const { t } = useTranslation();
 	const { setNodeRef, isOver } = useDroppable({ id: dropDndId(groupKey) });

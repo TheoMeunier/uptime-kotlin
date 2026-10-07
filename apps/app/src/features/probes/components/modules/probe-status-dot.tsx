@@ -1,7 +1,6 @@
 import { getStatusTokens } from '@/lib/status.ts';
 import { cn } from '@/lib/utils';
 
-/* The status colour alone, for dense lists where a full badge would be noise. */
 export default function ProbeStatusDot({ status, className }: { status?: string; className?: string }) {
 	return (
 		<span

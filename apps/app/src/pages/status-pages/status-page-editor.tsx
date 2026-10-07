@@ -16,7 +16,6 @@ export default function StatusPageEditor() {
 	const { data: page, isLoading, isError, refetch } = useStatusPage(statusPageId);
 	const save = useSaveStatusPage(statusPageId);
 
-	/* Navigating from an effect: by then the form is clean and the unsaved-changes guard lets it through. */
 	const [createdId, setCreatedId] = useState<string>();
 	useEffect(() => {
 		if (createdId) navigate(`/status-pages/${createdId}`, { replace: true });
@@ -34,7 +33,6 @@ export default function StatusPageEditor() {
 				<StatusPageFormSkeleton />
 			) : (
 				<StatusPageForm
-					// A fresh form per loaded version: local state starts from what the server holds.
 					key={page?.updated_at ?? 'new'}
 					page={page}
 					isSaving={save.isPending}

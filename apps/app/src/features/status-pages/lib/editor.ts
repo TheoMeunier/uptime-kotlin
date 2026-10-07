@@ -21,7 +21,6 @@ export function emptyGroup(): EditorGroup {
 	return { key: newGroupKey(), name: '', probeIds: [] };
 }
 
-/* « Mon Entreprise ! » → « mon-entreprise »: what the backend accepts as a slug. */
 export function slugify(value: string) {
 	return value
 		.normalize('NFD')

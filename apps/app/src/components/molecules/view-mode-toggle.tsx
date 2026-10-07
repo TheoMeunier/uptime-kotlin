@@ -13,7 +13,6 @@ const MODES = [
 interface ViewModeToggleProps {
 	'value': ViewMode;
 	'onChange': (value: ViewMode) => void;
-	/* Icons only by default (toolbars); with labels it stretches to its container (forms). */
 	'showLabels'?: boolean;
 	'className'?: string;
 	'aria-label'?: string;

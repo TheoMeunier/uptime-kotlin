@@ -40,7 +40,6 @@ export default function AddProbePopover({ available, onSelect }: AddProbePopover
 							{available.map((probe) => (
 								<CommandItem
 									key={probe.id}
-									// The id keeps two probes with the same name apart for cmdk.
 									value={`${probe.name} ${probe.id}`}
 									onSelect={() => {
 										onSelect(probe.id);

@@ -29,9 +29,7 @@ export default function StatusBoardHeader({ title, subtitle, items, layout, onLa
 						{subtitle && <p className="text-muted-foreground mt-1 text-sm sm:text-base">{subtitle}</p>}
 					</div>
 
-					{/* The status page is public and has no app chrome: its toolbar lives here. */}
 					<div className="ml-auto flex items-center gap-1 self-start">
-						{/* Below md both layouts render the same single column: no need for the switch. */}
 						<ViewModeToggle
 							value={layout}
 							onChange={onLayoutChange}

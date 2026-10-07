@@ -1,9 +1,5 @@
 import type { UniqueIdentifier } from '@dnd-kit/core';
 
-/*
- * One drag context holds three kinds of targets. Prefixed ids tell them apart:
- * a group card, a probe row, and the drop zone of a (possibly empty) group.
- */
 const GROUP = 'group:';
 const PROBE = 'probe:';
 const DROP = 'drop:';

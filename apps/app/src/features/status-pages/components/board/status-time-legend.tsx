@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
-/* The two ends of the bar chart: the oldest bar on the left, the latest check on the right. */
 export default function StatusTimeLegend({ className }: { className?: string }) {
 	const { t } = useTranslation();
 

@@ -11,7 +11,6 @@ interface SlugFieldProps {
 	showError: boolean;
 }
 
-/* The public address of the page, with the full URL previewed as it is typed. */
 export default function SlugField({ value, onChange, error, showError }: SlugFieldProps) {
 	const { t } = useTranslation();
 	const visibleError = showError || value.length > 0 ? error : undefined;

@@ -18,7 +18,6 @@ export default function GroupsEditor({ groups, probes, onChange }: GroupsEditorP
 	const { t } = useTranslation();
 	const { sensors, onDragOver, onDragEnd } = useGroupsDragAndDrop(groups, onChange);
 
-	/* A probe appears once per page: what is already placed is not offered again. */
 	const placed = new Set(groups.flatMap((group) => group.probeIds));
 	const available = [...probes.values()].filter((probe) => !placed.has(probe.id));
 
