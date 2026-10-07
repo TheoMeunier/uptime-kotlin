@@ -175,6 +175,10 @@ const es: typeof en = {
 					service: 'Servicio',
 				},
 			},
+			not_found: {
+				title: 'Página de estado no encontrada',
+				description: 'No hay ninguna página de estado publicada en /status/{{slug}}.',
+			},
 			empty: {
 				title: 'Todavía no hay ningún monitor',
 				description: 'Añada un monitor para empezar a vigilar su infraestructura.',
@@ -599,9 +603,9 @@ const es: typeof en = {
 					'Programe una ventana de mantenimiento antes de una intervención: las alertas quedan en silencio y la disponibilidad no se descuenta, pero las comprobaciones continúan.',
 			},
 			status_page: {
-				title: 'Página de estado',
+				title: 'Páginas de estado',
 				description:
-					'Una página pública, sin inicio de sesión, para compartir con sus usuarios y mostrarles el estado de sus servicios.',
+					'Páginas públicas, sin inicio de sesión. /status muestra todos los monitores; cree tantas páginas como quiera en /status/<nombre>, con sus propios grupos y orden.',
 			},
 			header: {
 				title: 'Actualización y tema',
@@ -617,6 +621,78 @@ const es: typeof en = {
 				title: 'Todo listo',
 				description: 'Lo más útil ahora: crear su primer monitor y asociarle una notificación para recibir alertas.',
 			},
+		},
+	},
+
+	status_pages: {
+		title: {
+			index: 'Páginas de estado',
+			create: 'Nueva página de estado',
+			update: 'Editar página de estado',
+			remove: '¿Eliminar esta página de estado?',
+		},
+		description: {
+			index:
+				'Páginas públicas para compartir con sus usuarios. Cada una muestra los monitores que elija, agrupados y en el orden que quiera.',
+			editor: 'Elija los monitores, agrúpelos y arrástrelos a su lugar.',
+			remove: '«{{title}}» dejará de estar disponible en /status/{{slug}}. Los monitores no se modifican.',
+		},
+		actions: {
+			back: 'Todas las páginas de estado',
+			create: 'Nueva página',
+			view: 'Ver la página',
+		},
+		global: {
+			title: 'Todos los monitores',
+			description: 'Página integrada, todos los monitores activos',
+		},
+		count: {
+			groups_one: '{{count}} grupo',
+			groups_other: '{{count}} grupos',
+			probes_one: '{{count}} monitor',
+			probes_other: '{{count}} monitores',
+		},
+		empty: {
+			title: 'Todavía no hay páginas personalizadas',
+			description:
+				'Cree una para publicar una selección de monitores en su propia dirección, por ejemplo /status/mi-empresa.',
+		},
+		form: {
+			settings: 'Ajustes',
+			title: 'Título',
+			title_placeholder: 'Mi empresa — estado de los servicios',
+			slug: 'Dirección',
+			slug_description: 'Minúsculas, cifras y guiones. Es la dirección pública de la página.',
+			description: 'Descripción',
+			description_placeholder: 'Se muestra bajo el título',
+			default_layout: 'Vista por defecto',
+			default_layout_description: 'Los visitantes pueden cambiarla; su elección se recuerda.',
+			save: 'Guardar',
+			unsaved: 'Cambios sin guardar',
+			layout_title: 'Grupos y monitores',
+			layout_description:
+				'Arrastre las asas para reordenar los grupos, o para mover un monitor dentro de su grupo o a otro.',
+			add_group: 'Añadir un grupo',
+			group_name: 'Nombre del grupo',
+			group_name_placeholder: 'Grupo sin título',
+			remove_group: 'Eliminar el grupo',
+			move_group: 'Mover el grupo',
+			move_probe: 'Mover {{name}}',
+			remove_probe: 'Quitar {{name}}',
+			add_probe: 'Añadir un monitor',
+			search_probe: 'Buscar un monitor…',
+			no_probe_left: 'No quedan monitores por añadir.',
+			empty_group: 'Suelte un monitor aquí o añada uno abajo.',
+			unknown_probe: 'Monitor eliminado',
+		},
+		validation: {
+			title: 'El título es obligatorio.',
+			slug: 'Use solo minúsculas, cifras y guiones simples.',
+		},
+		alerts: {
+			created: 'Página de estado «{{title}}» creada',
+			updated: 'Página de estado «{{title}}» guardada',
+			removed: 'Página de estado eliminada',
 		},
 	},
 
@@ -657,7 +733,7 @@ const es: typeof en = {
 			logout: 'Cerrar sesión',
 			guide: 'Guía de uso',
 			dashboard: 'Panel',
-			status_page: 'Página de estado',
+			status_page: 'Páginas de estado',
 			maintenances: 'Mantenimiento',
 			new_monitor: 'Nuevo monitor',
 		},

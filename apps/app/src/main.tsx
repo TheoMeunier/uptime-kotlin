@@ -24,8 +24,11 @@ import {
 	Maintenances,
 	ProbesStatus,
 	Profile,
+	PublicStatusPage,
 	SetupPage,
 	ShowProbe,
+	StatusPageEditor,
+	StatusPages,
 } from '@/pages/lazy-pages.ts';
 
 window.addEventListener('vite:preloadError', (event) => {
@@ -68,12 +71,17 @@ const router = createBrowserRouter(
 
 							<Route path="maintenances" element={<Maintenances />} />
 
+							<Route path="status-pages" element={<StatusPages />} />
+							<Route path="status-pages/new" element={<StatusPageEditor />} />
+							<Route path="status-pages/:statusPageId" element={<StatusPageEditor />} />
+
 							<Route path="profile" element={<Profile />} />
 						</Route>
 					</Route>
 				</Route>
 
 				<Route path="/status" element={<ProbesStatus />} />
+				<Route path="/status/:slug" element={<PublicStatusPage />} />
 				<Route path="/login" element={<Login />} />
 
 				<Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -106,8 +106,8 @@ export default function Layout() {
 									<Wrench size={18} /> {t('layout.sidebar.maintenances')}
 								</Link>
 							</SidebarMenuButton>
-							<SidebarMenuButton asChild isActive={pathname.startsWith('/status')} data-tour="status-page">
-								<Link to={'/status'}>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/status-pages')} data-tour="status-page">
+								<Link to={'/status-pages'}>
 									<Activity size={18} /> {t('layout.sidebar.status_page')}
 								</Link>
 							</SidebarMenuButton>

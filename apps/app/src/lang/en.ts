@@ -172,6 +172,10 @@ const en = {
 					service: 'Service',
 				},
 			},
+			not_found: {
+				title: 'Status page not found',
+				description: 'No status page is published at /status/{{slug}}.',
+			},
 			empty: {
 				title: 'No monitor yet',
 				description: 'Add a monitor to start watching your infrastructure.',
@@ -590,9 +594,9 @@ const en = {
 					'Schedule a maintenance window before planned work: alerts stay silent and uptime is not counted against you, while checks keep running.',
 			},
 			status_page: {
-				title: 'Status page',
+				title: 'Status pages',
 				description:
-					'A public page, no sign-in required, to share with your users so they can see how your services are doing.',
+					'Public pages, no sign-in required. /status shows every monitor; create as many curated pages as you like at /status/<name>, with your own groups and order.',
 			},
 			header: {
 				title: 'Freshness and theme',
@@ -609,6 +613,76 @@ const en = {
 				description:
 					'The most useful next step: create your first monitor, then attach a notification so you get alerted.',
 			},
+		},
+	},
+
+	status_pages: {
+		title: {
+			index: 'Status pages',
+			create: 'New status page',
+			update: 'Edit status page',
+			remove: 'Delete this status page?',
+		},
+		description: {
+			index:
+				'Public pages to share with your users. Each one shows the monitors you pick, in groups and in the order you choose.',
+			editor: 'Pick the monitors to show, group them and drag them into place.',
+			remove: '“{{title}}” will no longer be reachable at /status/{{slug}}. Monitors are not affected.',
+		},
+		actions: {
+			back: 'All status pages',
+			create: 'New status page',
+			view: 'View page',
+		},
+		global: {
+			title: 'All monitors',
+			description: 'Built-in page, every enabled monitor',
+		},
+		count: {
+			groups_one: '{{count}} group',
+			groups_other: '{{count}} groups',
+			probes_one: '{{count}} monitor',
+			probes_other: '{{count}} monitors',
+		},
+		empty: {
+			title: 'No custom status page yet',
+			description: 'Create one to publish a selection of monitors at its own address, for instance /status/my-company.',
+		},
+		form: {
+			settings: 'Settings',
+			title: 'Title',
+			title_placeholder: 'My company — service status',
+			slug: 'Address',
+			slug_description: 'Lower-case letters, digits and dashes. This is the public address of the page.',
+			description: 'Description',
+			description_placeholder: 'Shown under the title',
+			default_layout: 'Default layout',
+			default_layout_description: 'Visitors can still switch; their choice is remembered.',
+			save: 'Save',
+			unsaved: 'Unsaved changes',
+			layout_title: 'Groups and monitors',
+			layout_description: 'Drag the handles to reorder groups, or to move a monitor within a group or to another one.',
+			add_group: 'Add a group',
+			group_name: 'Group name',
+			group_name_placeholder: 'Untitled group',
+			remove_group: 'Remove group',
+			move_group: 'Move group',
+			move_probe: 'Move {{name}}',
+			remove_probe: 'Remove {{name}}',
+			add_probe: 'Add a monitor',
+			search_probe: 'Search a monitor…',
+			no_probe_left: 'No monitor left to add.',
+			empty_group: 'Drop a monitor here, or add one below.',
+			unknown_probe: 'Deleted monitor',
+		},
+		validation: {
+			title: 'The title is required.',
+			slug: 'Use lower-case letters, digits and single dashes only.',
+		},
+		alerts: {
+			created: 'Status page “{{title}}” created',
+			updated: 'Status page “{{title}}” saved',
+			removed: 'Status page deleted',
 		},
 	},
 
@@ -649,7 +723,7 @@ const en = {
 			logout: 'Logout',
 			guide: 'User guide',
 			dashboard: 'Dashboard',
-			status_page: 'Status page',
+			status_page: 'Status pages',
 			maintenances: 'Maintenance',
 			new_monitor: 'New monitor',
 		},
