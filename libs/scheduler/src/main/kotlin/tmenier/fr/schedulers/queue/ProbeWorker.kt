@@ -8,12 +8,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.common.enums.probes.QueueJobStatus
 import tmenier.fr.common.utils.logger
+import tmenier.fr.common.utils.shutdownGracefully
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
 import java.net.InetAddress
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicInteger
 
 @ApplicationScoped
@@ -30,6 +32,11 @@ class ProbeWorker(
     var concurrency: Int = 4
 
     private val leaseDuration = Duration.ofMinutes(2)
+    private val shutdownTimeout = Duration.ofSeconds(30)
+
+    @Volatile
+    private var stopping = false
+
     private val activeTasks = AtomicInteger()
     private val activeTaskIds = ConcurrentHashMap.newKeySet<java.util.UUID>()
     private val threadSequence = AtomicInteger()
@@ -53,7 +60,7 @@ class ProbeWorker(
     fun executeDueTasks() {
         probeLoopHeartbeat.tick()
 
-        if (!schedulerStrategy.runsBackgroundJobs) return
+        if (!schedulerStrategy.runsBackgroundJobs || stopping) return
 
         val capacity = concurrency - activeTasks.get()
         if (capacity <= 0) return
@@ -83,38 +90,44 @@ class ProbeWorker(
         tasks.forEach { task ->
             activeTasks.incrementAndGet()
             activeTaskIds.add(task.id)
-            executor.submit {
-                try {
-                    logger.debug {
-                        "Starting Probe Check task ${task.id}: probe=${task.probeId}, " +
-                            "attempt=${task.attemptNumber}, region=${task.region}"
+            try {
+                executor.submit {
+                    try {
+                        logger.debug {
+                            "Starting Probe Check task ${task.id}: probe=${task.probeId}, " +
+                                "attempt=${task.attemptNumber}, region=${task.region}"
+                        }
+                        probeWorkerService.execute(task, workerId)
+                        logger.debug { "Finished Probe Check task ${task.id}" }
+                    } catch (error: Exception) {
+                        logger.error(error) { "Technical failure executing Probe Check task ${task.id}" }
+                        val outcome =
+                            probeCheckTaskRepository.markTechnicalFailure(
+                                taskId = task.id,
+                                workerId = workerId,
+                                message = error.message ?: "Unknown Probe Check processing error",
+                            )
+                        when (outcome) {
+                            QueueJobStatus.DEAD ->
+                                logger.warn {
+                                    "Probe Check task ${task.id} moved to dead-letter: probe=${task.probeId}, " +
+                                        "maximum technical delivery attempts reached"
+                                }
+                            QueueJobStatus.PENDING ->
+                                logger.info {
+                                    "Probe Check task ${task.id} rescheduled after technical failure: probe=${task.probeId}"
+                                }
+                            else -> Unit
+                        }
+                    } finally {
+                        activeTaskIds.remove(task.id)
+                        activeTasks.decrementAndGet()
                     }
-                    probeWorkerService.execute(task, workerId)
-                    logger.debug { "Finished Probe Check task ${task.id}" }
-                } catch (error: Exception) {
-                    logger.error(error) { "Technical failure executing Probe Check task ${task.id}" }
-                    val outcome =
-                        probeCheckTaskRepository.markTechnicalFailure(
-                            taskId = task.id,
-                            workerId = workerId,
-                            message = error.message ?: "Unknown Probe Check processing error",
-                        )
-                    when (outcome) {
-                        QueueJobStatus.DEAD ->
-                            logger.warn {
-                                "Probe Check task ${task.id} moved to dead-letter: probe=${task.probeId}, " +
-                                    "maximum technical delivery attempts reached"
-                            }
-                        QueueJobStatus.PENDING ->
-                            logger.info {
-                                "Probe Check task ${task.id} rescheduled after technical failure: probe=${task.probeId}"
-                            }
-                        else -> Unit
-                    }
-                } finally {
-                    activeTaskIds.remove(task.id)
-                    activeTasks.decrementAndGet()
                 }
+            } catch (_: RejectedExecutionException) {
+                activeTaskIds.remove(task.id)
+                activeTasks.decrementAndGet()
+                logger.warn { "Probe Check task ${task.id} not started: worker is stopping, lease will expire" }
             }
         }
     }
@@ -132,9 +145,10 @@ class ProbeWorker(
 
     @PreDestroy
     fun close() {
+        stopping = true
         logger.info {
             "Stopping Probe worker $workerId with ${activeTasks.get()} active task(s)"
         }
-        executor.shutdownNow()
+        executor.shutdownGracefully("Probe worker $workerId", shutdownTimeout)
     }
 }
