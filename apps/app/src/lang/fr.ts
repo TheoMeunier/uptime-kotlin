@@ -178,6 +178,10 @@ const fr: typeof en = {
 					service: 'Service',
 				},
 			},
+			not_found: {
+				title: 'Page de statut introuvable',
+				description: 'Aucune page de statut n’est publiée à l’adresse /status/{{slug}}.',
+			},
 			empty: {
 				title: 'Aucune sonde pour l’instant',
 				description: 'Ajoutez une sonde pour commencer à surveiller votre infrastructure.',
@@ -605,9 +609,9 @@ const fr: typeof en = {
 					'Planifiez une fenêtre de maintenance avant une intervention : les alertes restent silencieuses et la disponibilité n’est pas décomptée, mais les vérifications continuent.',
 			},
 			status_page: {
-				title: 'Page de statut',
+				title: 'Pages de statut',
 				description:
-					'Une page publique, sans connexion, à partager avec vos utilisateurs pour leur montrer l’état de vos services.',
+					'Des pages publiques, sans connexion. /status montre toutes les sondes ; créez autant de pages que vous voulez sur /status/<nom>, avec vos propres groupes et votre ordre.',
 			},
 			header: {
 				title: 'Fraîcheur et thème',
@@ -624,6 +628,78 @@ const fr: typeof en = {
 				description:
 					'Le plus utile maintenant : créer votre première sonde, puis lui associer une notification pour être alerté.',
 			},
+		},
+	},
+
+	status_pages: {
+		title: {
+			index: 'Pages de statut',
+			create: 'Nouvelle page de statut',
+			update: 'Modifier la page de statut',
+			remove: 'Supprimer cette page de statut ?',
+		},
+		description: {
+			index:
+				'Des pages publiques à partager avec vos utilisateurs. Chacune affiche les sondes que vous choisissez, regroupées et dans l’ordre que vous voulez.',
+			editor: 'Choisissez les sondes à afficher, regroupez-les et faites-les glisser à leur place.',
+			remove: '« {{title}} » ne sera plus accessible à l’adresse /status/{{slug}}. Les sondes ne sont pas modifiées.',
+		},
+		actions: {
+			back: 'Toutes les pages de statut',
+			create: 'Nouvelle page',
+			view: 'Voir la page',
+		},
+		global: {
+			title: 'Toutes les sondes',
+			description: 'Page intégrée, toutes les sondes actives',
+		},
+		count: {
+			groups_one: '{{count}} groupe',
+			groups_other: '{{count}} groupes',
+			probes_one: '{{count}} sonde',
+			probes_other: '{{count}} sondes',
+		},
+		empty: {
+			title: 'Aucune page personnalisée',
+			description:
+				'Créez-en une pour publier une sélection de sondes à sa propre adresse, par exemple /status/mon-entreprise.',
+		},
+		form: {
+			settings: 'Réglages',
+			title: 'Titre',
+			title_placeholder: 'Mon entreprise — état des services',
+			slug: 'Adresse',
+			slug_description: 'Lettres minuscules, chiffres et tirets. C’est l’adresse publique de la page.',
+			description: 'Description',
+			description_placeholder: 'Affichée sous le titre',
+			default_layout: 'Disposition par défaut',
+			default_layout_description: 'Les visiteurs peuvent toujours changer ; leur choix est mémorisé.',
+			save: 'Enregistrer',
+			unsaved: 'Modifications non enregistrées',
+			layout_title: 'Groupes et sondes',
+			layout_description:
+				'Faites glisser les poignées pour réordonner les groupes, ou pour déplacer une sonde dans son groupe ou vers un autre.',
+			add_group: 'Ajouter un groupe',
+			group_name: 'Nom du groupe',
+			group_name_placeholder: 'Groupe sans titre',
+			remove_group: 'Supprimer le groupe',
+			move_group: 'Déplacer le groupe',
+			move_probe: 'Déplacer {{name}}',
+			remove_probe: 'Retirer {{name}}',
+			add_probe: 'Ajouter une sonde',
+			search_probe: 'Rechercher une sonde…',
+			no_probe_left: 'Plus aucune sonde à ajouter.',
+			empty_group: 'Déposez une sonde ici, ou ajoutez-en une ci-dessous.',
+			unknown_probe: 'Sonde supprimée',
+		},
+		validation: {
+			title: 'Le titre est obligatoire.',
+			slug: 'Utilisez uniquement des minuscules, des chiffres et des tirets simples.',
+		},
+		alerts: {
+			created: 'Page de statut « {{title}} » créée',
+			updated: 'Page de statut « {{title}} » enregistrée',
+			removed: 'Page de statut supprimée',
 		},
 	},
 
@@ -664,7 +740,7 @@ const fr: typeof en = {
 			logout: 'Se déconnecter',
 			guide: 'Guide d’utilisation',
 			dashboard: 'Tableau de bord',
-			status_page: 'Page de statut',
+			status_page: 'Pages de statut',
 			maintenances: 'Maintenance',
 			new_monitor: 'Nouvelle sonde',
 		},

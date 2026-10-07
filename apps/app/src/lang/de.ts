@@ -180,6 +180,10 @@ const de: typeof en = {
 					service: 'Dienst',
 				},
 			},
+			not_found: {
+				title: 'Statusseite nicht gefunden',
+				description: 'Unter /status/{{slug}} ist keine Statusseite veröffentlicht.',
+			},
 			empty: {
 				title: 'Noch kein Monitor',
 				description: 'Legen Sie einen Monitor an, um Ihre Infrastruktur zu überwachen.',
@@ -603,9 +607,9 @@ const de: typeof en = {
 					'Planen Sie vor Arbeiten ein Wartungsfenster: Alarme bleiben stumm und die Verfügbarkeit wird nicht angerechnet, die Prüfungen laufen aber weiter.',
 			},
 			status_page: {
-				title: 'Statusseite',
+				title: 'Statusseiten',
 				description:
-					'Eine öffentliche Seite ohne Anmeldung, die Sie mit Ihren Nutzern teilen können, um den Zustand Ihrer Dienste zu zeigen.',
+					'Öffentliche Seiten ohne Anmeldung. /status zeigt alle Monitore; erstellen Sie beliebig viele eigene Seiten unter /status/<name>, mit eigenen Gruppen und eigener Reihenfolge.',
 			},
 			header: {
 				title: 'Aktualität und Design',
@@ -622,6 +626,78 @@ const de: typeof en = {
 				description:
 					'Der nützlichste nächste Schritt: Erstellen Sie Ihren ersten Monitor und verknüpfen Sie ihn mit einer Benachrichtigung.',
 			},
+		},
+	},
+
+	status_pages: {
+		title: {
+			index: 'Statusseiten',
+			create: 'Neue Statusseite',
+			update: 'Statusseite bearbeiten',
+			remove: 'Diese Statusseite löschen?',
+		},
+		description: {
+			index:
+				'Öffentliche Seiten für Ihre Nutzer. Jede zeigt die Monitore Ihrer Wahl, gruppiert und in Ihrer Reihenfolge.',
+			editor: 'Wählen Sie die Monitore aus, gruppieren Sie sie und ziehen Sie sie an ihren Platz.',
+			remove: '„{{title}}“ ist dann nicht mehr unter /status/{{slug}} erreichbar. Die Monitore bleiben unverändert.',
+		},
+		actions: {
+			back: 'Alle Statusseiten',
+			create: 'Neue Seite',
+			view: 'Seite ansehen',
+		},
+		global: {
+			title: 'Alle Monitore',
+			description: 'Integrierte Seite, alle aktiven Monitore',
+		},
+		count: {
+			groups_one: '{{count}} Gruppe',
+			groups_other: '{{count}} Gruppen',
+			probes_one: '{{count}} Monitor',
+			probes_other: '{{count}} Monitore',
+		},
+		empty: {
+			title: 'Noch keine eigene Statusseite',
+			description:
+				'Erstellen Sie eine, um eine Auswahl von Monitoren unter einer eigenen Adresse zu veröffentlichen, z. B. /status/meine-firma.',
+		},
+		form: {
+			settings: 'Einstellungen',
+			title: 'Titel',
+			title_placeholder: 'Meine Firma – Dienststatus',
+			slug: 'Adresse',
+			slug_description: 'Kleinbuchstaben, Ziffern und Bindestriche. Das ist die öffentliche Adresse der Seite.',
+			description: 'Beschreibung',
+			description_placeholder: 'Wird unter dem Titel angezeigt',
+			default_layout: 'Standardansicht',
+			default_layout_description: 'Besucher können weiterhin wechseln; ihre Wahl wird gespeichert.',
+			save: 'Speichern',
+			unsaved: 'Ungespeicherte Änderungen',
+			layout_title: 'Gruppen und Monitore',
+			layout_description:
+				'Ziehen Sie die Griffe, um Gruppen neu anzuordnen oder einen Monitor innerhalb seiner Gruppe oder in eine andere zu verschieben.',
+			add_group: 'Gruppe hinzufügen',
+			group_name: 'Gruppenname',
+			group_name_placeholder: 'Gruppe ohne Titel',
+			remove_group: 'Gruppe entfernen',
+			move_group: 'Gruppe verschieben',
+			move_probe: '{{name}} verschieben',
+			remove_probe: '{{name}} entfernen',
+			add_probe: 'Monitor hinzufügen',
+			search_probe: 'Monitor suchen…',
+			no_probe_left: 'Kein Monitor mehr verfügbar.',
+			empty_group: 'Monitor hierher ziehen oder unten hinzufügen.',
+			unknown_probe: 'Gelöschter Monitor',
+		},
+		validation: {
+			title: 'Der Titel ist erforderlich.',
+			slug: 'Nur Kleinbuchstaben, Ziffern und einfache Bindestriche verwenden.',
+		},
+		alerts: {
+			created: 'Statusseite „{{title}}“ erstellt',
+			updated: 'Statusseite „{{title}}“ gespeichert',
+			removed: 'Statusseite gelöscht',
 		},
 	},
 
@@ -662,7 +738,7 @@ const de: typeof en = {
 			logout: 'Abmelden',
 			guide: 'Benutzerhandbuch',
 			dashboard: 'Übersicht',
-			status_page: 'Statusseite',
+			status_page: 'Statusseiten',
 			maintenances: 'Wartung',
 			new_monitor: 'Neuer Monitor',
 		},

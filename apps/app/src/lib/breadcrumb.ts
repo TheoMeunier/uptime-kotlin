@@ -13,6 +13,14 @@ export function buildCrumbs(pathname: string, resolveProbe: (id: string) => Part
 
 	if (first === 'dashboard') return [{ key: 'layout.sidebar.dashboard' }];
 	if (first === 'maintenances') return [HOME, { key: 'layout.sidebar.maintenances' }];
+	if (first === 'status-pages') {
+		const index: Crumb = { key: 'layout.sidebar.status_page', to: '/status-pages' };
+
+		if (!second) return [HOME, { ...index, to: undefined }];
+		if (second === 'new') return [HOME, index, { key: 'status_pages.title.create' }];
+
+		return [HOME, index, { key: 'status_pages.title.update' }];
+	}
 	if (first === 'profile') return [HOME, { key: 'layout.sidebar.settings' }];
 
 	if (first === 'monitors') {
