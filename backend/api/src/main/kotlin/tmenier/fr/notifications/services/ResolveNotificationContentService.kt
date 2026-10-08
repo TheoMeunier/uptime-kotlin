@@ -105,7 +105,7 @@ class ResolveNotificationContentService(
 
             else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
         }
-    
+
     private fun resolveToken(
         incoming: String?,
         stored: String?,
