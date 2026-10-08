@@ -25,11 +25,11 @@ object NotificationContentMapper {
         return objectMapper.treeToValue(node, contentClass(notification.type))
     }
 
-    /** Tokens never leave the API: the edit form leaves the field empty to keep the stored one. */
     fun withoutTokens(content: NotificationContent): NotificationContent =
         when (content) {
             is NotificationContent.Telegram -> content.copy(botToken = "")
             is NotificationContent.Ntfy -> content.copy(accessToken = null)
+            is NotificationContent.Gotify -> content.copy(appToken = "")
             else -> content
         }
 
@@ -42,6 +42,7 @@ object NotificationContentMapper {
             NotificationChannelsEnum.WEBHOOK -> NotificationContent.Webhook::class.java
             NotificationChannelsEnum.TELEGRAM -> NotificationContent.Telegram::class.java
             NotificationChannelsEnum.NTFY -> NotificationContent.Ntfy::class.java
+            NotificationChannelsEnum.GOTIFY -> NotificationContent.Gotify::class.java
         }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
@@ -54,6 +55,7 @@ object NotificationContentMapper {
                 is NotificationContent.Webhook -> NotificationChannelsEnum.WEBHOOK
                 is NotificationContent.Telegram -> NotificationChannelsEnum.TELEGRAM
                 is NotificationContent.Ntfy -> NotificationChannelsEnum.NTFY
+                is NotificationContent.Gotify -> NotificationChannelsEnum.GOTIFY
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 

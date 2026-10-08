@@ -9,6 +9,7 @@ import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
@@ -77,6 +78,15 @@ class ResolveNotificationContentService(
                         },
                 )
 
+            is ValidNotificationChannelGotifyRequest ->
+                NotificationContent.Gotify(
+                    serverUrl = request.serverUrl.trim(),
+                    appToken =
+                        requireNotNull(resolveToken(request.appToken, existingContent<NotificationContent.Gotify>(existingNotification)?.appToken)) {
+                            "Application token is required"
+                        },
+                )
+
             is ValidNotificationChannelMailRequest ->
                 NotificationContent.Mail(
                     hostname = request.hostname,
@@ -95,11 +105,7 @@ class ResolveNotificationContentService(
 
             else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
         }
-
-    /**
-     * Encrypts a newly typed token; an empty field keeps the stored one, since the API never sends tokens back.
-     * A token stored before encryption existed is encrypted on its way through.
-     */
+    
     private fun resolveToken(
         incoming: String?,
         stored: String?,

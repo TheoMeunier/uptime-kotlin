@@ -6,6 +6,7 @@ enum NotificationTypeEnum {
 	WEBHOOK = 'WEBHOOK',
 	TELEGRAM = 'TELEGRAM',
 	NTFY = 'NTFY',
+	GOTIFY = 'GOTIFY',
 }
 
 export default NotificationTypeEnum;

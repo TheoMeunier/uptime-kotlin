@@ -45,6 +45,12 @@ sealed interface NotificationContent {
     ) : NotificationContent
 
     @RegisterForReflection
+    data class Gotify(
+        val serverUrl: String,
+        val appToken: String,
+    ) : NotificationContent
+
+    @RegisterForReflection
     data class Mail(
         val hostname: String,
         val port: Int,

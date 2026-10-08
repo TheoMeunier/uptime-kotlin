@@ -45,7 +45,7 @@ multi-channel notifications, and a worker-based cluster mode to scale your check
 - HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis, SMTP, Kafka and RabbitMQ
   monitoring
 - Real-time dashboard with historical data
-- Multi-channel notifications (Email, Slack, Discord, Teams, Telegram, ntfy, Webhook), with periodic resend while a monitor
+- Multi-channel notifications (Email, Slack, Discord, Teams, Telegram, ntfy, Gotify, Webhook), with periodic resend while a monitor
   stays down (per-monitor interval, disabled by default)
 - Public status pages for your users
 - JWT authentication with encrypted data
@@ -104,7 +104,7 @@ services:
     - `SCHEDULER_WORKER_CONCURRENCY` (default `4`): checks run in parallel.
     - `MAINTENANCE_HORIZON_DAYS` (default `90`) and `MAINTENANCE_MAX_DURATION_HOURS` (default `24`): maintenance
       windows, same values on the application and the workers.
-    - `NOTIFICATIONS_DISPLAY_TIMEZONE` (default `UTC`): zone of the dates shown in Slack, Teams, Telegram, ntfy and e-mail
+    - `NOTIFICATIONS_DISPLAY_TIMEZONE` (default `UTC`): zone of the dates shown in Slack, Teams, Telegram, ntfy, Gotify and e-mail
       notifications (IANA name, e.g. `Europe/Paris`), same value on the application and the workers. Webhook
       payloads stay in UTC (ISO-8601).
 

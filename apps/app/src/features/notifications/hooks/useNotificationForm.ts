@@ -48,6 +48,12 @@ const ntfyNotificationSchema = baseStoreNotificationSchema.extend({
 	remove_access_token: z.boolean().optional(),
 });
 
+const gotifyNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('GOTIFY'),
+	server_url: z.url(),
+	app_token: z.string().trim().optional().nullable(),
+});
+
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
 	hostname: z.url(),
@@ -67,6 +73,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	webhookNotificationSchema,
 	telegramNotificationSchema,
 	ntfyNotificationSchema,
+	gotifyNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';
@@ -98,6 +105,14 @@ function createNotificationSchema(mode: NotificationFormMode) {
 				code: z.ZodIssueCode.custom,
 				message: i18n.t('validation.telegram_bot_token'),
 				path: ['bot_token'],
+			});
+		}
+
+		if (mode === 'create' && data.notification_type === 'GOTIFY' && !data.app_token) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: i18n.t('validation.gotify_app_token'),
+				path: ['app_token'],
 			});
 		}
 

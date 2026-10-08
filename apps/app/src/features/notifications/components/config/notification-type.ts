@@ -86,6 +86,22 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				update_only: true,
 			},
 		],
+		[NotificationTypeEnum.GOTIFY]: [
+			{
+				name: 'server_url',
+				label: t('form.label.server_url'),
+				input_type: 'text',
+				placeholder: 'https://gotify.example.com',
+				description: t('form.description.gotify_server_url'),
+			},
+			{
+				name: 'app_token',
+				label: t('form.label.app_token'),
+				input_type: 'password',
+				placeholder: 'AbCdEf...',
+				description: t('form.description.app_token'),
+			},
+		],
 		[NotificationTypeEnum.MAIL]: [
 			{
 				name: 'hostname',

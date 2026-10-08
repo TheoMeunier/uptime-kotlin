@@ -70,6 +70,7 @@ const es: typeof en = {
 			topic: 'Tema (topic)',
 			access_token: 'Token de acceso (opcional)',
 			remove_access_token: 'Eliminar el token de acceso',
+			app_token: 'Token de aplicación',
 		},
 		placeholder: {
 			email: 'juan.perez@ejemplo.com',
@@ -86,6 +87,9 @@ const es: typeof en = {
 			server_url: 'https://ntfy.sh, o la dirección de su servidor ntfy autoalojado.',
 			topic: 'Letras, dígitos, - y _. En ntfy.sh los temas son públicos: elija un nombre difícil de adivinar.',
 			access_token: 'Solo para un tema protegido (token tk_…). Al editar, déjelo vacío para conservar el token actual.',
+			gotify_server_url:
+				'La dirección del servidor, sin /message. Detrás de un proxy inverso, incluya su ruta (p. ej. https://example.com/gotify).',
+			app_token: 'Se crea en la pestaña Apps de Gotify. Al editar, déjelo vacío para conservar el token actual.',
 			password: 'Al menos 8 caracteres',
 		},
 	},
@@ -139,6 +143,7 @@ const es: typeof en = {
 		telegram_bot_token: 'Token no válido (formato esperado: 123456789:AAH…)',
 		telegram_chat_id: 'ID de chat no válido (un número o @nombredelcanal)',
 		ntfy_topic: 'Tema no válido (letras, dígitos, - y _, máx. 64 caracteres)',
+		gotify_app_token: 'Token de aplicación obligatorio',
 	},
 
 	select: {
@@ -616,7 +621,7 @@ const es: typeof en = {
 			settings: {
 				title: 'Ajustes',
 				description:
-					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
+					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, Gotify, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
 			},
 			done: {
 				title: 'Todo listo',

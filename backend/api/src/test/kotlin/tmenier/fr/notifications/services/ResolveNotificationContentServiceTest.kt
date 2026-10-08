@@ -11,6 +11,7 @@ import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.mappers.NotificationContentMapper
+import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
 import java.util.UUID
@@ -37,6 +38,12 @@ class ResolveNotificationContentServiceTest {
         name = "ntfy"
         notificationType = NotificationChannelsEnum.NTFY
     }
+
+    private fun gotify(appToken: String?) =
+        ValidNotificationChannelGotifyRequest(serverUrl = " https://push.example.com/ ", appToken = appToken).apply {
+            name = "Gotify"
+            notificationType = NotificationChannelsEnum.GOTIFY
+        }
 
     private fun stored(content: NotificationContent) =
         NotificationDto(UUID.randomUUID(), "stored", NotificationContentMapper.toEntity(content).second, false, content)
@@ -110,5 +117,29 @@ class ResolveNotificationContentServiceTest {
 
         assertEquals("", telegram.botToken())
         assertNull(ntfy.accessToken())
+    }
+
+    @Test
+    fun `encrypts the Gotify token on creation and keeps it when left empty on update`() {
+        val created = service.resolve(gotify("AppToken123"), isUpdate = false, existingNotification = null) as NotificationContent.Gotify
+
+        assertEquals("https://push.example.com/", created.serverUrl)
+        assertTrue(encryption.isEncryptedWithCurrentKey(created.appToken), created.appToken)
+        assertEquals("AppToken123", encryption.decrypt(created.appToken))
+
+        val kept = service.resolve(gotify(""), isUpdate = true, existingNotification = stored(created)) as NotificationContent.Gotify
+        assertEquals(created.appToken, kept.appToken)
+    }
+
+    @Test
+    fun `refuses to create a Gotify channel without a token`() {
+        assertThrows<IllegalArgumentException> { service.resolve(gotify(null), isUpdate = false, existingNotification = null) }
+    }
+
+    @Test
+    fun `never sends the Gotify token back`() {
+        val gotify = NotificationContentMapper.withoutTokens(NotificationContent.Gotify("https://push.example.com", "secret"))
+
+        assertEquals("", (gotify as NotificationContent.Gotify).appToken)
     }
 }
