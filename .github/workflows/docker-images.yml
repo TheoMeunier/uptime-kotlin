@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-    # Temporaire : images de test pour le correctif ping, à retirer avant la fusion.
-    branches:
-      - 'fix/ping-ip-et-intervalle-defaut'
   workflow_dispatch:
 
 permissions:
