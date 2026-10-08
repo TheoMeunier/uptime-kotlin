@@ -27,6 +27,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidNotificationChannelWebhookRequest::class, name = "WEBHOOK"),
     JsonSubTypes.Type(value = ValidNotificationChannelTelegramRequest::class, name = "TELEGRAM"),
     JsonSubTypes.Type(value = ValidNotificationChannelNtfyRequest::class, name = "NTFY"),
+    JsonSubTypes.Type(value = ValidNotificationChannelGotifyRequest::class, name = "GOTIFY"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -70,7 +71,6 @@ data class ValidNotificationChannelSlackRequest(
 
 @RegisterForReflection
 data class ValidNotificationChannelTelegramRequest(
-    // Left empty on update to keep the stored token, which the API never sends back.
     @field:NotBlank(message = "Bot token is required", groups = [OnCreate::class])
     @field:Pattern(regexp = "^(\\d+:[A-Za-z0-9_-]+)?$", message = "Invalid bot token format")
     val botToken: String? = null,
@@ -91,6 +91,15 @@ data class ValidNotificationChannelNtfyRequest(
     val topic: String,
     val accessToken: String? = null,
     val removeAccessToken: Boolean? = false,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelGotifyRequest(
+    @field:NotBlank(message = "Server URL is required")
+    @field:URL(message = "Invalid URL format")
+    val serverUrl: String,
+    @field:NotBlank(message = "Application token is required", groups = [OnCreate::class])
+    val appToken: String? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

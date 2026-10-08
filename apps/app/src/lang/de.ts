@@ -72,6 +72,7 @@ const de: typeof en = {
 			topic: 'Thema (Topic)',
 			access_token: 'Zugriffstoken (optional)',
 			remove_access_token: 'Zugriffstoken entfernen',
+			app_token: 'Anwendungstoken',
 		},
 		placeholder: {
 			email: 'max.mustermann@beispiel.de',
@@ -91,6 +92,9 @@ const de: typeof en = {
 				'Buchstaben, Ziffern, - und _. Auf ntfy.sh sind Themen öffentlich: wählen Sie einen schwer zu erratenden Namen.',
 			access_token:
 				'Nur für ein geschütztes Thema (tk_…-Token). Beim Bearbeiten leer lassen, um das aktuelle Token zu behalten.',
+			gotify_server_url:
+				'Die Serveradresse, ohne /message. Hinter einem Reverse-Proxy dessen Pfad angeben (z. B. https://example.com/gotify).',
+			app_token: 'Wird in Gotify unter Apps erstellt. Beim Bearbeiten leer lassen, um das aktuelle Token zu behalten.',
 			password: 'Mindestens 8 Zeichen',
 		},
 	},
@@ -144,6 +148,7 @@ const de: typeof en = {
 		telegram_bot_token: 'Ungültiges Token (erwartetes Format: 123456789:AAH…)',
 		telegram_chat_id: 'Ungültige Chat-ID (Zahl oder @kanalname)',
 		ntfy_topic: 'Ungültiges Thema (Buchstaben, Ziffern, - und _, max. 64 Zeichen)',
+		gotify_app_token: 'Anwendungstoken erforderlich',
 	},
 
 	select: {
@@ -620,7 +625,7 @@ const de: typeof en = {
 			settings: {
 				title: 'Einstellungen',
 				description:
-					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
+					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, Gotify, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
 			},
 			done: {
 				title: 'Alles bereit',

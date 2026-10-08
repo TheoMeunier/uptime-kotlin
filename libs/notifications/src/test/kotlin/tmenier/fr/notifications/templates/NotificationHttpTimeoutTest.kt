@@ -81,6 +81,12 @@ class NotificationHttpTimeoutTest {
         }
 
     @Test
+    fun `gotify gives up on a receiver that never answers`() =
+        assertTimesOut {
+            GotifyNotificationService(http, NotificationDateFormatter("UTC"), encryption).sendTest(NotificationContent.Gotify(url, "token"))
+        }
+
+    @Test
     fun `generic webhook gives up on a receiver that never answers`() =
         assertTimesOut {
             WebhookNotificationService(http).sendTest(NotificationContent.Webhook(HttpMethodEnum.POST, url))

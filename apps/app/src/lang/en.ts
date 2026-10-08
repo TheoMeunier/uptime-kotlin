@@ -67,6 +67,7 @@ const en = {
 			topic: 'Topic',
 			access_token: 'Access token (optional)',
 			remove_access_token: 'Remove the access token',
+			app_token: 'Application token',
 		},
 		placeholder: {
 			email: 'john.doe@exemple.com',
@@ -83,6 +84,9 @@ const en = {
 			server_url: 'https://ntfy.sh, or the address of your self-hosted ntfy server.',
 			topic: 'Letters, digits, - and _. On ntfy.sh topics are public: pick a name that is hard to guess.',
 			access_token: 'Only for a protected topic (tk_… token). When editing, leave empty to keep the current token.',
+			gotify_server_url:
+				'The server address, without /message. Behind a reverse proxy, include its path (e.g. https://example.com/gotify).',
+			app_token: 'Created under Apps in Gotify. When editing, leave empty to keep the current token.',
 			password: 'Must be at least 8 characters long',
 		},
 	},
@@ -136,6 +140,7 @@ const en = {
 		telegram_bot_token: 'Invalid token (expected format: 123456789:AAH…)',
 		telegram_chat_id: 'Invalid chat ID (a number or @channelname)',
 		ntfy_topic: 'Invalid topic (letters, digits, - and _, 64 characters max)',
+		gotify_app_token: 'Application token required',
 	},
 
 	select: {
@@ -607,7 +612,7 @@ const en = {
 			settings: {
 				title: 'Settings',
 				description:
-					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, ntfy, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
+					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, ntfy, Gotify, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
 			},
 			done: {
 				title: "You're all set",
