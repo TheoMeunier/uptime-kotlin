@@ -11,6 +11,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToLong
 
 @ApplicationScoped
 class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
@@ -27,7 +28,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
             val delay = content.pingDelay.toLong()
 
             var successfulPings = 0
-            var totalResponseTime = 0L
+            var totalResponseTime = 0.0
             val pingResults = mutableListOf<Boolean>()
 
             repeat(maxPackets) { iteration ->
@@ -35,18 +36,18 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
                     Thread.sleep(delay)
                 }
 
-                val (reachable, pingTime) = systemPing(cleanUrl, timeoutSeconds(probe))
-                pingResults.add(reachable)
+                val reply = systemPing(cleanUrl, timeoutSeconds(probe))
+                pingResults.add(reply.reachable)
 
-                if (reachable) {
+                if (reply.reachable) {
                     successfulPings++
-                    totalResponseTime += pingTime
+                    totalResponseTime += reply.rttMillis
                 }
             }
 
             val avgResponseTime =
                 if (successfulPings > 0) {
-                    totalResponseTime / successfulPings
+                    (totalResponseTime / successfulPings).roundToLong()
                 } else {
                     0L
                 }
@@ -97,14 +98,15 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
     private fun systemPing(
         host: String,
         timeoutSeconds: Int,
-    ): Pair<Boolean, Long> {
-        val startTime = System.currentTimeMillis()
+    ): PingReply {
+        val startNanos = System.nanoTime()
 
         return try {
-            val command = listOf("ping", "-c", "1", "-W", "$timeoutSeconds", host)
+            val command = listOf("ping", "-c", "1", "-W", waitArgument(timeoutSeconds), host)
 
             val processBuilder = ProcessBuilder(command)
             processBuilder.redirectErrorStream(true)
+            processBuilder.environment()["LC_ALL"] = "C"
             val process =
                 try {
                     processBuilder.start()
@@ -112,37 +114,67 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
                     throw PingUnavailableException("ping command is not available on the worker (${e.message})", e)
                 }
 
-            val output = StringBuilder()
-            BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    output.append(line).append("\n")
+            val output =
+                BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                    reader.readText()
                 }
-            }
 
             val finished = process.waitFor(timeoutSeconds.toLong() + 2, TimeUnit.SECONDS)
             val exitCode = if (finished) process.exitValue() else -1
 
             if (!finished) {
-                process.destroy()
+                process.destroyForcibly()
             }
 
-            val responseTime = System.currentTimeMillis() - startTime
+            val wallClockMillis = elapsedMillis(startNanos)
             val success = exitCode == 0
 
             if (!success) {
-                logger.info { "Ping failed for $host. Exit code: $exitCode. Output: ${output.toString().trim()}" }
+                logger.info { "Ping failed for $host. Exit code: $exitCode. Output: ${output.trim()}" }
+                return PingReply(false, wallClockMillis)
             }
 
-            Pair(success, responseTime)
+            PingReply(true, PingOutputParser.rttMillis(output) ?: wallClockMillis)
         } catch (e: PingUnavailableException) {
             throw e
         } catch (e: Exception) {
             logger.error { "Ping failed for $host: ${e.message}" }
-            val responseTime = System.currentTimeMillis() - startTime
-            Pair(false, responseTime)
+            PingReply(false, elapsedMillis(startNanos))
         }
     }
+
+    /** `-W` est en secondes sous Linux (iputils, BusyBox) mais en millisecondes sous macOS/BSD. */
+    private fun waitArgument(timeoutSeconds: Int): String = if (IS_MAC_OS) "${timeoutSeconds * 1000}" else "$timeoutSeconds"
+
+    private fun elapsedMillis(startNanos: Long): Double = (System.nanoTime() - startNanos) / 1_000_000.0
+
+    private companion object {
+        val IS_MAC_OS =
+            System
+                .getProperty("os.name")
+                .orEmpty()
+                .lowercase()
+                .contains("mac")
+    }
+
+    private data class PingReply(
+        val reachable: Boolean,
+        val rttMillis: Double,
+    )
+}
+
+internal object PingOutputParser {
+    private val TIME_REGEX = Regex("""time\s*[=<]\s*(\d+(?:[.,]\d+)?)\s*ms""", RegexOption.IGNORE_CASE)
+
+    /** Ligne de résumé : `rtt min/avg/max/mdev = 1/2/3/4 ms` (Linux) ou `round-trip min/avg/max/stddev = …` (macOS, BusyBox). */
+    private val SUMMARY_REGEX = Regex("""min/avg/max\S*\s*=\s*[\d.,]+/([\d.,]+)/""")
+
+    fun rttMillis(output: String): Double? =
+        (TIME_REGEX.find(output) ?: SUMMARY_REGEX.find(output))
+            ?.groupValues
+            ?.get(1)
+            ?.replace(',', '.')
+            ?.toDoubleOrNull()
 }
 
 private class PingUnavailableException(
