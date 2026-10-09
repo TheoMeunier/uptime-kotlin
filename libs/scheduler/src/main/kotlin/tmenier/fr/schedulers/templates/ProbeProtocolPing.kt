@@ -143,7 +143,6 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
         }
     }
 
-    /** `-W` est en secondes sous Linux (iputils, BusyBox) mais en millisecondes sous macOS/BSD. */
     private fun waitArgument(timeoutSeconds: Int): String = if (IS_MAC_OS) "${timeoutSeconds * 1000}" else "$timeoutSeconds"
 
     private fun elapsedMillis(startNanos: Long): Double = (System.nanoTime() - startNanos) / 1_000_000.0
