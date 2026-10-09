@@ -29,7 +29,18 @@ class JwtSigningKeyRepository(
         return checkNotNull(find()) { "jwt_signing_keys is still empty after inserting the generated key" }
     }
 
-    private fun find(): StoredJwtSigningKey? {
+    fun replacePrivateKey(
+        previous: String,
+        next: String,
+    ): Boolean =
+        em
+            .createNativeQuery("UPDATE jwt_signing_keys SET private_key = :next WHERE id = :id AND private_key = :previous")
+            .setParameter("next", next)
+            .setParameter("id", SINGLETON_ID)
+            .setParameter("previous", previous)
+            .executeUpdate() == 1
+
+    fun find(): StoredJwtSigningKey? {
         val row =
             em
                 .createNativeQuery("SELECT public_key, private_key FROM jwt_signing_keys WHERE id = :id")

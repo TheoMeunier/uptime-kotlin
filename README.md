@@ -96,8 +96,8 @@ services:
 
 2. Configure the environment variables
 
-    - `ENCRYPTION_MASTER_KEY` (required): at least 32 bytes, `openssl rand -base64 32`. Do not change it afterwards,
-      it also encrypts the JWT signing key stored in the database.
+    - `ENCRYPTION_MASTER_KEY` (required): at least 32 bytes, `openssl rand -base64 32`. It encrypts the stored
+      secrets and the JWT signing key: to change it, follow [Rotate the master key](#rotate-the-master-key).
     - `QUARKUS_DATASOURCE_USERNAME`, `QUARKUS_DATASOURCE_PASSWORD`, `QUARKUS_DATASOURCE_JDBC_URL`: PostgreSQL access.
     - `MP_JWT_VERIFY_ISSUER`: issuer of the JWT tokens.
     - `SCHEDULER_STRATEGY` (default `database`): `none` when workers run the checks (see [Cluster mode](#cluster-mode)).
@@ -155,6 +155,18 @@ uptime-kotlin-worker:
 
 `SCHEDULER_WORKER_NAME` must be unique per worker. Checks left by a stopped worker are picked up by the others after
 30 seconds.
+
+### Rotate the master key
+
+1. Generate a new key (`openssl rand -base64 32`).
+2. On the application **and every worker**: put the new key in `ENCRYPTION_MASTER_KEY` and the old one in
+   `ENCRYPTION_PREVIOUS_MASTER_KEYS` (comma-separated if there are several).
+3. Restart. On startup the application re-encrypts every stored secret with the new key and logs
+   `Re-encrypted N stored secret(s)`. A warning lists the secrets no key could decrypt, to be re-entered.
+4. Remove `ENCRYPTION_PREVIOUS_MASTER_KEYS` at the next deployment.
+
+A lost key cannot be recovered: the secrets it encrypted must be re-entered, and the `jwt_signing_keys` row deleted
+(this signs everyone out).
 
 ### Images
 

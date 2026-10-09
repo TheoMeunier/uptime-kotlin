@@ -3,10 +3,12 @@ package tmenier.fr.common.encryption
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.Optional
+import javax.crypto.AEADBadTagException
 
 class EncryptionServiceTest {
     private val service = EncryptionService(MASTER_KEY)
@@ -64,6 +66,53 @@ class EncryptionServiceTest {
     }
 
     @Test
+    fun `reads v2 values written with a previous master key`() {
+        val rotated = EncryptionService(NEW_MASTER_KEY, Optional.empty(), Optional.of(listOf(MASTER_KEY)))
+        val written = service.encrypt("smtp-password")
+
+        assertEquals("smtp-password", rotated.decrypt(written))
+        assertEquals("smtp-password", rotated.decrypt(V2_REFERENCE))
+        assertFalse(rotated.isEncryptedWithCurrentKey(written))
+    }
+
+    @Test
+    fun `re-encrypts values from a previous key or v1 with the current key`() {
+        val rotated = EncryptionService(NEW_MASTER_KEY, Optional.of(MASTER_KEY), Optional.of(listOf(MASTER_KEY)))
+
+        listOf(service.encrypt("smtp-password"), V1_REFERENCE).forEach { stored ->
+            val reEncrypted = rotated.reEncrypt(stored)!!
+
+            assertTrue(rotated.isEncryptedWithCurrentKey(reEncrypted))
+            assertEquals("smtp-password", EncryptionService(NEW_MASTER_KEY).decrypt(reEncrypted))
+        }
+    }
+
+    @Test
+    fun `leaves values already encrypted with the current key untouched`() {
+        assertNull(service.reEncrypt(service.encrypt("smtp-password")))
+    }
+
+    @Test
+    fun `fails clearly when no configured key decrypts a v2 value`() {
+        val rotated = EncryptionService(NEW_MASTER_KEY)
+
+        val error = assertThrows<AEADBadTagException> { rotated.decrypt(service.encrypt("smtp-password")) }
+        assertTrue(error.message!!.contains("ENCRYPTION_PREVIOUS_MASTER_KEYS"))
+        assertThrows<AEADBadTagException> { rotated.reEncrypt(service.encrypt("smtp-password")) }
+    }
+
+    @Test
+    fun `refuses a previous master key shorter than 32 bytes`() {
+        val error =
+            assertThrows<IllegalArgumentException> {
+                EncryptionService(MASTER_KEY, Optional.empty(), Optional.of(listOf(SHORT_LEGACY_KEY)))
+            }
+
+        assertTrue(error.message!!.contains("ENCRYPTION_PREVIOUS_MASTER_KEYS"))
+        assertFalse(error.message!!.contains(SHORT_LEGACY_KEY))
+    }
+
+    @Test
     fun `leaves existing plain text connection strings readable during migration`() {
         val plainText = "redis://monitor:secret@localhost/0"
 
@@ -80,6 +129,7 @@ class EncryptionServiceTest {
 
     private companion object {
         const val MASTER_KEY = "0123456789abcdef0123456789abcdef"
+        const val NEW_MASTER_KEY = "a-brand-new-master-key-of-32-bytes!"
         const val SHORT_LEGACY_KEY = "zfzefzefzef1212zedazdazd"
         const val V2_REFERENCE = "enc:v2:AAAAAAAAAAAAAAAAVE14nuionOe5PsNerTixf6RDlF6PBWQoO4YaUt4="
         const val V1_REFERENCE = "enc:v1:AAAAAAAAAAAAAAAAvR7VcT9zPiucWu76fAW4zumBx/VRRnHCPA/5x+o="

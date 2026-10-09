@@ -8,6 +8,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import java.security.SecureRandom
 import java.util.Base64
 import java.util.Optional
+import javax.crypto.AEADBadTagException
 import javax.crypto.Cipher
 import javax.crypto.Mac
 import javax.crypto.SecretKey
@@ -24,20 +25,27 @@ class EncryptionService
         masterKey: String,
         @ConfigProperty(name = "encryption.legacy-master-key")
         legacyMasterKey: Optional<String>,
+        @ConfigProperty(name = "encryption.previous-master-keys")
+        previousMasterKeys: Optional<List<String>>,
     ) {
-        constructor(masterKey: String) : this(masterKey, Optional.empty())
+        constructor(masterKey: String) : this(masterKey, Optional.empty(), Optional.empty())
+
+        constructor(masterKey: String, legacyMasterKey: Optional<String>) : this(masterKey, legacyMasterKey, Optional.empty())
 
         private val secretKey: SecretKey
+        private val previousSecretKeys: List<SecretKey>
         private val legacySecretKey: SecretKey
         private val secureRandom = SecureRandom()
 
         init {
-            val masterKeyBytes = masterKey.toByteArray(Charsets.UTF_8)
-            require(masterKeyBytes.size >= MIN_MASTER_KEY_BYTES) {
-                "encryption.master-key (ENCRYPTION_MASTER_KEY) must be at least $MIN_MASTER_KEY_BYTES bytes, " +
-                    "got ${masterKeyBytes.size}. Generate one with `openssl rand -base64 32`."
-            }
-            secretKey = SecretKeySpec(hkdfSha256(masterKeyBytes), AES)
+            secretKey = deriveKey(masterKey, "encryption.master-key (ENCRYPTION_MASTER_KEY)")
+            previousSecretKeys =
+                previousMasterKeys
+                    .orElse(emptyList())
+                    .map(String::trim)
+                    .filter(String::isNotEmpty)
+                    .filter { it != masterKey }
+                    .map { deriveKey(it, "Each encryption.previous-master-keys (ENCRYPTION_PREVIOUS_MASTER_KEYS) entry") }
 
             val legacyKeyBytes = legacyMasterKey.orElse(masterKey).toByteArray(Charsets.UTF_8)
             legacySecretKey = SecretKeySpec(legacyKeyBytes.copyOf(AES_KEY_BYTES), AES)
@@ -54,19 +62,55 @@ class EncryptionService
 
         fun decrypt(encryptedText: String): String =
             if (encryptedText.startsWith(PREFIX_V2)) {
-                decryptWith(secretKey, encryptedText.removePrefix(PREFIX_V2))
+                decryptV2(encryptedText.removePrefix(PREFIX_V2))
             } else {
                 decryptWith(legacySecretKey, encryptedText.removePrefix(PREFIX_V1))
             }
 
         fun decryptIfEncrypted(value: String): String {
-            if (value.startsWith(PREFIX_V2) || value.startsWith(PREFIX_V1)) return decrypt(value)
+            if (hasEncryptionMarker(value)) return decrypt(value)
             if ("://" in value) return value
 
             return runCatching { decrypt(value) }.getOrDefault(value)
         }
 
-        fun isEncryptedWithCurrentKey(value: String): Boolean = value.startsWith(PREFIX_V2)
+        fun hasEncryptionMarker(value: String): Boolean = value.startsWith(PREFIX_V2) || value.startsWith(PREFIX_V1)
+
+        fun isEncryptedWithCurrentKey(value: String): Boolean =
+            value.startsWith(PREFIX_V2) &&
+                runCatching { decryptWith(secretKey, value.removePrefix(PREFIX_V2)) }.isSuccess
+
+        fun reEncrypt(value: String): String? {
+            require(hasEncryptionMarker(value)) { "Not an encrypted value" }
+            if (isEncryptedWithCurrentKey(value)) return null
+
+            return encrypt(decrypt(value))
+        }
+
+        private fun decryptV2(payload: String): String {
+            for (key in listOf(secretKey) + previousSecretKeys) {
+                try {
+                    return decryptWith(key, payload)
+                } catch (ignored: AEADBadTagException) {
+                    // AES-GCM authenticates the ciphertext: a wrong key always fails here, try the next one.
+                }
+            }
+            throw AEADBadTagException(
+                "Value encrypted with a key that is neither ENCRYPTION_MASTER_KEY nor one of ENCRYPTION_PREVIOUS_MASTER_KEYS",
+            )
+        }
+
+        private fun deriveKey(
+            masterKey: String,
+            name: String,
+        ): SecretKey {
+            val masterKeyBytes = masterKey.toByteArray(Charsets.UTF_8)
+            require(masterKeyBytes.size >= MIN_MASTER_KEY_BYTES) {
+                "$name must be at least $MIN_MASTER_KEY_BYTES bytes, " +
+                    "got ${masterKeyBytes.size}. Generate one with `openssl rand -base64 32`."
+            }
+            return SecretKeySpec(hkdfSha256(masterKeyBytes), AES)
+        }
 
         private fun decryptWith(
             key: SecretKey,

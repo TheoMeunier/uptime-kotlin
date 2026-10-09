@@ -60,7 +60,8 @@ class JwtKeyProvider(
                 runCatching { encryptionService.decrypt(stored.privateKey) }.getOrElse {
                     throw IllegalStateException(
                         "Unable to decrypt the JWT signing key stored in jwt_signing_keys: " +
-                            "ENCRYPTION_MASTER_KEY is not the key it was encrypted with.",
+                            "it was encrypted with neither ENCRYPTION_MASTER_KEY nor ENCRYPTION_PREVIOUS_MASTER_KEYS. " +
+                            "When rotating the master key, set the old one in ENCRYPTION_PREVIOUS_MASTER_KEYS.",
                         it,
                     )
                 }
