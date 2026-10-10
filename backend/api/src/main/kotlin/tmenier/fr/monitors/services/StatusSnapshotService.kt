@@ -9,13 +9,17 @@ import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Base64
+import java.util.UUID
 
 @ApplicationScoped
 class StatusSnapshotService(
     private val probeRepository: ProbeRepository,
     private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
 ) {
-    fun snapshot(now: Instant): List<ProbeStatusDTO> {
+    fun snapshot(
+        now: Instant,
+        probeIds: Collection<UUID>? = null,
+    ): List<ProbeStatusDTO> {
         val maintenance =
             maintenanceOccurrenceRepository.findMaintenanceStateByProbe(
                 at = now,
@@ -29,14 +33,14 @@ class StatusSnapshotService(
             )
 
         val metrics =
-            probeRepository.getProbesStatusMetrics().mapValues { (probeId, probeMetrics) ->
+            probeRepository.getProbesStatusMetrics(probeIds).mapValues { (probeId, probeMetrics) ->
                 probeMetrics.copy(
                     maintenance = maintenance[probeId],
                     maintenanceSeconds = plannedDowntime[probeId] ?: 0L,
                 )
             }
 
-        return probeRepository.getProbesLastHourWithMetrics(metrics)
+        return probeRepository.getProbesLastHourWithMetrics(metrics, probeIds)
     }
 
     fun fingerprint(

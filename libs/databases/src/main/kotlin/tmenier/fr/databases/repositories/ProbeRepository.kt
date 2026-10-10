@@ -45,16 +45,27 @@ class ProbeRepository(
 
     fun findByIds(ids: List<UUID>): List<ProbesEntity> = find("id in ?1", ids).list()
 
-    fun getProbesLastHourWithMetrics(metrics: Map<UUID, ProbeStatusMetrics>): List<ProbeStatusDTO> =
-        findProbesWithLastHourLogs().map { ProbeMapper.toStatusDto(it, metrics[it.id]) }
+    fun getProbesLastHourWithMetrics(
+        metrics: Map<UUID, ProbeStatusMetrics>,
+        probeIds: Collection<UUID>? = null,
+    ): List<ProbeStatusDTO> = findProbesWithLastHourLogs(probeIds).map { ProbeMapper.toStatusDto(it, metrics[it.id]) }
 
-    private fun findProbesWithLastHourLogs(): List<ProbesEntity> =
-        find(
-            "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ORDER BY p.name ASC",
-            Instant.now().minus(1, ChronoUnit.HOURS),
+    private fun findProbesWithLastHourLogs(probeIds: Collection<UUID>?): List<ProbesEntity> {
+        if (probeIds?.isEmpty() == true) return emptyList()
+
+        val since = Instant.now().minus(1, ChronoUnit.HOURS)
+        val scope = if (probeIds == null) "" else "AND p.id IN ?2 "
+        val params: Array<Any> = if (probeIds == null) arrayOf(since) else arrayOf(since, probeIds)
+
+        return find(
+            "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ${scope}ORDER BY p.name ASC",
+            *params,
         ).list().sortedBy { it.name.lowercase() }
+    }
 
-    fun getProbesStatusMetrics(): Map<UUID, ProbeStatusMetrics> {
+    fun getProbesStatusMetrics(probeIds: Collection<UUID>? = null): Map<UUID, ProbeStatusMetrics> {
+        if (probeIds?.isEmpty() == true) return emptyMap()
+
         val now = Instant.now()
         val since24h = now.minus(24, ChronoUnit.HOURS)
         val since7d = now.minus(7, ChronoUnit.DAYS)
@@ -73,6 +84,7 @@ class ProbeRepository(
             FROM ProbesEntity p
             LEFT JOIN p.probesMonitorLogs pml WITH pml.runAt > :since30d AND pml.underMaintenance = false
             WHERE p.enabled = true
+            ${if (probeIds == null) "" else "AND p.id IN :probeIds"}
             GROUP BY p.id
             """.trimIndent()
 
@@ -83,6 +95,7 @@ class ProbeRepository(
                 .setParameter("since7d", since7d)
                 .setParameter("since30d", since30d)
                 .setParameter("success", ProbeMonitorLogStatus.SUCCESS)
+                .apply { if (probeIds != null) setParameter("probeIds", probeIds) }
                 .resultList
 
         return rows.associate { row ->

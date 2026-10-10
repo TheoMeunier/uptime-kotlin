@@ -62,10 +62,11 @@ class ListStatusPageAction(
     @Transactional
     fun arrange(
         slug: String,
-        snapshot: List<ProbeStatusDTO>,
+        snapshot: (Set<UUID>) -> List<ProbeStatusDTO>,
     ): PublicStatusPageDto {
         val page = findPublished(slug)
-        val byProbe = snapshot.associateBy { it.probe.id }
+        val probeIds = page.groups.flatMap { it.orderedProbes() }.mapTo(mutableSetOf()) { it.id }
+        val byProbe = snapshot(probeIds).associateBy { it.probe.id }
 
         return PublicStatusPageDto(
             slug = page.slug,

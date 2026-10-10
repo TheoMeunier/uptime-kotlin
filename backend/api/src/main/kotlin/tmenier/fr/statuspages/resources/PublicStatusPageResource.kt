@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.Response
 import tmenier.fr.monitors.services.StatusSnapshotService
 import tmenier.fr.monitors.services.StatusSnapshotService.Companion.CACHE_POLICY
 import tmenier.fr.statuspages.actions.ListStatusPageAction
+import tmenier.fr.statuspages.services.PublicStatusPageCache
 import java.time.Instant
 
 @Path("/api/status/{slug}")
@@ -22,6 +23,7 @@ import java.time.Instant
 class PublicStatusPageResource(
     private val statusSnapshotService: StatusSnapshotService,
     private val listStatusPageAction: ListStatusPageAction,
+    private val publicStatusPageCache: PublicStatusPageCache,
 ) {
     @GET
     fun show(
@@ -39,8 +41,11 @@ class PublicStatusPageResource(
         }
 
         return Response
-            .ok(listStatusPageAction.arrange(slug, statusSnapshotService.snapshot(now)))
-            .tag(tag)
+            .ok(
+                publicStatusPageCache.getOrCompute(slug, tag.value, now) {
+                    listStatusPageAction.arrange(slug) { probeIds -> statusSnapshotService.snapshot(now, probeIds) }
+                },
+            ).tag(tag)
             .header(HttpHeaders.CACHE_CONTROL, CACHE_POLICY)
             .build()
     }
