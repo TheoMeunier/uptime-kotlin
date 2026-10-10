@@ -2,6 +2,7 @@ package tmenier.fr.schedulers.queue
 
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.transaction.RollbackException
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import tmenier.fr.common.config.SchedulerStrategy
 import tmenier.fr.common.utils.logger
@@ -31,13 +32,21 @@ class WorkerRegistry(
 
     @Scheduled(every = "10m", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun purgeStaleHeartbeats() {
+        if (!schedulerStrategy.runsBackgroundJobs) return
+
         try {
             val purged = workerHeartbeatRepository.purgeStale()
             if (purged > 0) logger.info { "Purged $purged stale worker heartbeat(s)" }
         } catch (e: Exception) {
-            logger.warn(e) { "Failed to purge stale worker heartbeats" }
+            if (e.isTransactionRolledBack()) {
+                logger.warn { "Stale worker heartbeats purge rolled back (${e.message}), retrying in 10 minutes" }
+            } else {
+                logger.warn(e) { "Failed to purge stale worker heartbeats" }
+            }
         }
     }
+
+    private fun Throwable.isTransactionRolledBack(): Boolean = generateSequence(this) { it.cause }.any { it is RollbackException }
 
     fun activeWorkerCount(): Int = workerHeartbeatRepository.activeWorkerCount()
 
