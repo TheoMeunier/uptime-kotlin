@@ -1,10 +1,6 @@
-# Test local de l'image tout-en-un.
-#   docker compose -f docker/all-in-one/compose.yaml up --build
-# Puis http://localhost:8090
-
 services:
   uptime-kotlin:
-    image: ghcr.io/theomeunier/uptime-kotlin:feat-multi-arch-images
+    image: ghcr.io/theomeunier/uptime-kotlin:1.4.0
     restart: unless-stopped
     mem_limit: 512m
     ports:
