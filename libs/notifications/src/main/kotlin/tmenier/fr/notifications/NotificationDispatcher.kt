@@ -1,8 +1,10 @@
 package tmenier.fr.notifications
 
 import jakarta.enterprise.context.ApplicationScoped
+import tmenier.fr.common.config.DemoMode
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.notifications.NotificationEvent
+import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.dtos.ProbeDTO
 import java.time.Duration
@@ -10,6 +12,7 @@ import java.time.Duration
 @ApplicationScoped
 class NotificationDispatcher(
     private val notificationFactory: NotificationFactory,
+    private val demoMode: DemoMode,
 ) {
     fun dispatch(
         notification: NotificationDto,
@@ -20,6 +23,11 @@ class NotificationDispatcher(
         downtime: Duration? = null,
     ) {
         if (event == NotificationEvent.NONE) return
+
+        if (demoMode.enabled) {
+            logger.info { "Demo mode: $event for probe ${probe.id} not sent to ${notification.type} channel ${notification.id}" }
+            return
+        }
 
         val handler =
             notificationFactory.getNotification(notification.type)

@@ -15,7 +15,7 @@ import { Button } from '@/components/atoms/button.tsx';
 import { Activity, BadgeCheck, ChevronsUpDown, Compass, Home, LogOut, Plus, Wrench } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
 import type { ProbeListItem } from '@/features/probes/schemas/probe-response.schema.ts';
@@ -42,6 +42,7 @@ import SidebarMonitors from '@/components/molecules/sidebar-monitors.tsx';
 import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
 import GuidedTour from '@/features/onboarding/components/guided-tour.tsx';
 import useOnboardingTour from '@/features/onboarding/hooks/useOnboardingTour.ts';
+import { DemoBanner } from '@/features/demo/slots.ts';
 
 export default function Layout() {
 	const { t } = useTranslation();
@@ -181,6 +182,11 @@ export default function Layout() {
 			</Sidebar>
 
 			<SidebarInset className="min-w-0">
+				{DemoBanner && (
+					<Suspense fallback={null}>
+						<DemoBanner />
+					</Suspense>
+				)}
 				<header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
 					<SidebarTrigger className="-ml-1" />
 					<Separator orientation="vertical" className="mr-1 data-[orientation=vertical]:h-4" />

@@ -5,7 +5,9 @@ WORKDIR /app
 COPY apps/app/package.json apps/app/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
 COPY apps/app/ ./
-RUN npm run build
+# true only for the public demo image: the demo banner and login hint are left out of the regular bundle.
+ARG VITE_DEMO=false
+RUN VITE_DEMO=${VITE_DEMO} npm run build
 
 FROM ${MANDREL_IMAGE} AS back
 USER root
