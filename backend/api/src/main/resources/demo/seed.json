@@ -1,0 +1,372 @@
+{
+  "user_name": "Demo",
+  "notification": {
+    "name": "Demo webhook (nothing is sent)",
+    "notification_type": "WEBHOOK",
+    "is_default": true,
+    "url": "https://hooks.uptime-demo.invalid/alerts",
+    "method": "POST"
+  },
+  "probes": [
+    {
+      "name": "Google",
+      "description": "Google search home page.",
+      "protocol": "HTTP",
+      "url": "https://www.google.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 60,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "Wikipedia",
+      "description": "Wikipedia portal, with a latency threshold at 1.5 s.",
+      "protocol": "HTTP",
+      "url": "https://www.wikipedia.org",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30,
+      "max_latency_ms": 1500
+    },
+    {
+      "name": "Apple",
+      "description": "apple.com home page.",
+      "protocol": "HTTP",
+      "url": "https://www.apple.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "Microsoft",
+      "description": "microsoft.com, redirects followed.",
+      "protocol": "HTTP",
+      "url": "https://www.microsoft.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "GitHub",
+      "description": "github.com home page.",
+      "protocol": "HTTP",
+      "url": "https://github.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 60,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "GitHub API",
+      "description": "Root of the GitHub REST API (JSON).",
+      "protocol": "HTTP",
+      "url": "https://api.github.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "npm registry",
+      "description": "Public npm registry (JSON).",
+      "protocol": "HTTP",
+      "url": "https://registry.npmjs.org",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "Docker Hub",
+      "description": "Docker Hub web site.",
+      "protocol": "HTTP",
+      "url": "https://hub.docker.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 300,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "GitHub (missing page)",
+      "description": "A GitHub URL that answers 404: stays down on purpose.",
+      "protocol": "HTTP",
+      "url": "https://github.com/uptime-kotlin-demo/this-page-does-not-exist",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": false,
+      "ignore_certificate_errors": false,
+      "interval": 300,
+      "interval_retry": 30,
+      "retry": 1,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30,
+      "alert_repeat_seconds": 3600
+    },
+    {
+      "name": "Payments API (flaky)",
+      "description": "httpbin.org answers 503 about one time in five, to show incidents and downtime.",
+      "protocol": "HTTP",
+      "url": "https://httpbin.org/status/200,200,200,200,503",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": false,
+      "ignore_certificate_errors": false,
+      "interval": 60,
+      "interval_retry": 30,
+      "retry": 1,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "Expired certificate",
+      "description": "badssl.com test host serving an expired TLS certificate.",
+      "protocol": "HTTP",
+      "url": "https://expired.badssl.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 300,
+      "interval_retry": 30,
+      "retry": 1,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30
+    },
+    {
+      "name": "Cloudflare DNS (TCP 443)",
+      "description": "Opens a TCP connection to 1.1.1.1 on port 443.",
+      "protocol": "TCP",
+      "interval": 60,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 5,
+      "enabled": true,
+      "log_retention_days": 30,
+      "url": "1.1.1.1",
+      "tcp_port": 443
+    },
+    {
+      "name": "Google DNS resolution",
+      "description": "Resolves the A record of google.com through 8.8.8.8.",
+      "protocol": "DNS",
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 5,
+      "enabled": true,
+      "log_retention_days": 30,
+      "hostname": "google.com",
+      "dns_server": "8.8.8.8",
+      "dns_port": 53,
+      "record_type": "A"
+    },
+    {
+      "name": "Google Public DNS (ping)",
+      "description": "Three ICMP echo requests to 8.8.8.8.",
+      "protocol": "PING",
+      "interval": 60,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 5,
+      "enabled": true,
+      "log_retention_days": 30,
+      "ip": "8.8.8.8",
+      "ping_heartbeat_interval": 1,
+      "ping_max_packet": 3,
+      "ping_size": 56,
+      "ping_delay": 50,
+      "ping_numeric_output": true
+    },
+    {
+      "name": "Gmail SMTP",
+      "description": "SMTP handshake with smtp.gmail.com on port 587 (STARTTLS).",
+      "protocol": "SMTP",
+      "interval": 300,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": true,
+      "log_retention_days": 30,
+      "hostname": "smtp.gmail.com",
+      "port": 587,
+      "security": "STARTTLS"
+    },
+    {
+      "name": "Twitter / X (paused)",
+      "description": "A paused probe: kept, but not checked.",
+      "protocol": "HTTP",
+      "url": "https://x.com",
+      "method": "GET",
+      "http_code_allowed": [
+        "200-299"
+      ],
+      "notification_certificate": true,
+      "ignore_certificate_errors": false,
+      "interval": 120,
+      "interval_retry": 30,
+      "retry": 2,
+      "timeout": 10,
+      "enabled": false,
+      "log_retention_days": 30
+    }
+  ],
+  "status_pages": [
+    {
+      "slug": "demo",
+      "title": "Demo status page",
+      "description": "Well-known public services, grouped by kind.",
+      "default_layout": "GRID",
+      "groups": [
+        {
+          "name": "Websites",
+          "probes": [
+            "Google",
+            "Wikipedia",
+            "Apple",
+            "Microsoft"
+          ]
+        },
+        {
+          "name": "Developer services",
+          "probes": [
+            "GitHub",
+            "GitHub API",
+            "npm registry",
+            "Docker Hub",
+            "Payments API (flaky)"
+          ]
+        },
+        {
+          "name": "Network",
+          "probes": [
+            "Cloudflare DNS (TCP 443)",
+            "Google DNS resolution",
+            "Google Public DNS (ping)",
+            "Gmail SMTP"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "developers",
+      "title": "Developer services",
+      "description": "A second page, in list layout.",
+      "default_layout": "LIST",
+      "groups": [
+        {
+          "name": null,
+          "probes": [
+            "GitHub",
+            "GitHub API",
+            "npm registry",
+            "Docker Hub"
+          ]
+        }
+      ]
+    }
+  ],
+  "maintenances": [
+    {
+      "title": "Weekly payments maintenance",
+      "description": "Recurring window: alerts are muted while it runs.",
+      "starts_in_hours": 48,
+      "duration_seconds": 3600,
+      "recurrence": "WEEKLY",
+      "timezone": "Europe/Paris",
+      "active": true,
+      "is_public": true,
+      "probes": [
+        "Payments API (flaky)"
+      ]
+    },
+    {
+      "title": "Docker Hub migration",
+      "description": "One-off window announced on the status page.",
+      "starts_in_hours": 6,
+      "duration_seconds": 1800,
+      "recurrence": "ONCE",
+      "timezone": "Europe/Paris",
+      "active": true,
+      "is_public": true,
+      "probes": [
+        "Docker Hub"
+      ]
+    }
+  ]
+}
