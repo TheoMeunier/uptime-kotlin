@@ -9,6 +9,7 @@ import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.auth.actions.ListingSessionsAction
+import tmenier.fr.common.config.DemoMode
 import java.util.UUID
 
 @Path("/api/auth/sessions")
@@ -16,6 +17,7 @@ import java.util.UUID
 @Consumes(MediaType.APPLICATION_JSON)
 class ListingSessionsResource(
     private val listingSessionsAction: ListingSessionsAction,
+    private val demoMode: DemoMode,
 ) {
     @GET
     @Authenticated
@@ -23,7 +25,8 @@ class ListingSessionsResource(
         @QueryParam("current") current: String?,
     ): Response {
         val currentSessionId = current?.let { runCatching { UUID.fromString(it) }.getOrNull() }
+        val sessions = listingSessionsAction.execute(currentSessionId)
 
-        return Response.ok(listingSessionsAction.execute(currentSessionId)).build()
+        return Response.ok(if (demoMode.enabled) sessions.filter { it.current } else sessions).build()
     }
 }

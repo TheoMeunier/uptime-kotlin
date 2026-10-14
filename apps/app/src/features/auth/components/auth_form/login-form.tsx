@@ -5,6 +5,8 @@ import { Input } from '@/components/atoms/input';
 import { Button } from '@/components/atoms/button.tsx';
 import useLoginForm from '@/features/auth/hooks/useLoginForm.ts';
 import { useTranslation } from 'react-i18next';
+import { Suspense } from 'react';
+import { DemoLoginHint } from '@/features/demo/slots.ts';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
 	const { t } = useTranslation();
@@ -12,6 +14,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
 	return (
 		<div className={cn('flex flex-col gap-6', className)} {...props}>
+			{DemoLoginHint && (
+				<Suspense fallback={null}>
+					<DemoLoginHint onCredentials={form.reset} />
+				</Suspense>
+			)}
 			<Card>
 				<CardHeader>
 					<CardTitle className="text-center text-xl">{t('pages.login.title')}</CardTitle>

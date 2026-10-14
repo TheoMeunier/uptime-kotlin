@@ -1,3 +1,10 @@
+const messagesByErrorCode = new Map<string, () => string>();
+
+/** Replaces the server message of an error code (`error` field of the payload) with a translated one. */
+export function registerErrorMessage(code: string, message: () => string) {
+	messagesByErrorCode.set(code, message);
+}
+
 export type ApiViolation = {
 	field: string;
 	message: string;
@@ -47,6 +54,12 @@ export function getApiErrorMessage(error: unknown) {
 export async function createApiError(response: Response, fallbackMessage = 'An API error occurred.') {
 	const payload = await readErrorPayload(response);
 	const violations = readViolations(payload);
+	const registeredMessage = payload?.error ? messagesByErrorCode.get(payload.error) : undefined;
+
+	if (registeredMessage) {
+		return new ApiError(registeredMessage(), response.status, payload?.errors ?? payload, violations);
+	}
+
 	const violationMessage = violations.map((violation) => violation.message).join(' · ');
 	const message =
 		payload?.message || payload?.error || violationMessage || payload?.title || response.statusText || fallbackMessage;
