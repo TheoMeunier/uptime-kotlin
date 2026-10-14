@@ -29,13 +29,6 @@ import java.util.UUID
 import tmenier.fr.monitors.requests.OnCreate as ProbeOnCreate
 import tmenier.fr.notifications.requests.OnCreate as NotificationOnCreate
 
-/**
- * Fills an empty database with the demo account and its data (`demo/seed.json`) when the demo mode is on.
- *
- * The seed goes through the same actions and validation as the API, in the API payload format, so it breaks
- * loudly when the model changes. Probes, status pages and maintenances reference probes by name.
- * Nothing happens once a user exists: the API is read-only, the data only needs to be written once.
- */
 @ApplicationScoped
 class DemoSeeder(
     private val demoMode: DemoMode,
@@ -60,7 +53,6 @@ class DemoSeeder(
             val seeded = QuarkusTransaction.requiringNew().call { seedIfEmpty() }
             if (seeded) logger.info { "Demo data seeded, sign in with ${demoMode.email}." }
         } catch (e: Exception) {
-            // The demo stays reachable (empty); the next start tries again since nothing was committed.
             logger.error(e) { "Demo seed failed, nothing was written" }
         }
     }
@@ -107,7 +99,14 @@ class DemoSeeder(
         seed.path("maintenances").forEach { maintenance ->
             val node = maintenance.deepCopy<ObjectNode>()
             val startsInHours = node.remove("starts_in_hours")?.asLong() ?: DEFAULT_STARTS_IN_HOURS
-            node.put("starts_at", Instant.now().plus(Duration.ofHours(startsInHours)).truncatedTo(ChronoUnit.HOURS).toString())
+            node.put(
+                "starts_at",
+                Instant
+                    .now()
+                    .plus(Duration.ofHours(startsInHours))
+                    .truncatedTo(ChronoUnit.HOURS)
+                    .toString(),
+            )
             node.replaceProbeNames(probeIds)
             storeMaintenanceAction.execute(read(node, StoreMaintenanceRequest::class.java))
         }
@@ -115,7 +114,6 @@ class DemoSeeder(
         return true
     }
 
-    /** `probes: ["name", …]` → `probe_ids: [uuid, …]`. */
     private fun ObjectNode.replaceProbeNames(probeIds: Map<String, UUID>) {
         val names = remove("probes") ?: return
         val ids = names.map { probeIds[it.asText()] ?: error("Demo seed: unknown probe '${it.asText()}'") }

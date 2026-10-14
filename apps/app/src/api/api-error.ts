@@ -1,6 +1,5 @@
 const messagesByErrorCode = new Map<string, () => string>();
 
-/** Replaces the server message of an error code (`error` field of the payload) with a translated one. */
 export function registerErrorMessage(code: string, message: () => string) {
 	messagesByErrorCode.set(code, message);
 }

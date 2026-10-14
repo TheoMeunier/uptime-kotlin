@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.Response
 import tmenier.fr.common.config.DemoMode
 import tmenier.fr.setup.actions.GetStatusApplicationAction
 
-// `demo` is left out of the JSON outside the demo mode: the response stays `{"status": …}`.
 @RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class StatusResponse(
