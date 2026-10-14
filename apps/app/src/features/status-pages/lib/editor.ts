@@ -13,8 +13,11 @@ export interface EditorProbe {
 
 export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+let groupKeySeq = 0;
+
 export function newGroupKey() {
-	return crypto.randomUUID();
+	groupKeySeq += 1;
+	return `group-${Date.now().toString(36)}-${groupKeySeq}`;
 }
 
 export function emptyGroup(): EditorGroup {
