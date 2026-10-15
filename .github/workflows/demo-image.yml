@@ -2,10 +2,6 @@ name: Demo image build and push
 
 on:
   workflow_dispatch:
-  # Temporary: deploys the demo from this branch before the next release. Remove before merging.
-  push:
-    branches:
-      - feat/application-demo
 
 permissions:
   contents: read
