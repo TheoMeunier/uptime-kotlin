@@ -12,6 +12,14 @@ function readLocal(email: string): boolean {
 	}
 }
 
+export function forgetOnboardingCompletion(email: string) {
+	try {
+		localStorage.removeItem(STORAGE_PREFIX + email);
+	} catch {
+		// Storage unavailable, nothing to forget.
+	}
+}
+
 function writeLocal(email: string) {
 	try {
 		localStorage.setItem(STORAGE_PREFIX + email, 'true');
