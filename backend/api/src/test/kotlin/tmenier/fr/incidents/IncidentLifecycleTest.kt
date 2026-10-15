@@ -151,6 +151,50 @@ class IncidentLifecycleTest {
         assertEquals(600L, summary.longest?.durationSeconds)
     }
 
+    @Test
+    fun `an outage that started before the period is still ongoing in it, for the part inside it`() {
+        val probe = fixtures.probe().also(probes::add)
+        check(probe, ProbeMonitorLogStatus.FAILURE, at = t0.minusSeconds(3_600))
+
+        val summary = fixtures.summary(from = t0.minusSeconds(1_800), to = t0, probeId = probe, now = t0)
+
+        assertEquals(1L, summary.count)
+        assertEquals(1L, summary.ongoing)
+        assertEquals(1_800L, summary.totalDowntimeSeconds, "the downtime before the period is left out")
+        assertNull(summary.mttrSeconds)
+        assertEquals(t0.minusSeconds(3_600), summary.longest?.startedAt)
+    }
+
+    @Test
+    fun `the summary only counts the part of each outage inside the period`() {
+        val probe = fixtures.probe().also(probes::add)
+        val from = t0.minusSeconds(3_300)
+        val to = t0.minusSeconds(1_800)
+
+        // Over before the period.
+        check(probe, ProbeMonitorLogStatus.FAILURE, at = t0.minusSeconds(7_200))
+        check(probe, ProbeMonitorLogStatus.SUCCESS, at = t0.minusSeconds(6_600))
+        // 600 s, 300 s of them after `from`.
+        check(probe, ProbeMonitorLogStatus.FAILURE, at = t0.minusSeconds(3_600))
+        check(probe, ProbeMonitorLogStatus.SUCCESS, at = t0.minusSeconds(3_000))
+        // 1 200 s, 600 s of them before `to`.
+        check(probe, ProbeMonitorLogStatus.FAILURE, at = t0.minusSeconds(2_400))
+        check(probe, ProbeMonitorLogStatus.SUCCESS, at = t0.minusSeconds(1_200))
+        // Started after the period.
+        check(probe, ProbeMonitorLogStatus.FAILURE, at = t0.minusSeconds(600))
+
+        val summary = fixtures.summary(from = from, to = to, probeId = probe, now = t0)
+
+        assertEquals(2L, summary.count)
+        assertEquals(0L, summary.ongoing)
+        assertEquals(300L + 600L, summary.totalDowntimeSeconds, "never more than the period itself")
+        assertEquals(900L, summary.mttrSeconds, "the time to recover is the whole outage")
+        assertEquals(1_200L, summary.longest?.durationSeconds)
+
+        val history = fixtures.incidents(probe, from = from, to = to)
+        assertEquals(listOf(t0.minusSeconds(2_400), t0.minusSeconds(3_600)), history.map { it.startedAt }, "the list shows the same incidents")
+    }
+
     private fun check(
         probeId: UUID,
         status: ProbeMonitorLogStatus,
@@ -191,7 +235,11 @@ class IncidentFixtures(
     }
 
     @Transactional
-    fun incidents(probeId: UUID): List<IncidentDto> = incidentRepository.findPage(IncidentFilter(probeId = probeId), page = 0, size = 50).items
+    fun incidents(
+        probeId: UUID,
+        from: Instant? = null,
+        to: Instant? = null,
+    ): List<IncidentDto> = incidentRepository.findPage(IncidentFilter(probeId = probeId, from = from, to = to), page = 0, size = 50).items
 
     @Transactional
     fun summary(

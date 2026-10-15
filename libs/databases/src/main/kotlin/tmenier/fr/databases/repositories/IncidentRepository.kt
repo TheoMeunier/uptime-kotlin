@@ -108,16 +108,13 @@ class IncidentRepository(
         val closed = IncidentFilter(state = IncidentState.CLOSED, probeId = probeId, from = from, to = to)
         val open = closed.copy(state = IncidentState.OPEN)
 
-        val stats =
+        val closedSpans =
             em
                 .createQuery(
-                    """
-                    SELECT COUNT(i), COALESCE(SUM(i.durationSeconds), 0), AVG(i.durationSeconds)
-                    FROM IncidentEntity i ${whereClause(closed)}
-                    """.trimIndent(),
+                    "SELECT i.startedAt, i.endedAt, i.durationSeconds FROM IncidentEntity i ${whereClause(closed)}",
                     Tuple::class.java,
                 ).bind(closed)
-                .singleResult
+                .resultList
 
         val longestClosed =
             em
@@ -140,9 +137,14 @@ class IncidentRepository(
                 .resultList
                 .map { IncidentMapper.toDto(it) to elapsedSeconds(it.startedAt, now) }
 
-        val closedCount = (stats[0] as Number).toLong()
-        val closedDowntime = (stats[1] as Number).toLong()
-        val mttr = (stats[2] as Number?)?.toDouble()?.let { Math.round(it) }
+        val closedDowntime = closedSpans.sumOf { downtimeWithin(it[0] as Instant, it[1] as Instant, from, to) }
+        val ongoingDowntime = ongoing.sumOf { downtimeWithin(it.first.startedAt, now, from, to) }
+        val mttr =
+            closedSpans
+                .map { (it[2] as Number).toLong() }
+                .takeIf { it.isNotEmpty() }
+                ?.average()
+                ?.let { Math.round(it) }
 
         val longestOngoing = ongoing.maxByOrNull { it.second }
         val longest =
@@ -156,9 +158,9 @@ class IncidentRepository(
         return IncidentSummaryDto(
             from = from,
             to = to,
-            count = closedCount + ongoing.size,
+            count = closedSpans.size.toLong() + ongoing.size,
             ongoing = ongoing.size.toLong(),
-            totalDowntimeSeconds = closedDowntime + ongoing.sumOf { it.second },
+            totalDowntimeSeconds = closedDowntime + ongoingDowntime,
             mttrSeconds = mttr,
             longest = longest,
         )
@@ -169,6 +171,13 @@ class IncidentRepository(
         now: Instant,
     ): Long = Duration.between(startedAt, now).seconds.coerceAtLeast(0)
 
+    private fun downtimeWithin(
+        startedAt: Instant,
+        endedAt: Instant,
+        from: Instant,
+        to: Instant,
+    ): Long = Duration.between(maxOf(startedAt, from), minOf(endedAt, to)).seconds.coerceAtLeast(0)
+
     private fun whereClause(filter: IncidentFilter): String {
         val conditions =
             listOfNotNull(
@@ -178,7 +187,7 @@ class IncidentRepository(
                     null -> null
                 },
                 filter.probeId?.let { "i.probe.id = :probeId" },
-                filter.from?.let { "i.startedAt >= :from" },
+                filter.from?.let { "(i.endedAt IS NULL OR i.endedAt > :from)" },
                 filter.to?.let { "i.startedAt < :to" },
             )
         return if (conditions.isEmpty()) "" else conditions.joinToString(" AND ", prefix = "WHERE ")
