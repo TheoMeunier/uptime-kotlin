@@ -29,9 +29,9 @@
 </p>
 
 <p align="center">
-  <a href="DEMO_URL"><b>Live demo</b></a>
+  <a href="https://demo.uptime-kotlin.com/status"><b>Live demo</b></a>
   ·
-  <a href="DEMO_URL/status/demo">Demo status page</a>
+  <a href="https://demo.uptime-kotlin.com/status/demo">Demo status page</a>
   ·
   <a href="#quick-start">Quick start</a>
   ·
@@ -40,18 +40,19 @@
   <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
 </p>
 
-<a href="DEMO_URL">
+<a href="https://demo.uptime-kotlin.com">
   <img src="docs/images/dashboard.webp" alt="Uptime Kotlin dashboard" width="900">
 </a>
 </div>
 
 ## Try it
 
-The **[live demo](DEMO_URL)** is read-only: the login form is filled in for you, you can open every page and form,
+The **[live demo](https://demo.uptime-kotlin.com/status)** is read-only: the login form is filled in for you, you can
+open every page and form,
 and nothing is saved. It monitors well-known public services, with a few failures on purpose (a 404, a flaky API, an
 expired certificate) so you can see incidents and alerts.
 
-Prefer the public side? Open the **[demo status page](DEMO_URL/status/demo)**.
+Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin.com/status/demo)**.
 
 ## Features
 
@@ -130,15 +131,15 @@ services:
 
 ## Configuration
 
-| Variable                                                                             | Default    | Description                                                                                                                                                                      |
-|--------------------------------------------------------------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ENCRYPTION_MASTER_KEY`                                                              | (required) | At least 32 bytes. Encrypts the stored secrets and the JWT signing key. To change it, see [Rotate the master key](#rotate-the-master-key).                                        |
-| `QUARKUS_DATASOURCE_USERNAME`<br>`QUARKUS_DATASOURCE_PASSWORD`<br>`QUARKUS_DATASOURCE_JDBC_URL` |            | PostgreSQL access.                                                                                                                                                               |
-| `MP_JWT_VERIFY_ISSUER`                                                               |            | Issuer of the JWT tokens.                                                                                                                                                        |
-| `SCHEDULER_STRATEGY`                                                                 | `database` | `none` when workers run the checks (see [Cluster mode](#cluster-mode)).                                                                                                          |
-| `SCHEDULER_WORKER_CONCURRENCY`                                                       | `4`        | Checks run in parallel.                                                                                                                                                          |
-| `MAINTENANCE_HORIZON_DAYS`<br>`MAINTENANCE_MAX_DURATION_HOURS`                       | `90`, `24` | Maintenance windows. Same values on the application and the workers.                                                                                                             |
-| `NOTIFICATIONS_DISPLAY_TIMEZONE`                                                     | `UTC`      | Zone of the dates in Slack, Teams, Telegram, ntfy, Gotify and e-mail notifications (IANA name, e.g. `Europe/Paris`). Same value on the application and the workers. Webhook payloads stay in UTC (ISO-8601). |
+| Variable                                                                                        | Default    | Description                                                                                                                                                                                                  |
+|-------------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ENCRYPTION_MASTER_KEY`                                                                         | (required) | At least 32 bytes. Encrypts the stored secrets and the JWT signing key. To change it, see [Rotate the master key](#rotate-the-master-key).                                                                   |
+| `QUARKUS_DATASOURCE_USERNAME`<br>`QUARKUS_DATASOURCE_PASSWORD`<br>`QUARKUS_DATASOURCE_JDBC_URL` |            | PostgreSQL access.                                                                                                                                                                                           |
+| `MP_JWT_VERIFY_ISSUER`                                                                          |            | Issuer of the JWT tokens.                                                                                                                                                                                    |
+| `SCHEDULER_STRATEGY`                                                                            | `database` | `none` when workers run the checks (see [Cluster mode](#cluster-mode)).                                                                                                                                      |
+| `SCHEDULER_WORKER_CONCURRENCY`                                                                  | `4`        | Checks run in parallel.                                                                                                                                                                                      |
+| `MAINTENANCE_HORIZON_DAYS`<br>`MAINTENANCE_MAX_DURATION_HOURS`                                  | `90`, `24` | Maintenance windows. Same values on the application and the workers.                                                                                                                                         |
+| `NOTIFICATIONS_DISPLAY_TIMEZONE`                                                                | `UTC`      | Zone of the dates in Slack, Teams, Telegram, ntfy, Gotify and e-mail notifications (IANA name, e.g. `Europe/Paris`). Same value on the application and the workers. Webhook payloads stay in UTC (ISO-8601). |
 
 <details>
 <summary>Use your own JWT keys</summary>
