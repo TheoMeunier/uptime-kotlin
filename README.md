@@ -41,7 +41,7 @@
 </p>
 
 <a href="https://demo.uptime-kotlin.com">
-  <img src="docs/images/demo.gif" alt="Uptime Kotlin demo: dashboard, creating a monitor with its notifications, monitor details and a public status page" width="900">
+  <img src="docs/images/demo.webp" alt="Uptime Kotlin demo: dashboard, creating a monitor with its notifications, monitor details and a public status page" width="900">
 </a>
 </div>
 
