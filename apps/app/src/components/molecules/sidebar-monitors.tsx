@@ -78,38 +78,40 @@ export default function SidebarMonitors({ probes, isLoading }: SidebarMonitorsPr
 			</SidebarGroupLabel>
 
 			{showFilter && (
-				<div role="search" className="relative px-1 pb-2">
-					<Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />
-					<SidebarInput
-						ref={inputRef}
-						type="text"
-						value={query}
-						onChange={(event) => setQuery(event.target.value)}
-						onKeyDown={(event) => {
-							if (event.key !== 'Escape') return;
+				<div role="search" className="px-1 pb-2">
+					<div className="relative">
+						<Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
+						<SidebarInput
+							ref={inputRef}
+							type="text"
+							value={query}
+							onChange={(event) => setQuery(event.target.value)}
+							onKeyDown={(event) => {
+								if (event.key !== 'Escape') return;
 
-							event.stopPropagation();
-							if (query) setQuery('');
-							else inputRef.current?.blur();
-						}}
-						placeholder={t('layout.sidebar.search.placeholder')}
-						aria-label={t('layout.sidebar.search.label')}
-						aria-controls={LIST_ID}
-						className="h-8 pr-8 pl-8"
-					/>
-					{isFiltering && (
-						<button
-							type="button"
-							onClick={() => {
-								setQuery('');
-								inputRef.current?.focus();
+								event.stopPropagation();
+								if (query) setQuery('');
+								else inputRef.current?.blur();
 							}}
-							aria-label={t('layout.sidebar.search.clear')}
-							className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 rounded-sm"
-						>
-							<X className="size-3.5" />
-						</button>
-					)}
+							placeholder={t('layout.sidebar.search.placeholder')}
+							aria-label={t('layout.sidebar.search.label')}
+							aria-controls={LIST_ID}
+							className="h-8 pr-8 pl-8"
+						/>
+						{isFiltering && (
+							<button
+								type="button"
+								onClick={() => {
+									setQuery('');
+									inputRef.current?.focus();
+								}}
+								aria-label={t('layout.sidebar.search.clear')}
+								className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 rounded-sm"
+							>
+								<X className="size-3.5" />
+							</button>
+						)}
+					</div>
 				</div>
 			)}
 
