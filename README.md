@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-  <a href="https://demo.uptime-kotlin.com/status"><b>Live demo</b></a>
+  <a href="https://demo.uptime-kotlin.com"><b>Live demo</b></a>
   ·
   <a href="https://demo.uptime-kotlin.com/status/demo">Demo status page</a>
   ·
@@ -47,7 +47,7 @@
 
 ## Try it
 
-The **[live demo](https://demo.uptime-kotlin.com/status)** is read-only: the login form is filled in for you, you can
+The **[live demo](https://demo.uptime-kotlin.com)** is read-only: the login form is filled in for you, you can
 open every page and form,
 and nothing is saved. It monitors well-known public services, with a few failures on purpose (a 404, a flaky API, an
 expired certificate) so you can see incidents and alerts.
