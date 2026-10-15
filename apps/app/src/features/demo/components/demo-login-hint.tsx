@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import useDemoCredentials, { type DemoCredentials } from '@/features/demo/hooks/useDemoCredentials.ts';
+import { forgetOnboardingCompletion } from '@/features/onboarding/hooks/useOnboardingTour.ts';
 
 type DemoLoginHintProps = {
 	onCredentials: (credentials: DemoCredentials) => void;
@@ -13,7 +14,10 @@ export default function DemoLoginHint({ onCredentials }: DemoLoginHintProps) {
 	const { data: credentials } = useDemoCredentials();
 
 	useEffect(() => {
-		if (credentials) onCredentials(credentials);
+		if (!credentials) return;
+
+		onCredentials(credentials);
+		forgetOnboardingCompletion(credentials.email);
 	}, [credentials, onCredentials]);
 
 	if (!credentials) return null;
