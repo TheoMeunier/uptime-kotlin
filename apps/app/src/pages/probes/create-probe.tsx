@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import ProbeForm from '@/features/probes/components/forms/probe-form.tsx';
 import ProbeProtocol from '@/features/probes/enums/probe-enum.ts';
+import HttpStatusCode from '@/features/probes/enums/http-status-code.ts';
 import { useStoreMonitor } from '@/features/probes/hooks/useStoreProbeForm.ts';
 import probeService from '@/features/probes/services/probeService.ts';
 import ErrorState from '@/components/molecules/error-state.tsx';
@@ -28,6 +29,7 @@ const DEFAULT_VALUES = {
 	follow_redirects: true,
 	max_latency_ms: 2000,
 	tls_expiry_warning_days: 30 as const,
+	http_code_allowed: [HttpStatusCode.SUCCESS],
 };
 
 export default function CreateProbe() {

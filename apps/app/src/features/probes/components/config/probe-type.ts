@@ -63,6 +63,7 @@ export function buildProbeFieldsConfig(t: TFunction) {
 					label: t('monitors.label.http_code_allowed'),
 					input_type: 'switch_multiple',
 					options: Object.values(HttpStatusCode),
+					default_value: [HttpStatusCode.SUCCESS],
 					searchable: false,
 					closeOnSelect: false,
 				},

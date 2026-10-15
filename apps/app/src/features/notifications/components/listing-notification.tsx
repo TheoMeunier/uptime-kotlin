@@ -8,6 +8,7 @@ import DeleteNotificationDialogue from '@/features/notifications/components/acti
 import CreateNotificationDialogue from '@/features/notifications/components/actions/create-notification-dialogue.tsx';
 import useNotificationsSetting from '@/features/notifications/hooks/useNotificationsSetting.ts';
 import type { NotificationDetail } from '@/features/notifications/schemas/notifications-reponse.schema.ts';
+import { NOTIFICATION_TYPE_LABELS } from '@/features/notifications/enums/notification-type-enum.ts';
 
 export default function ListingNotification() {
 	const { t } = useTranslation();
@@ -35,7 +36,7 @@ export default function ListingNotification() {
 								<div className="flex min-w-0 items-center gap-2.5">
 									<span className="truncate text-sm font-medium">{notification.name}</span>
 									<Badge variant="outline" className="shrink-0 font-normal">
-										{notification.notification_type}
+										{NOTIFICATION_TYPE_LABELS[notification.notification_type]}
 									</Badge>
 									{notification.is_default && (
 										<Badge variant="secondary" className="shrink-0 font-normal">
