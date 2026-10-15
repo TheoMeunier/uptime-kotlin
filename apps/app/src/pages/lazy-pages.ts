@@ -10,6 +10,7 @@ export const ShowProbe = lazy(() =>
 export const Profile = lazy(() => import('@/pages/profile/profile.tsx'));
 export const ProbesStatus = lazy(() => import('@/pages/probes/probes-status.tsx'));
 export const Maintenances = lazy(() => import('@/pages/maintenances/maintenances.tsx'));
+export const Incidents = lazy(() => import('@/pages/incidents/incidents.tsx'));
 export const StatusPages = lazy(() => import('@/pages/status-pages/status-pages.tsx'));
 export const StatusPageEditor = lazy(() => import('@/pages/status-pages/status-page-editor.tsx'));
 export const PublicStatusPage = lazy(() => import('@/pages/status-pages/public-status-page.tsx'));

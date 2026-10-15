@@ -368,5 +368,79 @@
         "Docker Hub"
       ]
     }
+  ],
+  "incidents": [
+    {
+      "probe": "Payments API (flaky)",
+      "started_hours_ago": 5,
+      "duration_seconds": 180,
+      "message": "HTTP 503 Service Unavailable"
+    },
+    {
+      "probe": "Payments API (flaky)",
+      "started_hours_ago": 27,
+      "duration_seconds": 420,
+      "message": "Read timed out after 10000 ms"
+    },
+    {
+      "probe": "Payments API (flaky)",
+      "started_hours_ago": 74,
+      "duration_seconds": 95,
+      "message": "HTTP 502 Bad Gateway"
+    },
+    {
+      "probe": "Payments API (flaky)",
+      "started_hours_ago": 150,
+      "duration_seconds": 1260,
+      "message": "HTTP 503 Service Unavailable"
+    },
+    {
+      "probe": "Payments API (flaky)",
+      "started_hours_ago": 410,
+      "duration_seconds": 300,
+      "message": "Connection reset by peer"
+    },
+    {
+      "probe": "GitHub API",
+      "started_hours_ago": 50,
+      "duration_seconds": 540,
+      "message": "HTTP 503 Service Unavailable"
+    },
+    {
+      "probe": "GitHub API",
+      "started_hours_ago": 330,
+      "duration_seconds": 2700,
+      "message": "HTTP 500 Internal Server Error"
+    },
+    {
+      "probe": "npm registry",
+      "started_hours_ago": 98,
+      "duration_seconds": 240,
+      "message": "Read timed out after 10000 ms"
+    },
+    {
+      "probe": "Docker Hub",
+      "started_hours_ago": 200,
+      "duration_seconds": 5400,
+      "message": "HTTP 502 Bad Gateway"
+    },
+    {
+      "probe": "Docker Hub",
+      "started_hours_ago": 610,
+      "duration_seconds": 900,
+      "message": "HTTP 429 Too Many Requests"
+    },
+    {
+      "probe": "Cloudflare DNS (TCP 443)",
+      "started_hours_ago": 260,
+      "duration_seconds": 120,
+      "message": "Connection refused"
+    },
+    {
+      "probe": "Gmail SMTP",
+      "started_hours_ago": 520,
+      "duration_seconds": 660,
+      "message": "SMTP 421 Service not available, closing transmission channel"
+    }
   ]
 }

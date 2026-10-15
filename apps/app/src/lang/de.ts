@@ -417,6 +417,63 @@ const de: typeof en = {
 		},
 	},
 
+	incidents: {
+		title: 'Störungen',
+		description:
+			'Jeder Ausfall, der eine Benachrichtigung ausgelöst hat, von der ersten fehlgeschlagenen Prüfung bis zur Wiederherstellung.',
+		ongoing: {
+			title: 'Laufend',
+			description: 'Derzeit ausgefallene Monitore. Die Dauer zählt ab der ersten fehlgeschlagenen Prüfung.',
+			empty: 'Keine laufende Störung: Alle gemeldeten Monitore sind wiederhergestellt.',
+			since: 'seit {{time}}',
+		},
+		history: {
+			title: 'Verlauf',
+			closed: 'Behobene Störungen',
+			hint: 'Dauern werden zwischen zwei Prüfungen gemessen: Ein Monitor, der alle 5 Minuten prüft, erkennt keinen kürzeren Ausfall.',
+		},
+		summary: {
+			count: 'Störungen',
+			ongoing: '{{count}} laufend',
+			downtime: 'Gesamte Ausfallzeit',
+			mttr: 'Mittlere Wiederherstellungszeit',
+			mttr_empty: 'Noch keine Störung behoben',
+			longest: 'Längste Störung',
+		},
+		filters: {
+			probe: 'Monitor',
+			all_probes: 'Alle Monitore',
+			period: 'Zeitraum',
+			periods: {
+				'24h': 'Letzte 24 Stunden',
+				'7d': 'Letzte 7 Tage',
+				'30d': 'Letzte 30 Tage',
+				'90d': 'Letzte 90 Tage',
+				'365d': 'Letzte 12 Monate',
+			},
+		},
+		table: {
+			probe: 'Monitor',
+			started: 'Beginn',
+			ended: 'Behoben',
+			duration: 'Dauer',
+			cause: 'Ursache',
+		},
+		closed_reason: {
+			RECOVERY: 'Wiederhergestellt',
+			PROBE_DISABLED: 'Monitor pausiert',
+		},
+		empty: {
+			title: 'Keine Störung in diesem Zeitraum',
+			description: 'Eine Störung erscheint hier, sobald ein Monitor eine Benachrichtigung auslöst.',
+		},
+		pagination: {
+			range: '{{from}}–{{to}} von {{total}}',
+			previous: 'Zurück',
+			next: 'Weiter',
+		},
+	},
+
 	maintenances: {
 		title: {
 			index: 'Wartungsfenster',
@@ -745,6 +802,7 @@ const de: typeof en = {
 			guide: 'Benutzerhandbuch',
 			dashboard: 'Übersicht',
 			status_page: 'Statusseiten',
+			incidents: 'Störungen',
 			maintenances: 'Wartung',
 			new_monitor: 'Neuer Monitor',
 		},

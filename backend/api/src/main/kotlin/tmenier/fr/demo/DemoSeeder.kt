@@ -10,8 +10,10 @@ import jakarta.enterprise.event.Observes
 import jakarta.validation.Validator
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.config.DemoMode
+import tmenier.fr.common.enums.incidents.IncidentClosedReason
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.mappers.UserDto
+import tmenier.fr.databases.repositories.IncidentRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.databases.repositories.UserRepository
 import tmenier.fr.maintenances.actions.StoreMaintenanceAction
@@ -34,6 +36,7 @@ class DemoSeeder(
     private val demoMode: DemoMode,
     private val userRepository: UserRepository,
     private val probeRepository: ProbeRepository,
+    private val incidentRepository: IncidentRepository,
     private val bcryptService: BcryptService,
     private val storeNotificationAction: StoreNotificationAction,
     private val storeProbeAction: StoreProbeAction,
@@ -111,7 +114,34 @@ class DemoSeeder(
             storeMaintenanceAction.execute(read(node, StoreMaintenanceRequest::class.java))
         }
 
+        seedIncidents(seed.path("incidents"), probeIds)
+
         return true
+    }
+
+    /** Past outages, so that the incidents page shows what the tool records from the first visit. */
+    private fun seedIncidents(
+        incidents: JsonNode,
+        probeIds: Map<String, UUID>,
+    ) {
+        val now = Instant.now().truncatedTo(ChronoUnit.SECONDS)
+
+        incidents.forEach { node ->
+            val name = node.required("probe").asText()
+            val probe = probeRepository.findById(probeIds[name] ?: error("Demo seed: unknown probe '$name'"))
+            val startedAt = now.minus(Duration.ofHours(node.required("started_hours_ago").asLong()))
+            val endedAt = startedAt.plusSeconds(node.required("duration_seconds").asLong())
+
+            incidentRepository.open(
+                probe = probe,
+                startedAt = startedAt,
+                // As if the probe had retried once before alerting.
+                confirmedAt = minOf(startedAt.plusSeconds(probe.interval.toLong()), endedAt),
+                message = node.path("message").asText(""),
+                checkTaskId = null,
+            )
+            incidentRepository.close(probe.id, endedAt, IncidentClosedReason.RECOVERY)
+        }
     }
 
     private fun ObjectNode.replaceProbeNames(probeIds: Map<String, UUID>) {

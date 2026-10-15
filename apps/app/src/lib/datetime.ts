@@ -89,6 +89,18 @@ export function formatDuration(totalSeconds: number): string {
 	return parts.join(' ') || '0m';
 }
 
+export function formatOutageDuration(totalSeconds: number): string {
+	const seconds = Math.max(0, Math.round(totalSeconds));
+	if (seconds < 60) return `${seconds}s`;
+	if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+	if (seconds < 86400) {
+		const minutes = Math.floor((seconds % 3600) / 60);
+		return `${Math.floor(seconds / 3600)}h ${String(minutes).padStart(2, '0')}m`;
+	}
+
+	return formatDuration(seconds);
+}
+
 export function formatRelativeDuration(value: Date | string | number): string {
 	const date = toDate(value);
 	if (!date) return '';

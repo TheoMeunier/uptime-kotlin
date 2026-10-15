@@ -407,6 +407,62 @@ const en = {
 		},
 	},
 
+	incidents: {
+		title: 'Incidents',
+		description: 'Every outage that raised an alert, from the first failed check to the recovery.',
+		ongoing: {
+			title: 'Ongoing',
+			description: 'Monitors currently down. The duration counts from the first failed check.',
+			empty: 'No ongoing incident: every alerted monitor has recovered.',
+			since: 'since {{time}}',
+		},
+		history: {
+			title: 'History',
+			closed: 'Resolved incidents',
+			hint: 'Durations are measured between two checks: a monitor checked every 5 minutes cannot see an outage shorter than that.',
+		},
+		summary: {
+			count: 'Incidents',
+			ongoing: '{{count}} ongoing',
+			downtime: 'Total downtime',
+			mttr: 'Mean time to recovery',
+			mttr_empty: 'No incident resolved yet',
+			longest: 'Longest incident',
+		},
+		filters: {
+			probe: 'Monitor',
+			all_probes: 'All monitors',
+			period: 'Period',
+			periods: {
+				'24h': 'Last 24 hours',
+				'7d': 'Last 7 days',
+				'30d': 'Last 30 days',
+				'90d': 'Last 90 days',
+				'365d': 'Last 12 months',
+			},
+		},
+		table: {
+			probe: 'Monitor',
+			started: 'Started',
+			ended: 'Resolved',
+			duration: 'Duration',
+			cause: 'Cause',
+		},
+		closed_reason: {
+			RECOVERY: 'Recovered',
+			PROBE_DISABLED: 'Monitor paused',
+		},
+		empty: {
+			title: 'No incident over this period',
+			description: 'An incident appears here as soon as a monitor raises an alert.',
+		},
+		pagination: {
+			range: '{{from}}–{{to}} of {{total}}',
+			previous: 'Previous',
+			next: 'Next',
+		},
+	},
+
 	maintenances: {
 		title: {
 			index: 'Maintenance windows',
@@ -730,6 +786,7 @@ const en = {
 			guide: 'User guide',
 			dashboard: 'Dashboard',
 			status_page: 'Status pages',
+			incidents: 'Incidents',
 			maintenances: 'Maintenance',
 			new_monitor: 'New monitor',
 		},

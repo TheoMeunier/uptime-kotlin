@@ -12,6 +12,7 @@ export function buildCrumbs(pathname: string, resolveProbe: (id: string) => Part
 	const [first, second, third] = segments;
 
 	if (first === 'dashboard') return [{ key: 'layout.sidebar.dashboard' }];
+	if (first === 'incidents') return [HOME, { key: 'layout.sidebar.incidents' }];
 	if (first === 'maintenances') return [HOME, { key: 'layout.sidebar.maintenances' }];
 	if (first === 'status-pages') {
 		const index: Crumb = { key: 'layout.sidebar.status_page', to: '/status-pages' };

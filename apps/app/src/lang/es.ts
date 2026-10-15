@@ -413,6 +413,62 @@ const es: typeof en = {
 		},
 	},
 
+	incidents: {
+		title: 'Incidencias',
+		description: 'Cada caída que generó una alerta, desde la primera comprobación fallida hasta la recuperación.',
+		ongoing: {
+			title: 'En curso',
+			description: 'Monitores caídos ahora mismo. La duración cuenta desde la primera comprobación fallida.',
+			empty: 'Ninguna incidencia en curso: todos los monitores alertados se han recuperado.',
+			since: 'desde {{time}}',
+		},
+		history: {
+			title: 'Historial',
+			closed: 'Incidencias resueltas',
+			hint: 'Las duraciones se miden entre dos comprobaciones: un monitor comprobado cada 5 minutos no ve una caída más corta.',
+		},
+		summary: {
+			count: 'Incidencias',
+			ongoing: '{{count}} en curso',
+			downtime: 'Tiempo total de caída',
+			mttr: 'Tiempo medio de recuperación',
+			mttr_empty: 'Ninguna incidencia resuelta todavía',
+			longest: 'Incidencia más larga',
+		},
+		filters: {
+			probe: 'Monitor',
+			all_probes: 'Todos los monitores',
+			period: 'Periodo',
+			periods: {
+				'24h': 'Últimas 24 horas',
+				'7d': 'Últimos 7 días',
+				'30d': 'Últimos 30 días',
+				'90d': 'Últimos 90 días',
+				'365d': 'Últimos 12 meses',
+			},
+		},
+		table: {
+			probe: 'Monitor',
+			started: 'Inicio',
+			ended: 'Resuelto',
+			duration: 'Duración',
+			cause: 'Causa',
+		},
+		closed_reason: {
+			RECOVERY: 'Recuperado',
+			PROBE_DISABLED: 'Monitor pausado',
+		},
+		empty: {
+			title: 'Ninguna incidencia en este periodo',
+			description: 'Una incidencia aparece aquí en cuanto un monitor genera una alerta.',
+		},
+		pagination: {
+			range: '{{from}}–{{to}} de {{total}}',
+			previous: 'Anterior',
+			next: 'Siguiente',
+		},
+	},
+
 	maintenances: {
 		title: {
 			index: 'Ventanas de mantenimiento',
@@ -740,6 +796,7 @@ const es: typeof en = {
 			guide: 'Guía de uso',
 			dashboard: 'Panel',
 			status_page: 'Páginas de estado',
+			incidents: 'Incidencias',
 			maintenances: 'Mantenimiento',
 			new_monitor: 'Nuevo monitor',
 		},
