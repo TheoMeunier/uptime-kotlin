@@ -3,9 +3,12 @@ package tmenier.fr.schedulers.services
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.enums.incidents.IncidentClosedReason
+import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
 import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.IncidentRepository
 import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
@@ -20,6 +23,7 @@ class SaveProbeMonitor(
     private val probeMonitorRepository: ProbeMonitorRepository,
     private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
     private val notificationService: NotificationService,
+    private val incidentRepository: IncidentRepository,
 ) {
     @Transactional
     fun saveProbeMonitorLog(
@@ -68,13 +72,35 @@ class SaveProbeMonitor(
             return true
         }
 
-        notificationService.announce(
-            probe = probe,
-            checkTaskId = checkTaskId,
-            result = result,
-            at = runAt,
-            outageStart = outageStart,
-        )
+        val event =
+            notificationService.announce(
+                probe = probe,
+                checkTaskId = checkTaskId,
+                result = result,
+                at = runAt,
+                outageStart = outageStart,
+            )
+
+        when (event) {
+            NotificationEvent.FAILURE ->
+                incidentRepository.open(
+                    probe = probe,
+                    startedAt = probe.failingSince ?: runAt,
+                    confirmedAt = runAt,
+                    message = result.message,
+                    checkTaskId = checkTaskId,
+                )
+
+            NotificationEvent.RECOVERY ->
+                incidentRepository.close(
+                    probeId = probe.id,
+                    at = runAt,
+                    reason = IncidentClosedReason.RECOVERY,
+                    checkTaskId = checkTaskId,
+                )
+
+            NotificationEvent.REMINDER, NotificationEvent.NONE -> Unit
+        }
 
         return true
     }

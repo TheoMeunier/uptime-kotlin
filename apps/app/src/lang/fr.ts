@@ -416,6 +416,62 @@ const fr: typeof en = {
 		},
 	},
 
+	incidents: {
+		title: 'Incidents',
+		description: 'Chaque panne qui a déclenché une alerte, du premier check en échec jusqu’au rétablissement.',
+		ongoing: {
+			title: 'En cours',
+			description: 'Sondes actuellement en panne. La durée court depuis le premier check en échec.',
+			empty: 'Aucun incident en cours : toutes les sondes en alerte sont rétablies.',
+			since: 'depuis le {{time}}',
+		},
+		history: {
+			title: 'Historique',
+			closed: 'Incidents résolus',
+			hint: 'Les durées sont mesurées entre deux checks : une sonde vérifiée toutes les 5 minutes ne voit pas une panne plus courte.',
+		},
+		summary: {
+			count: 'Incidents',
+			ongoing: '{{count}} en cours',
+			downtime: 'Indisponibilité cumulée',
+			mttr: 'Temps moyen de rétablissement',
+			mttr_empty: 'Aucun incident résolu pour l’instant',
+			longest: 'Incident le plus long',
+		},
+		filters: {
+			probe: 'Sonde',
+			all_probes: 'Toutes les sondes',
+			period: 'Période',
+			periods: {
+				'24h': 'Dernières 24 heures',
+				'7d': '7 derniers jours',
+				'30d': '30 derniers jours',
+				'90d': '90 derniers jours',
+				'365d': '12 derniers mois',
+			},
+		},
+		table: {
+			probe: 'Sonde',
+			started: 'Début',
+			ended: 'Rétablissement',
+			duration: 'Durée',
+			cause: 'Cause',
+		},
+		closed_reason: {
+			RECOVERY: 'Rétablie',
+			PROBE_DISABLED: 'Sonde mise en pause',
+		},
+		empty: {
+			title: 'Aucun incident sur cette période',
+			description: 'Un incident apparaît ici dès qu’une sonde déclenche une alerte.',
+		},
+		pagination: {
+			range: '{{from}}–{{to}} sur {{total}}',
+			previous: 'Précédent',
+			next: 'Suivant',
+		},
+	},
+
 	maintenances: {
 		title: {
 			index: 'Fenêtres de maintenance',
@@ -747,6 +803,7 @@ const fr: typeof en = {
 			guide: 'Guide d’utilisation',
 			dashboard: 'Tableau de bord',
 			status_page: 'Pages de statut',
+			incidents: 'Incidents',
 			maintenances: 'Maintenance',
 			new_monitor: 'Nouvelle sonde',
 		},

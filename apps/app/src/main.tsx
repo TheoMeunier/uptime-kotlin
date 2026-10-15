@@ -20,6 +20,7 @@ import {
 	CreateProbe,
 	Dashboard,
 	EditProbe,
+	Incidents,
 	Login,
 	Maintenances,
 	ProbesStatus,
@@ -68,6 +69,8 @@ const router = createBrowserRouter(
 							<Route path="monitors/new" element={<CreateProbe />} />
 							<Route path="monitors/:probeId/edit" element={<EditProbe />} />
 							<Route path="monitors/:probeId" element={<ShowProbe />} />
+
+							<Route path="incidents" element={<Incidents />} />
 
 							<Route path="maintenances" element={<Maintenances />} />
 

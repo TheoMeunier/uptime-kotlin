@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
 import jakarta.persistence.Tuple
 import jakarta.transaction.Transactional
+import tmenier.fr.common.enums.incidents.IncidentClosedReason
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeOnOffDto
@@ -26,6 +27,7 @@ import java.util.UUID
 class ProbeRepository(
     private val notificationRepository: NotificationRepository,
     private val probeCheckTaskRepository: ProbeCheckTaskRepository,
+    private val incidentRepository: IncidentRepository,
     private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
     @Transactional
@@ -192,6 +194,9 @@ class ProbeRepository(
         notifications: List<UUID>,
     ) {
         val entity = findById(dto.id)
+        if (entity.enabled && !dto.enabled) {
+            incidentRepository.close(entity.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
+        }
         entity.name = dto.name
         entity.interval = dto.interval
         entity.timeout = dto.timeout
@@ -250,6 +255,7 @@ class ProbeRepository(
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)
         }
+        incidentRepository.close(probe.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
         probe.persist()
     }
 }

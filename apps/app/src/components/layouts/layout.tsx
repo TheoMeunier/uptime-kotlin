@@ -12,7 +12,7 @@ import {
 	SidebarTrigger,
 } from '@/components/atoms/sidebar.tsx';
 import { Button } from '@/components/atoms/button.tsx';
-import { Activity, BadgeCheck, ChevronsUpDown, Compass, Home, LogOut, Plus, Wrench } from 'lucide-react';
+import { Activity, BadgeCheck, ChevronsUpDown, Compass, Home, LogOut, Plus, Siren, Wrench } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { Suspense, useMemo } from 'react';
@@ -100,6 +100,11 @@ export default function Layout() {
 							<SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard')} data-tour="dashboard">
 								<Link to={'/dashboard'}>
 									<Home size={18} /> {t('layout.sidebar.dashboard')}
+								</Link>
+							</SidebarMenuButton>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/incidents')}>
+								<Link to={'/incidents'}>
+									<Siren size={18} /> {t('layout.sidebar.incidents')}
 								</Link>
 							</SidebarMenuButton>
 							<SidebarMenuButton asChild isActive={pathname.startsWith('/maintenances')} data-tour="maintenances">
