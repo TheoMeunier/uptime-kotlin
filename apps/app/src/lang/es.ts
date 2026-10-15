@@ -659,6 +659,11 @@ const es: typeof en = {
 				description:
 					'Todos sus monitores aparecen aquí con su estado en tiempo real. Abra uno para ver su historial y tiempos de respuesta, o lanzar una comprobación inmediata. El filtro ayuda cuando la lista crece.',
 			},
+			incidents: {
+				title: 'Incidencias',
+				description:
+					'Cada caída que generó una alerta, desde la primera comprobación fallida hasta la recuperación: lo que está caído ahora, el historial, el tiempo total de caída y el tiempo medio de recuperación.',
+			},
 			maintenances: {
 				title: 'Mantenimiento',
 				description:

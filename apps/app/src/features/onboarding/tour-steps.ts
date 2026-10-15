@@ -11,6 +11,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
 	{ id: 'new_monitor', target: 'new-monitor', side: 'right' },
 	{ id: 'dashboard', target: 'dashboard', side: 'right' },
 	{ id: 'monitors', target: 'monitors', side: 'right' },
+	{ id: 'incidents', target: 'incidents', side: 'right' },
 	{ id: 'maintenances', target: 'maintenances', side: 'right' },
 	{ id: 'status_page', target: 'status-page', side: 'right' },
 	{ id: 'header', target: 'header-tools', side: 'bottom' },

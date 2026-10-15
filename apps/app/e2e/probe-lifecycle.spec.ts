@@ -138,7 +138,7 @@ test('the guided tour can be replayed from the profile menu', async ({ page }) =
 
 	const tour = page.getByRole('dialog', { name: 'Welcome to Uptime Kotlin' });
 	await expect(tour).toBeVisible();
-	await expect(tour.getByText('Step 1 of 9')).toBeVisible();
+	await expect(tour.getByText('Step 1 of 10')).toBeVisible();
 
 	await tour.getByRole('button', { name: "Let's go" }).click();
 	await expect(page.getByRole('dialog', { name: 'Create a monitor' })).toBeVisible();
@@ -151,5 +151,5 @@ test('the guided tour can be replayed from the profile menu', async ({ page }) =
 
 	// Passée une fois, la visite ne revient pas d'elle-même au rechargement.
 	await page.reload();
-	await expect(page.getByText(/^Step \d+ of 9$/)).toHaveCount(0);
+	await expect(page.getByText(/^Step \d+ of 10$/)).toHaveCount(0);
 });

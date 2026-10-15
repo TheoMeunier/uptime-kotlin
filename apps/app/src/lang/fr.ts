@@ -665,6 +665,11 @@ const fr: typeof en = {
 				description:
 					'Toutes vos sondes sont listées ici avec leur état en temps réel. Ouvrez-en une pour voir son historique et ses temps de réponse, ou lancer une vérification immédiate. Le filtre aide quand la liste s’allonge.',
 			},
+			incidents: {
+				title: 'Incidents',
+				description:
+					'Chaque panne qui a déclenché une alerte, du premier check en échec jusqu’au rétablissement : ce qui est en panne maintenant, l’historique, l’indisponibilité cumulée et le temps moyen de rétablissement.',
+			},
 			maintenances: {
 				title: 'Maintenance',
 				description:

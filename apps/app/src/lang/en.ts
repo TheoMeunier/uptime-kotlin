@@ -650,6 +650,11 @@ const en = {
 				description:
 					'Every monitor is listed here with its live status. Open one to see its history and response times, or run a check right away. Use the filter once the list grows.',
 			},
+			incidents: {
+				title: 'Incidents',
+				description:
+					'Every outage that raised an alert, from the first failed check to the recovery: what is down right now, the history, total downtime and mean time to recovery.',
+			},
 			maintenances: {
 				title: 'Maintenance',
 				description:

@@ -102,7 +102,7 @@ export default function Layout() {
 									<Home size={18} /> {t('layout.sidebar.dashboard')}
 								</Link>
 							</SidebarMenuButton>
-							<SidebarMenuButton asChild isActive={pathname.startsWith('/incidents')}>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/incidents')} data-tour="incidents">
 								<Link to={'/incidents'}>
 									<Siren size={18} /> {t('layout.sidebar.incidents')}
 								</Link>
