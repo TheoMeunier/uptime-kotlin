@@ -20,7 +20,7 @@ const SHOW_LABEL_INDEXES = [0, 6, 12, 18, 23];
 export default function IncidentBarCard({ data, description }: IncidentBarCardProps) {
 	const { t, i18n } = useTranslation();
 
-	const total = data.reduce((sum, d) => sum + d.up_count + d.down_count, 0);
+	const total = data.reduce((sum, d) => sum + d.down_count, 0);
 	const maxVal = Math.max(...data.map((d) => d.up_count + d.down_count), 1);
 	const hasIncident = data.some((d) => d.down_count > 0);
 
