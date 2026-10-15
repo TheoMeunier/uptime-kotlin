@@ -664,6 +664,11 @@ const de: typeof en = {
 				description:
 					'Alle Monitore werden hier mit ihrem Live-Status aufgelistet. Öffnen Sie einen, um Verlauf und Antwortzeiten zu sehen oder sofort eine Prüfung auszulösen. Der Filter hilft, wenn die Liste wächst.',
 			},
+			incidents: {
+				title: 'Störungen',
+				description:
+					'Jeder Ausfall, der eine Benachrichtigung ausgelöst hat, von der ersten fehlgeschlagenen Prüfung bis zur Wiederherstellung: was gerade ausgefallen ist, der Verlauf, die gesamte Ausfallzeit und die mittlere Wiederherstellungszeit.',
+			},
 			maintenances: {
 				title: 'Wartung',
 				description:
