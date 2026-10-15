@@ -6,64 +6,85 @@
 <h2 align="center">Uptime Kotlin</h2>
 
 <p align="center">
+  Self-hosted uptime monitoring with public status pages.<br>
+  One Docker image, <b>~50 MB of RAM</b>, amd64 and ARM64.
+</p>
+
+<p align="center">
   <a href="https://github.com/TheoMeunier/uptime-kotlin/releases">
     <img src="https://img.shields.io/github/v/release/TheoMeunier/uptime-kotlin" alt="Release">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/github/license/TheoMeunier/uptime-kotlin" alt="License">
   </a>
-<a href="https://github.com/TheoMeunier/uptime-kotlin/actions/workflows/back-ci.yml">
+  <a href="https://github.com/TheoMeunier/uptime-kotlin/actions/workflows/back-ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/TheoMeunier/uptime-kotlin/back-ci.yml?branch=main&label=backend" alt="Backend CI">
   </a>
   <a href="https://github.com/TheoMeunier/uptime-kotlin/actions/workflows/app-ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/TheoMeunier/uptime-kotlin/app-ci.yml?branch=main&label=frontend" alt="Frontend CI">
   </a>
+  <a href="https://github.com/TheoMeunier/uptime-kotlin/stargazers">
+    <img src="https://img.shields.io/github/stars/TheoMeunier/uptime-kotlin?style=flat" alt="Stars">
+  </a>
 </p>
 
 <p align="center">
-<a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-·
-<a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+  <a href="DEMO_URL"><b>Live demo</b></a>
+  ·
+  <a href="DEMO_URL/status/demo">Demo status page</a>
+  ·
+  <a href="#quick-start">Quick start</a>
+  ·
+  <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+  ·
+  <a href="https://github.com/TheoMeunier/uptime-kotlin/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
 </p>
+
+<a href="DEMO_URL">
+  <img src="docs/images/dashboard.webp" alt="Uptime Kotlin dashboard" width="900">
+</a>
 </div>
 
-## About The Project
+## Try it
 
-Self-hosted uptime monitoring for HTTP, TCP, DNS, databases, Kafka, RabbitMQ and more. Public status pages,
-multi-channel notifications, and a worker-based cluster mode to scale your checks.
+The **[live demo](DEMO_URL)** is read-only: the login form is filled in for you, you can open every page and form,
+and nothing is saved. It monitors well-known public services, with a few failures on purpose (a 404, a flaky API, an
+expired certificate) so you can see incidents and alerts.
+
+Prefer the public side? Open the **[demo status page](DEMO_URL/status/demo)**.
+
+## Features
+
+- **Many protocols**: HTTP/HTTPS, TCP, DNS, ping, SMTP, PostgreSQL, MySQL/MariaDB, Microsoft SQL Server, Redis,
+  Kafka and RabbitMQ
+- **Real-time dashboard** with response times, uptime history and log export
+- **Incidents** opened and closed automatically, with the downtime duration
+- **TLS certificate expiry** tracking
+- **Notifications**: Email, Slack, Discord, Teams, Telegram, ntfy, Gotify and Webhook, with optional reminders
+  while a monitor stays down
+- **Public status pages**, several per instance, in grid or list layout
+- **Maintenance windows**, one-off or recurring, that mute alerts
+- **Lightweight**: a native image that runs in **~50 MB of RAM**, on amd64 and ARM64
+- **Cluster mode**: add workers to spread the checks, with no extra service (the job queue lives in PostgreSQL)
+- **Secure by default**: JWT authentication, stored secrets encrypted with your own key
+- Interface in **English, French, German and Spanish**
 
 <table>
   <tr>
-    <td><img src="docs/images/dashboard.webp" alt="dashboard" width="300"></td>
-    <td><img src="docs/images/status-page.webp" alt="status page" width="300"></td>
-    <td><img src="docs/images/monitor-page.webp" alt="monitor" width="300"></td>
+    <td><img src="docs/images/status-page.webp" alt="Status page" width="440"></td>
+    <td><img src="docs/images/monitor-page.webp" alt="Monitor details" width="440"></td>
+  </tr>
+  <tr>
+    <td align="center">Public status page</td>
+    <td align="center">Monitor details</td>
   </tr>
 </table>
 
-### Key Features
+## Quick start
 
-- HTTP/HTTPS, TCP, DNS, ping, PostgreSQL, Microsoft SQL Server, MySQL/MariaDB, Redis, SMTP, Kafka and RabbitMQ
-  monitoring
-- Real-time dashboard with historical data
-- Multi-channel notifications (Email, Slack, Discord, Teams, Telegram, ntfy, Gotify, Webhook), with periodic resend while a monitor
-  stays down (per-monitor interval, disabled by default)
-- Public status pages for your users
-- JWT authentication with encrypted data
-- Single Docker image for amd64 and ARM64, a few tens of MB of RAM
+One image runs the web interface, the API and the checks. You only need it and PostgreSQL.
 
-### Built With
-
-- [Kotlin](https://kotlinlang.org/)
-- [Quarkus](https://quarkus.io/)
-- [React](https://reactjs.org/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [Docker](https://www.docker.com/)
-
-## Getting Started
-
-One image runs the web interface, the API and the monitoring checks. It is published for amd64 and arm64.
-
-1. Create a `compose.yaml` file
+1. Create a `compose.yaml` file:
 
 ```yml
 services:
@@ -71,6 +92,7 @@ services:
     image: ghcr.io/theomeunier/uptime-kotlin:latest
     container_name: uptime_kotlin
     restart: unless-stopped
+    mem_limit: 512m
     ports:
       - "8080:8080"
     environment:
@@ -80,6 +102,8 @@ services:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
       ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:17.4-alpine
@@ -94,41 +118,35 @@ services:
       - ./storage-db:/var/lib/postgresql/data
 ```
 
-2. Configure the environment variables
-
-    - `ENCRYPTION_MASTER_KEY` (required): at least 32 bytes, `openssl rand -base64 32`. It encrypts the stored
-      secrets and the JWT signing key: to change it, follow [Rotate the master key](#rotate-the-master-key).
-    - `QUARKUS_DATASOURCE_USERNAME`, `QUARKUS_DATASOURCE_PASSWORD`, `QUARKUS_DATASOURCE_JDBC_URL`: PostgreSQL access.
-    - `MP_JWT_VERIFY_ISSUER`: issuer of the JWT tokens.
-    - `SCHEDULER_STRATEGY` (default `database`): `none` when workers run the checks (see [Cluster mode](#cluster-mode)).
-    - `SCHEDULER_WORKER_CONCURRENCY` (default `4`): checks run in parallel.
-    - `MAINTENANCE_HORIZON_DAYS` (default `90`) and `MAINTENANCE_MAX_DURATION_HOURS` (default `24`): maintenance
-      windows, same values on the application and the workers.
-    - `NOTIFICATIONS_DISPLAY_TIMEZONE` (default `UTC`): zone of the dates shown in Slack, Teams, Telegram, ntfy, Gotify and e-mail
-      notifications (IANA name, e.g. `Europe/Paris`), same value on the application and the workers. Webhook
-      payloads stay in UTC (ISO-8601).
-
-   <details>
-   <summary>Use your own JWT keys</summary>
-
-   Set both variables and mount the files: `MP_JWT_VERIFY_PUBLICKEY_LOCATION` (public key) and
-   `SMALLRYE_JWT_SIGN_KEY_LOCATION` (private key, PKCS#8).
-
-   </details>
-
-3. Start the application
-
-```bash
-docker compose up -d
-```
-
-4. Open `http://localhost:8080`
+2. Replace `ENCRYPTION_MASTER_KEY` with the output of `openssl rand -base64 32`, and both `change-me` passwords.
+3. Run `docker compose up -d`.
+4. Open `http://localhost:8080` and create your account.
 
 > [!TIP]
-> Set a memory limit (`mem_limit: 512m`): the native heap is sized from the memory the container sees, ~50 MB with a
-> limit, several hundred MB without.
+> Keep the memory limit: the native heap is sized from the memory the container sees, ~50 MB with a limit, several
+> hundred MB without.
 >
 > Behind a reverse proxy, forward every path to port `8080` and allow a 300 s read timeout for exports.
+
+## Configuration
+
+| Variable                                                                             | Default    | Description                                                                                                                                                                      |
+|--------------------------------------------------------------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ENCRYPTION_MASTER_KEY`                                                              | (required) | At least 32 bytes. Encrypts the stored secrets and the JWT signing key. To change it, see [Rotate the master key](#rotate-the-master-key).                                        |
+| `QUARKUS_DATASOURCE_USERNAME`<br>`QUARKUS_DATASOURCE_PASSWORD`<br>`QUARKUS_DATASOURCE_JDBC_URL` |            | PostgreSQL access.                                                                                                                                                               |
+| `MP_JWT_VERIFY_ISSUER`                                                               |            | Issuer of the JWT tokens.                                                                                                                                                        |
+| `SCHEDULER_STRATEGY`                                                                 | `database` | `none` when workers run the checks (see [Cluster mode](#cluster-mode)).                                                                                                          |
+| `SCHEDULER_WORKER_CONCURRENCY`                                                       | `4`        | Checks run in parallel.                                                                                                                                                          |
+| `MAINTENANCE_HORIZON_DAYS`<br>`MAINTENANCE_MAX_DURATION_HOURS`                       | `90`, `24` | Maintenance windows. Same values on the application and the workers.                                                                                                             |
+| `NOTIFICATIONS_DISPLAY_TIMEZONE`                                                     | `UTC`      | Zone of the dates in Slack, Teams, Telegram, ntfy, Gotify and e-mail notifications (IANA name, e.g. `Europe/Paris`). Same value on the application and the workers. Webhook payloads stay in UTC (ISO-8601). |
+
+<details>
+<summary>Use your own JWT keys</summary>
+
+Set both variables and mount the files: `MP_JWT_VERIFY_PUBLICKEY_LOCATION` (public key) and
+`SMALLRYE_JWT_SIGN_KEY_LOCATION` (private key, PKCS#8).
+
+</details>
 
 ### Cluster mode
 
@@ -168,7 +186,7 @@ uptime-kotlin-worker:
 A lost key cannot be recovered: the secrets it encrypted must be re-entered, and the `jwt_signing_keys` row deleted
 (this signs everyone out).
 
-### Images
+## Images
 
 | Image                                      | Role                                     |
 |--------------------------------------------|------------------------------------------|
@@ -186,20 +204,23 @@ docker build -f docker/all-in-one/Dockerfile.native -t uptime-kotlin:local .
 docker build -f docker/worker/Dockerfile.native -t uptime-kotlin-worker:local .
 ```
 
+## Built With
+
+[Kotlin](https://kotlinlang.org/) · [Quarkus](https://quarkus.io/) (GraalVM native image) ·
+[React](https://react.dev/) · [PostgreSQL](https://www.postgresql.org/) · [Docker](https://www.docker.com/)
+
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
-contributions you make are **greatly appreciated**.
+Contributions are welcome! Read [CONTRIBUTING.md](CONTRIBUTING.md), then:
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
-simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a pull request
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+You can also open an issue with the `enhancement` label. If you like the project, a ⭐ helps a lot!
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
