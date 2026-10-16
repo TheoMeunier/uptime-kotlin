@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { IncidentClosedReasonEnum } from '@/features/incidents/schemas/incident.schema.ts';
 
 const summary = z.object({
 	total_monitors: z.number(),
@@ -9,14 +10,7 @@ const summary = z.object({
 
 const metrics_last_days = z.object({
 	avg_response_time_ms: z.number(),
-	count_incidents24h: z.number(),
 	count_checks24h: z.number(),
-});
-
-const down_probes = z.object({
-	id: z.uuid(),
-	name: z.string(),
-	down_duration: z.string(),
 });
 
 const incident_bar = z.object({
@@ -30,18 +24,22 @@ const spark_line_point = z.object({
 	value: z.number(),
 });
 
+/** The opening (at the first failed check) or the closing of an incident. */
 const recent_event = z.object({
+	incident_id: z.uuid(),
 	probe_id: z.uuid(),
 	probe_name: z.string(),
-	status: z.string(),
+	type: z.enum(['OPENED', 'CLOSED']),
+	at: z.coerce.date(),
 	message: z.string(),
-	run_at: z.coerce.date(),
+	ongoing: z.boolean(),
+	duration_seconds: z.number().nullable().optional(),
+	closed_reason: z.enum(IncidentClosedReasonEnum).nullable().optional(),
 });
 
 const DashboardStatsSchema = z.object({
 	summary: summary,
 	metrics_last_days: metrics_last_days,
-	down_probes: z.array(down_probes),
 	latency_spark_line: z.array(spark_line_point),
 	incident_bar: z.array(incident_bar),
 	check_spark_line: z.array(spark_line_point),

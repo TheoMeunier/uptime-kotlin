@@ -591,7 +591,7 @@ const fr: typeof en = {
 			notifications: 'Notifications',
 			last_24_hours: 'Dernières 24 heures',
 			response_time_average: 'Temps de réponse moyen',
-			incidents: 'Incidents',
+			incidents: 'Checks en échec',
 			checks_executed: 'Vérifications exécutées',
 		},
 
@@ -609,8 +609,12 @@ const fr: typeof en = {
 
 		events: {
 			title: 'Événements récents',
-			description: 'Changements d’état de vos sondes',
-			empty: 'Aucun changement d’état sur les 7 derniers jours',
+			description: 'Incidents ouverts et résolus',
+			empty: 'Aucun incident pour l’instant',
+			see_all: 'Tous les incidents',
+			opened: 'Panne',
+			ongoing: 'En cours',
+			lasted: 'après {{duration}} de panne',
 		},
 
 		legend: {

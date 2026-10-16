@@ -585,7 +585,7 @@ const es: typeof en = {
 			notifications: 'Notificaciones',
 			last_24_hours: 'Últimas 24 horas',
 			response_time_average: 'Tiempo de respuesta medio',
-			incidents: 'Incidencias',
+			incidents: 'Comprobaciones fallidas',
 			checks_executed: 'Comprobaciones ejecutadas',
 		},
 
@@ -603,8 +603,12 @@ const es: typeof en = {
 
 		events: {
 			title: 'Eventos recientes',
-			description: 'Cambios de estado de sus monitores',
-			empty: 'Ningún cambio de estado en los últimos 7 días',
+			description: 'Incidencias abiertas y resueltas',
+			empty: 'Ninguna incidencia por ahora',
+			see_all: 'Todas las incidencias',
+			opened: 'Caída',
+			ongoing: 'En curso',
+			lasted: 'tras {{duration}} de caída',
 		},
 
 		legend: {

@@ -590,7 +590,7 @@ const de: typeof en = {
 			notifications: 'Benachrichtigungen',
 			last_24_hours: 'Letzte 24 Stunden',
 			response_time_average: 'Durchschnittliche Antwortzeit',
-			incidents: 'Störungen',
+			incidents: 'Fehlgeschlagene Prüfungen',
 			checks_executed: 'Ausgeführte Prüfungen',
 		},
 
@@ -608,8 +608,12 @@ const de: typeof en = {
 
 		events: {
 			title: 'Jüngste Ereignisse',
-			description: 'Statuswechsel Ihrer Monitore',
-			empty: 'Kein Statuswechsel in den letzten 7 Tagen',
+			description: 'Eröffnete und behobene Störungen',
+			empty: 'Noch keine Störung',
+			see_all: 'Alle Störungen',
+			opened: 'Ausfall',
+			ongoing: 'Laufend',
+			lasted: 'nach {{duration}} Ausfall',
 		},
 
 		legend: {

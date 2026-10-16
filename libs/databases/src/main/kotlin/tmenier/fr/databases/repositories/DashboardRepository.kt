@@ -3,20 +3,17 @@ package tmenier.fr.databases.repositories
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Tuple
-import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
-import tmenier.fr.common.utils.toHumanReadable
-import tmenier.fr.databases.dtos.DownProbeDto
+import tmenier.fr.common.enums.incidents.IncidentEventType
 import tmenier.fr.databases.dtos.IncidentBar
+import tmenier.fr.databases.dtos.IncidentEventDto
 import tmenier.fr.databases.dtos.MonitorSummary
-import tmenier.fr.databases.dtos.ProbeEventDto
 import tmenier.fr.databases.dtos.ResponseMetrics24h
 import tmenier.fr.databases.dtos.SparklinePoint
+import tmenier.fr.databases.entities.IncidentEntity
 import java.sql.Timestamp
-import java.time.Duration
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 @ApplicationScoped
 class DashboardRepository(
@@ -51,7 +48,6 @@ class DashboardRepository(
             """
             SELECT
               COALESCE(AVG(pml.responseTime), 0),
-              SUM(CASE WHEN pml.status = 3 THEN 1 ELSE 0 END),
               COUNT(pml)
             FROM ProbesEntity p
             LEFT JOIN p.probesMonitorLogs pml WITH pml.runAt > :since
@@ -66,42 +62,8 @@ class DashboardRepository(
 
         return ResponseMetrics24h(
             avgResponseTimeMs = ((single[0] as Number?) ?: 0.0).toDouble(),
-            countIncidents24h = ((single[1] as Number?) ?: 0L).toLong(),
-            countChecks24h = ((single[2] as Number?) ?: 0L).toLong(),
+            countChecks24h = ((single[1] as Number?) ?: 0L).toLong(),
         )
-    }
-
-    fun findDownProbesWithDowntime(): List<DownProbeDto> {
-        val jpql =
-            """
-            SELECT p.id, p.name, MAX(pml.runAt), p.createdAt, p.failingSince
-            FROM ProbesEntity p
-            LEFT JOIN p.probesMonitorLogs pml WITH pml.status = 0
-            WHERE p.enabled = true AND p.status = 3
-            GROUP BY p.id, p.name, p.createdAt, p.failingSince
-            """.trimIndent()
-
-        val results = em.createQuery(jpql, Tuple::class.java).resultList
-
-        val now = Instant.now()
-
-        return results.map { row ->
-            val id = (row[0] as UUID)
-            val name = row[1] as String
-            val lastSuccess = row[2] as Instant?
-            val createdAt = row[3] as Instant
-            val failingSince = row[4] as Instant?
-
-            val duration =
-                failingSince?.let { Duration.between(it, Instant.now()) }
-                    ?: Duration.between(lastSuccess ?: createdAt, now)
-
-            DownProbeDto(
-                id = id,
-                name = name,
-                downDuration = duration.toHumanReadable(),
-            )
-        }
     }
 
     fun getLatencySparkline(): List<SparklinePoint> {
@@ -193,48 +155,52 @@ class DashboardRepository(
         }
     }
 
-    fun getRecentEvents(limit: Int = 15): List<ProbeEventDto> {
-        val since = Instant.now().minus(7, ChronoUnit.DAYS)
+    /**
+     * The latest openings and closings of incidents, newest first, all probes included: a probe
+     * paused during an outage shows how its incident ended.
+     *
+     * Reading the [limit] incidents whose last event is the most recent is enough. An incident
+     * ranked lower has all its events older than the last event of each incident above it, so
+     * it cannot place one among the [limit] newest. The table holds a few dozen rows per probe
+     * and per year, and the retention purge never touches it.
+     */
+    fun getRecentEvents(limit: Int = 15): List<IncidentEventDto> =
+        em
+            .createQuery(
+                """
+                SELECT i FROM IncidentEntity i JOIN FETCH i.probe
+                ORDER BY COALESCE(i.endedAt, i.startedAt) DESC, i.id
+                """.trimIndent(),
+                IncidentEntity::class.java,
+            ).setMaxResults(limit)
+            .resultList
+            .flatMap(::eventsOf)
+            .sortedWith(compareByDescending<IncidentEventDto> { it.at }.thenByDescending { it.type })
+            .take(limit)
 
-        val sql =
-            """
-            SELECT probe_id, probe_name, status, message, run_at
-            FROM (
-                SELECT pml.probe_id       AS probe_id,
-                       p.name             AS probe_name,
-                       pml.status         AS status,
-                       pml.message        AS message,
-                       pml.run_at         AS run_at,
-                       LAG(pml.status) OVER (PARTITION BY pml.probe_id ORDER BY pml.run_at) AS previous_status
-                FROM probes_monitors_logs pml
-                JOIN probes p ON p.id = pml.probe_id
-                WHERE pml.run_at > :since AND p.enabled = true
-            ) transitions
-            WHERE status IS DISTINCT FROM previous_status
-            ORDER BY run_at DESC
-            """.trimIndent()
-
-        val rows =
-            em
-                .createNativeQuery(sql, Tuple::class.java)
-                .setParameter("since", since)
-                .setMaxResults(limit)
-                .resultList
-                .filterIsInstance<Tuple>()
-
-        val statuses = ProbeMonitorLogStatus.entries
-
-        return rows.map { row ->
-            val ordinal = (row.get("status") as Number).toInt()
-
-            ProbeEventDto(
-                probeId = row.get("probe_id") as UUID,
-                probeName = row.get("probe_name") as String,
-                status = statuses.getOrNull(ordinal)?.name ?: ProbeMonitorLogStatus.FAILURE.name,
-                message = row.get("message") as? String ?: "",
-                runAt = toInstant(row.get("run_at"), "run_at"),
+    private fun eventsOf(incident: IncidentEntity): List<IncidentEventDto> {
+        val opened =
+            IncidentEventDto(
+                incidentId = incident.id,
+                probeId = incident.probe.id,
+                probeName = incident.probe.name,
+                type = IncidentEventType.OPENED,
+                at = incident.startedAt,
+                message = incident.openingMessage,
+                ongoing = incident.endedAt == null,
+                durationSeconds = null,
+                closedReason = null,
             )
-        }
+        val endedAt = incident.endedAt ?: return listOf(opened)
+
+        val closed =
+            opened.copy(
+                type = IncidentEventType.CLOSED,
+                at = endedAt,
+                durationSeconds = incident.durationSeconds,
+                closedReason = incident.closedReason,
+            )
+        return listOf(closed, opened)
     }
 
     private fun toInstant(
