@@ -1,7 +1,9 @@
 name: Demo image build and push
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: read
