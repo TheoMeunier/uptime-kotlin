@@ -16,6 +16,9 @@ object IncidentMapper {
             durationSeconds = entity.durationSeconds,
             openingMessage = entity.openingMessage,
             closedReason = entity.closedReason,
+            acknowledgedAt = entity.acknowledgedAt,
+            note = entity.note,
+            noteUpdatedAt = entity.noteUpdatedAt,
         )
 
     fun toPeriodDto(entity: IncidentEntity): IncidentPeriodDto =

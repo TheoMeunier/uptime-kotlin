@@ -132,14 +132,21 @@ class DemoSeeder(
             val startedAt = now.minus(Duration.ofHours(node.required("started_hours_ago").asLong()))
             val endedAt = startedAt.plusSeconds(node.required("duration_seconds").asLong())
 
-            incidentRepository.open(
-                probe = probe,
-                startedAt = startedAt,
-                // As if the probe had retried once before alerting.
-                confirmedAt = minOf(startedAt.plusSeconds(probe.interval.toLong()), endedAt),
-                message = node.path("message").asText(""),
-                checkTaskId = null,
-            )
+            val incident =
+                incidentRepository.open(
+                    probe = probe,
+                    startedAt = startedAt,
+                    confirmedAt = minOf(startedAt.plusSeconds(probe.interval.toLong()), endedAt),
+                    message = node.path("message").asText(""),
+                    checkTaskId = null,
+                )
+            node.path("acknowledged_after_seconds").takeIf { it.isNumber }?.let {
+                incident.acknowledgedAt = minOf(incident.confirmedAt.plusSeconds(it.asLong()), endedAt)
+            }
+            node.path("note").takeIf { it.isTextual }?.let {
+                incident.note = it.asText()
+                incident.noteUpdatedAt = minOf(endedAt.plusSeconds(NOTE_WRITTEN_AFTER_SECONDS), now)
+            }
             incidentRepository.close(probe.id, endedAt, IncidentClosedReason.RECOVERY)
         }
     }
@@ -167,5 +174,6 @@ class DemoSeeder(
     companion object {
         private const val SEED_RESOURCE = "/demo/seed.json"
         private const val DEFAULT_STARTS_IN_HOURS = 24L
+        private const val NOTE_WRITTEN_AFTER_SECONDS = 900L
     }
 }

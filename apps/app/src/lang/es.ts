@@ -459,6 +459,23 @@ const es: typeof en = {
 			duration: 'Duración',
 			cause: 'Causa',
 		},
+		acknowledge: {
+			action: 'Reconocer',
+			hint: 'Detiene los recordatorios de esta caída. La recuperación se seguirá notificando.',
+			done: 'Reconocida a las {{time}}',
+			success: 'Incidencia reconocida: no habrá más recordatorios para esta caída.',
+			closed: 'Esta incidencia ya está resuelta: ya no se puede reconocer.',
+		},
+		note: {
+			add: 'Añadir una nota',
+			edit: 'Editar la nota',
+			title: 'Nota de la incidencia',
+			description: '{{probe}}, desde {{time}}. Visible en el historial: la causa y lo que se hizo.',
+			placeholder: 'P. ej.: certificado caducado, renovado a las 09:40',
+			length: '{{length}} / {{max}}',
+			save: 'Guardar',
+			saved: 'Nota guardada',
+		},
 		probe: {
 			see_all: 'Historial completo',
 		},

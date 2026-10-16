@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.incidents.IncidentClosedReason
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.notifications.NotificationEvent
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
@@ -72,6 +73,11 @@ class SaveProbeMonitor(
             return true
         }
 
+        val acknowledged =
+            result.status == ProbeMonitorLogStatus.FAILURE &&
+                alertedStatus == ProbeMonitorLogStatus.FAILURE &&
+                incidentRepository.findOpen(probe.id)?.acknowledgedAt != null
+
         val event =
             notificationService.announce(
                 probe = probe,
@@ -79,6 +85,7 @@ class SaveProbeMonitor(
                 result = result,
                 at = runAt,
                 outageStart = outageStart,
+                acknowledged = acknowledged,
             )
 
         when (event) {

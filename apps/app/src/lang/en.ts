@@ -453,6 +453,23 @@ const en = {
 			duration: 'Duration',
 			cause: 'Cause',
 		},
+		acknowledge: {
+			action: 'Acknowledge',
+			hint: 'Silences the reminders of this outage. The recovery is still announced.',
+			done: 'Acknowledged at {{time}}',
+			success: 'Incident acknowledged: no more reminders for this outage.',
+			closed: 'This incident is already resolved: it can no longer be acknowledged.',
+		},
+		note: {
+			add: 'Add a note',
+			edit: 'Edit the note',
+			title: 'Incident note',
+			description: '{{probe}}, since {{time}}. Shown in the history: the cause, what was done.',
+			placeholder: 'E.g. certificate expired, renewed at 09:40',
+			length: '{{length}} / {{max}}',
+			save: 'Save',
+			saved: 'Note saved',
+		},
 		probe: {
 			see_all: 'Full history',
 		},

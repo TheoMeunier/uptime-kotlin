@@ -73,6 +73,40 @@ class IncidentRepository(
         return incident
     }
 
+    fun acknowledge(
+        id: UUID,
+        by: UUID?,
+        at: Instant,
+    ): Boolean =
+        em
+            .createQuery(
+                """
+                UPDATE IncidentEntity i
+                SET i.acknowledgedAt = :at, i.acknowledgedBy = :by, i.updatedAt = :at
+                WHERE i.id = :id AND i.acknowledgedAt IS NULL AND i.endedAt IS NULL
+                """.trimIndent(),
+            ).setParameter("at", at)
+            .setParameter("by", by)
+            .setParameter("id", id)
+            .executeUpdate() == 1
+
+    fun updateNote(
+        id: UUID,
+        note: String?,
+        at: Instant,
+    ): Boolean =
+        em
+            .createQuery(
+                """
+                UPDATE IncidentEntity i
+                SET i.note = :note, i.noteUpdatedAt = :at, i.updatedAt = :at
+                WHERE i.id = :id
+                """.trimIndent(),
+            ).setParameter("note", note)
+            .setParameter("at", at)
+            .setParameter("id", id)
+            .executeUpdate() == 1
+
     fun findPage(
         filter: IncidentFilter,
         page: Int,

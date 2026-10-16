@@ -462,6 +462,23 @@ const fr: typeof en = {
 			duration: 'Durée',
 			cause: 'Cause',
 		},
+		acknowledge: {
+			action: 'Acquitter',
+			hint: 'Coupe les rappels de cette panne. Le rétablissement sera quand même annoncé.',
+			done: 'Acquitté à {{time}}',
+			success: 'Incident acquitté : plus de rappel pour cette panne.',
+			closed: 'Cet incident est déjà résolu : il ne peut plus être acquitté.',
+		},
+		note: {
+			add: 'Ajouter une note',
+			edit: 'Modifier la note',
+			title: 'Note de l’incident',
+			description: '{{probe}}, depuis le {{time}}. Visible dans l’historique : la cause, ce qui a été fait.',
+			placeholder: 'Ex. : certificat expiré, renouvelé à 09:40',
+			length: '{{length}} / {{max}}',
+			save: 'Enregistrer',
+			saved: 'Note enregistrée',
+		},
 		probe: {
 			see_all: 'Tout l’historique',
 		},

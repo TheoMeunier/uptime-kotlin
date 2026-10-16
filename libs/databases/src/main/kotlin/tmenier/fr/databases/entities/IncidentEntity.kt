@@ -11,12 +11,14 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.UpdateTimestamp
 import tmenier.fr.common.enums.incidents.IncidentClosedReason
 import java.time.Instant
 import java.util.UUID
 
 @Entity
+@DynamicUpdate
 @Table(name = "incidents")
 class IncidentEntity : PanacheEntityBase {
     @Id
@@ -51,6 +53,18 @@ class IncidentEntity : PanacheEntityBase {
     @Enumerated(EnumType.STRING)
     @Column(name = "closed_reason", length = 16)
     var closedReason: IncidentClosedReason? = null
+
+    @Column(name = "acknowledged_at")
+    var acknowledgedAt: Instant? = null
+
+    @Column(name = "acknowledged_by")
+    var acknowledgedBy: UUID? = null
+
+    @Column(name = "note", columnDefinition = "TEXT")
+    var note: String? = null
+
+    @Column(name = "note_updated_at")
+    var noteUpdatedAt: Instant? = null
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

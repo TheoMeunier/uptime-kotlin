@@ -16,12 +16,14 @@ class AlertRepeatPolicyTest {
         alertedStatus: ProbeMonitorLogStatus = ProbeMonitorLogStatus.FAILURE,
         alertRepeatSeconds: Int = 1800,
         nextAlertAt: Instant? = now.minusSeconds(1),
+        acknowledged: Boolean = false,
     ) = AlertRepeatPolicy.isDue(
         status = status,
         alertedStatus = alertedStatus,
         alertRepeatSeconds = alertRepeatSeconds,
         nextAlertAt = nextAlertAt,
         at = now,
+        acknowledged = acknowledged,
     )
 
     @Test
@@ -57,6 +59,12 @@ class AlertRepeatPolicyTest {
         // and repeating here would alert before the first alert.
         assertFalse(isDue(alertedStatus = ProbeMonitorLogStatus.SUCCESS))
         assertFalse(isDue(alertedStatus = ProbeMonitorLogStatus.WARNING))
+    }
+
+    @Test
+    fun `an acknowledged outage is never repeated`() {
+        assertFalse(isDue(acknowledged = true))
+        assertFalse(isDue(acknowledged = true, nextAlertAt = now.minusSeconds(3_600)), "however overdue")
     }
 
     @Test

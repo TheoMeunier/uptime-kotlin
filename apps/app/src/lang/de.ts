@@ -464,6 +464,23 @@ const de: typeof en = {
 			duration: 'Dauer',
 			cause: 'Ursache',
 		},
+		acknowledge: {
+			action: 'Bestätigen',
+			hint: 'Stoppt die Erinnerungen für diesen Ausfall. Die Wiederherstellung wird trotzdem gemeldet.',
+			done: 'Bestätigt um {{time}}',
+			success: 'Störung bestätigt: keine weiteren Erinnerungen für diesen Ausfall.',
+			closed: 'Diese Störung ist bereits behoben und kann nicht mehr bestätigt werden.',
+		},
+		note: {
+			add: 'Notiz hinzufügen',
+			edit: 'Notiz bearbeiten',
+			title: 'Notiz zur Störung',
+			description: '{{probe}}, seit {{time}}. Im Verlauf sichtbar: Ursache und Maßnahmen.',
+			placeholder: 'Z. B. Zertifikat abgelaufen, um 09:40 erneuert',
+			length: '{{length}} / {{max}}',
+			save: 'Speichern',
+			saved: 'Notiz gespeichert',
+		},
 		probe: {
 			see_all: 'Gesamter Verlauf',
 		},
