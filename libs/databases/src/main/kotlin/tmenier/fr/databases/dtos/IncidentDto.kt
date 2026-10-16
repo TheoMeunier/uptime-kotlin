@@ -17,6 +17,9 @@ data class IncidentDto(
     val durationSeconds: Long?,
     val openingMessage: String,
     val closedReason: IncidentClosedReason?,
+    val acknowledgedAt: Instant? = null,
+    val note: String? = null,
+    val noteUpdatedAt: Instant? = null,
 )
 
 @RegisterForReflection

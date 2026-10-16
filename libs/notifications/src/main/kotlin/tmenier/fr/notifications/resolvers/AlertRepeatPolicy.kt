@@ -10,8 +10,10 @@ object AlertRepeatPolicy {
         alertRepeatSeconds: Int,
         nextAlertAt: Instant?,
         at: Instant,
+        acknowledged: Boolean,
     ): Boolean {
         if (alertRepeatSeconds <= 0) return false
+        if (acknowledged) return false
         if (status != ProbeMonitorLogStatus.FAILURE) return false
         if (alertedStatus != ProbeMonitorLogStatus.FAILURE) return false
 

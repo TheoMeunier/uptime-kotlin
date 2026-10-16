@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
-import { ShieldCheck } from 'lucide-react';
+import { CheckCheck, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms/table.tsx';
 import type { IncidentPage } from '@/features/incidents/schemas/incident.schema.ts';
+import IncidentNoteDialog from '@/features/incidents/components/incident-note-dialog.tsx';
 import { formatDateTime, formatOutageDuration } from '@/lib/datetime.ts';
 
 export default function IncidentHistory({
@@ -84,9 +85,34 @@ export default function IncidentHistory({
 							</TableCell>
 							<TableCell className="tabular font-medium whitespace-nowrap">
 								{formatOutageDuration(incident.duration_seconds ?? 0)}
+								{incident.acknowledged_at && (
+									<span
+										className="text-muted-foreground ml-1.5 inline-flex align-middle"
+										title={t('incidents.acknowledge.done', {
+											time: formatDateTime(incident.acknowledged_at, i18n.language),
+										})}
+									>
+										<CheckCheck className="size-3.5" />
+									</span>
+								)}
 							</TableCell>
-							<TableCell className="text-muted-foreground max-w-md truncate text-xs" title={incident.opening_message}>
-								{incident.opening_message || '—'}
+							<TableCell className="text-muted-foreground max-w-md text-xs">
+								<div className="flex items-start gap-2">
+									<div className="min-w-0 flex-1">
+										<p className="truncate" title={incident.opening_message}>
+											{incident.opening_message || '—'}
+										</p>
+										{incident.note && (
+											<p
+												className="text-foreground/80 mt-1 line-clamp-2 break-words whitespace-pre-line"
+												title={incident.note}
+											>
+												{incident.note}
+											</p>
+										)}
+									</div>
+									<IncidentNoteDialog incident={incident} />
+								</div>
 							</TableCell>
 						</TableRow>
 					))}

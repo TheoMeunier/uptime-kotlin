@@ -1,10 +1,16 @@
 import api from '@/api/kyClient.ts';
+import i18n from '@/lang/i18n.ts';
+import { registerErrorMessage } from '@/api/api-error.ts';
 import {
-	IncidentPageSchema,
-	IncidentSummarySchema,
+	type Incident,
 	type IncidentPage,
+	IncidentPageSchema,
+	IncidentSchema,
 	type IncidentSummary,
+	IncidentSummarySchema,
 } from '@/features/incidents/schemas/incident.schema.ts';
+
+registerErrorMessage('INCIDENT_CLOSED', () => i18n.t('incidents.acknowledge.closed'));
 
 export interface IncidentQuery {
 	state?: 'open' | 'closed';
@@ -33,6 +39,16 @@ const incidentService = {
 	async getSummary(query: Pick<IncidentQuery, 'probeId' | 'from'>): Promise<IncidentSummary> {
 		const response = await api.get('incidents/summary', { searchParams: toSearchParams(query) }).json();
 		return IncidentSummarySchema.parse(response);
+	},
+
+	async acknowledge(incidentId: string): Promise<Incident> {
+		const response = await api.post(`incidents/${incidentId}/acknowledge`).json();
+		return IncidentSchema.parse(response);
+	},
+
+	async updateNote(incidentId: string, note: string): Promise<Incident> {
+		const response = await api.put(`incidents/${incidentId}/note`, { body: JSON.stringify({ note }) }).json();
+		return IncidentSchema.parse(response);
 	},
 };
 

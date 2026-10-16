@@ -24,12 +24,12 @@ class NotificationService(
         result: ProbeResult,
         at: Instant,
         outageStart: Instant? = null,
+        acknowledged: Boolean = false,
     ): NotificationEvent {
         val announcedStatus = probe.alertedStatus
         val event = notificationEventResolver.resolve(announcedStatus, result.status)
 
         if (event != NotificationEvent.NONE) {
-            // Frozen now: a delivery retried later must report the same downtime.
             val downtime = if (event == NotificationEvent.RECOVERY) OutageWindow.downtime(outageStart, at) else null
             notificationTaskRepository.enqueueDeliveries(
                 probe = probe,
@@ -56,6 +56,7 @@ class NotificationService(
                 alertRepeatSeconds = probe.alertRepeatSeconds,
                 nextAlertAt = probe.nextAlertAt,
                 at = at,
+                acknowledged = acknowledged,
             )
         if (!due) return NotificationEvent.NONE
 

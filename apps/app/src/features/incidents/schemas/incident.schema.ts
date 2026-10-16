@@ -13,6 +13,9 @@ export const IncidentSchema = z.object({
 	duration_seconds: z.number().nullable().optional(),
 	opening_message: z.string(),
 	closed_reason: z.enum(IncidentClosedReasonEnum).nullable().optional(),
+	acknowledged_at: z.coerce.date().nullable().optional(),
+	note: z.string().nullable().optional(),
+	note_updated_at: z.coerce.date().nullable().optional(),
 });
 
 export type Incident = z.infer<typeof IncidentSchema>;

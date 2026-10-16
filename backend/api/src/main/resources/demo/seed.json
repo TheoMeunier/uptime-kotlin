@@ -392,7 +392,9 @@
       "probe": "Payments API (flaky)",
       "started_hours_ago": 150,
       "duration_seconds": 1260,
-      "message": "HTTP 503 Service Unavailable"
+      "message": "HTTP 503 Service Unavailable",
+      "acknowledged_after_seconds": 240,
+      "note": "Payment provider incident, confirmed on their status page. Nothing to do on our side."
     },
     {
       "probe": "Payments API (flaky)",
@@ -410,7 +412,9 @@
       "probe": "GitHub API",
       "started_hours_ago": 330,
       "duration_seconds": 2700,
-      "message": "HTTP 500 Internal Server Error"
+      "message": "HTTP 500 Internal Server Error",
+      "acknowledged_after_seconds": 300,
+      "note": "GitHub outage (githubstatus.com). Deploys paused until it recovered."
     },
     {
       "probe": "npm registry",
@@ -422,7 +426,9 @@
       "probe": "Docker Hub",
       "started_hours_ago": 200,
       "duration_seconds": 5400,
-      "message": "HTTP 502 Bad Gateway"
+      "message": "HTTP 502 Bad Gateway",
+      "acknowledged_after_seconds": 600,
+      "note": "Docker Hub degraded. CI switched to the registry mirror in the meantime."
     },
     {
       "probe": "Docker Hub",
