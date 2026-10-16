@@ -454,6 +454,8 @@ const fr: typeof en = {
 				'90d': '90 derniers jours',
 				'365d': '12 derniers mois',
 			},
+			months: 'Mois calendaires',
+			this_month: 'Ce mois-ci',
 		},
 		table: {
 			probe: 'Sonde',
@@ -481,6 +483,10 @@ const fr: typeof en = {
 		},
 		probe: {
 			see_all: 'Tout l’historique',
+		},
+		export: {
+			hint: 'Télécharge les incidents de la période, en cours compris, au format CSV.',
+			too_large: 'Trop d’incidents sur cette période pour les exporter : choisissez une période plus courte.',
 		},
 		closed_reason: {
 			RECOVERY: 'Rétablie',

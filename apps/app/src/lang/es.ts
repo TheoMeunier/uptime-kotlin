@@ -451,6 +451,8 @@ const es: typeof en = {
 				'90d': 'Últimos 90 días',
 				'365d': 'Últimos 12 meses',
 			},
+			months: 'Meses naturales',
+			this_month: 'Este mes',
 		},
 		table: {
 			probe: 'Monitor',
@@ -478,6 +480,10 @@ const es: typeof en = {
 		},
 		probe: {
 			see_all: 'Historial completo',
+		},
+		export: {
+			hint: 'Descarga las incidencias del periodo, incluidas las que siguen en curso, en formato CSV.',
+			too_large: 'Demasiadas incidencias en este periodo para exportarlas: elija uno más corto.',
 		},
 		closed_reason: {
 			RECOVERY: 'Recuperado',

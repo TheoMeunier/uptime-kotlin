@@ -445,6 +445,8 @@ const en = {
 				'90d': 'Last 90 days',
 				'365d': 'Last 12 months',
 			},
+			months: 'Calendar months',
+			this_month: 'This month',
 		},
 		table: {
 			probe: 'Monitor',
@@ -472,6 +474,10 @@ const en = {
 		},
 		probe: {
 			see_all: 'Full history',
+		},
+		export: {
+			hint: 'Downloads the incidents of this period, ongoing ones included, as a CSV file.',
+			too_large: 'Too many incidents in this period to export them: choose a shorter one.',
 		},
 		closed_reason: {
 			RECOVERY: 'Recovered',

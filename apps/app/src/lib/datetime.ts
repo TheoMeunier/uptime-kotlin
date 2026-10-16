@@ -46,6 +46,14 @@ export function formatDayLong(value: Date | string | number, locale: string): st
 	return formatter(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
 }
 
+export function formatMonthYear(value: Date | string | number, locale: string): string {
+	const date = toDate(value);
+	if (!date) return '';
+
+	const label = formatter(locale, { month: 'long', year: 'numeric' }).format(date);
+	return label.charAt(0).toLocaleUpperCase(locale) + label.slice(1);
+}
+
 export function formatShortDateTime(value: Date | string | number, locale: string): string {
 	const date = toDate(value);
 	if (!date) return '';

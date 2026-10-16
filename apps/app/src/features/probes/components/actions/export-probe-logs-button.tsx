@@ -1,5 +1,6 @@
 import { Button } from '@/components/atoms/button.tsx';
 import probeService from '@/features/probes/services/probeService.ts';
+import { downloadBlob } from '@/lib/http.ts';
 import { Download } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +13,7 @@ export default function ExportProbeLogsButton({ probeId }: { probeId: string }) 
 		setIsExporting(true);
 		try {
 			const { blob, fileName } = await probeService.exportProbeLogs(probeId);
-			const url = URL.createObjectURL(blob);
-			const link = document.createElement('a');
-
-			link.href = url;
-			link.download = fileName;
-			link.click();
-			URL.revokeObjectURL(url);
+			downloadBlob(blob, fileName);
 		} finally {
 			setIsExporting(false);
 		}

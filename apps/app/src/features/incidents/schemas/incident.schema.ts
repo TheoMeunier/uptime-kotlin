@@ -50,9 +50,13 @@ export const IncidentSpanSchema = z.object({
 export type IncidentSpan = z.infer<typeof IncidentSpanSchema>;
 
 export const IncidentPeriods = ['24h', '7d', '30d', '90d', '365d'] as const;
-export type IncidentPeriod = (typeof IncidentPeriods)[number];
+export type RollingIncidentPeriod = (typeof IncidentPeriods)[number];
 
-const PERIOD_HOURS: Record<IncidentPeriod, number> = {
+/** A calendar month, `2026-09`, bounded in the browser's time zone. */
+export type MonthPeriod = `${number}-${string}`;
+export type IncidentPeriod = RollingIncidentPeriod | MonthPeriod;
+
+const PERIOD_HOURS: Record<RollingIncidentPeriod, number> = {
 	'24h': 24,
 	'7d': 24 * 7,
 	'30d': 24 * 30,
@@ -60,6 +64,43 @@ const PERIOD_HOURS: Record<IncidentPeriod, number> = {
 	'365d': 24 * 365,
 };
 
-export function periodStart(period: IncidentPeriod, now: number = Date.now()): string {
-	return new Date(now - PERIOD_HOURS[period] * 3_600_000).toISOString();
+const MONTH_PATTERN = /^(\d{4})-(0[1-9]|1[0-2])$/;
+
+export function isMonthPeriod(value: string | null | undefined): value is MonthPeriod {
+	return value != null && MONTH_PATTERN.test(value);
+}
+
+export function parseIncidentPeriod(value: string | null | undefined): IncidentPeriod | undefined {
+	if (IncidentPeriods.includes(value as RollingIncidentPeriod)) return value as RollingIncidentPeriod;
+	return isMonthPeriod(value) ? value : undefined;
+}
+
+function monthPeriodOf(date: Date): MonthPeriod {
+	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** The current month first, then the ones before it. */
+export function recentMonths(count: number, now: Date = new Date()): MonthPeriod[] {
+	return Array.from({ length: count }, (_, index) =>
+		monthPeriodOf(new Date(now.getFullYear(), now.getMonth() - index, 1))
+	);
+}
+
+export function monthStart(period: MonthPeriod): Date {
+	const [year, month] = period.split('-').map(Number);
+	return new Date(year, month - 1, 1);
+}
+
+/**
+ * A rolling period ends now, so it has no `to`: the API takes the time of the request. A month runs from its
+ * first midnight to the next month's, in the browser's time zone.
+ */
+export function periodRange(period: IncidentPeriod, now: number = Date.now()): { from: string; to?: string } {
+	if (!isMonthPeriod(period)) {
+		return { from: new Date(now - PERIOD_HOURS[period] * 3_600_000).toISOString() };
+	}
+
+	const start = monthStart(period);
+	const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+	return { from: start.toISOString(), to: end.toISOString() };
 }
