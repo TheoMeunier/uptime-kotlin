@@ -13,11 +13,13 @@ export default function IncidentHistory({
 	isLoading,
 	isFetching,
 	onPageChange,
+	showProbe = true,
 }: {
 	data?: IncidentPage;
 	isLoading: boolean;
 	isFetching: boolean;
 	onPageChange: (page: number) => void;
+	showProbe?: boolean;
 }) {
 	const { t, i18n } = useTranslation();
 
@@ -52,7 +54,7 @@ export default function IncidentHistory({
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>{t('incidents.table.probe')}</TableHead>
+						{showProbe && <TableHead>{t('incidents.table.probe')}</TableHead>}
 						<TableHead>{t('incidents.table.started')}</TableHead>
 						<TableHead>{t('incidents.table.ended')}</TableHead>
 						<TableHead>{t('incidents.table.duration')}</TableHead>
@@ -62,11 +64,13 @@ export default function IncidentHistory({
 				<TableBody>
 					{data.items.map((incident) => (
 						<TableRow key={incident.id}>
-							<TableCell className="font-medium">
-								<Link to={`/monitors/${incident.probe_id}`} className="hover:underline">
-									{incident.probe_name}
-								</Link>
-							</TableCell>
+							{showProbe && (
+								<TableCell className="font-medium">
+									<Link to={`/monitors/${incident.probe_id}?tab=incidents`} className="hover:underline">
+										{incident.probe_name}
+									</Link>
+								</TableCell>
+							)}
 							<TableCell className="tabular text-muted-foreground whitespace-nowrap">
 								{formatDateTime(incident.started_at, i18n.language)}
 							</TableCell>

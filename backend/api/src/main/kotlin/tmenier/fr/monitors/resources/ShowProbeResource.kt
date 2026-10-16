@@ -15,6 +15,7 @@ import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.mappers.ProbeMapper
+import tmenier.fr.databases.repositories.IncidentRepository
 import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
@@ -30,6 +31,7 @@ class ShowProbeResource(
     private val probeRepository: ProbeRepository,
     private val probeMonitorRepository: ProbeMonitorRepository,
     private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
+    private val incidentRepository: IncidentRepository,
 ) {
     @GET
     @Authenticated
@@ -70,6 +72,7 @@ class ShowProbeResource(
                 from = from,
                 to = now,
             )
+        val incidentPeriods = incidentRepository.findPeriods(probeId = probeId, from = from, to = now)
 
         return Response
             .ok(
@@ -79,6 +82,7 @@ class ShowProbeResource(
                     uptimes = uptimes,
                     maintenance = maintenance,
                     maintenancePeriods = maintenancePeriods,
+                    incidentPeriods = incidentPeriods,
                 ),
             ).build()
     }

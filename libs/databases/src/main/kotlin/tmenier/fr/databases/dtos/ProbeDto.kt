@@ -24,6 +24,7 @@ data class ProbeShowDTO(
     val maintenance: ProbeMaintenanceDto? = null,
     val nextMaintenance: ProbeMaintenanceDto? = null,
     val maintenancePeriods: List<MaintenanceOccurrenceDto> = emptyList(),
+    val incidentPeriods: List<IncidentPeriodDto> = emptyList(),
 )
 
 @RegisterForReflection

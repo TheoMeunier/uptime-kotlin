@@ -10,6 +10,7 @@ import tmenier.fr.common.enums.incidents.IncidentState
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.IncidentFilter
 import tmenier.fr.databases.dtos.IncidentPageDto
+import tmenier.fr.databases.dtos.IncidentPeriodDto
 import tmenier.fr.databases.dtos.IncidentSummaryDto
 import tmenier.fr.databases.entities.IncidentEntity
 import tmenier.fr.databases.entities.ProbesEntity
@@ -97,6 +98,23 @@ class IncidentRepository(
                 .map(IncidentMapper::toDto)
 
         return IncidentPageDto(items = items, total = total, page = page, size = size)
+    }
+
+    fun findPeriods(
+        probeId: UUID,
+        from: Instant,
+        to: Instant,
+        limit: Int = PERIODS_LIMIT,
+    ): List<IncidentPeriodDto> {
+        val filter = IncidentFilter(probeId = probeId, from = from, to = to)
+
+        return em
+            .createQuery("SELECT i FROM IncidentEntity i ${whereClause(filter)} ORDER BY i.startedAt DESC, i.id", IncidentEntity::class.java)
+            .bind(filter)
+            .setMaxResults(limit)
+            .resultList
+            .map(IncidentMapper::toPeriodDto)
+            .reversed()
     }
 
     fun summary(
@@ -198,5 +216,9 @@ class IncidentRepository(
         filter.from?.let { setParameter("from", it) }
         filter.to?.let { setParameter("to", it) }
         return this
+    }
+
+    companion object {
+        const val PERIODS_LIMIT = 200
     }
 }

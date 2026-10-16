@@ -1,28 +1,83 @@
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/atoms/chart.tsx';
-import { Area, AreaChart, CartesianGrid, ReferenceArea, ReferenceDot, ReferenceLine, XAxis, YAxis } from 'recharts';
-import { useMemo } from 'react';
+import {
+	Area,
+	AreaChart,
+	CartesianGrid,
+	Customized,
+	ReferenceArea,
+	ReferenceDot,
+	ReferenceLine,
+	XAxis,
+	YAxis,
+} from 'recharts';
+import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
-import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import type { MaintenanceOccurrence } from '@/features/maintenances/schemas/maintenance.schema.ts';
+import type { IncidentSpan } from '@/features/incidents/schemas/incident.schema.ts';
 import { formatDayShort, formatTime } from '@/lib/datetime.ts';
+
+const seriesColor = 'var(--primary)';
+const incidentColor = 'var(--status-down)';
+const MIN_BAND_RATIO = 0.004;
+
+interface Band {
+	id: string;
+	from: number;
+	to: number;
+}
+
+function IncidentGradient({
+	id,
+	domain: [start, end],
+	bands,
+	offset,
+}: {
+	id: string;
+	domain: number[];
+	bands: Band[];
+	offset?: { left: number; width: number };
+}) {
+	if (!offset) return null;
+
+	const at = (time: number) => (time - start) / (end - start);
+
+	return (
+		<defs>
+			<linearGradient
+				id={id}
+				gradientUnits="userSpaceOnUse"
+				x1={offset.left}
+				y1={0}
+				x2={offset.left + offset.width}
+				y2={0}
+			>
+				<stop offset={0} style={{ stopColor: seriesColor }} />
+				{bands.flatMap((band) => [
+					<stop key={`${band.id}-in`} offset={at(band.from)} style={{ stopColor: seriesColor }} />,
+					<stop key={`${band.id}-red-in`} offset={at(band.from)} style={{ stopColor: incidentColor }} />,
+					<stop key={`${band.id}-red-out`} offset={at(band.to)} style={{ stopColor: incidentColor }} />,
+					<stop key={`${band.id}-out`} offset={at(band.to)} style={{ stopColor: seriesColor }} />,
+				])}
+				<stop offset={1} style={{ stopColor: seriesColor }} />
+			</linearGradient>
+		</defs>
+	);
+}
 
 export default function ProbeChart({
 	monitors,
 	lastHour,
-	monitorStatus,
 	maintenancePeriods = [],
+	incidentPeriods = [],
 }: {
 	monitors: Monitor[];
 	lastHour: number;
-	monitorStatus: ProbeStatusEnum;
 	maintenancePeriods?: MaintenanceOccurrence[];
+	incidentPeriods?: IncidentSpan[];
 }) {
 	const { t, i18n } = useTranslation();
-
-	const isFailing = monitorStatus === 'FAILURE';
-	const seriesColor = isFailing ? 'var(--status-down)' : 'var(--status-up)';
-	const seriesFill = isFailing ? 'var(--status-down-bg)' : 'var(--status-up-bg)';
+	const gradientId = `incident-gradient-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
 	const chartConfig = {
 		response_time: {
@@ -95,6 +150,28 @@ export default function ProbeChart({
 			.filter((band) => Number.isFinite(band.from) && Number.isFinite(band.to) && band.to > band.from);
 	}, [maintenancePeriods, xAxisDomain]);
 
+	const incidentBands = useMemo(() => {
+		const [start, end] = xAxisDomain;
+		const minWidth = (end - start) * MIN_BAND_RATIO;
+
+		return incidentPeriods
+			.flatMap((period) => {
+				const startedAt = period.started_at.getTime();
+				const endedAt = period.ended_at?.getTime() ?? end;
+				if (startedAt >= end || endedAt <= start) return [];
+
+				const from = Math.min(Math.max(startedAt, start), end - minWidth);
+				const to = Math.min(Math.max(endedAt, from + minWidth), end);
+
+				return [{ id: period.id, from, to }];
+			})
+			.sort((a, b) => a.from - b.from);
+	}, [incidentPeriods, xAxisDomain]);
+
+	const isDuringIncident = (timestamp: number | undefined) =>
+		timestamp !== undefined && incidentBands.some((band) => timestamp >= band.from && timestamp <= band.to);
+	const seriesPaint = incidentBands.length > 0 ? `url(#${gradientId})` : seriesColor;
+
 	const hasData = chartData.some((d) => d.response_time !== null);
 
 	if (!hasData) {
@@ -128,15 +205,19 @@ export default function ProbeChart({
 					/>
 					<ChartTooltip
 						cursor={false}
-						content={
+						content={({ active, payload, label }) => (
 							<ChartTooltipContent
+								active={active}
+								payload={payload}
+								label={label}
+								color={isDuringIncident(payload?.[0]?.payload?.timestamp) ? incidentColor : seriesColor}
 								labelFormatter={(_, payload) => {
 									const timestamp = payload?.[0]?.payload?.timestamp;
 									return timestamp ? formatTick(timestamp) : '';
 								}}
 								indicator="dot"
 							/>
-						}
+						)}
 					/>
 
 					{maintenanceBands.map((band) => (
@@ -152,11 +233,28 @@ export default function ProbeChart({
 						/>
 					))}
 
+					{incidentBands.map((band) => (
+						<ReferenceArea
+							key={band.id}
+							x1={band.from}
+							x2={band.to}
+							fill={incidentColor}
+							fillOpacity={0.06}
+							stroke="none"
+							ifOverflow="hidden"
+						/>
+					))}
+
+					{incidentBands.length > 0 && (
+						<Customized component={<IncidentGradient id={gradientId} domain={xAxisDomain} bands={incidentBands} />} />
+					)}
+
 					<Area
 						dataKey="response_time"
 						type="monotone"
-						fill={seriesFill}
-						stroke={seriesColor}
+						fill={seriesPaint}
+						fillOpacity={0.12}
+						stroke={seriesPaint}
 						connectNulls={false}
 						isAnimationActive={false}
 					/>
@@ -181,7 +279,7 @@ export default function ProbeChart({
 							x={lastPoint.timestamp}
 							y={lastPoint.response_time}
 							r={4}
-							fill={seriesColor}
+							fill={isDuringIncident(lastPoint.timestamp) ? incidentColor : seriesColor}
 							stroke="var(--background)"
 							strokeWidth={2}
 							isFront

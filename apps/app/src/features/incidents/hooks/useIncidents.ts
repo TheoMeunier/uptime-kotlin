@@ -11,10 +11,10 @@ export interface IncidentFilters {
 	probeId?: string;
 }
 
-export function useOngoingIncidents() {
+export function useOngoingIncidents(probeId?: string) {
 	const { data, isLoading, isError, refetch } = useQuery({
-		queryKey: ['incidents', 'ongoing'],
-		queryFn: () => incidentService.getIncidents({ state: 'open', size: ONGOING_LIMIT }),
+		queryKey: ['incidents', 'ongoing', probeId ?? null],
+		queryFn: () => incidentService.getIncidents({ state: 'open', probeId, size: ONGOING_LIMIT }),
 		refetchInterval: 30_000,
 	});
 

@@ -7,6 +7,7 @@ import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.utils.toHumanReadable
+import tmenier.fr.databases.dtos.IncidentPeriodDto
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
 import tmenier.fr.databases.dtos.ProbeMaintenanceState
@@ -248,6 +249,7 @@ object ProbeMapper {
         uptimes: ProbeUptimeDTO? = null,
         maintenance: ProbeMaintenanceState? = null,
         maintenancePeriods: List<MaintenanceOccurrenceEntity> = emptyList(),
+        incidentPeriods: List<IncidentPeriodDto> = emptyList(),
     ): ProbeShowDTO {
         val content = ProbeContentMapper.toDto(entity)
 
@@ -289,6 +291,7 @@ object ProbeMapper {
             maintenance = maintenance?.current,
             nextMaintenance = maintenance?.next,
             maintenancePeriods = maintenancePeriods.map(MaintenanceMapper::toOccurrenceDto),
+            incidentPeriods = incidentPeriods,
         )
     }
 

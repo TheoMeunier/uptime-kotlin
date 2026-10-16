@@ -38,6 +38,14 @@ export const IncidentSummarySchema = z.object({
 
 export type IncidentSummary = z.infer<typeof IncidentSummarySchema>;
 
+export const IncidentSpanSchema = z.object({
+	id: z.uuid(),
+	started_at: z.coerce.date(),
+	ended_at: z.coerce.date().nullable().optional(),
+});
+
+export type IncidentSpan = z.infer<typeof IncidentSpanSchema>;
+
 export const IncidentPeriods = ['24h', '7d', '30d', '90d', '365d'] as const;
 export type IncidentPeriod = (typeof IncidentPeriods)[number];
 

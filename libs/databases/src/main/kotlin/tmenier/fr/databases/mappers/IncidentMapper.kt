@@ -1,6 +1,7 @@
 package tmenier.fr.databases.mappers
 
 import tmenier.fr.databases.dtos.IncidentDto
+import tmenier.fr.databases.dtos.IncidentPeriodDto
 import tmenier.fr.databases.entities.IncidentEntity
 
 object IncidentMapper {
@@ -15,5 +16,12 @@ object IncidentMapper {
             durationSeconds = entity.durationSeconds,
             openingMessage = entity.openingMessage,
             closedReason = entity.closedReason,
+        )
+
+    fun toPeriodDto(entity: IncidentEntity): IncidentPeriodDto =
+        IncidentPeriodDto(
+            id = entity.id,
+            startedAt = entity.startedAt,
+            endedAt = entity.endedAt,
         )
 }
