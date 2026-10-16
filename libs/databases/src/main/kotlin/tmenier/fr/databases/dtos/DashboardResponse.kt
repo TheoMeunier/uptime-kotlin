@@ -1,6 +1,8 @@
 package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
+import tmenier.fr.common.enums.incidents.IncidentClosedReason
+import tmenier.fr.common.enums.incidents.IncidentEventType
 import java.time.Instant
 import java.util.UUID
 
@@ -15,15 +17,7 @@ data class MonitorSummary(
 @RegisterForReflection
 data class ResponseMetrics24h(
     val avgResponseTimeMs: Double,
-    val countIncidents24h: Long,
     val countChecks24h: Long,
-)
-
-@RegisterForReflection
-data class DownProbeDto(
-    val id: UUID,
-    val name: String,
-    val downDuration: String,
 )
 
 @RegisterForReflection
@@ -32,13 +26,21 @@ data class SparklinePoint(
     val value: Double,
 )
 
+/**
+ * The opening or the closing of an incident. An opening is dated at the first failed check
+ * ([IncidentDto.startedAt]), like on the incidents page, not at the alert.
+ */
 @RegisterForReflection
-data class ProbeEventDto(
+data class IncidentEventDto(
+    val incidentId: UUID,
     val probeId: UUID,
     val probeName: String,
-    val status: String,
+    val type: IncidentEventType,
+    val at: Instant,
     val message: String,
-    val runAt: Instant,
+    val ongoing: Boolean,
+    val durationSeconds: Long?,
+    val closedReason: IncidentClosedReason?,
 )
 
 @RegisterForReflection

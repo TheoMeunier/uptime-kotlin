@@ -255,6 +255,8 @@ class ProbeRepository(
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)
         }
+        // Close in both directions. Switching on an already enabled probe resets alertedStatus above,
+        // so its recovery would never be announced and the open incident would never be closed.
         incidentRepository.close(probe.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
         probe.persist()
     }

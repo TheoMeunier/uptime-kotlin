@@ -577,7 +577,7 @@ const en = {
 			notifications: 'Notifications',
 			last_24_hours: 'Last 24 hours',
 			response_time_average: 'Response time average',
-			incidents: 'Incidents',
+			incidents: 'Failed checks',
 			checks_executed: 'Checks executed',
 		},
 
@@ -595,8 +595,12 @@ const en = {
 
 		events: {
 			title: 'Recent events',
-			description: 'State changes across your monitors',
-			empty: 'No state change in the last 7 days',
+			description: 'Incidents opened and resolved',
+			empty: 'No incident yet',
+			see_all: 'All incidents',
+			opened: 'Outage',
+			ongoing: 'Ongoing',
+			lasted: 'after {{duration}} down',
 		},
 
 		legend: {

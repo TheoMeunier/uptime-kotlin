@@ -20,7 +20,6 @@ class DashboardResource(
     fun stats(): Response {
         val summary = dashboardRepository.getMonitorsSummary()
         val metricsLastDay = dashboardRepository.get24hResponseMetrics()
-        val downProbes = dashboardRepository.findDownProbesWithDowntime()
         val getLatencySparkline = dashboardRepository.getLatencySparkline()
         val getIncidentBar = dashboardRepository.getIncidentBars()
         val getCheckSparkLine = dashboardRepository.getChecksSparkline()
@@ -30,7 +29,6 @@ class DashboardResource(
             mapOf(
                 "summary" to summary,
                 "metrics_last_days" to metricsLastDay,
-                "down_probes" to downProbes,
                 "latency_spark_line" to getLatencySparkline,
                 "incident_bar" to getIncidentBar,
                 "check_spark_line" to getCheckSparkLine,
