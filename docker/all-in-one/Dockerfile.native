@@ -43,7 +43,9 @@ RUN chown 1001 /work \
 COPY --from=back --chown=1001:root --chmod=0755 /project/backend/api/build/*-runner /work/application
 COPY --from=ping /out/ /
 
-ENV SCHEDULER_STRATEGY=database
+ARG VITE_DEMO=false
+ENV SCHEDULER_STRATEGY=database \
+    DEMO_ENABLED=${VITE_DEMO}
 
 EXPOSE 8080
 USER 1001
