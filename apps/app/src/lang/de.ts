@@ -456,6 +456,8 @@ const de: typeof en = {
 				'90d': 'Letzte 90 Tage',
 				'365d': 'Letzte 12 Monate',
 			},
+			months: 'Kalendermonate',
+			this_month: 'Dieser Monat',
 		},
 		table: {
 			probe: 'Monitor',
@@ -483,6 +485,10 @@ const de: typeof en = {
 		},
 		probe: {
 			see_all: 'Gesamter Verlauf',
+		},
+		export: {
+			hint: 'Lädt die Störungen dieses Zeitraums, laufende eingeschlossen, als CSV-Datei herunter.',
+			too_large: 'Zu viele Störungen in diesem Zeitraum für einen Export: Wählen Sie einen kürzeren Zeitraum.',
 		},
 		closed_reason: {
 			RECOVERY: 'Wiederhergestellt',

@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import incidentService from '@/features/incidents/services/incident-service.ts';
-import { type IncidentPeriod, periodStart } from '@/features/incidents/schemas/incident.schema.ts';
+import { downloadBlob } from '@/lib/http.ts';
+import { type IncidentPeriod, periodRange } from '@/features/incidents/schemas/incident.schema.ts';
 
 export const INCIDENTS_PAGE_SIZE = 20;
 const ONGOING_LIMIT = 100;
@@ -29,7 +30,7 @@ export function useIncidentHistory({ period, probeId }: IncidentFilters, page: n
 			incidentService.getIncidents({
 				state: 'closed',
 				probeId,
-				from: periodStart(period),
+				...periodRange(period),
 				page,
 				size: INCIDENTS_PAGE_SIZE,
 			}),
@@ -43,12 +44,22 @@ export function useIncidentHistory({ period, probeId }: IncidentFilters, page: n
 export function useIncidentSummary({ period, probeId }: IncidentFilters) {
 	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ['incidents', 'summary', period, probeId ?? null],
-		queryFn: () => incidentService.getSummary({ probeId, from: periodStart(period) }),
+		queryFn: () => incidentService.getSummary({ probeId, ...periodRange(period) }),
 		placeholderData: (previousData) => previousData,
 		refetchInterval: 60_000,
 	});
 
 	return { data, isLoading, isError, refetch };
+}
+
+/** Downloads the period on screen: same filters, so the file adds up to the summary above it. */
+export function useExportIncidents() {
+	return useMutation({
+		mutationFn: async ({ period, probeId }: IncidentFilters) => {
+			const { blob, fileName } = await incidentService.exportIncidents({ probeId, ...periodRange(period) });
+			downloadBlob(blob, fileName);
+		},
+	});
 }
 
 export function useAcknowledgeIncident() {

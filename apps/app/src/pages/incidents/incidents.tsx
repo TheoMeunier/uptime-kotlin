@@ -6,22 +6,22 @@ import OngoingIncidents from '@/features/incidents/components/ongoing-incidents.
 import IncidentSummary from '@/features/incidents/components/incident-summary.tsx';
 import IncidentFilters from '@/features/incidents/components/incident-filters.tsx';
 import IncidentHistory from '@/features/incidents/components/incident-history.tsx';
+import ExportIncidentsButton from '@/features/incidents/components/export-incidents-button.tsx';
 import {
 	type IncidentFilters as Filters,
 	useIncidentHistory,
 	useIncidentSummary,
 	useOngoingIncidents,
 } from '@/features/incidents/hooks/useIncidents.ts';
-import { type IncidentPeriod, IncidentPeriods } from '@/features/incidents/schemas/incident.schema.ts';
+import { type IncidentPeriod, parseIncidentPeriod } from '@/features/incidents/schemas/incident.schema.ts';
 
 const DEFAULT_PERIOD: IncidentPeriod = '30d';
 
 function useIncidentSearchParams() {
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	const rawPeriod = searchParams.get('period');
 	const filters: Filters = {
-		period: IncidentPeriods.includes(rawPeriod as IncidentPeriod) ? (rawPeriod as IncidentPeriod) : DEFAULT_PERIOD,
+		period: parseIncidentPeriod(searchParams.get('period')) ?? DEFAULT_PERIOD,
 		probeId: searchParams.get('probe') ?? undefined,
 	};
 	const page = Math.max(0, Number(searchParams.get('page')) || 0);
@@ -68,7 +68,10 @@ export default function Incidents() {
 
 			<section className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
 				<h2 className="text-lg font-semibold tracking-tight">{t('incidents.history.title')}</h2>
-				<IncidentFilters filters={filters} onChange={(next) => update(next)} />
+				<div className="flex flex-wrap gap-2">
+					<IncidentFilters filters={filters} onChange={(next) => update(next)} />
+					<ExportIncidentsButton filters={filters} />
+				</div>
 			</section>
 
 			<IncidentSummary summary={summary.data} isLoading={summary.isLoading} />

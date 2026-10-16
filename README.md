@@ -59,7 +59,7 @@ Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin
 - **Many protocols**: HTTP/HTTPS, TCP, DNS, ping, SMTP, PostgreSQL, MySQL/MariaDB, Microsoft SQL Server, Redis,
   Kafka and RabbitMQ
 - **Real-time dashboard** with response times, uptime history and log export
-- **Incidents** opened and closed automatically, with the downtime duration
+- **Incidents** opened and closed automatically, with the downtime duration, and a CSV export for monthly reports
 - **TLS certificate expiry** tracking
 - **Notifications**: Email, Slack, Discord, Teams, Telegram, ntfy, Gotify and Webhook, with optional reminders
   while a monitor stays down

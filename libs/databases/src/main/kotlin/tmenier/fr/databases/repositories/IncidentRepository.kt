@@ -8,6 +8,7 @@ import jakarta.persistence.TypedQuery
 import tmenier.fr.common.enums.incidents.IncidentClosedReason
 import tmenier.fr.common.enums.incidents.IncidentState
 import tmenier.fr.common.utils.logger
+import tmenier.fr.databases.dtos.IncidentDto
 import tmenier.fr.databases.dtos.IncidentFilter
 import tmenier.fr.databases.dtos.IncidentPageDto
 import tmenier.fr.databases.dtos.IncidentPeriodDto
@@ -134,6 +135,19 @@ class IncidentRepository(
         return IncidentPageDto(items = items, total = total, page = page, size = size)
     }
 
+    fun findForExport(
+        filter: IncidentFilter,
+        limit: Int,
+    ): List<IncidentDto> =
+        em
+            .createQuery(
+                "SELECT i FROM IncidentEntity i JOIN FETCH i.probe ${whereClause(filter)} ORDER BY i.startedAt, i.id",
+                IncidentEntity::class.java,
+            ).bind(filter)
+            .setMaxResults(limit)
+            .resultList
+            .map(IncidentMapper::toDto)
+
     fun findPeriods(
         probeId: UUID,
         from: Instant,
@@ -223,13 +237,6 @@ class IncidentRepository(
         now: Instant,
     ): Long = Duration.between(startedAt, now).seconds.coerceAtLeast(0)
 
-    private fun downtimeWithin(
-        startedAt: Instant,
-        endedAt: Instant,
-        from: Instant,
-        to: Instant,
-    ): Long = Duration.between(maxOf(startedAt, from), minOf(endedAt, to)).seconds.coerceAtLeast(0)
-
     private fun whereClause(filter: IncidentFilter): String {
         val conditions =
             listOfNotNull(
@@ -254,5 +261,13 @@ class IncidentRepository(
 
     companion object {
         const val PERIODS_LIMIT = 200
+
+        /** The part of an outage that falls inside [from, to): what the summary adds up as downtime. */
+        fun downtimeWithin(
+            startedAt: Instant,
+            endedAt: Instant,
+            from: Instant,
+            to: Instant,
+        ): Long = Duration.between(maxOf(startedAt, from), minOf(endedAt, to)).seconds.coerceAtLeast(0)
     }
 }
