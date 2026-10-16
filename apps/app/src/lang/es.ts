@@ -341,6 +341,11 @@ const es: typeof en = {
 			max_peak: 'Pico máximo',
 			min: 'Mínima',
 		},
+		tabs: {
+			logs: 'Registro',
+			incidents: 'Incidencias',
+		},
+
 		chart: {
 			title: 'Tiempo de respuesta',
 			description: 'Tiempos de respuesta de las comprobaciones en {{range}}',
@@ -453,6 +458,9 @@ const es: typeof en = {
 			ended: 'Resuelto',
 			duration: 'Duración',
 			cause: 'Causa',
+		},
+		probe: {
+			see_all: 'Historial completo',
 		},
 		closed_reason: {
 			RECOVERY: 'Recuperado',

@@ -346,6 +346,11 @@ const de: typeof en = {
 			max_peak: 'Höchstwert',
 			min: 'Minimum',
 		},
+		tabs: {
+			logs: 'Protokoll',
+			incidents: 'Störungen',
+		},
+
 		chart: {
 			title: 'Antwortzeit',
 			description: 'Antwortzeiten der Prüfungen über {{range}}',
@@ -458,6 +463,9 @@ const de: typeof en = {
 			ended: 'Behoben',
 			duration: 'Dauer',
 			cause: 'Ursache',
+		},
+		probe: {
+			see_all: 'Gesamter Verlauf',
 		},
 		closed_reason: {
 			RECOVERY: 'Wiederhergestellt',

@@ -6,6 +6,7 @@ import {
 	MaintenanceOccurrenceSchema,
 	ProbeMaintenanceSchema,
 } from '@/features/maintenances/schemas/maintenance.schema.ts';
+import { IncidentSpanSchema } from '@/features/incidents/schemas/incident.schema.ts';
 
 const ProbeListSidebarSchema = z.array(
 	z.object({
@@ -55,6 +56,7 @@ export const ProbeShowSchema = z.object({
 	maintenance: ProbeMaintenanceSchema.nullable().optional(),
 	next_maintenance: ProbeMaintenanceSchema.nullable().optional(),
 	maintenance_periods: z.array(MaintenanceOccurrenceSchema).optional().default([]),
+	incident_periods: z.array(IncidentSpanSchema).optional().default([]),
 });
 
 export type ProbeShow = z.infer<typeof ProbeShowSchema>;

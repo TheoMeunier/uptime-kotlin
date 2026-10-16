@@ -345,6 +345,11 @@ const fr: typeof en = {
 			max_peak: 'Pic maximal',
 			min: 'Minimale',
 		},
+		tabs: {
+			logs: 'Journal',
+			incidents: 'Incidents',
+		},
+
 		chart: {
 			title: 'Temps de réponse',
 			description: 'Temps de réponse des sondes sur {{range}}',
@@ -456,6 +461,9 @@ const fr: typeof en = {
 			ended: 'Rétablissement',
 			duration: 'Durée',
 			cause: 'Cause',
+		},
+		probe: {
+			see_all: 'Tout l’historique',
 		},
 		closed_reason: {
 			RECOVERY: 'Rétablie',

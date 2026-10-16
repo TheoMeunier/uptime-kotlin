@@ -336,6 +336,11 @@ const en = {
 			max_peak: 'Max peak',
 			min: 'Min',
 		},
+		tabs: {
+			logs: 'Logs',
+			incidents: 'Incidents',
+		},
+
 		chart: {
 			title: 'Response time',
 			description: 'Showing probe response times for {{range}}',
@@ -447,6 +452,9 @@ const en = {
 			ended: 'Resolved',
 			duration: 'Duration',
 			cause: 'Cause',
+		},
+		probe: {
+			see_all: 'Full history',
 		},
 		closed_reason: {
 			RECOVERY: 'Recovered',

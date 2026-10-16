@@ -20,6 +20,13 @@ data class IncidentDto(
 )
 
 @RegisterForReflection
+data class IncidentPeriodDto(
+    val id: UUID,
+    val startedAt: Instant,
+    val endedAt: Instant?,
+)
+
+@RegisterForReflection
 data class IncidentPageDto(
     val items: List<IncidentDto>,
     val total: Long,

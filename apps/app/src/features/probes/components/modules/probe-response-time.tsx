@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardTitle } from '@/components/atom
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atoms/select.tsx';
 import { useTranslation } from 'react-i18next';
 import type { Monitor } from '@/features/probes/schemas/probe-monitor.schema.ts';
-import type ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
 import type { MaintenanceOccurrence } from '@/features/maintenances/schemas/maintenance.schema.ts';
+import type { IncidentSpan } from '@/features/incidents/schemas/incident.schema.ts';
 import ResponseTimeStats from '@/features/probes/components/modules/probe-response-time-status.tsx';
 import { lazy, Suspense } from 'react';
 
@@ -13,16 +13,16 @@ interface ProbeResponseTimeProps {
 	monitors: Monitor[];
 	lastHour: number;
 	setLastHour: (value: number) => void;
-	monitorStatus: ProbeStatusEnum;
 	maintenancePeriods?: MaintenanceOccurrence[];
+	incidentPeriods?: IncidentSpan[];
 }
 
 export default function ProbeResponseTime({
 	monitors,
-	monitorStatus,
 	lastHour,
 	setLastHour,
 	maintenancePeriods,
+	incidentPeriods,
 }: ProbeResponseTimeProps) {
 	const { t } = useTranslation();
 
@@ -89,8 +89,8 @@ export default function ProbeResponseTime({
 						<ProbeChart
 							monitors={monitors}
 							lastHour={lastHour}
-							monitorStatus={monitorStatus}
 							maintenancePeriods={maintenancePeriods}
+							incidentPeriods={incidentPeriods}
 						/>
 					</Suspense>
 				</div>

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Button } from '@/components/atoms/button.tsx';
 import { Pencil } from 'lucide-react';
@@ -19,6 +19,8 @@ import ErrorState from '@/components/molecules/error-state.tsx';
 import CheckProbeNowButton from '@/features/probes/components/actions/check-probe-now-button.tsx';
 import ProbeActionsMenu from '@/features/probes/components/actions/probe-actions-menu.tsx';
 import MaintenanceBanner from '@/features/maintenances/components/maintenance-banner.tsx';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/atoms/tabs.tsx';
+import ProbeIncidents from '@/features/incidents/components/probe-incidents.tsx';
 
 const POLL_MIN_MS = 15_000;
 const POLL_MAX_MS = 120_000;
@@ -29,10 +31,27 @@ function pollIntervalFor(probeIntervalSeconds: number | undefined): number {
 	return Math.min(Math.max(probeIntervalSeconds * 1000, POLL_MIN_MS), POLL_MAX_MS);
 }
 
+type ProbeTab = 'logs' | 'incidents';
+
+function useProbeTab(): [ProbeTab, (tab: string) => void] {
+	const [searchParams, setSearchParams] = useSearchParams();
+	const tab: ProbeTab = searchParams.get('tab') === 'incidents' ? 'incidents' : 'logs';
+
+	const select = (next: string) => {
+		const params = new URLSearchParams(searchParams);
+		if (next === 'incidents') params.set('tab', next);
+		else params.delete('tab');
+		setSearchParams(params, { replace: true });
+	};
+
+	return [tab, select];
+}
+
 export function ShowProbe() {
 	const { t } = useTranslation();
 	const params = useParams();
 	const [hours, setHours] = useState(1);
+	const [tab, selectTab] = useProbeTab();
 
 	const { data, isLoading, isFetching, isError, refetch } = useQuery({
 		queryKey: ['probe', params.probeId!, hours],
@@ -47,6 +66,7 @@ export function ShowProbe() {
 	if (isError || !data) return <ErrorState onRetry={() => refetch()} />;
 
 	const isRefetching = isFetching && !isLoading;
+	const hasOngoingIncident = data.incident_periods.some((period) => !period.ended_at);
 
 	return (
 		<div className="space-y-4">
@@ -110,17 +130,40 @@ export function ShowProbe() {
 					monitors={data.monitors}
 					lastHour={hours}
 					setLastHour={setHours}
-					monitorStatus={data.probe.status}
 					maintenancePeriods={data.maintenance_periods}
+					incidentPeriods={data.incident_periods}
 				/>
 			</section>
 
-			<section
-				className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}
-				aria-busy={isRefetching}
-			>
-				<ProbeMonitorLog probeId={data.probe.id} monitors={data.monitors} />
-			</section>
+			<Tabs value={tab} onValueChange={selectTab} className="gap-3">
+				<TabsList>
+					<TabsTrigger value="logs" className="px-3">
+						{t('monitors.tabs.logs')}
+					</TabsTrigger>
+					<TabsTrigger value="incidents" className="px-3">
+						{t('monitors.tabs.incidents')}
+						{hasOngoingIncident && (
+							<>
+								<span className="bg-status-down h-1.5 w-1.5 animate-pulse rounded-full" />
+								<span className="sr-only">{t('incidents.ongoing.title')}</span>
+							</>
+						)}
+					</TabsTrigger>
+				</TabsList>
+
+				<TabsContent value="logs">
+					<section
+						className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}
+						aria-busy={isRefetching}
+					>
+						<ProbeMonitorLog probeId={data.probe.id} monitors={data.monitors} />
+					</section>
+				</TabsContent>
+
+				<TabsContent value="incidents">
+					<ProbeIncidents key={data.probe.id} probeId={data.probe.id} />
+				</TabsContent>
+			</Tabs>
 		</div>
 	);
 }

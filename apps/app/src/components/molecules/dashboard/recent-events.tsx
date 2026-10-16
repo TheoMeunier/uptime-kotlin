@@ -60,7 +60,7 @@ export default function RecentEvents({ events }: { events: RecentEvent[] }) {
 									/>
 
 									<Link
-										to={`/monitors/${event.probe_id}`}
+										to={`/monitors/${event.probe_id}?tab=incidents`}
 										className="min-w-0 flex-1 truncate text-sm font-medium hover:underline sm:w-40 sm:flex-none sm:shrink-0"
 									>
 										{event.probe_name}

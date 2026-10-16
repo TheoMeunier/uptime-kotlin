@@ -19,7 +19,15 @@ function useNow(active: boolean): number {
 	return now;
 }
 
-export default function OngoingIncidents({ incidents, isLoading }: { incidents?: Incident[]; isLoading: boolean }) {
+export default function OngoingIncidents({
+	incidents,
+	isLoading,
+	showProbe = true,
+}: {
+	incidents?: Incident[];
+	isLoading: boolean;
+	showProbe?: boolean;
+}) {
 	const { t, i18n } = useTranslation();
 	const now = useNow((incidents?.length ?? 0) > 0);
 
@@ -46,12 +54,14 @@ export default function OngoingIncidents({ incidents, isLoading }: { incidents?:
 							>
 								<span className="bg-status-down h-2 w-2 shrink-0 animate-pulse rounded-full" />
 
-								<Link
-									to={`/monitors/${incident.probe_id}`}
-									className="w-44 shrink-0 truncate text-sm font-medium hover:underline"
-								>
-									{incident.probe_name}
-								</Link>
+								{showProbe && (
+									<Link
+										to={`/monitors/${incident.probe_id}?tab=incidents`}
+										className="w-44 shrink-0 truncate text-sm font-medium hover:underline"
+									>
+										{incident.probe_name}
+									</Link>
+								)}
 
 								<span
 									className="text-muted-foreground order-last min-w-0 basis-full truncate text-xs sm:order-none sm:flex-1 sm:basis-0"
