@@ -834,6 +834,8 @@ const es: typeof en = {
 			settings: 'Ajustes',
 			logout: 'Cerrar sesión',
 			guide: 'Guía de uso',
+			documentation: 'Documentación',
+			new_tab: '(se abre en una pestaña nueva)',
 			dashboard: 'Panel',
 			status_page: 'Páginas de estado',
 			incidents: 'Incidencias',

@@ -841,6 +841,8 @@ const fr: typeof en = {
 			settings: 'Paramètres',
 			logout: 'Se déconnecter',
 			guide: 'Guide d’utilisation',
+			documentation: 'Documentation',
+			new_tab: '(s’ouvre dans un nouvel onglet)',
 			dashboard: 'Tableau de bord',
 			status_page: 'Pages de statut',
 			incidents: 'Incidents',

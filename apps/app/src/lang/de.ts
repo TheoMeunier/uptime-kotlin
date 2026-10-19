@@ -840,6 +840,8 @@ const de: typeof en = {
 			settings: 'Einstellungen',
 			logout: 'Abmelden',
 			guide: 'Benutzerhandbuch',
+			documentation: 'Dokumentation',
+			new_tab: '(öffnet in neuem Tab)',
 			dashboard: 'Übersicht',
 			status_page: 'Statusseiten',
 			incidents: 'Störungen',

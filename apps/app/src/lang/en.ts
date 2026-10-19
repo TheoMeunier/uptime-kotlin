@@ -824,6 +824,8 @@ const en = {
 			settings: 'Settings',
 			logout: 'Logout',
 			guide: 'User guide',
+			documentation: 'Documentation',
+			new_tab: '(opens in a new tab)',
 			dashboard: 'Dashboard',
 			status_page: 'Status pages',
 			incidents: 'Incidents',
