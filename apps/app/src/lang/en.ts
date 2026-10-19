@@ -141,6 +141,7 @@ const en = {
 		telegram_chat_id: 'Invalid chat ID (a number or @channelname)',
 		ntfy_topic: 'Invalid topic (letters, digits, - and _, 64 characters max)',
 		gotify_app_token: 'Application token required',
+		hostname: 'Invalid hostname or IP address (e.g. smtp.gmail.com)',
 	},
 
 	select: {

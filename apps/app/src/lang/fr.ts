@@ -147,6 +147,7 @@ const fr: typeof en = {
 		telegram_chat_id: 'ID de chat invalide (nombre ou @nomducanal)',
 		ntfy_topic: 'Sujet invalide (lettres, chiffres, - et _, 64 caractères max.)',
 		gotify_app_token: 'Jeton d’application requis',
+		hostname: 'Nom d’hôte ou adresse IP invalide (ex. smtp.gmail.com)',
 	},
 
 	select: {
