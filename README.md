@@ -101,7 +101,7 @@ services:
       QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
       QUARKUS_DATASOURCE_PASSWORD: change-me
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
-      ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
+      ENCRYPTION_MASTER_KEY: GENERATE_WITH_openssl_rand
       MP_JWT_VERIFY_ISSUER: https://issuer.uptime-kotlin.com
     depends_on:
       - postgres
@@ -119,7 +119,8 @@ services:
       - ./storage-db:/var/lib/postgresql/data
 ```
 
-2. Replace `ENCRYPTION_MASTER_KEY` with the output of `openssl rand -base64 32`, and both `change-me` passwords.
+2. Replace `ENCRYPTION_MASTER_KEY` with the output of `openssl rand -base64 32` (the application refuses to start until
+   you do), and both `change-me` passwords.
 3. Run `docker compose up -d`.
 4. Open `http://localhost:8080` and create your account.
 
@@ -167,7 +168,7 @@ uptime-kotlin-worker:
     QUARKUS_DATASOURCE_USERNAME: uptime-kotlin
     QUARKUS_DATASOURCE_PASSWORD: change-me
     QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/uptime-kotlin
-    ENCRYPTION_MASTER_KEY: change-me-32-characters-minimum-0
+    ENCRYPTION_MASTER_KEY: GENERATE_WITH_openssl_rand
   depends_on:
     - uptime-kotlin
 ```
