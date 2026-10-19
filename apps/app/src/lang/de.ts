@@ -149,6 +149,7 @@ const de: typeof en = {
 		telegram_chat_id: 'Ungültige Chat-ID (Zahl oder @kanalname)',
 		ntfy_topic: 'Ungültiges Thema (Buchstaben, Ziffern, - und _, max. 64 Zeichen)',
 		gotify_app_token: 'Anwendungstoken erforderlich',
+		hostname: 'Ungültiger Hostname oder ungültige IP-Adresse (z. B. smtp.gmail.com)',
 	},
 
 	select: {

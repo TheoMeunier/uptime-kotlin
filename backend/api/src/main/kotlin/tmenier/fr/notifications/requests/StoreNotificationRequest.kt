@@ -12,8 +12,8 @@ import jakarta.validation.groups.Default
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
+import tmenier.fr.common.validations.HostnameOrIp
 
-// Extending Default keeps the unscoped constraints (URL, e-mail, patterns) active on create and update.
 interface OnCreate : Default
 
 interface OnUpdate : Default
@@ -104,7 +104,8 @@ data class ValidNotificationChannelGotifyRequest(
 
 @RegisterForReflection
 data class ValidNotificationChannelMailRequest(
-    @field:URL(message = "Invalid URL format")
+    @field:NotBlank(message = "Hostname is required")
+    @field:HostnameOrIp(message = "Invalid hostname or IP address")
     val hostname: String,
     @field:Min(1)
     @field:NotNull(message = "Port is required")

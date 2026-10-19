@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import i18n from '@/lang/i18n.ts';
+import { isValidHostnameOrIp } from '@/lib/hostname.ts';
 
 const baseStoreNotificationSchema = z.object({
 	name: z.string().min(3).max(255),
@@ -56,7 +57,7 @@ const gotifyNotificationSchema = baseStoreNotificationSchema.extend({
 
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
-	hostname: z.url(),
+	hostname: z.string().trim().refine(isValidHostnameOrIp, i18n.t('validation.hostname')),
 	port: z.number().min(1).max(65535),
 	username: z.email().min(3).max(255),
 	password: z.string().min(3).max(255).nullable(),

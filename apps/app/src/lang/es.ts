@@ -144,6 +144,7 @@ const es: typeof en = {
 		telegram_chat_id: 'ID de chat no válido (un número o @nombredelcanal)',
 		ntfy_topic: 'Tema no válido (letras, dígitos, - y _, máx. 64 caracteres)',
 		gotify_app_token: 'Token de aplicación obligatorio',
+		hostname: 'Nombre de host o dirección IP no válidos (p. ej. smtp.gmail.com)',
 	},
 
 	select: {
