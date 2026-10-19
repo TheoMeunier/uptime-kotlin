@@ -127,6 +127,21 @@ class EncryptionServiceTest {
         assertFalse(error.message!!.contains(SHORT_LEGACY_KEY))
     }
 
+    @Test
+    fun `recognizes the README example master key`() {
+        assertTrue(isExampleMasterKey("change-me-32-characters-minimum-0"))
+        assertTrue(isExampleMasterKey("  CHANGE-ME-32-characters-minimum-0"))
+        assertFalse(isExampleMasterKey(MASTER_KEY))
+        assertFalse(isExampleMasterKey("local-test-key-change-me-32-chars-min"))
+    }
+
+    @Test
+    fun `still starts with the README example master key`() {
+        val example = EncryptionService("change-me-32-characters-minimum-0")
+
+        assertEquals("smtp-password", example.decrypt(example.encrypt("smtp-password")))
+    }
+
     private companion object {
         const val MASTER_KEY = "0123456789abcdef0123456789abcdef"
         const val NEW_MASTER_KEY = "a-brand-new-master-key-of-32-bytes!"
