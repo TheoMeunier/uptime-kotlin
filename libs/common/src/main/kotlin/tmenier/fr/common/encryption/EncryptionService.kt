@@ -5,6 +5,7 @@ import io.quarkus.runtime.Startup
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import tmenier.fr.common.utils.logger
 import java.security.SecureRandom
 import java.util.Base64
 import java.util.Optional
@@ -39,6 +40,14 @@ class EncryptionService
 
         init {
             secretKey = deriveKey(masterKey, "encryption.master-key (ENCRYPTION_MASTER_KEY)")
+            if (isExampleMasterKey(masterKey)) {
+                logger.warn {
+                    "ENCRYPTION_MASTER_KEY still holds the example value from the README (it starts with " +
+                        "\"$EXAMPLE_KEY_PREFIX\"): anyone who has read the README can decrypt the stored secrets. " +
+                        "Generate a key with `openssl rand -base64 32` and switch to it as described in " +
+                        "\"Rotate the master key\" in the README. A future version will refuse to start with it."
+                }
+            }
             previousSecretKeys =
                 previousMasterKeys
                     .orElse(emptyList())
@@ -153,3 +162,7 @@ class EncryptionService
             val HKDF_INFO = "aes-256-gcm/v2".toByteArray(Charsets.UTF_8)
         }
     }
+
+internal const val EXAMPLE_KEY_PREFIX = "change-me"
+
+internal fun isExampleMasterKey(masterKey: String): Boolean = masterKey.trim().startsWith(EXAMPLE_KEY_PREFIX, ignoreCase = true)
