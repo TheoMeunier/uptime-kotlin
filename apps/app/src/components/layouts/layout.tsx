@@ -9,10 +9,22 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarProvider,
+	SidebarSeparator,
 	SidebarTrigger,
 } from '@/components/atoms/sidebar.tsx';
 import { Button } from '@/components/atoms/button.tsx';
-import { Activity, BadgeCheck, ChevronsUpDown, Compass, Home, LogOut, Plus, Siren, Wrench } from 'lucide-react';
+import {
+	Activity,
+	BadgeCheck,
+	BookOpen,
+	ChevronsUpDown,
+	Compass,
+	Home,
+	LogOut,
+	Plus,
+	Siren,
+	Wrench,
+} from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { Suspense, useMemo } from 'react';
@@ -43,6 +55,7 @@ import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
 import GuidedTour from '@/features/onboarding/components/guided-tour.tsx';
 import useOnboardingTour from '@/features/onboarding/hooks/useOnboardingTour.ts';
 import { DemoBanner } from '@/features/demo/slots.ts';
+import { DOCUMENTATION_URL } from '@/lib/links.ts';
 
 export default function Layout() {
 	const { t } = useTranslation();
@@ -124,6 +137,18 @@ export default function Layout() {
 				</SidebarContent>
 
 				<SidebarFooter>
+					<SidebarMenu>
+						<SidebarMenuItem>
+							<SidebarMenuButton asChild>
+								<a href={DOCUMENTATION_URL} target="_blank" rel="noopener noreferrer">
+									<BookOpen />
+									{t('layout.sidebar.documentation')}
+									<span className="sr-only">{t('layout.sidebar.new_tab')}</span>
+								</a>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarMenu>
+					<SidebarSeparator className="mx-0" />
 					<SidebarMenu>
 						<SidebarMenuItem>
 							<DropdownMenu>

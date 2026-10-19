@@ -2,7 +2,8 @@ const jwtDecoder = {
 	parseJwt(token: string) {
 		const base64Url = token.split('.')[1];
 		const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-		return JSON.parse(window.atob(base64));
+		const bytes = Uint8Array.from(window.atob(base64), (char) => char.charCodeAt(0));
+		return JSON.parse(new TextDecoder().decode(bytes));
 	},
 
 	isExpired(token: string) {
