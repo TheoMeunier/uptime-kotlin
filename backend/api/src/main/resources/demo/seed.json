@@ -448,5 +448,33 @@
       "duration_seconds": 660,
       "message": "SMTP 421 Service not available, closing transmission channel"
     }
+  ],
+  "announcements": [
+    {
+      "title": "You are viewing a demo instance",
+      "body": "This instance is read-only. Monitors, incidents and announcements are sample data.",
+      "severity": "INFO",
+      "starts_hours_ago": 1,
+      "show_on_global": true,
+      "status_pages": ["demo"]
+    },
+    {
+      "title": "Slow responses from the payments API",
+      "body": "Requests to the payments API took up to 10 seconds. The upstream provider fixed a saturated load balancer.",
+      "severity": "DEGRADED",
+      "starts_hours_ago": 76,
+      "ends_hours_ago": 74,
+      "show_on_global": true,
+      "status_pages": ["demo"]
+    },
+    {
+      "title": "Scheduled maintenance of the mail relay",
+      "body": "Outgoing e-mail was queued for about 20 minutes while the relay was upgraded. No message was lost.",
+      "severity": "MAINTENANCE",
+      "starts_hours_ago": 340,
+      "ends_hours_ago": 339,
+      "show_on_global": false,
+      "status_pages": ["demo"]
+    }
   ]
 }

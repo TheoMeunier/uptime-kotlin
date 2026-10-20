@@ -39,6 +39,7 @@ class StatusPageRepository(
                 title = dto.title
                 description = dto.description
                 defaultLayout = dto.defaultLayout
+                uptimePeriod = dto.uptimePeriod
             }
 
         replaceGroups(entity, dto.groups)
@@ -53,6 +54,7 @@ class StatusPageRepository(
         entity.title = dto.title
         entity.description = dto.description
         entity.defaultLayout = dto.defaultLayout
+        entity.uptimePeriod = dto.uptimePeriod
         entity.updatedAt = Instant.now()
 
         replaceGroups(entity, dto.groups)

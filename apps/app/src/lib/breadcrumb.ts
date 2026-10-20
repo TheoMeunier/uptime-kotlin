@@ -14,6 +14,7 @@ export function buildCrumbs(pathname: string, resolveProbe: (id: string) => Part
 	if (first === 'dashboard') return [{ key: 'layout.sidebar.dashboard' }];
 	if (first === 'incidents') return [HOME, { key: 'layout.sidebar.incidents' }];
 	if (first === 'maintenances') return [HOME, { key: 'layout.sidebar.maintenances' }];
+	if (first === 'announcements') return [HOME, { key: 'layout.sidebar.announcements' }];
 	if (first === 'status-pages') {
 		const index: Crumb = { key: 'layout.sidebar.status_page', to: '/status-pages' };
 

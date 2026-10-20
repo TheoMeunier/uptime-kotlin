@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import ProbeStatusEnum from '@/features/probes/enums/probe-status.enum.ts';
+import { UptimePeriodEnum } from '@/features/status-pages/lib/uptime-period.ts';
 import { ProbeStatusShowSchema } from '@/features/probes/schemas/probe-response.schema.ts';
 
 export const StatusPageLayoutEnum = ['GRID', 'LIST'] as const;
@@ -12,6 +13,7 @@ export const StatusPageListSchema = z.array(
 		title: z.string(),
 		description: z.string().nullable(),
 		default_layout: z.enum(StatusPageLayoutEnum),
+		uptime_period: z.enum(UptimePeriodEnum),
 		group_count: z.number(),
 		probe_count: z.number(),
 		updated_at: z.string(),
@@ -26,6 +28,7 @@ export const StatusPageProbeSchema = z.object({
 	description: z.string().nullable().optional(),
 	url: z.string().nullable().optional(),
 	status: z.enum(ProbeStatusEnum),
+	log_retention_days: z.number().nullable().optional(),
 });
 
 export type StatusPageProbe = z.infer<typeof StatusPageProbeSchema>;
@@ -36,6 +39,7 @@ export const StatusPageDetailSchema = z.object({
 	title: z.string(),
 	description: z.string().nullable(),
 	default_layout: z.enum(StatusPageLayoutEnum),
+	uptime_period: z.enum(UptimePeriodEnum),
 	groups: z.array(
 		z.object({
 			name: z.string().nullable(),
@@ -53,6 +57,7 @@ export const PublicStatusPageSchema = z.object({
 	title: z.string(),
 	description: z.string().nullable(),
 	default_layout: z.enum(StatusPageLayoutEnum),
+	uptime_period: z.enum(UptimePeriodEnum),
 	groups: z.array(
 		z.object({
 			name: z.string().nullable(),

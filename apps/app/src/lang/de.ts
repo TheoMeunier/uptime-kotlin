@@ -179,6 +179,28 @@ const de: typeof en = {
 
 	pages: {
 		status_page: {
+			uptime: {
+				state: {
+					up: 'Betriebsbereit',
+					degraded: 'Eingeschränkt',
+					down: 'Ausfall',
+					maintenance: 'Wartung',
+					nodata: 'Keine Daten',
+				},
+				checks_one: 'bei {{count}} Prüfung',
+				checks_other: 'bei {{count}} Prüfungen',
+				failures_one: '{{count}} fehlgeschlagene Prüfung',
+				failures_other: '{{count}} fehlgeschlagene Prüfungen',
+				maintenance_one: '{{count}} Prüfung während einer Wartung',
+				maintenance_other: '{{count}} Prüfungen während einer Wartung',
+				ago_hours_one: 'Vor {{count}} Stunde',
+				ago_hours_other: 'Vor {{count}} Stunden',
+				ago_days_one: 'Vor {{count}} Tag',
+				ago_days_other: 'Vor {{count}} Tagen',
+				today: 'Heute',
+				no_data: 'Keine Daten',
+				label: 'Verfügbarkeit',
+			},
 			title: 'Statusübersicht',
 			subtitle: 'Infrastrukturüberwachung in Echtzeit',
 			description: {
@@ -760,6 +782,14 @@ const de: typeof en = {
 	},
 
 	status_pages: {
+		uptime_period: {
+			H1: 'Letzte Stunde, Prüfung für Prüfung',
+			D1: '24 Stunden',
+			D7: '7 Tage',
+			D30: '30 Tage',
+			D60: '60 Tage',
+			D90: '90 Tage',
+		},
 		title: {
 			index: 'Statusseiten',
 			create: 'Neue Statusseite',
@@ -802,6 +832,13 @@ const de: typeof en = {
 			description_placeholder: 'Wird unter dem Titel angezeigt',
 			default_layout: 'Standardansicht',
 			default_layout_description: 'Besucher können weiterhin wechseln; ihre Wahl wird gespeichert.',
+			uptime_period: 'Angezeigte Verfügbarkeit',
+			uptime_period_description: 'Wie weit der Balken jedes Monitors zurückreicht.',
+			uptime_period_description_limited:
+				'Wie weit der Balken jedes Monitors zurückreicht. Ein Monitor dieser Seite bewahrt seine Prüfungen {{days}} Tage auf.',
+			uptime_period_retention: '(Aufbewahrung {{days}} T.)',
+			uptime_period_too_long:
+				'Ein Monitor dieser Seite bewahrt seine Prüfungen {{days}} Tage auf: Wählen Sie einen kürzeren Zeitraum.',
 			save: 'Speichern',
 			unsaved: 'Ungespeicherte Änderungen',
 			layout_title: 'Gruppen und Monitore',
@@ -828,6 +865,89 @@ const de: typeof en = {
 			created: 'Statusseite „{{title}}“ erstellt',
 			updated: 'Statusseite „{{title}}“ gespeichert',
 			removed: 'Statusseite gelöscht',
+		},
+	},
+
+	announcements: {
+		title: {
+			index: 'Ankündigungen',
+			create: 'Neue Ankündigung',
+			update: 'Ankündigung bearbeiten',
+			remove: 'Diese Ankündigung löschen?',
+		},
+		description: {
+			index:
+				'Meldungen oben auf Ihren öffentlichen Statusseiten: ein laufendes Problem, geplante Arbeiten, eine Information.',
+			remove: '„{{title}}“ verschwindet von den Statusseiten. Das kann nicht rückgängig gemacht werden.',
+		},
+		severity: {
+			INFO: 'Information',
+			DEGRADED: 'Eingeschränkt',
+			OUTAGE: 'Ausfall',
+			MAINTENANCE: 'Wartung',
+		},
+		state: {
+			SCHEDULED: 'Geplant',
+			ACTIVE: 'Angezeigt',
+			ENDED: 'Beendet',
+		},
+		state_detail: {
+			starts: 'Ab {{date}}',
+			until: 'Bis {{date}}',
+			ended: 'Beendet am {{date}}',
+			no_end: 'Bis Sie sie beenden',
+		},
+		actions: {
+			create: 'Neue Ankündigung',
+			publish: 'Veröffentlichen',
+			save: 'Speichern',
+			end: 'Jetzt beenden',
+		},
+		form: {
+			title: 'Titel',
+			title_placeholder: 'Langsame Antworten der API',
+			severity: 'Schweregrad',
+			body: 'Nachricht',
+			body_placeholder: 'Was passiert, wer betroffen ist, was Sie unternehmen.',
+			body_description: 'Reiner Text; Zeilenumbrüche bleiben erhalten.',
+			starts_at: 'Angezeigt ab',
+			starts_at_description: 'In Ihrer Zeitzone. Ein späteres Datum plant sie ein.',
+			ends_at: 'Angezeigt bis',
+			ends_at_description: 'Optional. Ohne Datum bleibt die Ankündigung, bis Sie sie beenden.',
+			pages: 'Statusseiten',
+			pages_description: 'Die Seiten, auf denen die Ankündigung erscheint.',
+			show_on_global: 'Auch auf /status anzeigen',
+			show_on_global_description: 'Die eingebaute Seite mit allen Monitoren.',
+		},
+		validation: {
+			title: 'Der Titel ist erforderlich.',
+			starts_at: 'Geben Sie an, wann die Ankündigung erscheint.',
+			ends_after_start: 'Das Ende muss nach dem Beginn liegen.',
+			target: 'Wählen Sie mindestens eine Seite oder /status.',
+		},
+		table: {
+			title: 'Ankündigung',
+			state: 'Status',
+			pages: 'Seiten',
+			actions: 'Aktionen',
+			no_target: 'Keine Seite mehr',
+		},
+		empty: {
+			title: 'Noch keine Ankündigung',
+			description:
+				'Veröffentlichen Sie eine, um Ihre Nutzer direkt auf Ihren Statusseiten über ein Problem oder Arbeiten zu informieren.',
+		},
+		alerts: {
+			created: 'Ankündigung „{{title}}“ veröffentlicht',
+			updated: 'Ankündigung „{{title}}“ gespeichert',
+			ended: 'Ankündigung beendet, sie erscheint nicht mehr auf den Statusseiten',
+			removed: 'Ankündigung gelöscht',
+			not_started: 'Diese Ankündigung hat noch nicht begonnen: Bearbeiten oder löschen Sie sie.',
+		},
+		public: {
+			current: 'Aktuelle Ankündigungen',
+			posted: 'Veröffentlicht am {{date}}',
+			until: 'bis {{date}}',
 		},
 	},
 
@@ -871,6 +991,7 @@ const de: typeof en = {
 			new_tab: '(öffnet in neuem Tab)',
 			dashboard: 'Übersicht',
 			status_page: 'Statusseiten',
+			announcements: 'Ankündigungen',
 			incidents: 'Störungen',
 			maintenances: 'Wartung',
 			new_monitor: 'Neuer Monitor',

@@ -21,6 +21,7 @@ import {
 	Compass,
 	Home,
 	LogOut,
+	Megaphone,
 	Plus,
 	Siren,
 	Wrench,
@@ -128,6 +129,11 @@ export default function Layout() {
 							<SidebarMenuButton asChild isActive={pathname.startsWith('/status-pages')} data-tour="status-page">
 								<Link to={'/status-pages'}>
 									<Activity size={18} /> {t('layout.sidebar.status_page')}
+								</Link>
+							</SidebarMenuButton>
+							<SidebarMenuButton asChild isActive={pathname.startsWith('/announcements')} data-tour="announcements">
+								<Link to={'/announcements'}>
+									<Megaphone size={18} /> {t('layout.sidebar.announcements')}
 								</Link>
 							</SidebarMenuButton>
 						</SidebarMenuItem>

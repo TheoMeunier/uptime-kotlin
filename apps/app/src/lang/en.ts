@@ -169,6 +169,28 @@ const en = {
 
 	pages: {
 		status_page: {
+			uptime: {
+				state: {
+					up: 'Operational',
+					degraded: 'Degraded',
+					down: 'Outage',
+					maintenance: 'Maintenance',
+					nodata: 'No data',
+				},
+				checks_one: 'over {{count}} check',
+				checks_other: 'over {{count}} checks',
+				failures_one: '{{count}} failed check',
+				failures_other: '{{count}} failed checks',
+				maintenance_one: '{{count}} check during maintenance',
+				maintenance_other: '{{count}} checks during maintenance',
+				ago_hours_one: '{{count}} hour ago',
+				ago_hours_other: '{{count}} hours ago',
+				ago_days_one: '{{count}} day ago',
+				ago_days_other: '{{count}} days ago',
+				today: 'Today',
+				no_data: 'No data',
+				label: 'uptime',
+			},
 			title: 'Health Dashboard',
 			subtitle: 'Real-time infrastructure monitoring',
 			description: {
@@ -744,6 +766,14 @@ const en = {
 	},
 
 	status_pages: {
+		uptime_period: {
+			H1: 'Last hour, check by check',
+			D1: '24 hours',
+			D7: '7 days',
+			D30: '30 days',
+			D60: '60 days',
+			D90: '90 days',
+		},
 		title: {
 			index: 'Status pages',
 			create: 'New status page',
@@ -785,6 +815,12 @@ const en = {
 			description_placeholder: 'Shown under the title',
 			default_layout: 'Default layout',
 			default_layout_description: 'Visitors can still switch; their choice is remembered.',
+			uptime_period: 'Availability shown',
+			uptime_period_description: 'How far back the bar of each monitor goes.',
+			uptime_period_description_limited:
+				'How far back the bar of each monitor goes. A monitor of this page keeps its checks {{days}} days.',
+			uptime_period_retention: '(retention {{days}} d)',
+			uptime_period_too_long: 'A monitor of this page keeps its checks {{days}} days: choose a shorter period.',
 			save: 'Save',
 			unsaved: 'Unsaved changes',
 			layout_title: 'Groups and monitors',
@@ -810,6 +846,88 @@ const en = {
 			created: 'Status page “{{title}}” created',
 			updated: 'Status page “{{title}}” saved',
 			removed: 'Status page deleted',
+		},
+	},
+
+	announcements: {
+		title: {
+			index: 'Announcements',
+			create: 'New announcement',
+			update: 'Edit announcement',
+			remove: 'Delete this announcement?',
+		},
+		description: {
+			index:
+				'Messages shown at the top of your public status pages: an ongoing problem, planned work, a piece of news.',
+			remove: '“{{title}}” will disappear from the status pages. This cannot be undone.',
+		},
+		severity: {
+			INFO: 'Information',
+			DEGRADED: 'Degraded service',
+			OUTAGE: 'Outage',
+			MAINTENANCE: 'Maintenance',
+		},
+		state: {
+			SCHEDULED: 'Scheduled',
+			ACTIVE: 'Shown',
+			ENDED: 'Ended',
+		},
+		state_detail: {
+			starts: 'From {{date}}',
+			until: 'Until {{date}}',
+			ended: 'Ended {{date}}',
+			no_end: 'Until you end it',
+		},
+		actions: {
+			create: 'New announcement',
+			publish: 'Publish',
+			save: 'Save',
+			end: 'End now',
+		},
+		form: {
+			title: 'Title',
+			title_placeholder: 'Slow responses on the API',
+			severity: 'Severity',
+			body: 'Message',
+			body_placeholder: 'What is happening, who is affected, what you are doing about it.',
+			body_description: 'Plain text; line breaks are kept.',
+			starts_at: 'Shown from',
+			starts_at_description: 'In your time zone. A later date schedules it.',
+			ends_at: 'Shown until',
+			ends_at_description: 'Optional. Without it, the announcement stays until you end it.',
+			pages: 'Status pages',
+			pages_description: 'The pages where the announcement appears.',
+			show_on_global: 'Also show on /status',
+			show_on_global_description: 'The built-in page with every monitor.',
+		},
+		validation: {
+			title: 'The title is required.',
+			starts_at: 'Choose when the announcement appears.',
+			ends_after_start: 'The end must come after the start.',
+			target: 'Choose at least one page, or /status.',
+		},
+		table: {
+			title: 'Announcement',
+			state: 'State',
+			pages: 'Pages',
+			actions: 'Actions',
+			no_target: 'No page any more',
+		},
+		empty: {
+			title: 'No announcement yet',
+			description: 'Publish one to tell your users about a problem or planned work, right on your status pages.',
+		},
+		alerts: {
+			created: 'Announcement “{{title}}” published',
+			updated: 'Announcement “{{title}}” saved',
+			ended: 'Announcement ended, it no longer shows on the status pages',
+			removed: 'Announcement deleted',
+			not_started: 'This announcement has not started yet: edit or delete it instead.',
+		},
+		public: {
+			current: 'Current announcements',
+			posted: 'Posted {{date}}',
+			until: 'until {{date}}',
 		},
 	},
 
@@ -853,6 +971,7 @@ const en = {
 			new_tab: '(opens in a new tab)',
 			dashboard: 'Dashboard',
 			status_page: 'Status pages',
+			announcements: 'Announcements',
 			incidents: 'Incidents',
 			maintenances: 'Maintenance',
 			new_monitor: 'New monitor',

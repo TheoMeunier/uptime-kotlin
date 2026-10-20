@@ -3,15 +3,19 @@ import {
 	CreatedStatusPageSchema,
 	PublicStatusPageSchema,
 	StatusPageDetailSchema,
-	StatusPageListSchema,
 	type StatusPageLayoutValue,
+	StatusPageListSchema,
 } from '@/features/status-pages/schemas/status-page.schema.ts';
+import { StatusFeedSchema } from '@/features/status-pages/schemas/status-feed.schema.ts';
+import { StatusUptimeSchema } from '@/features/status-pages/schemas/status-uptime.schema.ts';
+import type { UptimePeriod } from '@/features/status-pages/lib/uptime-period.ts';
 
 export interface StatusPagePayload {
 	slug: string;
 	title: string;
 	description: string;
 	default_layout: StatusPageLayoutValue;
+	uptime_period: UptimePeriod;
 	groups: { name: string; probe_ids: string[] }[];
 }
 
@@ -21,6 +25,7 @@ function toBody(payload: StatusPagePayload) {
 		title: payload.title,
 		description: payload.description || null,
 		default_layout: payload.default_layout,
+		uptime_period: payload.uptime_period,
 		groups: payload.groups.map((group) => ({ name: group.name || null, probe_ids: group.probe_ids })),
 	});
 }
@@ -39,6 +44,19 @@ const statusPageService = {
 	async getPublicStatusPage(slug: string) {
 		const response = await api.get(`status/${encodeURIComponent(slug)}`).json();
 		return PublicStatusPageSchema.parse(response);
+	},
+
+	async getStatusFeed(slug?: string) {
+		const path = slug ? `status/${encodeURIComponent(slug)}/feed` : 'status-feed';
+		const response = await api.get(path).json();
+		return StatusFeedSchema.parse(response);
+	},
+
+	async getStatusUptime(slug: string, timezone: string) {
+		const response = await api
+			.get(`status/${encodeURIComponent(slug)}/uptime`, { searchParams: { tz: timezone } })
+			.json();
+		return StatusUptimeSchema.parse(response);
 	},
 
 	async storeStatusPage(payload: StatusPagePayload) {

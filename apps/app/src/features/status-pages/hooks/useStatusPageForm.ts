@@ -10,25 +10,37 @@ import {
 } from '@/features/status-pages/lib/editor.ts';
 import type { StatusPageDetail, StatusPageLayoutValue } from '@/features/status-pages/schemas/status-page.schema.ts';
 import type { StatusPagePayload } from '@/features/status-pages/services/status-page-service.ts';
+import type { UptimePeriod } from '@/features/status-pages/lib/uptime-period.ts';
 
 export interface StatusPageFormValues {
 	title: string;
 	slug: string;
 	description: string;
 	defaultLayout: StatusPageLayoutValue;
+	uptimePeriod: UptimePeriod;
 	groups: EditorGroup[];
 }
 
 export type StatusPageFormErrors = Partial<Record<'title' | 'slug', string>>;
 
 function initialValues(page?: StatusPageDetail): StatusPageFormValues {
-	if (!page) return { title: '', slug: '', description: '', defaultLayout: 'GRID', groups: [emptyGroup()] };
+	if (!page) {
+		return {
+			title: '',
+			slug: '',
+			description: '',
+			defaultLayout: 'GRID',
+			uptimePeriod: 'H1',
+			groups: [emptyGroup()],
+		};
+	}
 
 	return {
 		title: page.title,
 		slug: page.slug,
 		description: page.description ?? '',
 		defaultLayout: page.default_layout,
+		uptimePeriod: page.uptime_period,
 		groups: page.groups.map((group) => ({
 			key: newGroupKey(),
 			name: group.name ?? '',
@@ -43,6 +55,7 @@ function toPayload(values: StatusPageFormValues): StatusPagePayload {
 		slug: values.slug.trim(),
 		description: values.description.trim(),
 		default_layout: values.defaultLayout,
+		uptime_period: values.uptimePeriod,
 		groups: values.groups.map((group) => ({ name: group.name.trim(), probe_ids: group.probeIds })),
 	};
 }
@@ -83,6 +96,7 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 		},
 		setDescription: (description: string) => update({ description }),
 		setDefaultLayout: (defaultLayout: StatusPageLayoutValue) => update({ defaultLayout }),
+		setUptimePeriod: (uptimePeriod: UptimePeriod) => update({ uptimePeriod }),
 		setGroups: (groups: EditorGroup[]) => update({ groups }),
 		handleSubmit:
 			<T>(onSubmit: (payload: StatusPagePayload) => Promise<T>, onSaved?: (result: T) => void) =>

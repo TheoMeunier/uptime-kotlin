@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import tmenier.fr.common.enums.statuspages.StatusPageLayout
+import tmenier.fr.common.enums.statuspages.StatusPageUptimePeriod
 import java.util.UUID
 
 @RegisterForReflection
@@ -27,6 +28,9 @@ class StoreStatusPageRequest {
 
     @field:NotNull(message = "Default layout is required")
     var defaultLayout: StatusPageLayout = StatusPageLayout.GRID
+
+    @field:NotNull(message = "Uptime period is required")
+    var uptimePeriod: StatusPageUptimePeriod = StatusPageUptimePeriod.H1
 
     @field:Valid
     @field:Size(max = 50, message = "A status page holds at most 50 groups")

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/atoms/button.tsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/atoms/field.tsx';
+import UptimePeriodField from '@/features/status-pages/components/forms/uptime-period-field.tsx';
 import { Input } from '@/components/atoms/input.tsx';
 import { Textarea } from '@/components/atoms/textarea.tsx';
 import ViewModeToggle from '@/components/molecules/view-mode-toggle.tsx';
@@ -14,9 +15,16 @@ interface StatusPageSettingsCardProps {
 	isSaving: boolean;
 	canSave: boolean;
 	showUnsaved: boolean;
+	retentionDays: number | null;
 }
 
-export default function StatusPageSettingsCard({ form, isSaving, canSave, showUnsaved }: StatusPageSettingsCardProps) {
+export default function StatusPageSettingsCard({
+	form,
+	isSaving,
+	canSave,
+	showUnsaved,
+	retentionDays,
+}: StatusPageSettingsCardProps) {
 	const { t } = useTranslation();
 	const { values, errors, showErrors } = form;
 
@@ -62,6 +70,12 @@ export default function StatusPageSettingsCard({ form, isSaving, canSave, showUn
 						/>
 						<FieldDescription>{t('status_pages.form.default_layout_description')}</FieldDescription>
 					</Field>
+
+					<UptimePeriodField
+						value={values.uptimePeriod}
+						onChange={form.setUptimePeriod}
+						retentionDays={retentionDays}
+					/>
 				</FieldGroup>
 
 				<Button type="submit" className="mt-6" disabled={isSaving || !canSave}>

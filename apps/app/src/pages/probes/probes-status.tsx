@@ -6,10 +6,12 @@ import StatusBoard from '@/features/status-pages/components/board/status-board.t
 import StatusBoardFrame from '@/features/status-pages/components/board/status-board-frame.tsx';
 import StatusBoardSkeleton from '@/features/status-pages/components/board/status-board-skeleton.tsx';
 import useStatusLayout from '@/features/status-pages/hooks/useStatusLayout.ts';
+import useStatusFeed from '@/features/status-pages/hooks/useStatusFeed.ts';
 
 export default function ProbesStatus() {
 	const { t } = useTranslation();
 	const [layout, setLayout] = useStatusLayout('grid');
+	const { data: feed } = useStatusFeed();
 	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ['probes-status'],
 		queryFn: async () => {
@@ -35,6 +37,7 @@ export default function ProbesStatus() {
 			sections={[{ items: data ?? [] }]}
 			layout={layout}
 			onLayoutChange={setLayout}
+			feed={feed}
 		/>
 	);
 }

@@ -2,9 +2,13 @@ import { useTranslation } from 'react-i18next';
 import StatusTimeLegend from '@/features/status-pages/components/board/status-time-legend.tsx';
 import { LIST_COLUMNS } from '@/features/status-pages/components/board/layout-classes.ts';
 import { cn } from '@/lib/utils';
+import UptimeLegend from '@/features/status-pages/components/board/uptime-legend.tsx';
+import useProbeUptime from '@/features/status-pages/hooks/useProbeUptime.ts';
+import { isAggregated } from '@/features/status-pages/lib/uptime-period.ts';
 
 export default function StatusListHeader({ name }: { name?: string | null }) {
 	const { t } = useTranslation();
+	const { period } = useProbeUptime();
 
 	return (
 		<div
@@ -18,7 +22,11 @@ export default function StatusListHeader({ name }: { name?: string | null }) {
 			) : (
 				<span>{t('pages.status_page.layout.columns.service')}</span>
 			)}
-			<StatusTimeLegend className="font-normal" />
+			{isAggregated(period) ? (
+				<UptimeLegend period={period} className="font-normal" />
+			) : (
+				<StatusTimeLegend className="font-normal" />
+			)}
 		</div>
 	);
 }

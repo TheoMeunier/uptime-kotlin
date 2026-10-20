@@ -8,6 +8,8 @@ import io.quarkus.runtime.StartupEvent
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 import jakarta.validation.Validator
+import tmenier.fr.announcements.actions.StoreStatusAnnouncementAction
+import tmenier.fr.announcements.requests.StoreStatusAnnouncementRequest
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.config.DemoMode
 import tmenier.fr.common.enums.incidents.IncidentClosedReason
@@ -42,6 +44,7 @@ class DemoSeeder(
     private val storeProbeAction: StoreProbeAction,
     private val storeStatusPageAction: StoreStatusPageAction,
     private val storeMaintenanceAction: StoreMaintenanceAction,
+    private val storeStatusAnnouncementAction: StoreStatusAnnouncementAction,
     private val objectMapper: ObjectMapper,
     private val validator: Validator,
 ) {
@@ -91,12 +94,13 @@ class DemoSeeder(
 
         val probeIds = probeRepository.getAll().associate { it.name to it.id }
 
+        val pageIds = mutableMapOf<String, UUID>()
         seed.path("status_pages").forEach { page ->
             val node = page.deepCopy<ObjectNode>()
             node.path("groups").forEach { group ->
                 (group as ObjectNode).replaceProbeNames(probeIds)
             }
-            storeStatusPageAction.execute(read(node, StoreStatusPageRequest::class.java))
+            pageIds[node.path("slug").asText()] = storeStatusPageAction.execute(read(node, StoreStatusPageRequest::class.java))
         }
 
         seed.path("maintenances").forEach { maintenance ->
@@ -115,6 +119,7 @@ class DemoSeeder(
         }
 
         seedIncidents(seed.path("incidents"), probeIds)
+        seedAnnouncements(seed.path("announcements"), pageIds)
 
         return true
     }
@@ -148,6 +153,27 @@ class DemoSeeder(
                 incident.noteUpdatedAt = minOf(endedAt.plusSeconds(NOTE_WRITTEN_AFTER_SECONDS), now)
             }
             incidentRepository.close(probe.id, endedAt, IncidentClosedReason.RECOVERY)
+        }
+    }
+
+    /** One announcement shown now and a few past ones, so that the public pages show their history. */
+    private fun seedAnnouncements(
+        announcements: JsonNode,
+        pageIds: Map<String, UUID>,
+    ) {
+        val now = Instant.now().truncatedTo(ChronoUnit.MINUTES)
+
+        announcements.forEach { announcement ->
+            val node = announcement.deepCopy<ObjectNode>()
+            val startedHoursAgo = node.remove("starts_hours_ago")?.asLong() ?: 0L
+            node.put("starts_at", now.minus(Duration.ofHours(startedHoursAgo)).toString())
+            node.remove("ends_hours_ago")?.let { node.put("ends_at", now.minus(Duration.ofHours(it.asLong())).toString()) }
+
+            val slugs = node.remove("status_pages")?.map { it.asText() }.orEmpty()
+            val ids = slugs.map { pageIds[it] ?: error("Demo seed: unknown status page '$it'") }
+            node.set<JsonNode>("status_page_ids", objectMapper.valueToTree(ids))
+
+            storeStatusAnnouncementAction.execute(read(node, StoreStatusAnnouncementRequest::class.java))
         }
     }
 

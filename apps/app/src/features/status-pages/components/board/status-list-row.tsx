@@ -3,11 +3,15 @@ import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-mon
 import { LIST_COLUMNS } from '@/features/status-pages/components/board/layout-classes.ts';
 import { attentionAccent, displayTarget, isDown, type StatusItem } from '@/features/status-pages/lib/status-item.ts';
 import { cn } from '@/lib/utils';
+import UptimeBar from '@/features/status-pages/components/board/uptime-bar.tsx';
+import useProbeUptime from '@/features/status-pages/hooks/useProbeUptime.ts';
+import { isAggregated } from '@/features/status-pages/lib/uptime-period.ts';
 
 const LIST_BAR_COUNT = 60;
 
 export default function StatusListRow({ item }: { item: StatusItem }) {
 	const { t } = useTranslation();
+	const { period, bar } = useProbeUptime(item.probe.id);
 	const accent = attentionAccent(item);
 	const showDownFor = Boolean(item.down_duration && !item.maintenance);
 
@@ -36,12 +40,16 @@ export default function StatusListRow({ item }: { item: StatusItem }) {
 				</p>
 			</div>
 
-			<ProbeMonitorChartBar
-				monitors={item.monitors}
-				probeStatus={item.probe.status}
-				barCount={LIST_BAR_COUNT}
-				compact
-			/>
+			{isAggregated(period) ? (
+				<UptimeBar period={period} bar={bar} compact />
+			) : (
+				<ProbeMonitorChartBar
+					monitors={item.monitors}
+					probeStatus={item.probe.status}
+					barCount={LIST_BAR_COUNT}
+					compact
+				/>
+			)}
 		</li>
 	);
 }

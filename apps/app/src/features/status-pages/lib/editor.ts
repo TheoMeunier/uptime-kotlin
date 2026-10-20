@@ -9,6 +9,7 @@ export interface EditorProbe {
 	name: string;
 	status: string;
 	detail?: string | null;
+	log_retention_days?: number | null;
 }
 
 export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
