@@ -7,6 +7,7 @@ enum NotificationTypeEnum {
 	TELEGRAM = 'TELEGRAM',
 	NTFY = 'NTFY',
 	GOTIFY = 'GOTIFY',
+	WEB_PUSH = 'WEB_PUSH',
 }
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationTypeEnum, string> = {
@@ -18,6 +19,27 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationTypeEnum, string> = {
 	[NotificationTypeEnum.TELEGRAM]: 'Telegram',
 	[NotificationTypeEnum.NTFY]: 'ntfy',
 	[NotificationTypeEnum.GOTIFY]: 'Gotify',
+	[NotificationTypeEnum.WEB_PUSH]: 'Web Push',
 };
+
+export const NOTIFICATION_TYPE_GROUPS: { labelKey: string; types: NotificationTypeEnum[] }[] = [
+	{
+		labelKey: 'notifications.type_group.chat',
+		types: [
+			NotificationTypeEnum.DISCORD,
+			NotificationTypeEnum.SLACK,
+			NotificationTypeEnum.TEAMS,
+			NotificationTypeEnum.TELEGRAM,
+		],
+	},
+	{
+		labelKey: 'notifications.type_group.push',
+		types: [NotificationTypeEnum.WEB_PUSH, NotificationTypeEnum.NTFY, NotificationTypeEnum.GOTIFY],
+	},
+	{
+		labelKey: 'notifications.type_group.other',
+		types: [NotificationTypeEnum.MAIL, NotificationTypeEnum.WEBHOOK],
+	},
+];
 
 export default NotificationTypeEnum;

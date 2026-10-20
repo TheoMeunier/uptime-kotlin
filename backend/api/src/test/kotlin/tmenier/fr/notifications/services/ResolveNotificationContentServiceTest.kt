@@ -10,10 +10,13 @@ import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.NotificationDto
+import tmenier.fr.databases.dtos.WebPushSubscription
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelWebPushRequest
+import tmenier.fr.notifications.requests.WebPushSubscriptionRequest
 import java.util.UUID
 
 class ResolveNotificationContentServiceTest {
@@ -141,5 +144,80 @@ class ResolveNotificationContentServiceTest {
         val gotify = NotificationContentMapper.withoutTokens(NotificationContent.Gotify("https://push.example.com", "secret"))
 
         assertEquals("", (gotify as NotificationContent.Gotify).appToken)
+    }
+
+    private fun webPush(vararg browsers: WebPushSubscriptionRequest) =
+        ValidNotificationChannelWebPushRequest(subscriptions = browsers.toList()).apply {
+            name = "Browsers"
+            notificationType = NotificationChannelsEnum.WEB_PUSH
+        }
+
+    private fun newBrowser(
+        endpoint: String,
+        auth: String = "AuthSecret",
+        label: String? = "Firefox · macOS",
+    ) = WebPushSubscriptionRequest(endpoint = endpoint, p256dh = "BKey", auth = auth, label = label)
+
+    private fun storedBrowser(endpoint: String) = WebPushSubscriptionRequest(endpoint = endpoint, p256dh = "BKey", auth = "")
+
+    @Test
+    fun `adds browsers with an encrypted secret`() {
+        val created =
+            service.resolve(webPush(newBrowser(" https://fcm.googleapis.com/fcm/send/a ")), isUpdate = false, existingNotification = null)
+                as NotificationContent.WebPush
+
+        val browser = created.subscriptions.single()
+        assertEquals("https://fcm.googleapis.com/fcm/send/a", browser.endpoint)
+        assertEquals("Firefox · macOS", browser.label)
+        assertEquals("AuthSecret", encryption.decrypt(browser.auth))
+    }
+
+    @Test
+    fun `keeps stored browsers, adds new ones and drops the ones left out`() {
+        val created =
+            service.resolve(
+                webPush(newBrowser("https://push.example.com/a"), newBrowser("https://push.example.com/b")),
+                isUpdate = false,
+                existingNotification = null,
+            ) as NotificationContent.WebPush
+
+        val updated =
+            service.resolve(
+                webPush(storedBrowser("https://push.example.com/a"), newBrowser("https://web.push.apple.com/c", "Secret3", "Safari")),
+                isUpdate = true,
+                existingNotification = stored(created),
+            ) as NotificationContent.WebPush
+
+        assertEquals(listOf("https://push.example.com/a", "https://web.push.apple.com/c"), updated.subscriptions.map { it.endpoint })
+        assertEquals(created.subscriptions[0], updated.subscriptions[0])
+        assertEquals("Secret3", encryption.decrypt(updated.subscriptions[1].auth))
+    }
+
+    @Test
+    fun `refuses a Web Push channel without browsers or with an unknown browser missing its keys`() {
+        assertThrows<IllegalArgumentException> { service.resolve(webPush(), isUpdate = false, existingNotification = null) }
+        assertThrows<IllegalArgumentException> {
+            service.resolve(webPush(storedBrowser("https://push.example.com/x")), isUpdate = false, existingNotification = null)
+        }
+    }
+
+    @Test
+    fun `tests only the browsers whose keys are in the form`() {
+        val tested =
+            service.resolveForTesting(webPush(storedBrowser("https://push.example.com/a"), newBrowser("https://push.example.com/b")))
+                as NotificationContent.WebPush
+        assertEquals(listOf("https://push.example.com/b"), tested.subscriptions.map { it.endpoint })
+
+        assertThrows<IllegalArgumentException> { service.resolveForTesting(webPush(storedBrowser("https://push.example.com/a"))) }
+    }
+
+    @Test
+    fun `never sends the Web Push secrets back`() {
+        val masked =
+            NotificationContentMapper.withoutTokens(
+                NotificationContent.WebPush(listOf(WebPushSubscription("https://push.example.com/x", "BKey", "secret"))),
+            ) as NotificationContent.WebPush
+
+        assertEquals("", masked.subscriptions.single().auth)
     }
 }

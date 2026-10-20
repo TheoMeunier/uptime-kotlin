@@ -9,4 +9,5 @@ enum class NotificationChannelsEnum {
     TELEGRAM,
     NTFY,
     GOTIFY,
+    WEB_PUSH,
 }

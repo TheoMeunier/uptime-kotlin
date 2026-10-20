@@ -51,6 +51,11 @@ sealed interface NotificationContent {
     ) : NotificationContent
 
     @RegisterForReflection
+    data class WebPush(
+        val subscriptions: List<WebPushSubscription> = emptyList(),
+    ) : NotificationContent
+
+    @RegisterForReflection
     data class Mail(
         val hostname: String,
         val port: Int,
@@ -63,3 +68,11 @@ sealed interface NotificationContent {
         val cc: List<String>? = null,
     ) : NotificationContent
 }
+
+@RegisterForReflection
+data class WebPushSubscription(
+    val endpoint: String,
+    val p256dh: String,
+    val auth: String,
+    val label: String? = null,
+)

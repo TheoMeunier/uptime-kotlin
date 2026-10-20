@@ -87,6 +87,31 @@ class NotificationHttpTimeoutTest {
         }
 
     @Test
+    fun `web push gives up on a push service that never answers`() =
+        assertTimesOut {
+            val vapid =
+                tmenier.fr.notifications.webpush.WebPushCrypto
+                    .generateKeyPair()
+            val browser =
+                tmenier.fr.notifications.webpush.WebPushCrypto
+                    .generateKeyPair()
+            val p256dh =
+                tmenier.fr.notifications.webpush.WebPushCrypto.base64Url(
+                    tmenier.fr.notifications.webpush.WebPushCrypto
+                        .rawPublicKey(browser.public as java.security.interfaces.ECPublicKey),
+                )
+            WebPushNotificationService(http, NotificationDateFormatter("UTC"), encryption, { vapid }, {}, "mailto:ops@example.com")
+                .sendTest(
+                    NotificationContent.WebPush(
+                        listOf(
+                            tmenier.fr.databases.dtos
+                                .WebPushSubscription(url, p256dh, "AAAAAAAAAAAAAAAAAAAAAA"),
+                        ),
+                    ),
+                )
+        }
+
+    @Test
     fun `generic webhook gives up on a receiver that never answers`() =
         assertTimesOut {
             WebhookNotificationService(http).sendTest(NotificationContent.Webhook(HttpMethodEnum.POST, url))

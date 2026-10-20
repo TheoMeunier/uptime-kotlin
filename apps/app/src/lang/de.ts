@@ -73,6 +73,7 @@ const de: typeof en = {
 			access_token: 'Zugriffstoken (optional)',
 			remove_access_token: 'Zugriffstoken entfernen',
 			app_token: 'Anwendungstoken',
+			web_push: 'Browser-Benachrichtigungen',
 		},
 		placeholder: {
 			email: 'max.mustermann@beispiel.de',
@@ -95,7 +96,25 @@ const de: typeof en = {
 			gotify_server_url:
 				'Die Serveradresse, ohne /message. Hinter einem Reverse-Proxy dessen Pfad angeben (z. B. https://example.com/gotify).',
 			app_token: 'Wird in Gotify unter Apps erstellt. Beim Bearbeiten leer lassen, um das aktuelle Token zu behalten.',
+			web_push:
+				'Native Benachrichtigungen in den unten aufgeführten Browsern, auch bei geschlossenem Tab. Fügen Sie jeden Browser oder jedes Gerät hinzu, das benachrichtigt werden soll.',
 			password: 'Mindestens 8 Zeichen',
+		},
+		web_push: {
+			subscribe: 'Diesen Browser hinzufügen',
+			subscribing: 'Warte auf Ihre Erlaubnis…',
+			this_browser: 'Dieser Browser',
+			empty: 'Noch kein Browser.',
+			remove: 'Diesen Browser entfernen',
+			label_placeholder: 'Name dieses Browsers',
+			insecure: 'Browser-Benachrichtigungen erfordern eine über HTTPS (oder localhost) ausgelieferte Oberfläche.',
+			unsupported: 'Dieser Browser unterstützt keine Push-Benachrichtigungen.',
+			denied:
+				'Benachrichtigungen sind für diese Seite blockiert: Erlauben Sie sie in den Browsereinstellungen und laden Sie die Seite neu.',
+			failed:
+				'Dieser Browser konnte nicht abonniert werden. Versuchen Sie es erneut oder prüfen Sie, ob der Server erreichbar ist.',
+			os_hint:
+				'Es erscheint nichts? Prüfen Sie, ob das System Benachrichtigungen für diesen Browser erlaubt (unter macOS: Systemeinstellungen › Mitteilungen) und ob der Fokus-Modus aus ist. Der Test geht nur an diesen Browser.',
 		},
 	},
 
@@ -149,6 +168,7 @@ const de: typeof en = {
 		telegram_chat_id: 'Ungültige Chat-ID (Zahl oder @kanalname)',
 		ntfy_topic: 'Ungültiges Thema (Buchstaben, Ziffern, - und _, max. 64 Zeichen)',
 		gotify_app_token: 'Anwendungstoken erforderlich',
+		web_push_subscription: 'Fügen Sie mindestens einen Browser hinzu',
 		hostname: 'Ungültiger Hostname oder ungültige IP-Adresse (z. B. smtp.gmail.com)',
 	},
 
@@ -216,6 +236,11 @@ const de: typeof en = {
 			title: 'Noch kein Benachrichtigungskanal',
 			description: 'Legen Sie einen an, um bei einem Ausfall benachrichtigt zu werden.',
 		},
+		type_group: {
+			chat: 'Team-Chat',
+			push: 'Push-Benachrichtigungen',
+			other: 'E-Mail & Webhook',
+		},
 		label: {
 			is_default: 'Standard',
 			set_as_default: 'Diese Benachrichtigung als Standard verwenden',
@@ -226,6 +251,7 @@ const de: typeof en = {
 			notification_name: 'Discord-Bot',
 		},
 		alerts: {
+			invalid: 'Einige Felder sind ungültig: Bitte prüfen Sie das Formular.',
 			create: 'Benachrichtigung {{ data }} erstellt',
 			update: 'Benachrichtigung {{ data }} aktualisiert',
 			remove: 'Benachrichtigung gelöscht',
@@ -723,7 +749,7 @@ const de: typeof en = {
 			settings: {
 				title: 'Einstellungen',
 				description:
-					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, Gotify, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
+					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, Gotify, Browser, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
 			},
 			done: {
 				title: 'Alles bereit',

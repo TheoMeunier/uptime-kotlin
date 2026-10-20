@@ -10,6 +10,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.notifications.actions.TestingNotificationAction
+import tmenier.fr.notifications.dto.NotificationTestResult
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 
 @Path("/api/notifications/testing")
@@ -24,8 +25,13 @@ class TestingNotificationResource(
     fun store(
         @Valid payload: BaseStoreNotificationRequest,
     ): Response {
-        testingNotificationAction.execute(payload)
-
-        return Response.ok().build()
+        return when (val result = testingNotificationAction.execute(payload)) {
+            is NotificationTestResult.Success -> Response.ok().build()
+            is NotificationTestResult.Failure ->
+                Response
+                    .status(422)
+                    .entity(mapOf("message" to result.message))
+                    .build()
+        }
     }
 }

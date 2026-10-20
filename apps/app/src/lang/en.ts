@@ -68,6 +68,7 @@ const en = {
 			access_token: 'Access token (optional)',
 			remove_access_token: 'Remove the access token',
 			app_token: 'Application token',
+			web_push: 'Browser notifications',
 		},
 		placeholder: {
 			email: 'john.doe@exemple.com',
@@ -87,7 +88,23 @@ const en = {
 			gotify_server_url:
 				'The server address, without /message. Behind a reverse proxy, include its path (e.g. https://example.com/gotify).',
 			app_token: 'Created under Apps in Gotify. When editing, leave empty to keep the current token.',
+			web_push:
+				'Native notifications in the browsers below, even when the tab is closed. Add each browser or device that should be alerted.',
 			password: 'Must be at least 8 characters long',
+		},
+		web_push: {
+			subscribe: 'Add this browser',
+			subscribing: 'Waiting for your permission…',
+			this_browser: 'This browser',
+			empty: 'No browser yet.',
+			remove: 'Remove this browser',
+			label_placeholder: 'Name of this browser',
+			insecure: 'Browser notifications need the interface served over HTTPS (or localhost).',
+			unsupported: 'This browser does not support push notifications.',
+			denied: 'Notifications are blocked for this site: allow them in the browser settings, then reload the page.',
+			failed: 'Could not subscribe this browser. Try again, or check that the server is reachable.',
+			os_hint:
+				'Nothing shows up? Check that the system allows notifications for this browser (on macOS: System Settings › Notifications) and that Focus / Do Not Disturb is off. The test is sent to this browser only.',
 		},
 	},
 
@@ -141,6 +158,7 @@ const en = {
 		telegram_chat_id: 'Invalid chat ID (a number or @channelname)',
 		ntfy_topic: 'Invalid topic (letters, digits, - and _, 64 characters max)',
 		gotify_app_token: 'Application token required',
+		web_push_subscription: 'Add at least one browser',
 		hostname: 'Invalid hostname or IP address (e.g. smtp.gmail.com)',
 	},
 
@@ -208,6 +226,11 @@ const en = {
 			title: 'No notification channel yet',
 			description: 'Create one to be alerted when a monitor goes down.',
 		},
+		type_group: {
+			chat: 'Team chat',
+			push: 'Push notifications',
+			other: 'Email & webhook',
+		},
 		label: {
 			is_default: 'Default',
 			set_as_default: 'Have the notification by default',
@@ -218,6 +241,7 @@ const en = {
 			notification_name: 'Discord bot',
 		},
 		alerts: {
+			invalid: 'Some fields are invalid: check the form.',
 			create: 'Notification {{ data }} successfully created',
 			update: 'Notification {{ data }} successfully updated',
 			remove: 'Notification successfully removed',
@@ -709,7 +733,7 @@ const en = {
 			settings: {
 				title: 'Settings',
 				description:
-					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, ntfy, Gotify, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
+					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, ntfy, Gotify, browser, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
 			},
 			done: {
 				title: "You're all set",

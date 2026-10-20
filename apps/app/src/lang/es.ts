@@ -71,6 +71,7 @@ const es: typeof en = {
 			access_token: 'Token de acceso (opcional)',
 			remove_access_token: 'Eliminar el token de acceso',
 			app_token: 'Token de aplicación',
+			web_push: 'Notificaciones del navegador',
 		},
 		placeholder: {
 			email: 'juan.perez@ejemplo.com',
@@ -90,7 +91,24 @@ const es: typeof en = {
 			gotify_server_url:
 				'La dirección del servidor, sin /message. Detrás de un proxy inverso, incluya su ruta (p. ej. https://example.com/gotify).',
 			app_token: 'Se crea en la pestaña Apps de Gotify. Al editar, déjelo vacío para conservar el token actual.',
+			web_push:
+				'Notificaciones nativas en los navegadores de abajo, incluso con la pestaña cerrada. Añada cada navegador o dispositivo que deba recibir alertas.',
 			password: 'Al menos 8 caracteres',
+		},
+		web_push: {
+			subscribe: 'Añadir este navegador',
+			subscribing: 'Esperando su permiso…',
+			this_browser: 'Este navegador',
+			empty: 'Todavía no hay ningún navegador.',
+			remove: 'Quitar este navegador',
+			label_placeholder: 'Nombre de este navegador',
+			insecure: 'Las notificaciones del navegador requieren que la interfaz se sirva por HTTPS (o en localhost).',
+			unsupported: 'Este navegador no admite notificaciones push.',
+			denied:
+				'Las notificaciones están bloqueadas para este sitio: permítalas en los ajustes del navegador y recargue la página.',
+			failed: 'No se pudo suscribir este navegador. Inténtelo de nuevo o compruebe que el servidor es accesible.',
+			os_hint:
+				'¿No aparece nada? Compruebe que el sistema permite las notificaciones de este navegador (en macOS: Ajustes del Sistema › Notificaciones) y que el modo Concentración está desactivado. La prueba solo se envía a este navegador.',
 		},
 	},
 
@@ -144,6 +162,7 @@ const es: typeof en = {
 		telegram_chat_id: 'ID de chat no válido (un número o @nombredelcanal)',
 		ntfy_topic: 'Tema no válido (letras, dígitos, - y _, máx. 64 caracteres)',
 		gotify_app_token: 'Token de aplicación obligatorio',
+		web_push_subscription: 'Añada al menos un navegador',
 		hostname: 'Nombre de host o dirección IP no válidos (p. ej. smtp.gmail.com)',
 	},
 
@@ -211,6 +230,11 @@ const es: typeof en = {
 			title: 'Todavía no hay ningún canal de notificación',
 			description: 'Cree uno para recibir avisos cuando un monitor caiga.',
 		},
+		type_group: {
+			chat: 'Chat de equipo',
+			push: 'Notificaciones push',
+			other: 'Correo y webhook',
+		},
 		label: {
 			is_default: 'Predeterminada',
 			set_as_default: 'Usar esta notificación de forma predeterminada',
@@ -221,6 +245,7 @@ const es: typeof en = {
 			notification_name: 'Bot de Discord',
 		},
 		alerts: {
+			invalid: 'Algunos campos no son válidos: revise el formulario.',
 			create: 'Notificación {{ data }} creada',
 			update: 'Notificación {{ data }} actualizada',
 			remove: 'Notificación eliminada',
@@ -718,7 +743,7 @@ const es: typeof en = {
 			settings: {
 				title: 'Ajustes',
 				description:
-					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, Gotify, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
+					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, Gotify, navegador, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
 			},
 			done: {
 				title: 'Todo listo',

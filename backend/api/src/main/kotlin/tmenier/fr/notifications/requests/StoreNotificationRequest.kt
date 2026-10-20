@@ -3,11 +3,14 @@ package tmenier.fr.notifications.requests
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.quarkus.runtime.annotations.RegisterForReflection
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import jakarta.validation.groups.Default
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
@@ -28,6 +31,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidNotificationChannelTelegramRequest::class, name = "TELEGRAM"),
     JsonSubTypes.Type(value = ValidNotificationChannelNtfyRequest::class, name = "NTFY"),
     JsonSubTypes.Type(value = ValidNotificationChannelGotifyRequest::class, name = "GOTIFY"),
+    JsonSubTypes.Type(value = ValidNotificationChannelWebPushRequest::class, name = "WEB_PUSH"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -101,6 +105,27 @@ data class ValidNotificationChannelGotifyRequest(
     @field:NotBlank(message = "Application token is required", groups = [OnCreate::class])
     val appToken: String? = null,
 ) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelWebPushRequest(
+    @field:NotEmpty(message = "Add at least one browser")
+    @field:Size(max = 50, message = "50 browsers at most")
+    @field:Valid
+    val subscriptions: List<WebPushSubscriptionRequest>? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class WebPushSubscriptionRequest(
+    @field:NotBlank(message = "Invalid push endpoint")
+    @field:Pattern(regexp = "^https://\\S+$", message = "Invalid push endpoint")
+    val endpoint: String = "",
+    @field:Pattern(regexp = "^[A-Za-z0-9_-]*={0,2}$", message = "Invalid subscription key")
+    val p256dh: String? = null,
+    @field:Pattern(regexp = "^[A-Za-z0-9_-]*={0,2}$", message = "Invalid subscription secret")
+    val auth: String? = null,
+    @field:Size(max = 100)
+    val label: String? = null,
+)
 
 @RegisterForReflection
 data class ValidNotificationChannelMailRequest(
