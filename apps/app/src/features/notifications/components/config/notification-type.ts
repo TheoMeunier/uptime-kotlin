@@ -102,6 +102,22 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				description: t('form.description.app_token'),
 			},
 		],
+		[NotificationTypeEnum.PAGERDUTY]: [
+			{
+				name: 'routing_key',
+				label: t('form.label.routing_key'),
+				input_type: 'password',
+				placeholder: 'R0ABCDEF...',
+				description: t('form.description.routing_key'),
+			},
+			{
+				name: 'severity',
+				label: t('form.label.severity'),
+				input_type: 'select',
+				options: ['critical', 'error', 'warning', 'info'],
+				description: t('form.description.severity'),
+			},
+		],
 		[NotificationTypeEnum.WEB_PUSH]: [
 			{
 				name: 'subscriptions',

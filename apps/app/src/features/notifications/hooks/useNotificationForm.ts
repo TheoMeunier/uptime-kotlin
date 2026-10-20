@@ -55,6 +55,12 @@ const gotifyNotificationSchema = baseStoreNotificationSchema.extend({
 	app_token: z.string().trim().optional().nullable(),
 });
 
+const pagerDutyNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('PAGERDUTY'),
+	routing_key: z.string().trim().max(255).optional().nullable(),
+	severity: z.enum(['critical', 'error', 'warning', 'info']).optional().nullable(),
+});
+
 const webPushSubscriptionSchema = z.object({
 	endpoint: z.string(),
 	p256dh: z.string().optional().nullable(),
@@ -90,6 +96,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	ntfyNotificationSchema,
 	gotifyNotificationSchema,
 	webPushNotificationSchema,
+	pagerDutyNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';
@@ -139,6 +146,14 @@ function createNotificationSchema(mode: NotificationFormMode) {
 				code: z.ZodIssueCode.custom,
 				message: i18n.t('validation.gotify_app_token'),
 				path: ['app_token'],
+			});
+		}
+
+		if (mode === 'create' && data.notification_type === 'PAGERDUTY' && !data.routing_key) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: i18n.t('validation.pagerduty_routing_key'),
+				path: ['routing_key'],
 			});
 		}
 

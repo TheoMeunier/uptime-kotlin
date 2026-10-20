@@ -8,6 +8,7 @@ enum NotificationTypeEnum {
 	NTFY = 'NTFY',
 	GOTIFY = 'GOTIFY',
 	WEB_PUSH = 'WEB_PUSH',
+	PAGERDUTY = 'PAGERDUTY',
 }
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationTypeEnum, string> = {
@@ -20,6 +21,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationTypeEnum, string> = {
 	[NotificationTypeEnum.NTFY]: 'ntfy',
 	[NotificationTypeEnum.GOTIFY]: 'Gotify',
 	[NotificationTypeEnum.WEB_PUSH]: 'Web Push',
+	[NotificationTypeEnum.PAGERDUTY]: 'PagerDuty',
 };
 
 export const NOTIFICATION_TYPE_GROUPS: { labelKey: string; types: NotificationTypeEnum[] }[] = [
@@ -38,7 +40,7 @@ export const NOTIFICATION_TYPE_GROUPS: { labelKey: string; types: NotificationTy
 	},
 	{
 		labelKey: 'notifications.type_group.other',
-		types: [NotificationTypeEnum.MAIL, NotificationTypeEnum.WEBHOOK],
+		types: [NotificationTypeEnum.MAIL, NotificationTypeEnum.PAGERDUTY, NotificationTypeEnum.WEBHOOK],
 	},
 ];
 

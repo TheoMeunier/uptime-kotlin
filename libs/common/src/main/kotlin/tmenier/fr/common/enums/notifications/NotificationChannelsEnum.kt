@@ -10,4 +10,5 @@ enum class NotificationChannelsEnum {
     NTFY,
     GOTIFY,
     WEB_PUSH,
+    PAGERDUTY,
 }

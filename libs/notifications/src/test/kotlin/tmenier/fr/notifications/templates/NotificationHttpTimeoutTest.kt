@@ -87,6 +87,12 @@ class NotificationHttpTimeoutTest {
         }
 
     @Test
+    fun `pagerduty gives up on a receiver that never answers`() =
+        assertTimesOut {
+            PagerDutyNotificationService(http, encryption, url).sendTest(NotificationContent.PagerDuty("key"))
+        }
+
+    @Test
     fun `web push gives up on a push service that never answers`() =
         assertTimesOut {
             val vapid =

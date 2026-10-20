@@ -72,6 +72,8 @@ const fr: typeof en = {
 			access_token: 'Jeton d’accès (facultatif)',
 			remove_access_token: 'Supprimer le jeton d’accès',
 			app_token: 'Jeton d’application',
+			routing_key: 'Clé d’intégration',
+			severity: 'Gravité',
 			web_push: 'Notifications du navigateur',
 		},
 		placeholder: {
@@ -94,6 +96,10 @@ const fr: typeof en = {
 			gotify_server_url:
 				'L’adresse du serveur, sans /message. Derrière un reverse proxy, incluez son chemin (ex. https://exemple.com/gotify).',
 			app_token: 'Créé dans l’onglet Apps de Gotify. En modification, laissez vide pour garder le jeton actuel.',
+			routing_key:
+				'Clé d’intégration Events API v2 d’un service PagerDuty (onglet Integrations). En modification, laissez vide pour garder la clé actuelle.',
+			severity:
+				'Gravité de l’alerte ouverte quand une sonde tombe (critical par défaut). Le test ouvre une alerte info et la résout aussitôt.',
 			web_push:
 				'Des notifications natives dans les navigateurs ci-dessous, même onglet fermé. Ajoutez chaque navigateur ou appareil à prévenir.',
 			password: 'Au moins 8 caractères',
@@ -165,6 +171,7 @@ const fr: typeof en = {
 		telegram_chat_id: 'ID de chat invalide (nombre ou @nomducanal)',
 		ntfy_topic: 'Sujet invalide (lettres, chiffres, - et _, 64 caractères max.)',
 		gotify_app_token: 'Jeton d’application requis',
+		pagerduty_routing_key: 'Clé d’intégration requise',
 		web_push_subscription: 'Ajoutez au moins un navigateur',
 		hostname: 'Nom d’hôte ou adresse IP invalide (ex. smtp.gmail.com)',
 	},
@@ -771,7 +778,7 @@ const fr: typeof en = {
 			settings: {
 				title: 'Paramètres',
 				description:
-					'Votre compte, votre mot de passe et surtout les notifications — Discord, Slack, Teams, Telegram, ntfy, Gotify, navigateur, e-mail ou webhook — pour être prévenu dès qu’un service tombe. La langue, la rétention des journaux et ce guide s’y trouvent aussi.',
+					'Votre compte, votre mot de passe et surtout les notifications — Discord, Slack, Teams, Telegram, ntfy, Gotify, PagerDuty, navigateur, e-mail ou webhook — pour être prévenu dès qu’un service tombe. La langue, la rétention des journaux et ce guide s’y trouvent aussi.',
 			},
 			done: {
 				title: 'Vous êtes prêt',

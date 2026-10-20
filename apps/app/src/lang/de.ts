@@ -73,6 +73,8 @@ const de: typeof en = {
 			access_token: 'Zugriffstoken (optional)',
 			remove_access_token: 'Zugriffstoken entfernen',
 			app_token: 'Anwendungstoken',
+			routing_key: 'Integrationsschlüssel',
+			severity: 'Schweregrad',
 			web_push: 'Browser-Benachrichtigungen',
 		},
 		placeholder: {
@@ -96,6 +98,10 @@ const de: typeof en = {
 			gotify_server_url:
 				'Die Serveradresse, ohne /message. Hinter einem Reverse-Proxy dessen Pfad angeben (z. B. https://example.com/gotify).',
 			app_token: 'Wird in Gotify unter Apps erstellt. Beim Bearbeiten leer lassen, um das aktuelle Token zu behalten.',
+			routing_key:
+				'Events-API-v2-Integrationsschlüssel eines PagerDuty-Dienstes (Reiter Integrations). Beim Bearbeiten leer lassen, um den aktuellen Schlüssel zu behalten.',
+			severity:
+				'Schweregrad des Alarms, der beim Ausfall eines Monitors geöffnet wird (standardmäßig critical). Der Test öffnet einen info-Alarm und löst ihn sofort auf.',
 			web_push:
 				'Native Benachrichtigungen in den unten aufgeführten Browsern, auch bei geschlossenem Tab. Fügen Sie jeden Browser oder jedes Gerät hinzu, das benachrichtigt werden soll.',
 			password: 'Mindestens 8 Zeichen',
@@ -168,6 +174,7 @@ const de: typeof en = {
 		telegram_chat_id: 'Ungültige Chat-ID (Zahl oder @kanalname)',
 		ntfy_topic: 'Ungültiges Thema (Buchstaben, Ziffern, - und _, max. 64 Zeichen)',
 		gotify_app_token: 'Anwendungstoken erforderlich',
+		pagerduty_routing_key: 'Integrationsschlüssel erforderlich',
 		web_push_subscription: 'Fügen Sie mindestens einen Browser hinzu',
 		hostname: 'Ungültiger Hostname oder ungültige IP-Adresse (z. B. smtp.gmail.com)',
 	},
@@ -771,7 +778,7 @@ const de: typeof en = {
 			settings: {
 				title: 'Einstellungen',
 				description:
-					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, Gotify, Browser, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
+					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, Gotify, PagerDuty, Browser, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
 			},
 			done: {
 				title: 'Alles bereit',

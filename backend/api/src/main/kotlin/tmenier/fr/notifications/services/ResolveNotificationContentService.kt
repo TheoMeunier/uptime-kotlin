@@ -13,6 +13,7 @@ import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelPagerDutyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTeamsRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
@@ -87,6 +88,19 @@ class ResolveNotificationContentService(
                         requireNotNull(resolveToken(request.appToken, existingContent<NotificationContent.Gotify>(existingNotification)?.appToken)) {
                             "Application token is required"
                         },
+                )
+
+            is ValidNotificationChannelPagerDutyRequest ->
+                NotificationContent.PagerDuty(
+                    routingKey =
+                        requireNotNull(resolveToken(request.routingKey, existingContent<NotificationContent.PagerDuty>(existingNotification)?.routingKey)) {
+                            "Integration key is required"
+                        },
+                    severity =
+                        request.severity
+                            ?.trim()
+                            ?.lowercase()
+                            ?.ifBlank { null },
                 )
 
             is ValidNotificationChannelWebPushRequest -> resolveWebPush(request, existingContent(existingNotification), isTesting)
