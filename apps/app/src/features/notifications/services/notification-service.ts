@@ -38,6 +38,11 @@ const notificationService = {
 		await api.post(`notifications/${notificationId}/remove`).json();
 	},
 
+	async getWebPushPublicKey(): Promise<string> {
+		const response = await api.get('notifications/web-push/public-key').json<{ public_key: string }>();
+		return response.public_key;
+	},
+
 	async testNotification(data: StoreNotificationSchema) {
 		await api
 			.post('notifications/testing', {

@@ -102,6 +102,14 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				description: t('form.description.app_token'),
 			},
 		],
+		[NotificationTypeEnum.WEB_PUSH]: [
+			{
+				name: 'subscriptions',
+				label: t('form.label.web_push'),
+				input_type: 'web_push',
+				description: t('form.description.web_push'),
+			},
+		],
 		[NotificationTypeEnum.MAIL]: [
 			{
 				name: 'hostname',

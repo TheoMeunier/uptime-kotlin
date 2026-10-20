@@ -16,6 +16,7 @@ import tmenier.fr.databases.repositories.AdvisoryLockRepository
 import tmenier.fr.databases.repositories.EncryptedContentRepository
 import tmenier.fr.databases.repositories.EncryptedContentTable
 import tmenier.fr.databases.repositories.JwtSigningKeyRepository
+import tmenier.fr.databases.repositories.WebPushVapidKeyRepository
 
 @RegisterForReflection
 data class ReEncryptionReport(
@@ -28,6 +29,7 @@ class SecretReEncryptionService(
     private val encryptionService: EncryptionService,
     private val contentRepository: EncryptedContentRepository,
     private val jwtSigningKeyRepository: JwtSigningKeyRepository,
+    private val webPushVapidKeyRepository: WebPushVapidKeyRepository,
     private val advisoryLockRepository: AdvisoryLockRepository,
     private val objectMapper: ObjectMapper,
 ) {
@@ -51,6 +53,11 @@ class SecretReEncryptionService(
         jwtSigningKeyRepository.find()?.privateKey?.let { stored ->
             val replacement = reEncryptValue(stored, "jwt_signing_keys/private_key", unreadable)
             if (replacement != null && jwtSigningKeyRepository.replacePrivateKey(stored, replacement)) reEncrypted++
+        }
+
+        webPushVapidKeyRepository.find()?.privateKey?.let { stored ->
+            val replacement = reEncryptValue(stored, "web_push_vapid_keys/private_key", unreadable)
+            if (replacement != null && webPushVapidKeyRepository.replacePrivateKey(stored, replacement)) reEncrypted++
         }
 
         return ReEncryptionReport(reEncrypted = reEncrypted, unreadable = unreadable)

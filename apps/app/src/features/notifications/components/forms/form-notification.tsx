@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
+import { toast } from 'sonner';
 import { DialogFooter, DialogHeader, DialogTitle } from '@/components/atoms/dialog.tsx';
 import { useTranslation } from 'react-i18next';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/atoms/field.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
 import NotificationTypeEnum, {
+	NOTIFICATION_TYPE_GROUPS,
 	NOTIFICATION_TYPE_LABELS,
 } from '@/features/notifications/enums/notification-type-enum.ts';
 import { Input } from '@/components/atoms/input.tsx';
@@ -17,6 +19,7 @@ import useNotificationTesting from '@/features/notifications/hooks/useNotificati
 import useNotificationForm, {
 	type NotificationFormMode,
 	type StoreNotificationSchema,
+	withEmptyFieldsAsNull,
 } from '@/features/notifications/hooks/useNotificationForm.ts';
 
 interface NotificationFormProps {
@@ -58,13 +61,17 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 			...Object.fromEntries(Object.entries(formData).filter(([key]) => currentFieldNames.includes(key))),
 		} as StoreNotificationSchema;
 
-		testNotification(filteredData);
+		testNotification(withEmptyFieldsAsNull(filteredData));
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		form.handleSubmit(onSubmit)(e);
+
+		form.handleSubmit(
+			(values) => onSubmit(withEmptyFieldsAsNull(values)),
+			() => toast.error(t('notifications.alerts.invalid'))
+		)(e);
 	};
 
 	return (
@@ -82,9 +89,12 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 						<FormSelect
 							form={form}
 							name="notification_type"
-							options={Object.values(NotificationTypeEnum).map((type) => ({
-								value: type,
-								label: NOTIFICATION_TYPE_LABELS[type],
+							options={NOTIFICATION_TYPE_GROUPS.map((group) => ({
+								label: t(group.labelKey),
+								options: group.types.map((type) => ({
+									value: type,
+									label: NOTIFICATION_TYPE_LABELS[type],
+								})),
 							}))}
 						/>
 						<FieldError>{errors.notification_type?.message}</FieldError>

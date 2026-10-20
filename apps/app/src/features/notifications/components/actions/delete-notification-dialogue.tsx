@@ -22,10 +22,10 @@ export default function DeleteNotificationDialogue({ notificationId }: { notific
 			<DialogTrigger asChild>
 				<Button
 					variant="outline"
-					size="sm"
+					size="icon"
 					className="text-status-down-fg hover:bg-status-down-bg hover:text-status-down-fg cursor-pointer"
 				>
-					<Trash2 className="h-4 w-4" />
+					<Trash2 />
 				</Button>
 			</DialogTrigger>
 

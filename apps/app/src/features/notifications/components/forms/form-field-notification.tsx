@@ -5,17 +5,17 @@ import { Textarea } from '@/components/atoms/textarea.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import FormMultiSelect from '@/components/molecules/forms/form-select-multiple.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
+import FormWebPushSubscription from '@/features/notifications/components/forms/form-web-push-subscription.tsx';
 
 interface FormFieldNotificationProps {
-	key: string;
 	field: FieldConfig;
 	form: any;
 }
 
-export default function FormFieldNotification({ key, field, form }: FormFieldNotificationProps) {
+export default function FormFieldNotification({ field, form }: FormFieldNotificationProps) {
 	if (field.input_type === 'textarea') {
 		return (
-			<Field key={key}>
+			<Field>
 				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 				<Textarea
 					{...form.register(field.name)}
@@ -31,7 +31,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 
 	if (field.input_type === 'number') {
 		return (
-			<Field key={key}>
+			<Field>
 				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 
 				<Input
@@ -82,6 +82,10 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 		);
 	}
 
+	if (field.input_type === 'web_push') {
+		return <FormWebPushSubscription field={field} form={form} />;
+	}
+
 	if (field.input_type === 'select') {
 		return (
 			<Field>
@@ -93,7 +97,7 @@ export default function FormFieldNotification({ key, field, form }: FormFieldNot
 		);
 	}
 	return (
-		<Field key={key}>
+		<Field>
 			<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 			<Input
 				{...form.register(field.name)}

@@ -13,7 +13,7 @@ function chatWebhookSchema<T extends 'DISCORD' | 'TEAMS' | 'SLACK'>(type: T) {
 	return baseStoreNotificationSchema.extend({
 		notification_type: z.literal(type),
 		webhook_url: z.url(),
-		username: z.string().min(3).max(255),
+		username: z.string().trim().max(255).nullish(),
 	});
 }
 
@@ -55,12 +55,26 @@ const gotifyNotificationSchema = baseStoreNotificationSchema.extend({
 	app_token: z.string().trim().optional().nullable(),
 });
 
+const webPushSubscriptionSchema = z.object({
+	endpoint: z.string(),
+	p256dh: z.string().optional().nullable(),
+	auth: z.string().optional().nullable(),
+	label: z.string().trim().max(100).optional().nullable(),
+});
+
+export type WebPushSubscriptionValue = z.infer<typeof webPushSubscriptionSchema>;
+
+const webPushNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('WEB_PUSH'),
+	subscriptions: z.array(webPushSubscriptionSchema).optional(),
+});
+
 const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
 	hostname: z.string().trim().refine(isValidHostnameOrIp, i18n.t('validation.hostname')),
 	port: z.number().min(1).max(65535),
 	username: z.email().min(3).max(255),
-	password: z.string().min(3).max(255).nullable(),
+	password: z.string().max(255).nullish(),
 	starttls: z.boolean().optional(),
 	to: z.email().min(3).max(255),
 	from: z.email().min(3).max(255),
@@ -75,9 +89,20 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	telegramNotificationSchema,
 	ntfyNotificationSchema,
 	gotifyNotificationSchema,
+	webPushNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';
+
+export function withEmptyFieldsAsNull<T extends Record<string, unknown>>(values: T): T {
+	const cleaned: Record<string, unknown> = { ...values };
+	for (const field of ['password', 'username']) {
+		if (cleaned.notification_type !== 'MAIL' || field === 'password') {
+			if (cleaned[field] === '') cleaned[field] = null;
+		}
+	}
+	return cleaned as T;
+}
 export type StoreNotificationSchema = z.infer<typeof storeNotificationSchema>;
 
 export default function useNotificationForm(
@@ -114,6 +139,14 @@ function createNotificationSchema(mode: NotificationFormMode) {
 				code: z.ZodIssueCode.custom,
 				message: i18n.t('validation.gotify_app_token'),
 				path: ['app_token'],
+			});
+		}
+
+		if (data.notification_type === 'WEB_PUSH' && !data.subscriptions?.length) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: i18n.t('validation.web_push_subscription'),
+				path: ['subscriptions'],
 			});
 		}
 

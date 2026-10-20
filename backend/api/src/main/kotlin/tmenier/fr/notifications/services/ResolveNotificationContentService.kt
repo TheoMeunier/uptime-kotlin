@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.NotificationDto
+import tmenier.fr.databases.dtos.WebPushSubscription
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
@@ -15,6 +16,7 @@ import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTeamsRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelWebPushRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelWebhookRequest
 
 @ApplicationScoped
@@ -87,6 +89,8 @@ class ResolveNotificationContentService(
                         },
                 )
 
+            is ValidNotificationChannelWebPushRequest -> resolveWebPush(request, existingContent(existingNotification), isTesting)
+
             is ValidNotificationChannelMailRequest ->
                 NotificationContent.Mail(
                     hostname = request.hostname,
@@ -114,6 +118,54 @@ class ResolveNotificationContentService(
         return stored?.let {
             if (encryptionService.isEncryptedWithCurrentKey(it)) it else encryptionService.encrypt(encryptionService.decryptIfEncrypted(it))
         }
+    }
+
+    private fun resolveWebPush(
+        request: ValidNotificationChannelWebPushRequest,
+        stored: NotificationContent.WebPush?,
+        isTesting: Boolean,
+    ): NotificationContent.WebPush {
+        val storedByEndpoint = stored?.subscriptions.orEmpty().associateBy { it.endpoint }
+
+        val subscriptions =
+            request.subscriptions
+                .orEmpty()
+                .distinctBy { it.endpoint.trim() }
+                .mapNotNull { incoming ->
+                    val endpoint = incoming.endpoint.trim()
+                    val label = incoming.label?.trim()?.ifBlank { null }
+                    val auth = incoming.auth?.trim()?.ifBlank { null }
+                    val previous = storedByEndpoint[endpoint]
+
+                    when {
+                        // A browser already stored, sent back without its secret (the API never returns it): keep its keys.
+                        auth == null && previous != null -> {
+                            previous.copy(
+                                auth = requireNotNull(resolveToken(null, previous.auth)),
+                                label = label ?: previous.label,
+                            )
+                        }
+
+                        // A test only reaches the browsers whose keys are in the form (the channel is not saved yet).
+                        auth == null && isTesting -> {
+                            null
+                        }
+
+                        else -> {
+                            WebPushSubscription(
+                                endpoint = endpoint,
+                                p256dh = requireNotNull(incoming.p256dh?.trim()?.ifBlank { null }) { "The subscription key (p256dh) is missing" },
+                                auth = encryptionService.encrypt(requireNotNull(auth) { "The subscription secret (auth) is missing" }),
+                                label = label,
+                            )
+                        }
+                    }
+                }
+
+        require(subscriptions.isNotEmpty()) {
+            if (isTesting) "Add this browser to the channel to send it a test" else "Add at least one browser"
+        }
+        return NotificationContent.WebPush(subscriptions)
     }
 
     private inline fun <reified T : NotificationContent> existingContent(existing: NotificationDto?): T? = existing?.content as? T
