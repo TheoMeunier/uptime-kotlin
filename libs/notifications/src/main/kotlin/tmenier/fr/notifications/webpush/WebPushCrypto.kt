@@ -37,15 +37,9 @@ object WebPushCrypto {
     private const val SEPARATOR: Byte = 0
     private const val FIRST_BLOCK: Byte = 1
 
-    private val random = SecureRandom()
     private val encoder = Base64.getUrlEncoder().withoutPadding()
-    private val params: ECParameterSpec =
-        AlgorithmParameters
-            .getInstance("EC")
-            .apply { init(ECGenParameterSpec(CURVE)) }
-            .getParameterSpec(ECParameterSpec::class.java)
 
-    fun generateKeyPair(): KeyPair = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec(CURVE), random) }.generateKeyPair()
+    fun generateKeyPair(): KeyPair = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec(CURVE), SecureRandom()) }.generateKeyPair()
 
     fun base64Url(bytes: ByteArray): String = encoder.encodeToString(bytes)
 
@@ -67,7 +61,7 @@ object WebPushCrypto {
                 BigInteger(1, raw.copyOfRange(1, 1 + COORDINATE_LENGTH)),
                 BigInteger(1, raw.copyOfRange(1 + COORDINATE_LENGTH, raw.size)),
             )
-        return KeyFactory.getInstance("EC").generatePublic(ECPublicKeySpec(point, params)) as ECPublicKey
+        return KeyFactory.getInstance("EC").generatePublic(ECPublicKeySpec(point, curveParameters())) as ECPublicKey
     }
 
     fun privateKeyFromPkcs8(encoded: ByteArray): PrivateKey = KeyFactory.getInstance("EC").generatePrivate(PKCS8EncodedKeySpec(encoded))
@@ -77,7 +71,7 @@ object WebPushCrypto {
         p256dh: ByteArray,
         auth: ByteArray,
         senderKeys: KeyPair = generateKeyPair(),
-        salt: ByteArray = ByteArray(SALT_LENGTH).also(random::nextBytes),
+        salt: ByteArray = ByteArray(SALT_LENGTH).also { SecureRandom().nextBytes(it) },
     ): ByteArray {
         require(auth.size == KEY_LENGTH) { "Invalid subscription secret (expected 16 bytes, got ${auth.size})" }
         require(plaintext.size + 1 + TAG_BITS / 8 <= RECORD_SIZE) { "Payload too large for a single record" }
@@ -137,6 +131,12 @@ object WebPushCrypto {
 
         return "vapid t=$signingInput.${base64Url(signature)}, k=${base64Url(rawPublicKey(keys.public as ECPublicKey))}"
     }
+
+    private fun curveParameters(): ECParameterSpec =
+        AlgorithmParameters
+            .getInstance("EC")
+            .apply { init(ECGenParameterSpec(CURVE)) }
+            .getParameterSpec(ECParameterSpec::class.java)
 
     private fun jsonEscape(value: String) = value.replace("\\", "\\\\").replace("\"", "\\\"")
 
