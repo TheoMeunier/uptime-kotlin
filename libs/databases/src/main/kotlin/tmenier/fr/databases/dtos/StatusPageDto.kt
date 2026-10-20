@@ -2,6 +2,7 @@ package tmenier.fr.databases.dtos
 
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.statuspages.StatusPageLayout
+import tmenier.fr.common.enums.statuspages.StatusPageUptimePeriod
 import java.time.Instant
 import java.util.UUID
 
@@ -18,6 +19,7 @@ data class StoreStatusPageDto(
     val title: String,
     val description: String?,
     val defaultLayout: StatusPageLayout,
+    val uptimePeriod: StatusPageUptimePeriod,
     val groups: List<StoreStatusPageGroupDto>,
 )
 
@@ -28,6 +30,7 @@ data class StatusPageListItemDto(
     val title: String,
     val description: String?,
     val defaultLayout: StatusPageLayout,
+    val uptimePeriod: StatusPageUptimePeriod,
     val groupCount: Int,
     val probeCount: Int,
     val updatedAt: Instant,
@@ -46,6 +49,7 @@ data class StatusPageDto(
     val title: String,
     val description: String?,
     val defaultLayout: StatusPageLayout,
+    val uptimePeriod: StatusPageUptimePeriod,
     val groups: List<StatusPageGroupDto>,
     val createdAt: Instant,
     val updatedAt: Instant,
@@ -63,5 +67,6 @@ data class PublicStatusPageDto(
     val title: String,
     val description: String?,
     val defaultLayout: StatusPageLayout,
+    val uptimePeriod: StatusPageUptimePeriod,
     val groups: List<PublicStatusPageGroupDto>,
 )

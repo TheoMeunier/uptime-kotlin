@@ -173,6 +173,28 @@ const es: typeof en = {
 
 	pages: {
 		status_page: {
+			uptime: {
+				state: {
+					up: 'Operativo',
+					degraded: 'Degradado',
+					down: 'Caída',
+					maintenance: 'Mantenimiento',
+					nodata: 'Sin datos',
+				},
+				checks_one: 'en {{count}} comprobación',
+				checks_other: 'en {{count}} comprobaciones',
+				failures_one: '{{count}} comprobación fallida',
+				failures_other: '{{count}} comprobaciones fallidas',
+				maintenance_one: '{{count}} comprobación durante un mantenimiento',
+				maintenance_other: '{{count}} comprobaciones durante un mantenimiento',
+				ago_hours_one: 'Hace {{count}} hora',
+				ago_hours_other: 'Hace {{count}} horas',
+				ago_days_one: 'Hace {{count}} día',
+				ago_days_other: 'Hace {{count}} días',
+				today: 'Hoy',
+				no_data: 'Sin datos',
+				label: 'de disponibilidad',
+			},
 			title: 'Panel de estado',
 			subtitle: 'Supervisión de la infraestructura en tiempo real',
 			description: {
@@ -753,6 +775,14 @@ const es: typeof en = {
 	},
 
 	status_pages: {
+		uptime_period: {
+			H1: 'Última hora, comprobación a comprobación',
+			D1: '24 horas',
+			D7: '7 días',
+			D30: '30 días',
+			D60: '60 días',
+			D90: '90 días',
+		},
 		title: {
 			index: 'Páginas de estado',
 			create: 'Nueva página de estado',
@@ -795,6 +825,13 @@ const es: typeof en = {
 			description_placeholder: 'Se muestra bajo el título',
 			default_layout: 'Vista por defecto',
 			default_layout_description: 'Los visitantes pueden cambiarla; su elección se recuerda.',
+			uptime_period: 'Disponibilidad mostrada',
+			uptime_period_description: 'Hasta dónde llega la barra de cada monitor.',
+			uptime_period_description_limited:
+				'Hasta dónde llega la barra de cada monitor. Un monitor de esta página conserva sus comprobaciones {{days}} días.',
+			uptime_period_retention: '(retención {{days}} d)',
+			uptime_period_too_long:
+				'Un monitor de esta página conserva sus comprobaciones {{days}} días: elija un periodo más corto.',
 			save: 'Guardar',
 			unsaved: 'Cambios sin guardar',
 			layout_title: 'Grupos y monitores',
@@ -821,6 +858,89 @@ const es: typeof en = {
 			created: 'Página de estado «{{title}}» creada',
 			updated: 'Página de estado «{{title}}» guardada',
 			removed: 'Página de estado eliminada',
+		},
+	},
+
+	announcements: {
+		title: {
+			index: 'Anuncios',
+			create: 'Nuevo anuncio',
+			update: 'Editar anuncio',
+			remove: '¿Eliminar este anuncio?',
+		},
+		description: {
+			index:
+				'Mensajes que aparecen en la parte superior de sus páginas de estado públicas: un problema en curso, trabajos previstos, una información.',
+			remove: '«{{title}}» desaparecerá de las páginas de estado. Esta acción es irreversible.',
+		},
+		severity: {
+			INFO: 'Información',
+			DEGRADED: 'Servicio degradado',
+			OUTAGE: 'Caída',
+			MAINTENANCE: 'Mantenimiento',
+		},
+		state: {
+			SCHEDULED: 'Programado',
+			ACTIVE: 'Visible',
+			ENDED: 'Finalizado',
+		},
+		state_detail: {
+			starts: 'A partir del {{date}}',
+			until: 'Hasta el {{date}}',
+			ended: 'Finalizado el {{date}}',
+			no_end: 'Hasta que lo finalice',
+		},
+		actions: {
+			create: 'Nuevo anuncio',
+			publish: 'Publicar',
+			save: 'Guardar',
+			end: 'Finalizar ahora',
+		},
+		form: {
+			title: 'Título',
+			title_placeholder: 'Lentitud en la API',
+			severity: 'Gravedad',
+			body: 'Mensaje',
+			body_placeholder: 'Qué ocurre, a quién afecta, qué están haciendo.',
+			body_description: 'Texto sin formato; se conservan los saltos de línea.',
+			starts_at: 'Visible a partir del',
+			starts_at_description: 'En su zona horaria. Una fecha futura lo programa.',
+			ends_at: 'Visible hasta el',
+			ends_at_description: 'Opcional. Sin fecha, el anuncio permanece hasta que lo finalice.',
+			pages: 'Páginas de estado',
+			pages_description: 'Las páginas en las que aparece el anuncio.',
+			show_on_global: 'Mostrar también en /status',
+			show_on_global_description: 'La página integrada, con todos los monitores.',
+		},
+		validation: {
+			title: 'El título es obligatorio.',
+			starts_at: 'Indique cuándo aparece el anuncio.',
+			ends_after_start: 'El fin debe ser posterior al inicio.',
+			target: 'Elija al menos una página, o /status.',
+		},
+		table: {
+			title: 'Anuncio',
+			state: 'Estado',
+			pages: 'Páginas',
+			actions: 'Acciones',
+			no_target: 'Ya no tiene páginas',
+		},
+		empty: {
+			title: 'Todavía no hay anuncios',
+			description:
+				'Publique uno para avisar a sus usuarios de un problema o de trabajos, directamente en sus páginas de estado.',
+		},
+		alerts: {
+			created: 'Anuncio «{{title}}» publicado',
+			updated: 'Anuncio «{{title}}» guardado',
+			ended: 'Anuncio finalizado: ya no aparece en las páginas de estado',
+			removed: 'Anuncio eliminado',
+			not_started: 'Este anuncio aún no ha empezado: edítelo o elimínelo.',
+		},
+		public: {
+			current: 'Anuncios en curso',
+			posted: 'Publicado el {{date}}',
+			until: 'hasta el {{date}}',
 		},
 	},
 
@@ -864,6 +984,7 @@ const es: typeof en = {
 			new_tab: '(se abre en una pestaña nueva)',
 			dashboard: 'Panel',
 			status_page: 'Páginas de estado',
+			announcements: 'Anuncios',
 			incidents: 'Incidencias',
 			maintenances: 'Mantenimiento',
 			new_monitor: 'Nuevo monitor',

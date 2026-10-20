@@ -5,10 +5,17 @@ import ProbeStatus from '@/features/probes/components/modules/probe-status.tsx';
 import MaintenanceBadge from '@/features/maintenances/components/maintenance-badge.tsx';
 import StatusTimeLegend from '@/features/status-pages/components/board/status-time-legend.tsx';
 import { type StatusItem, uptimeTone } from '@/features/status-pages/lib/status-item.ts';
+import UptimeBar from '@/features/status-pages/components/board/uptime-bar.tsx';
+import UptimeLegend from '@/features/status-pages/components/board/uptime-legend.tsx';
+import useProbeUptime from '@/features/status-pages/hooks/useProbeUptime.ts';
+import { isAggregated } from '@/features/status-pages/lib/uptime-period.ts';
 
 export default function StatusGridCard({ item }: { item: StatusItem }) {
 	const { t } = useTranslation();
-	const hasFooter = Boolean(item.uptimes || item.down_duration || item.next_maintenance);
+	const { period, bar } = useProbeUptime(item.probe.id);
+	const aggregated = isAggregated(period);
+	const showUptime30d = Boolean(item.uptimes) && !aggregated;
+	const hasFooter = Boolean(showUptime30d || item.down_duration || item.next_maintenance);
 
 	return (
 		<Card className="border-border bg-card hover:border-muted-foreground/30 transition-colors">
@@ -29,12 +36,21 @@ export default function StatusGridCard({ item }: { item: StatusItem }) {
 					)}
 				</div>
 
-				<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} barCount={30} />
-				<StatusTimeLegend className="mt-1" />
+				{aggregated ? (
+					<>
+						<UptimeBar period={period} bar={bar} />
+						<UptimeLegend period={period} uptimePercent={bar ? bar.uptime_percent : undefined} className="mt-1" />
+					</>
+				) : (
+					<>
+						<ProbeMonitorChartBar monitors={item.monitors} probeStatus={item.probe.status} barCount={30} />
+						<StatusTimeLegend className="mt-1" />
+					</>
+				)}
 
 				{hasFooter && (
 					<div className="border-border mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t pt-3 text-xs">
-						{item.uptimes ? (
+						{showUptime30d && item.uptimes ? (
 							<span className="text-muted-foreground">
 								{t('pages.status_page.uptime_30d')}{' '}
 								<span className={`tabular font-semibold ${uptimeTone(item.uptimes.d30)}`}>

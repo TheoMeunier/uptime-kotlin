@@ -185,6 +185,7 @@ object ProbeMapper {
             url = ProbeContentMapper.toUrl(content),
             description = entity.description,
             status = entity.status,
+            logRetentionDays = entity.logRetentionDays,
         )
     }
 

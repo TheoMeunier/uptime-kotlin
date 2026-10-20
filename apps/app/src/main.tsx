@@ -17,6 +17,7 @@ import AppErrorBoundary from '@/components/molecules/app-error-boundary.tsx';
 import RouteErrorBoundary from '@/components/molecules/route-error-boundary.tsx';
 import { reloadOnce } from '@/lib/chunk-error.ts';
 import {
+	Announcements,
 	CreateProbe,
 	Dashboard,
 	EditProbe,
@@ -77,6 +78,8 @@ const router = createBrowserRouter(
 							<Route path="status-pages" element={<StatusPages />} />
 							<Route path="status-pages/new" element={<StatusPageEditor />} />
 							<Route path="status-pages/:statusPageId" element={<StatusPageEditor />} />
+
+							<Route path="announcements" element={<Announcements />} />
 
 							<Route path="profile" element={<Profile />} />
 						</Route>

@@ -14,6 +14,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import tmenier.fr.common.enums.statuspages.StatusPageLayout
+import tmenier.fr.common.enums.statuspages.StatusPageUptimePeriod
 import java.time.Instant
 import java.util.UUID
 
@@ -36,6 +37,10 @@ class StatusPageEntity : PanacheEntityBase {
     @Enumerated(EnumType.STRING)
     @Column(name = "default_layout", nullable = false, length = 8)
     var defaultLayout: StatusPageLayout = StatusPageLayout.GRID
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "uptime_period", nullable = false, length = 4)
+    var uptimePeriod: StatusPageUptimePeriod = StatusPageUptimePeriod.H1
 
     @OneToMany(mappedBy = "statusPage", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("position ASC")

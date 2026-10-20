@@ -1,5 +1,6 @@
 package tmenier.fr.databases.dtos
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
@@ -14,6 +15,8 @@ data class ProbeListDTO(
     val description: String? = null,
     val url: String? = null,
     val status: ProbeMonitorLogStatus,
+    @field:JsonInclude(JsonInclude.Include.NON_NULL)
+    val logRetentionDays: Int? = null,
 )
 
 @RegisterForReflection

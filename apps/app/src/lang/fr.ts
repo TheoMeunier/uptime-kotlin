@@ -176,6 +176,28 @@ const fr: typeof en = {
 
 	pages: {
 		status_page: {
+			uptime: {
+				state: {
+					up: 'Opérationnel',
+					degraded: 'Dégradé',
+					down: 'Panne',
+					maintenance: 'Maintenance',
+					nodata: 'Pas de données',
+				},
+				checks_one: 'sur {{count}} check',
+				checks_other: 'sur {{count}} checks',
+				failures_one: '{{count}} check en échec',
+				failures_other: '{{count}} checks en échec',
+				maintenance_one: '{{count}} check pendant une maintenance',
+				maintenance_other: '{{count}} checks pendant une maintenance',
+				ago_hours_one: 'Il y a {{count}} heure',
+				ago_hours_other: 'Il y a {{count}} heures',
+				ago_days_one: 'Il y a {{count}} jour',
+				ago_days_other: 'Il y a {{count}} jours',
+				today: 'Aujourd’hui',
+				no_data: 'Pas de données',
+				label: 'de disponibilité',
+			},
 			title: 'Tableau de santé',
 			subtitle: 'Supervision de l’infrastructure en temps réel',
 			description: {
@@ -760,6 +782,14 @@ const fr: typeof en = {
 	},
 
 	status_pages: {
+		uptime_period: {
+			H1: 'Dernière heure, check par check',
+			D1: '24 heures',
+			D7: '7 jours',
+			D30: '30 jours',
+			D60: '60 jours',
+			D90: '90 jours',
+		},
 		title: {
 			index: 'Pages de statut',
 			create: 'Nouvelle page de statut',
@@ -802,6 +832,13 @@ const fr: typeof en = {
 			description_placeholder: 'Affichée sous le titre',
 			default_layout: 'Disposition par défaut',
 			default_layout_description: 'Les visiteurs peuvent toujours changer ; leur choix est mémorisé.',
+			uptime_period: 'Disponibilité affichée',
+			uptime_period_description: 'Jusqu’où remonte la barre de chaque sonde.',
+			uptime_period_description_limited:
+				'Jusqu’où remonte la barre de chaque sonde. Une sonde de cette page conserve ses checks {{days}} jours.',
+			uptime_period_retention: '(rétention {{days}} j)',
+			uptime_period_too_long:
+				'Une sonde de cette page conserve ses checks {{days}} jours : choisissez une durée plus courte.',
 			save: 'Enregistrer',
 			unsaved: 'Modifications non enregistrées',
 			layout_title: 'Groupes et sondes',
@@ -828,6 +865,89 @@ const fr: typeof en = {
 			created: 'Page de statut « {{title}} » créée',
 			updated: 'Page de statut « {{title}} » enregistrée',
 			removed: 'Page de statut supprimée',
+		},
+	},
+
+	announcements: {
+		title: {
+			index: 'Annonces',
+			create: 'Nouvelle annonce',
+			update: 'Modifier l’annonce',
+			remove: 'Supprimer cette annonce ?',
+		},
+		description: {
+			index:
+				'Des messages affichés en haut de vos pages de statut publiques : un problème en cours, des travaux prévus, une information.',
+			remove: '« {{title}} » disparaîtra des pages de statut. Cette action est irréversible.',
+		},
+		severity: {
+			INFO: 'Information',
+			DEGRADED: 'Service dégradé',
+			OUTAGE: 'Panne',
+			MAINTENANCE: 'Maintenance',
+		},
+		state: {
+			SCHEDULED: 'Programmée',
+			ACTIVE: 'Affichée',
+			ENDED: 'Terminée',
+		},
+		state_detail: {
+			starts: 'À partir du {{date}}',
+			until: 'Jusqu’au {{date}}',
+			ended: 'Terminée le {{date}}',
+			no_end: 'Jusqu’à ce que vous la terminiez',
+		},
+		actions: {
+			create: 'Nouvelle annonce',
+			publish: 'Publier',
+			save: 'Enregistrer',
+			end: 'Terminer',
+		},
+		form: {
+			title: 'Titre',
+			title_placeholder: 'Lenteurs sur l’API',
+			severity: 'Gravité',
+			body: 'Message',
+			body_placeholder: 'Ce qui se passe, qui est concerné, ce que vous faites.',
+			body_description: 'Texte brut ; les retours à la ligne sont conservés.',
+			starts_at: 'Affichée à partir du',
+			starts_at_description: 'Dans votre fuseau horaire. Une date future la programme.',
+			ends_at: 'Affichée jusqu’au',
+			ends_at_description: 'Facultatif. Sans date, l’annonce reste jusqu’à ce que vous la terminiez.',
+			pages: 'Pages de statut',
+			pages_description: 'Les pages sur lesquelles l’annonce apparaît.',
+			show_on_global: 'Afficher aussi sur /status',
+			show_on_global_description: 'La page intégrée, avec toutes les sondes.',
+		},
+		validation: {
+			title: 'Le titre est obligatoire.',
+			starts_at: 'Indiquez quand l’annonce apparaît.',
+			ends_after_start: 'La fin doit venir après le début.',
+			target: 'Choisissez au moins une page, ou /status.',
+		},
+		table: {
+			title: 'Annonce',
+			state: 'État',
+			pages: 'Pages',
+			actions: 'Actions',
+			no_target: 'Plus aucune page',
+		},
+		empty: {
+			title: 'Aucune annonce pour l’instant',
+			description:
+				'Publiez-en une pour prévenir vos utilisateurs d’un problème ou de travaux, directement sur vos pages de statut.',
+		},
+		alerts: {
+			created: 'Annonce « {{title}} » publiée',
+			updated: 'Annonce « {{title}} » enregistrée',
+			ended: 'Annonce terminée : elle n’apparaît plus sur les pages de statut',
+			removed: 'Annonce supprimée',
+			not_started: 'Cette annonce n’a pas encore commencé : modifiez-la ou supprimez-la.',
+		},
+		public: {
+			current: 'Annonces en cours',
+			posted: 'Publiée le {{date}}',
+			until: 'jusqu’au {{date}}',
 		},
 	},
 
@@ -871,6 +991,7 @@ const fr: typeof en = {
 			new_tab: '(s’ouvre dans un nouvel onglet)',
 			dashboard: 'Tableau de bord',
 			status_page: 'Pages de statut',
+			announcements: 'Annonces',
 			incidents: 'Incidents',
 			maintenances: 'Maintenance',
 			new_monitor: 'Nouvelle sonde',

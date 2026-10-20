@@ -14,6 +14,7 @@ const ProbeListSidebarSchema = z.array(
 		name: z.string().min(3).max(255),
 		status: z.enum(ProbeStatusEnum),
 		description: z.string().nullable(),
+		log_retention_days: z.number().nullable().optional(),
 	})
 );
 

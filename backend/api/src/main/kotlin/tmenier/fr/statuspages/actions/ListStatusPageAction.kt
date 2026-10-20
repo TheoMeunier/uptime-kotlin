@@ -28,6 +28,7 @@ class ListStatusPageAction(
                 title = page.title,
                 description = page.description,
                 defaultLayout = page.defaultLayout,
+                uptimePeriod = page.uptimePeriod,
                 groupCount = page.groups.size,
                 probeCount = page.groups.sumOf { it.orderedProbes().size },
                 updatedAt = page.updatedAt,
@@ -44,6 +45,7 @@ class ListStatusPageAction(
             title = page.title,
             description = page.description,
             defaultLayout = page.defaultLayout,
+            uptimePeriod = page.uptimePeriod,
             groups =
                 page.groups.map { group ->
                     StatusPageGroupDto(
@@ -73,6 +75,7 @@ class ListStatusPageAction(
             title = page.title,
             description = page.description,
             defaultLayout = page.defaultLayout,
+            uptimePeriod = page.uptimePeriod,
             groups =
                 page.groups.map { group ->
                     PublicStatusPageGroupDto(
