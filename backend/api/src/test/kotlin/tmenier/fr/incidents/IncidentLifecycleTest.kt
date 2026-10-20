@@ -1,6 +1,7 @@
 package tmenier.fr.incidents
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.narayana.jta.QuarkusTransaction
 import io.quarkus.test.junit.QuarkusTest
 import io.quarkus.test.junit.TestProfile
 import jakarta.enterprise.context.ApplicationScoped
@@ -53,6 +54,12 @@ class IncidentLifecycleTest {
     @AfterEach
     fun cleanUp() = probes.forEach(fixtures::delete)
 
+    /** Same transaction boundary as OnOffMonitorProbeResource, which is @Transactional: the repository locks the probe row. */
+    private fun switch(
+        probe: UUID,
+        enabled: Boolean,
+    ) = QuarkusTransaction.requiringNew().run { onOff.execute(probe, enabled) }
+
     @Test
     fun `an outage opens one incident at the alert and closes it at the recovery`() {
         val probe = fixtures.probe(retry = 1).also(probes::add)
@@ -96,12 +103,12 @@ class IncidentLifecycleTest {
         val probe = fixtures.probe().also(probes::add)
         check(probe, ProbeMonitorLogStatus.FAILURE, at = t0)
 
-        onOff.execute(probe, enabled = false)
+        switch(probe, enabled = false)
         val closed = fixtures.incidents(probe).single()
         assertNotNull(closed.endedAt)
         assertEquals(IncidentClosedReason.PROBE_DISABLED, closed.closedReason)
 
-        onOff.execute(probe, enabled = true)
+        switch(probe, enabled = true)
         check(probe, ProbeMonitorLogStatus.FAILURE, at = Instant.now())
         assertEquals(2, fixtures.incidents(probe).size)
     }
@@ -111,7 +118,7 @@ class IncidentLifecycleTest {
         val probe = fixtures.probe().also(probes::add)
         check(probe, ProbeMonitorLogStatus.FAILURE, at = t0)
 
-        onOff.execute(probe, enabled = true)
+        switch(probe, enabled = true)
         check(probe, ProbeMonitorLogStatus.FAILURE, at = Instant.now())
 
         val list = fixtures.incidents(probe)

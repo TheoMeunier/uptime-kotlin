@@ -7,6 +7,7 @@ dependencies {
     implementation(rootProject.libs.quarkus.arc)
 
     testImplementation(libs.junit)
+    testImplementation(libs.jackson.module.kotlin)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

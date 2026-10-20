@@ -51,6 +51,12 @@ sealed interface NotificationContent {
     ) : NotificationContent
 
     @RegisterForReflection
+    data class PagerDuty(
+        val routingKey: String,
+        val severity: String? = null,
+    ) : NotificationContent
+
+    @RegisterForReflection
     data class WebPush(
         val subscriptions: List<WebPushSubscription> = emptyList(),
     ) : NotificationContent

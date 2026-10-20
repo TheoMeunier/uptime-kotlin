@@ -32,6 +32,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidNotificationChannelNtfyRequest::class, name = "NTFY"),
     JsonSubTypes.Type(value = ValidNotificationChannelGotifyRequest::class, name = "GOTIFY"),
     JsonSubTypes.Type(value = ValidNotificationChannelWebPushRequest::class, name = "WEB_PUSH"),
+    JsonSubTypes.Type(value = ValidNotificationChannelPagerDutyRequest::class, name = "PAGERDUTY"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -104,6 +105,15 @@ data class ValidNotificationChannelGotifyRequest(
     val serverUrl: String,
     @field:NotBlank(message = "Application token is required", groups = [OnCreate::class])
     val appToken: String? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelPagerDutyRequest(
+    @field:NotBlank(message = "Integration key is required", groups = [OnCreate::class])
+    @field:Size(max = 255, message = "Integration key is too long")
+    val routingKey: String? = null,
+    @field:Pattern(regexp = "^(critical|error|warning|info)?$", message = "Severity must be critical, error, warning or info")
+    val severity: String? = null,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

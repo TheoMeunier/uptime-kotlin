@@ -14,6 +14,7 @@ import tmenier.fr.databases.dtos.WebPushSubscription
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelPagerDutyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelWebPushRequest
 import tmenier.fr.notifications.requests.WebPushSubscriptionRequest
@@ -40,6 +41,14 @@ class ResolveNotificationContentServiceTest {
     ).apply {
         name = "ntfy"
         notificationType = NotificationChannelsEnum.NTFY
+    }
+
+    private fun pagerDuty(
+        routingKey: String?,
+        severity: String? = null,
+    ) = ValidNotificationChannelPagerDutyRequest(routingKey = routingKey, severity = severity).apply {
+        name = "PagerDuty"
+        notificationType = NotificationChannelsEnum.PAGERDUTY
     }
 
     private fun gotify(appToken: String?) =
@@ -219,5 +228,32 @@ class ResolveNotificationContentServiceTest {
             ) as NotificationContent.WebPush
 
         assertEquals("", masked.subscriptions.single().auth)
+    }
+
+    @Test
+    fun `encrypts the PagerDuty key on creation and keeps it when left empty on update`() {
+        val created =
+            service.resolve(pagerDuty(" R0utingKey ", "Warning"), isUpdate = false, existingNotification = null) as NotificationContent.PagerDuty
+
+        assertTrue(encryption.isEncryptedWithCurrentKey(created.routingKey), created.routingKey)
+        assertEquals("R0utingKey", encryption.decrypt(created.routingKey))
+        assertEquals("warning", created.severity)
+
+        val kept = service.resolve(pagerDuty("", ""), isUpdate = true, existingNotification = stored(created)) as NotificationContent.PagerDuty
+        assertEquals(created.routingKey, kept.routingKey)
+        assertEquals(null, kept.severity)
+    }
+
+    @Test
+    fun `refuses to create a PagerDuty channel without a key`() {
+        assertThrows<IllegalArgumentException> { service.resolve(pagerDuty(null), isUpdate = false, existingNotification = null) }
+    }
+
+    @Test
+    fun `never sends the PagerDuty key back`() {
+        val content = NotificationContentMapper.withoutTokens(NotificationContent.PagerDuty("secret", "error"))
+
+        assertEquals("", (content as NotificationContent.PagerDuty).routingKey)
+        assertEquals("error", content.severity)
     }
 }

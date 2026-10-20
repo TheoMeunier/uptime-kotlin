@@ -61,7 +61,7 @@ Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin
 - **Real-time dashboard** with response times, uptime history and log export
 - **Incidents** opened and closed automatically, with the downtime duration, and a CSV export for monthly reports
 - **TLS certificate expiry** tracking
-- **Notifications**: Email, Slack, Discord, Teams, Telegram, ntfy, Gotify, Webhook and native browser notifications
+- **Notifications**: Email, Slack, Discord, Teams, Telegram, ntfy, Gotify, PagerDuty, Webhook and native browser notifications
   (Web Push), with optional reminders while a monitor stays down
 - **Public status pages**, several per instance, in grid or list layout
 - **Maintenance windows**, one-off or recurring, that mute alerts
@@ -142,6 +142,7 @@ services:
 | `MAINTENANCE_HORIZON_DAYS`<br>`MAINTENANCE_MAX_DURATION_HOURS`                                  | `90`, `24` | Maintenance windows. Same values on the application and the workers.                                                                                                                                         |
 | `NOTIFICATIONS_DISPLAY_TIMEZONE`                                                                | `UTC`      | Zone of the dates in Slack, Teams, Telegram, ntfy, Gotify and e-mail notifications (IANA name, e.g. `Europe/Paris`). Same value on the application and the workers. Webhook payloads stay in UTC (ISO-8601). |
 | `NOTIFICATIONS_WEB_PUSH_SUBJECT`                                                                | repo URL   | Contact given to the browser push services with each Web Push notification (`mailto:you@example.com` or an `https://` URL). Same value on the application and the workers. Browser notifications need the interface served over HTTPS (or `localhost`). |
+| `NOTIFICATIONS_PAGERDUTY_EVENTS_URL`                                                            | PagerDuty  | PagerDuty Events API v2 endpoint (`https://events.pagerduty.com/v2/enqueue`). Accounts in the EU service region use `https://events.eu.pagerduty.com/v2/enqueue`. Same value on the application and the workers. |
 
 <details>
 <summary>Use your own JWT keys</summary>

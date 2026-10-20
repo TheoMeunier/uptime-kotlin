@@ -30,6 +30,7 @@ object NotificationContentMapper {
             is NotificationContent.Telegram -> content.copy(botToken = "")
             is NotificationContent.Ntfy -> content.copy(accessToken = null)
             is NotificationContent.Gotify -> content.copy(appToken = "")
+            is NotificationContent.PagerDuty -> content.copy(routingKey = "")
             is NotificationContent.WebPush -> content.copy(subscriptions = content.subscriptions.map { it.copy(auth = "") })
             else -> content
         }
@@ -45,6 +46,7 @@ object NotificationContentMapper {
             NotificationChannelsEnum.NTFY -> NotificationContent.Ntfy::class.java
             NotificationChannelsEnum.GOTIFY -> NotificationContent.Gotify::class.java
             NotificationChannelsEnum.WEB_PUSH -> NotificationContent.WebPush::class.java
+            NotificationChannelsEnum.PAGERDUTY -> NotificationContent.PagerDuty::class.java
         }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
@@ -59,6 +61,7 @@ object NotificationContentMapper {
                 is NotificationContent.Ntfy -> NotificationChannelsEnum.NTFY
                 is NotificationContent.Gotify -> NotificationChannelsEnum.GOTIFY
                 is NotificationContent.WebPush -> NotificationChannelsEnum.WEB_PUSH
+                is NotificationContent.PagerDuty -> NotificationChannelsEnum.PAGERDUTY
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 

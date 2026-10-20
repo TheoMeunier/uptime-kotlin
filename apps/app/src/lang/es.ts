@@ -71,6 +71,8 @@ const es: typeof en = {
 			access_token: 'Token de acceso (opcional)',
 			remove_access_token: 'Eliminar el token de acceso',
 			app_token: 'Token de aplicación',
+			routing_key: 'Clave de integración',
+			severity: 'Gravedad',
 			web_push: 'Notificaciones del navegador',
 		},
 		placeholder: {
@@ -91,6 +93,10 @@ const es: typeof en = {
 			gotify_server_url:
 				'La dirección del servidor, sin /message. Detrás de un proxy inverso, incluya su ruta (p. ej. https://example.com/gotify).',
 			app_token: 'Se crea en la pestaña Apps de Gotify. Al editar, déjelo vacío para conservar el token actual.',
+			routing_key:
+				'Clave de integración Events API v2 de un servicio de PagerDuty (pestaña Integrations). Al editar, déjela vacía para conservar la clave actual.',
+			severity:
+				'Gravedad de la alerta abierta cuando un monitor cae (critical por defecto). La prueba abre una alerta info y la resuelve al instante.',
 			web_push:
 				'Notificaciones nativas en los navegadores de abajo, incluso con la pestaña cerrada. Añada cada navegador o dispositivo que deba recibir alertas.',
 			password: 'Al menos 8 caracteres',
@@ -162,6 +168,7 @@ const es: typeof en = {
 		telegram_chat_id: 'ID de chat no válido (un número o @nombredelcanal)',
 		ntfy_topic: 'Tema no válido (letras, dígitos, - y _, máx. 64 caracteres)',
 		gotify_app_token: 'Token de aplicación obligatorio',
+		pagerduty_routing_key: 'Clave de integración obligatoria',
 		web_push_subscription: 'Añada al menos un navegador',
 		hostname: 'Nombre de host o dirección IP no válidos (p. ej. smtp.gmail.com)',
 	},
@@ -765,7 +772,7 @@ const es: typeof en = {
 			settings: {
 				title: 'Ajustes',
 				description:
-					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, Gotify, navegador, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
+					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, Gotify, PagerDuty, navegador, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
 			},
 			done: {
 				title: 'Todo listo',
