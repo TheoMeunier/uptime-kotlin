@@ -24,8 +24,8 @@ class TestingNotificationResource(
     @Transactional
     fun store(
         @Valid payload: BaseStoreNotificationRequest,
-    ): Response {
-        return when (val result = testingNotificationAction.execute(payload)) {
+    ): Response =
+        when (val result = testingNotificationAction.execute(payload)) {
             is NotificationTestResult.Success -> Response.ok().build()
             is NotificationTestResult.Failure ->
                 Response
@@ -33,5 +33,4 @@ class TestingNotificationResource(
                     .entity(mapOf("message" to result.message))
                     .build()
         }
-    }
 }
