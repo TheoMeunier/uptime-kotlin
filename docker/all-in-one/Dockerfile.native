@@ -44,10 +44,12 @@ COPY --from=back --chown=1001:root --chmod=0755 /project/backend/api/build/*-run
 COPY --from=ping /out/ /
 
 ARG VITE_DEMO=false
+ARG APP_VERSION=dev
 ENV SCHEDULER_STRATEGY=database \
-    DEMO_ENABLED=${VITE_DEMO}
+    DEMO_ENABLED=${VITE_DEMO} \
+    UPTIME_VERSION=${APP_VERSION}
 
-EXPOSE 8080
+EXPOSE 8080 9000
 USER 1001
 
 ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

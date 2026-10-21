@@ -33,7 +33,10 @@ RUN chown 1001 /work \
 COPY --from=back --chown=1001:root --chmod=0755 /project/backend/worker/build/*-runner /work/application
 COPY --from=ping /out/ /
 
-EXPOSE 8082
+ARG APP_VERSION=dev
+ENV UPTIME_VERSION=${APP_VERSION}
+
+EXPOSE 8082 9002
 USER 1001
 
 ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
