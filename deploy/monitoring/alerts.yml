@@ -1,0 +1,87 @@
+# Alerting rules for Uptime Kotlin. They are visible in Prometheus (Alerts tab) and Grafana;
+# add an Alertmanager to receive them by e-mail, Slack, etc.
+#
+# The queue metrics are read from PostgreSQL by every instance, so they are aggregated with max(), never sum().
+
+groups:
+  - name: uptime-kotlin
+    rules:
+      - alert: UptimeKotlinInstanceDown
+        expr: up{job=~"uptime-kotlin.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} ({{ $labels.job }}) does not answer the scrape"
+          description: "Nothing watches the probes run by this instance while it is down."
+
+      - alert: UptimeKotlinProbeChecksLagging
+        expr: max(uptime_queue_lag_seconds{queue="probe_checks"}) > 60
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Probe Checks run {{ $value | humanizeDuration }} late"
+          description: >-
+            Due Probe Checks wait in the queue: no worker claims them, or the workers are saturated
+            (see uptime_probe_worker_active / uptime_probe_worker_concurrency, SCHEDULER_WORKER_CONCURRENCY).
+
+      - alert: UptimeKotlinNotificationsLagging
+        expr: max(uptime_queue_lag_seconds{queue="notifications"}) > 120
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Notifications go out {{ $value | humanizeDuration }} late"
+
+      - alert: UptimeKotlinDeadLetters
+        expr: delta(max by (queue) (uptime_queue_tasks{status="dead"})[15m:1m]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "New dead-lettered tasks in the {{ $labels.queue }} queue"
+          description: "These tasks reached their maximum delivery attempts and will not be retried."
+
+      - alert: UptimeKotlinNotificationFailures
+        expr: sum by (channel) (increase(uptime_notification_deliveries_total{result="failed"}[15m])) > 3
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $value | humanize }} failed {{ $labels.channel }} notification deliveries in 15 minutes"
+          description: "Check the channel configuration (token, webhook URL) in Uptime Kotlin."
+
+      - alert: UptimeKotlinProbeCheckErrors
+        expr: sum by (protocol) (increase(uptime_probe_checks_total{result="error"}[15m])) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.protocol }} Probe Checks fail technically"
+          description: "The check threw instead of producing a result: see the logs of the workers."
+
+      - alert: UptimeKotlinWorkerSilent
+        expr: max by (worker, region) (uptime_worker_heartbeat_age_seconds) > 60
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Worker {{ $labels.worker }} ({{ $labels.region }}) silent for {{ $value | humanizeDuration }}"
+          description: >-
+            Its checks are taken over by the other workers after 30 s. A worker stopped on purpose disappears
+            from this alert once its heartbeat is purged, an hour later.
+
+      - alert: UptimeKotlinNoActiveWorker
+        expr: (count(max by (worker) (uptime_worker_heartbeat_age_seconds) < 30) or vector(0)) == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No instance runs the Probe Checks"
+          description: "No worker (or all-in-one instance) has sent a heartbeat for 30 s: nothing is monitored."
+
+      - alert: UptimeKotlinMemoryNearLimit
+        expr: process_resident_memory_bytes / process_memory_limit_bytes > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.instance }} uses {{ $value | humanizePercentage }} of its memory limit"
