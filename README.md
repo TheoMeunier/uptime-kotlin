@@ -67,6 +67,7 @@ Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin
 - **Maintenance windows**, one-off or recurring, that mute alerts
 - **Lightweight**: a native image that runs in **~50 MB of RAM**, on amd64 and ARM64
 - **Cluster mode**: add workers to spread the checks, with no extra service (the job queue lives in PostgreSQL)
+- **Prometheus metrics** and a ready-made Grafana dashboard to watch the monitor itself
 - **Secure by default**: JWT authentication, stored secrets encrypted with your own key
 - Interface in **English, French, German and Spanish**
 
