@@ -10,6 +10,7 @@ import tmenier.fr.common.enums.probes.QueueJobStatus
 import tmenier.fr.common.utils.logger
 import tmenier.fr.common.utils.shutdownGracefully
 import tmenier.fr.databases.repositories.ProbeCheckTaskRepository
+import tmenier.fr.schedulers.metrics.ProbeCheckMetrics
 import java.net.InetAddress
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
@@ -24,6 +25,7 @@ class ProbeWorker(
     private val probeWorkerService: ProbeWorkerService,
     private val probeLoopHeartbeat: ProbeLoopHeartbeat,
     private val schedulerStrategy: SchedulerStrategy,
+    private val probeCheckMetrics: ProbeCheckMetrics,
 ) {
     @ConfigProperty(name = "scheduler.worker.name", defaultValue = "default")
     lateinit var region: String
@@ -50,6 +52,9 @@ class ProbeWorker(
             Executors.newFixedThreadPool(concurrency) { runnable ->
                 Thread(runnable, "probe-worker-${threadSequence.incrementAndGet()}")
             }
+        if (schedulerStrategy.runsBackgroundJobs) {
+            probeCheckMetrics.bindWorker(region, concurrency, activeTasks)
+        }
         logger.info {
             "Probe worker started: workerId=$workerId, region=$region, strategy=${schedulerStrategy.value}, " +
                 "concurrency=$concurrency, leaseDuration=${leaseDuration.seconds}s"

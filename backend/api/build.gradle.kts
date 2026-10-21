@@ -10,6 +10,7 @@ dependencies {
 
     // Monitoring
     implementation(libs.quarkus.smallrye.health)
+    implementation(libs.quarkus.micrometer.registry.prometheus)
 
     // Auth
     implementation(libs.quarkus.smallrye.jwt)

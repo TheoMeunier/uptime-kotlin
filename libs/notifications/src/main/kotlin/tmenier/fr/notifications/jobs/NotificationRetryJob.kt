@@ -5,10 +5,12 @@ import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.config.SchedulerStrategy
+import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.logger
 import tmenier.fr.common.utils.shutdownGracefully
 import tmenier.fr.databases.repositories.NotificationTaskRepository
 import tmenier.fr.notifications.NotificationDispatcher
+import tmenier.fr.notifications.metrics.NotificationMetrics
 import java.net.InetAddress
 import java.time.Duration
 import java.util.concurrent.Executors
@@ -20,6 +22,7 @@ class NotificationRetryJob(
     private val notificationTaskRepository: NotificationTaskRepository,
     private val notificationDispatcher: NotificationDispatcher,
     private val schedulerStrategy: SchedulerStrategy,
+    private val notificationMetrics: NotificationMetrics,
 ) {
     private val workerId = "notification-${InetAddress.getLocalHost().hostName}"
     private val leaseDuration = Duration.ofMinutes(2)
@@ -67,9 +70,11 @@ class NotificationRetryJob(
             try {
                 executor.submit {
                     watchdog.started(id)
+                    var channel: NotificationChannelsEnum? = null
                     try {
                         logger.info { "Starting notification delivery $id" }
                         val delivery = notificationTaskRepository.findByIdWithRelations(id)
+                        channel = delivery.notification.type
                         notificationDispatcher.dispatch(
                             delivery.notification,
                             delivery.probe,
@@ -79,10 +84,12 @@ class NotificationRetryJob(
                             delivery.downtime,
                         )
                         notificationTaskRepository.markSent(id)
+                        notificationMetrics.recordDelivery(channel, sent = true)
                         logger.info { "Notification delivery $id sent" }
                     } catch (error: Exception) {
                         Thread.interrupted()
                         logger.warn(error) { "Notification delivery $id failed" }
+                        notificationMetrics.recordDelivery(channel, sent = false)
                         notificationTaskRepository.markFailedAndReschedule(
                             id = id,
                             errorMessage = error.message ?: "Unknown notification delivery error",

@@ -4,6 +4,7 @@ dependencies {
 
     implementation(libs.quarkus.mailer)
     implementation(libs.quarkus.scheduler)
+    implementation(libs.quarkus.micrometer.registry.prometheus)
     implementation(rootProject.libs.quarkus.arc)
 
     testImplementation(libs.junit)
