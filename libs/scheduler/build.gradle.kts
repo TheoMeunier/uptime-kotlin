@@ -5,6 +5,7 @@ dependencies {
 
     implementation(libs.quarkus.scheduler)
     implementation(libs.quarkus.smallrye.health)
+    implementation(libs.quarkus.micrometer.registry.prometheus)
     implementation(libs.quarkus.jdbc.mssql)
     implementation(libs.quarkus.jdbc.mysql)
     implementation(libs.quarkus.jdbc.mariadb)

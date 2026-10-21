@@ -8,6 +8,8 @@ import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.schedulers.ProbeSchedulerFactory
 import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
+import tmenier.fr.schedulers.metrics.ProbeCheckMetrics
+import java.time.Duration
 import java.time.Instant
 
 @ApplicationScoped
@@ -15,6 +17,7 @@ class ProbeWorkerService(
     private val probeSchedulerFactory: ProbeSchedulerFactory,
     private val probeRepository: ProbeRepository,
     private val probeAttemptRecorder: ProbeAttemptRecorder,
+    private val probeCheckMetrics: ProbeCheckMetrics,
 ) {
     fun execute(
         task: ProbeCheckTaskDto,
@@ -42,7 +45,15 @@ class ProbeWorkerService(
             "Executing ${probe.protocol} Probe Check task ${task.id}: probe=${probe.id}, " +
                 "attempt=${task.attemptNumber}/${probe.retry + 1}, lastAttempt=$isLastAttempt"
         }
-        val result = typedHandler.execute(probe, probe.content, isLastAttempt)
+        val startedAt = System.nanoTime()
+        val result =
+            try {
+                typedHandler.execute(probe, probe.content, isLastAttempt)
+            } catch (error: Exception) {
+                probeCheckMetrics.recordCheck(probe.protocol, null, Duration.ofNanos(System.nanoTime() - startedAt))
+                throw error
+            }
+        probeCheckMetrics.recordCheck(probe.protocol, result.status, Duration.ofNanos(System.nanoTime() - startedAt))
         logger.debug {
             "Probe Check task ${task.id} produced status=${result.status}, " +
                 "responseTime=${result.responseTime}ms"
