@@ -36,6 +36,47 @@ services:
     networks:
       - app_network
 
+  # Monitoring of Uptime Kotlin itself: docker compose --profile monitoring up -d
+  # Prometheus on http://localhost:9090, Grafana on http://localhost:3000 (admin / admin), dashboard "Uptime Kotlin".
+  # Scrapes the API (:9000) and the worker (:9002) started on the host. See deploy/monitoring.
+  prometheus:
+    image: prom/prometheus:v3.13.4
+    container_name: uptime_kotlin_prometheus
+    restart: unless-stopped
+    profiles: [ monitoring ]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deploy/monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app_network
+
+  grafana:
+    image: grafana/grafana:13.2.4
+    container_name: uptime_kotlin_grafana
+    restart: unless-stopped
+    profiles: [ monitoring ]
+    ports:
+      - "3000:3000"
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/uptime-kotlin.json
+    volumes:
+      - ./deploy/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
