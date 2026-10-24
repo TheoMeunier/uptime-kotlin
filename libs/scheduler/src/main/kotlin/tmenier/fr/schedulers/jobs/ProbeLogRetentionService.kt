@@ -5,6 +5,7 @@ import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.AdvisoryLockRepository
+import tmenier.fr.databases.repositories.ProbeLogRollupRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import java.time.Instant
 
@@ -12,6 +13,7 @@ import java.time.Instant
 class ProbeLogRetentionService(
     private val probeMonitorRepository: ProbeMonitorRepository,
     private val advisoryLockRepository: AdvisoryLockRepository,
+    private val rollupRepository: ProbeLogRollupRepository,
 ) {
     @Scheduled(cron = "0 30 3 * * ?", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     fun purgeExpiredLogs() {
@@ -37,12 +39,21 @@ class ProbeLogRetentionService(
                     if (!advisoryLockRepository.tryLock(AdvisoryLockRepository.LOG_RETENTION)) {
                         LOCKED
                     } else {
-                        probeMonitorRepository.deleteExpiredBatch(now, minOf(batchSize, maxPerRun - total))
+                        val rolledUpBefore = rollupRepository.watermark()?.minus(ProbeLogRollupService.RECOMPUTE_WINDOW)
+                        if (rolledUpBefore == null) {
+                            NOT_ROLLED_UP
+                        } else {
+                            probeMonitorRepository.deleteExpiredBatch(now, rolledUpBefore, minOf(batchSize, maxPerRun - total))
+                        }
                     }
                 }
 
             if (deleted == LOCKED) {
                 logger.debug { "Probe log retention skipped: another worker holds the lock" }
+                break
+            }
+            if (deleted == NOT_ROLLED_UP) {
+                logger.warn { "Probe log retention skipped: checks are not summarised into hourly rollups yet" }
                 break
             }
 
@@ -56,5 +67,6 @@ class ProbeLogRetentionService(
         const val BATCH_SIZE: Int = 10_000
         const val MAX_PER_RUN: Int = 2_000_000
         private const val LOCKED: Int = -1
+        private const val NOT_ROLLED_UP: Int = -2
     }
 }

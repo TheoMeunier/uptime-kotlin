@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import UnsavedChangesGuard from '@/components/molecules/forms/unsaved-changes-guard.tsx';
 import StatusPageGroupsCard from '@/features/status-pages/components/forms/status-page-groups-card.tsx';
 import StatusPageSettingsCard from '@/features/status-pages/components/forms/status-page-settings-card.tsx';
@@ -6,8 +5,6 @@ import useEditorProbes from '@/features/status-pages/hooks/useEditorProbes.ts';
 import useStatusPageForm from '@/features/status-pages/hooks/useStatusPageForm.ts';
 import type { StatusPageDetail } from '@/features/status-pages/schemas/status-page.schema.ts';
 import type { StatusPagePayload } from '@/features/status-pages/services/status-page-service.ts';
-import useLogRetentionSettings from '@/features/settings/hooks/useLogRetentionSettings.ts';
-import { isPeriodAllowed, shortestRetentionDays } from '@/features/status-pages/lib/uptime-period.ts';
 
 interface StatusPageFormProps {
 	page?: StatusPageDetail;
@@ -20,17 +17,6 @@ export default function StatusPageForm({ page, isSaving, onSubmit, onSaved }: St
 	const form = useStatusPageForm(page);
 	const probes = useEditorProbes(page);
 	const isExisting = Boolean(page);
-	const { data: retentionSettings } = useLogRetentionSettings();
-
-	const retentionDays = useMemo(
-		() =>
-			shortestRetentionDays(
-				form.values.groups.flatMap((group) => group.probeIds.flatMap((id) => probes.get(id) ?? [])),
-				retentionSettings?.log_retention_days
-			),
-		[form.values.groups, probes, retentionSettings]
-	);
-	const periodAllowed = isPeriodAllowed(form.values.uptimePeriod, retentionDays);
 
 	return (
 		<form
@@ -42,8 +28,7 @@ export default function StatusPageForm({ page, isSaving, onSubmit, onSaved }: St
 			<StatusPageSettingsCard
 				form={form}
 				isSaving={isSaving}
-				canSave={(!isExisting || form.isDirty) && periodAllowed}
-				retentionDays={retentionDays}
+				canSave={!isExisting || form.isDirty}
 				showUnsaved={isExisting && form.isDirty}
 			/>
 

@@ -16,7 +16,5 @@ enum class StatusPageUptimePeriod(
 
     val span: Duration get() = bucket.multipliedBy(bucketCount.toLong())
 
-    val requiredRetentionDays: Long get() = span.toDays().coerceAtLeast(1)
-
     val aggregated: Boolean get() = this != H1
 }

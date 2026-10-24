@@ -28,6 +28,7 @@ class ProbeRepository(
     private val notificationRepository: NotificationRepository,
     private val probeCheckTaskRepository: ProbeCheckTaskRepository,
     private val incidentRepository: IncidentRepository,
+    private val rollupRepository: ProbeLogRollupRepository,
     private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
     @Transactional
@@ -68,52 +69,32 @@ class ProbeRepository(
     fun getProbesStatusMetrics(probeIds: Collection<UUID>? = null): Map<UUID, ProbeStatusMetrics> {
         if (probeIds?.isEmpty() == true) return emptyMap()
 
-        val now = Instant.now()
-        val since24h = now.minus(24, ChronoUnit.HOURS)
-        val since7d = now.minus(7, ChronoUnit.DAYS)
-        val since30d = now.minus(30, ChronoUnit.DAYS)
-
-        val jpql =
-            """
-            SELECT p.id,
-              SUM(CASE WHEN pml.runAt > :since24h THEN 1 ELSE 0 END),
-              SUM(CASE WHEN pml.runAt > :since24h AND pml.status = :success THEN 1 ELSE 0 END),
-              SUM(CASE WHEN pml.runAt > :since7d THEN 1 ELSE 0 END),
-              SUM(CASE WHEN pml.runAt > :since7d AND pml.status = :success THEN 1 ELSE 0 END),
-              SUM(CASE WHEN pml.id IS NOT NULL THEN 1 ELSE 0 END),
-              SUM(CASE WHEN pml.status = :success THEN 1 ELSE 0 END),
-              MAX(CASE WHEN pml.status = :success THEN pml.runAt ELSE NULL END)
-            FROM ProbesEntity p
-            LEFT JOIN p.probesMonitorLogs pml WITH pml.runAt > :since30d AND pml.underMaintenance = false
-            WHERE p.enabled = true
-            ${if (probeIds == null) "" else "AND p.id IN :probeIds"}
-            GROUP BY p.id
-            """.trimIndent()
-
-        val rows =
+        val enabledIds =
             em
-                .createQuery(jpql, Tuple::class.java)
-                .setParameter("since24h", since24h)
-                .setParameter("since7d", since7d)
-                .setParameter("since30d", since30d)
-                .setParameter("success", ProbeMonitorLogStatus.SUCCESS)
-                .apply { if (probeIds != null) setParameter("probeIds", probeIds) }
+                .createQuery(
+                    "SELECT p.id FROM ProbesEntity p WHERE p.enabled = true${if (probeIds == null) "" else " AND p.id IN :probeIds"}",
+                    UUID::class.java,
+                ).apply { if (probeIds != null) setParameter("probeIds", probeIds) }
                 .resultList
+        if (enabledIds.isEmpty()) return emptyMap()
 
-        return rows.associate { row ->
-            val probeId = row[0] as UUID
+        val now = Instant.now()
+        val watermark = rollupRepository.watermark()
+        val h24 = rollupRepository.uptimeCounts(enabledIds, now.minus(24, ChronoUnit.HOURS), now, watermark)
+        val d7 = rollupRepository.uptimeCounts(enabledIds, now.minus(7, ChronoUnit.DAYS), now, watermark)
+        val d30 = rollupRepository.uptimeCounts(enabledIds, now.minus(30, ChronoUnit.DAYS), now, watermark)
 
-            probeId to
-                ProbeStatusMetrics(
-                    probeId = probeId,
-                    uptimes =
-                        ProbeUptimeDTO(
-                            h24 = ratio(row[2], row[1]),
-                            d7 = ratio(row[4], row[3]),
-                            d30 = ratio(row[6], row[5]),
-                        ),
-                    lastSuccessAt = row[7] as Instant?,
-                )
+        return enabledIds.associateWith { probeId ->
+            ProbeStatusMetrics(
+                probeId = probeId,
+                uptimes =
+                    ProbeUptimeDTO(
+                        h24 = h24[probeId]?.percent ?: 100.0,
+                        d7 = d7[probeId]?.percent ?: 100.0,
+                        d30 = d30[probeId]?.percent ?: 100.0,
+                    ),
+                lastSuccessAt = d30[probeId]?.lastSuccessAt,
+            )
         }
     }
 
@@ -154,17 +135,6 @@ class ProbeRepository(
     }
 
     private fun asLong(value: Any?): Long = ((value as Number?) ?: 0L).toLong()
-
-    private fun ratio(
-        success: Any?,
-        total: Any?,
-    ): Double {
-        val totalCount = ((total as Number?) ?: 0L).toLong()
-        if (totalCount == 0L) return 100.0
-
-        val successCount = ((success as Number?) ?: 0L).toLong()
-        return (successCount.toDouble() / totalCount.toDouble()) * 100.0
-    }
 
     fun getActiveProbes(): List<ProbeDTO> = find("enabled = ?1 ORDER BY name ASC", true).list().map { ProbeMapper.toDto(it) }
 
@@ -255,8 +225,6 @@ class ProbeRepository(
         if (!dto.enabled) {
             probeCheckTaskRepository.cancelPending(dto.id)
         }
-        // Close in both directions. Switching on an already enabled probe resets alertedStatus above,
-        // so its recovery would never be announced and the open incident would never be closed.
         incidentRepository.close(probe.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
         probe.persist()
     }

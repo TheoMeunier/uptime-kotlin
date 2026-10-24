@@ -17,6 +17,7 @@ import tmenier.fr.databases.dtos.ProbeUptimeDTO
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.IncidentRepository
 import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
+import tmenier.fr.databases.repositories.ProbeLogRollupRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import java.time.Duration
@@ -32,6 +33,7 @@ class ShowProbeResource(
     private val probeMonitorRepository: ProbeMonitorRepository,
     private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
     private val incidentRepository: IncidentRepository,
+    private val rollupRepository: ProbeLogRollupRepository,
 ) {
     @GET
     @Authenticated
@@ -89,10 +91,11 @@ class ShowProbeResource(
 
     private fun computeUptimes(probeId: UUID): ProbeUptimeDTO {
         val now = MonitoringClock.now()
+        val watermark = rollupRepository.watermark()
         return ProbeUptimeDTO(
-            h24 = computeUptime(probeId, now.minus(24, ChronoUnit.HOURS), now),
-            d7 = computeUptime(probeId, now.minus(7, ChronoUnit.DAYS), now),
-            d30 = computeUptime(probeId, now.minus(30, ChronoUnit.DAYS), now),
+            h24 = computeUptime(probeId, now.minus(24, ChronoUnit.HOURS), now, watermark),
+            d7 = computeUptime(probeId, now.minus(7, ChronoUnit.DAYS), now, watermark),
+            d30 = computeUptime(probeId, now.minus(30, ChronoUnit.DAYS), now, watermark),
         )
     }
 
@@ -100,12 +103,11 @@ class ShowProbeResource(
         probeId: UUID,
         from: Instant,
         to: Instant,
-    ): Double {
-        val total = probeMonitorRepository.countByProbeAndPeriod(probeId, from, to)
-        val success = probeMonitorRepository.countSuccessByProbeAndPeriod(probeId, from, to)
-        if (total == 0L) return 100.0
-        return (success.toDouble() / total.toDouble()) * 100.0
-    }
+        watermark: Instant?,
+    ): Double =
+        rollupRepository
+            .uptimeCounts(listOf(probeId), from, to, watermark)[probeId]
+            ?.percent ?: 100.0
 
     companion object {
         private const val MAINTENANCE_LOOKAHEAD_DAYS = 30L

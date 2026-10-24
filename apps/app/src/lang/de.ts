@@ -433,7 +433,8 @@ const de: typeof en = {
 				'Die Prüfung schlägt fehl, wenn die Antwort langsamer ist. Zwischen 1 und 5000 ms, da der HTTP-Client nach 5 s abbricht. Leer lassen, um die Schwelle zu deaktivieren.',
 			remove: 'Dieser Vorgang ist unwiderruflich. Alle zugehörigen Daten werden endgültig gelöscht',
 			check_now_disabled: 'Setzen Sie diesen Monitor fort, um eine Prüfung zu starten.',
-			purge_logs: 'Dies löscht die gesamte Historie dieses Monitors endgültig.',
+			purge_logs:
+				'Dies löscht die einzelnen Prüfergebnisse dieses Monitors endgültig. Die Uptime-Historie bleibt erhalten.',
 			dns_server: 'Cloudflare ist der Standardserver. Sie können den Resolver jederzeit wechseln.',
 			dns_port: 'Port des DNS-Servers. Standard ist 53. Jederzeit änderbar.',
 			smtp_security:
@@ -841,11 +842,6 @@ const de: typeof en = {
 			default_layout_description: 'Besucher können weiterhin wechseln; ihre Wahl wird gespeichert.',
 			uptime_period: 'Angezeigte Verfügbarkeit',
 			uptime_period_description: 'Wie weit der Balken jedes Monitors zurückreicht.',
-			uptime_period_description_limited:
-				'Wie weit der Balken jedes Monitors zurückreicht. Ein Monitor dieser Seite bewahrt seine Prüfungen {{days}} Tage auf.',
-			uptime_period_retention: '(Aufbewahrung {{days}} T.)',
-			uptime_period_too_long:
-				'Ein Monitor dieser Seite bewahrt seine Prüfungen {{days}} Tage auf: Wählen Sie einen kürzeren Zeitraum.',
 			save: 'Speichern',
 			unsaved: 'Ungespeicherte Änderungen',
 			layout_title: 'Gruppen und Monitore',
@@ -1021,10 +1017,10 @@ const de: typeof en = {
 			custom: 'Benutzerdefiniert…',
 		},
 		description_probe:
-			'Ältere Ergebnisse werden jede Nacht gelöscht. Die Uptimes für 24 h / 7 T / 30 T benötigen mindestens 30 Tage.',
+			'Ältere Prüfergebnisse werden jede Nacht gelöscht. Die Uptime-Historie bleibt als stündliche Zusammenfassung erhalten.',
 		description_default:
-			'Gilt für alle Monitore ohne eigene Aufbewahrung. Mindestens 30 Tage, damit die 30-Tage-Uptime korrekt bleibt.',
-		validation: 'Die Aufbewahrung muss zwischen 30 und 3650 Tagen liegen',
+			'Gilt für alle Monitore ohne eigene Aufbewahrung. Gelöscht werden nur die einzelnen Prüfergebnisse: Die Uptime behält ihre gesamte Historie. Mindestens 7 Tage.',
+		validation: 'Die Aufbewahrung muss zwischen 7 und 3650 Tagen liegen',
 		alerts: {
 			updated: 'Aufbewahrung aktualisiert',
 		},

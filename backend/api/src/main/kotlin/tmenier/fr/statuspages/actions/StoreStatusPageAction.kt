@@ -7,13 +7,11 @@ import tmenier.fr.databases.dtos.StoreStatusPageDto
 import tmenier.fr.databases.dtos.StoreStatusPageGroupDto
 import tmenier.fr.databases.repositories.StatusPageRepository
 import tmenier.fr.statuspages.requests.StoreStatusPageRequest
-import tmenier.fr.statuspages.services.StatusPageRetention
 import java.util.UUID
 
 @ApplicationScoped
 class StoreStatusPageAction(
     private val statusPageRepository: StatusPageRepository,
-    private val statusPageRetention: StatusPageRetention,
 ) {
     @Transactional
     fun execute(
@@ -57,13 +55,6 @@ class StoreStatusPageAction(
         val probeIds = payload.groups.flatMap { it.probeIds }
         if (probeIds.size != probeIds.toSet().size) {
             throw BadRequestException("A monitor can only appear once on a status page")
-        }
-
-        val retentionDays = statusPageRetention.shortestDays(probeIds)
-        if (retentionDays != null && payload.uptimePeriod.requiredRetentionDays > retentionDays) {
-            throw BadRequestException(
-                "A monitor of this page keeps its checks $retentionDays days: the availability cannot go back further",
-            )
         }
     }
 }

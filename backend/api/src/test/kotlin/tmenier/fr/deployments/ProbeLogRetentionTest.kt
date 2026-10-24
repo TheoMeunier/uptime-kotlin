@@ -30,17 +30,44 @@ class ProbeLogRetentionTest {
     @Inject
     lateinit var retention: ProbeLogRetentionService
 
+    @Inject
+    lateinit var rollups: RollupFixtures
+
     private val now = Instant.now()
     private val ages = listOf(1L, 29L, 45L, 100L, 400L)
     private val probes = mutableListOf<UUID>()
 
     @BeforeEach
-    fun resetDefault() = fixtures.setDefault(null)
+    fun resetDefault() {
+        fixtures.setDefault(null)
+        rollups.setWatermark(now.truncatedTo(ChronoUnit.HOURS))
+    }
 
     @AfterEach
     fun cleanUp() {
         probes.forEach(fixtures::delete)
         fixtures.setDefault(null)
+        rollups.setWatermark(null)
+    }
+
+    @Test
+    fun `nothing is purged while the hourly rollups never ran`() {
+        rollups.setWatermark(null)
+        val probe = fixtures.probeWithLogs(override = 30, ageInDays = ages, now = now).also(probes::add)
+
+        retention.purge(now)
+
+        assertEquals(ages.size.toLong(), fixtures.logCount(probe))
+    }
+
+    @Test
+    fun `a check past its retention is kept until its hour is summarised`() {
+        rollups.setWatermark(now.minus(50, ChronoUnit.DAYS).truncatedTo(ChronoUnit.HOURS))
+        val probe = fixtures.probeWithLogs(override = 30, ageInDays = listOf(1L, 45L, 60L), now = now).also(probes::add)
+
+        retention.purge(now)
+
+        assertEquals(2L, fixtures.logCount(probe), "45 days is past the retention but not rolled up yet; 60 days goes")
     }
 
     @Test

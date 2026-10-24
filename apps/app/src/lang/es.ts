@@ -427,7 +427,8 @@ const es: typeof en = {
 				'La comprobación falla si la respuesta es más lenta. Entre 1 y 5000 ms, ya que el cliente HTTP expira a los 5 s. Déjelo vacío para desactivar el umbral.',
 			remove: 'Esta acción es irreversible. Todos los datos asociados se eliminarán definitivamente',
 			check_now_disabled: 'Reanude este monitor para lanzar una comprobación.',
-			purge_logs: 'Esto eliminará definitivamente todo el historial de este monitor.',
+			purge_logs:
+				'Esto eliminará definitivamente los resultados detallados de este monitor. Su historial de disponibilidad se conserva.',
 			dns_server: 'Cloudflare es el servidor predeterminado. Puede cambiar de resolutor en cualquier momento.',
 			dns_port: 'Puerto del servidor DNS. 53 de forma predeterminada. Puede cambiarlo en cualquier momento.',
 			smtp_security:
@@ -834,11 +835,6 @@ const es: typeof en = {
 			default_layout_description: 'Los visitantes pueden cambiarla; su elección se recuerda.',
 			uptime_period: 'Disponibilidad mostrada',
 			uptime_period_description: 'Hasta dónde llega la barra de cada monitor.',
-			uptime_period_description_limited:
-				'Hasta dónde llega la barra de cada monitor. Un monitor de esta página conserva sus comprobaciones {{days}} días.',
-			uptime_period_retention: '(retención {{days}} d)',
-			uptime_period_too_long:
-				'Un monitor de esta página conserva sus comprobaciones {{days}} días: elija un periodo más corto.',
 			save: 'Guardar',
 			unsaved: 'Cambios sin guardar',
 			layout_title: 'Grupos y monitores',
@@ -1014,10 +1010,10 @@ const es: typeof en = {
 			custom: 'Personalizado…',
 		},
 		description_probe:
-			'Los resultados más antiguos se eliminan cada noche. Los uptimes de 24 h / 7 d / 30 d necesitan al menos 30 días.',
+			'Los resultados detallados más antiguos se eliminan cada noche. El historial de disponibilidad se conserva en resúmenes por hora.',
 		description_default:
-			'Se aplica a todos los monitores sin retención propia. Mínimo 30 días, para que el uptime de 30 días siga siendo correcto.',
-		validation: 'La retención debe estar entre 30 y 3650 días',
+			'Se aplica a todos los monitores sin retención propia. Solo se eliminan los resultados detallados: la disponibilidad conserva todo su historial. Mínimo 7 días.',
+		validation: 'La retención debe estar entre 7 y 3650 días',
 		alerts: {
 			updated: 'Retención actualizada',
 		},
