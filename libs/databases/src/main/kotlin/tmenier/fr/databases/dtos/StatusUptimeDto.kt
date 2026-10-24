@@ -40,3 +40,12 @@ data class PublicStatusUptimeDto(
     val timezone: String,
     val probes: List<ProbeUptimeBarDto>,
 )
+
+@RegisterForReflection
+data class UptimeCounts(
+    val total: Long,
+    val successes: Long,
+    val lastSuccessAt: Instant?,
+) {
+    val percent: Double get() = if (total == 0L) 100.0 else successes * 100.0 / total
+}

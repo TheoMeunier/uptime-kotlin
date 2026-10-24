@@ -29,11 +29,11 @@ class LogRetentionTest {
     }
 
     @Test
-    fun `the instance default is empty or between 30 and 3650 days`() {
+    fun `the instance default is empty or between 7 and 3650 days`() {
         assertTrue(LogRetention.isValidDefault(null))
-        assertTrue(LogRetention.isValidDefault(30))
+        assertTrue(LogRetention.isValidDefault(7))
         assertTrue(LogRetention.isValidDefault(3650))
-        assertFalse(LogRetention.isValidDefault(29))
+        assertFalse(LogRetention.isValidDefault(6))
         assertFalse(LogRetention.isValidDefault(0))
         assertFalse(LogRetention.isValidDefault(3651))
     }
@@ -42,8 +42,8 @@ class LogRetentionTest {
     fun `a probe override also accepts 0 for keep forever`() {
         assertTrue(LogRetention.isValidOverride(null))
         assertTrue(LogRetention.isValidOverride(0))
-        assertTrue(LogRetention.isValidOverride(30))
-        assertFalse(LogRetention.isValidOverride(29))
+        assertTrue(LogRetention.isValidOverride(7))
+        assertFalse(LogRetention.isValidOverride(6))
         assertFalse(LogRetention.isValidOverride(-1))
         assertFalse(LogRetention.isValidOverride(3651))
     }

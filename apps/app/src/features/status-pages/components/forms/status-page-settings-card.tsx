@@ -15,16 +15,9 @@ interface StatusPageSettingsCardProps {
 	isSaving: boolean;
 	canSave: boolean;
 	showUnsaved: boolean;
-	retentionDays: number | null;
 }
 
-export default function StatusPageSettingsCard({
-	form,
-	isSaving,
-	canSave,
-	showUnsaved,
-	retentionDays,
-}: StatusPageSettingsCardProps) {
+export default function StatusPageSettingsCard({ form, isSaving, canSave, showUnsaved }: StatusPageSettingsCardProps) {
 	const { t } = useTranslation();
 	const { values, errors, showErrors } = form;
 
@@ -71,11 +64,7 @@ export default function StatusPageSettingsCard({
 						<FieldDescription>{t('status_pages.form.default_layout_description')}</FieldDescription>
 					</Field>
 
-					<UptimePeriodField
-						value={values.uptimePeriod}
-						onChange={form.setUptimePeriod}
-						retentionDays={retentionDays}
-					/>
+					<UptimePeriodField value={values.uptimePeriod} onChange={form.setUptimePeriod} />
 				</FieldGroup>
 
 				<Button type="submit" className="mt-6" disabled={isSaving || !canSave}>

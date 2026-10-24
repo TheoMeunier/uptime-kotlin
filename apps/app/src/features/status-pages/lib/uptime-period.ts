@@ -5,42 +5,25 @@ export type UptimePeriod = (typeof UptimePeriodEnum)[number];
 
 interface PeriodSpec {
 	bars: number;
-	requiredDays: number;
 	unit: 'hours' | 'days';
 	span: number;
 }
 
 export const UPTIME_PERIODS: Record<UptimePeriod, PeriodSpec> = {
-	H1: { bars: 30, requiredDays: 1, unit: 'hours', span: 1 },
-	D1: { bars: 24, requiredDays: 1, unit: 'hours', span: 24 },
-	D7: { bars: 42, requiredDays: 7, unit: 'days', span: 7 },
-	D30: { bars: 30, requiredDays: 30, unit: 'days', span: 30 },
-	D60: { bars: 60, requiredDays: 60, unit: 'days', span: 60 },
-	D90: { bars: 90, requiredDays: 90, unit: 'days', span: 90 },
+	H1: { bars: 30, unit: 'hours', span: 1 },
+	D1: { bars: 24, unit: 'hours', span: 24 },
+	D7: { bars: 42, unit: 'days', span: 7 },
+	D30: { bars: 30, unit: 'days', span: 30 },
+	D60: { bars: 60, unit: 'days', span: 60 },
+	D90: { bars: 90, unit: 'days', span: 90 },
 };
 
 export const isAggregated = (period: UptimePeriod) => period !== 'H1';
 
-export function shortestRetentionDays(
-	probes: { log_retention_days?: number | null }[],
-	defaultDays: number | null | undefined
-): number | null {
-	const days = probes
-		.map((probe) => probe.log_retention_days ?? defaultDays ?? null)
-		.filter((value): value is number => value != null && value > 0);
-
-	return days.length > 0 ? Math.min(...days) : null;
-}
-
-export const isPeriodAllowed = (period: UptimePeriod, retentionDays: number | null) =>
-	retentionDays == null || UPTIME_PERIODS[period].requiredDays <= retentionDays;
-
 export type BucketState = 'up' | 'degraded' | 'down' | 'maintenance' | 'nodata';
 
-/** Below this availability a bucket is an outage; any failed or degraded check above it makes it degraded. */
 export const DOWN_BELOW_PERCENT = 99;
 
-/** Fill of a bar and colour of its label, per state. */
 export const BUCKET_TONE: Record<BucketState, { solid: string; text: string }> = {
 	up: { solid: 'bg-status-up', text: 'text-status-up-fg' },
 	degraded: { solid: 'bg-status-degraded', text: 'text-status-degraded-fg' },

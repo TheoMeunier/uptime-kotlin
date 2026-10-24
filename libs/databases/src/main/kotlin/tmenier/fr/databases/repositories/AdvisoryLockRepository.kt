@@ -21,5 +21,6 @@ class AdvisoryLockRepository(
         const val MAINTENANCE_MATERIALISER: Long = 8_110_004
         const val LOG_RETENTION: Long = 8_110_005
         const val SECRET_RE_ENCRYPTION: Long = 8_110_006
+        const val LOG_ROLLUP: Long = 8_110_007
     }
 }

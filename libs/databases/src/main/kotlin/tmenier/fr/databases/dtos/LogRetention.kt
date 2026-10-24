@@ -3,7 +3,7 @@ package tmenier.fr.databases.dtos
 import io.quarkus.runtime.annotations.RegisterForReflection
 
 object LogRetention {
-    const val MIN_DAYS: Int = 30
+    const val MIN_DAYS: Int = 7
     const val MAX_DAYS: Int = 3650
     const val KEEP_FOREVER: Int = 0
 

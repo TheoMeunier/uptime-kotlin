@@ -431,7 +431,8 @@ const fr: typeof en = {
 				'La vérification échoue si la réponse est plus lente. Entre 1 et 5000 ms, le client HTTP expirant au bout de 5 s. Laissez vide pour désactiver le seuil.',
 			remove: 'Cette action est irréversible. Toutes les données associées seront définitivement supprimées',
 			check_now_disabled: 'Reprenez cette sonde pour lancer une vérification.',
-			purge_logs: 'Cela supprimera définitivement tout l’historique de cette sonde.',
+			purge_logs:
+				'Cela supprimera définitivement le détail des checks de cette sonde. Son historique d’uptime est conservé.',
 			dns_server: 'Cloudflare est le serveur par défaut. Vous pouvez changer de résolveur à tout moment.',
 			dns_port: 'Port du serveur DNS. 53 par défaut. Vous pouvez le changer à tout moment.',
 			smtp_security:
@@ -841,11 +842,6 @@ const fr: typeof en = {
 			default_layout_description: 'Les visiteurs peuvent toujours changer ; leur choix est mémorisé.',
 			uptime_period: 'Disponibilité affichée',
 			uptime_period_description: 'Jusqu’où remonte la barre de chaque sonde.',
-			uptime_period_description_limited:
-				'Jusqu’où remonte la barre de chaque sonde. Une sonde de cette page conserve ses checks {{days}} jours.',
-			uptime_period_retention: '(rétention {{days}} j)',
-			uptime_period_too_long:
-				'Une sonde de cette page conserve ses checks {{days}} jours : choisissez une durée plus courte.',
 			save: 'Enregistrer',
 			unsaved: 'Modifications non enregistrées',
 			layout_title: 'Groupes et sondes',
@@ -1021,10 +1017,10 @@ const fr: typeof en = {
 			custom: 'Personnalisé…',
 		},
 		description_probe:
-			'Les résultats plus anciens sont supprimés chaque nuit. Les uptimes 24 h / 7 j / 30 j demandent au moins 30 jours.',
+			'Le détail des checks plus anciens est supprimé chaque nuit. L’historique d’uptime, résumé heure par heure, est conservé.',
 		description_default:
-			'S’applique à toutes les sondes sans durée propre. Minimum 30 jours, pour que l’uptime 30 jours reste juste.',
-		validation: 'La rétention doit être comprise entre 30 et 3650 jours',
+			'S’applique à toutes les sondes sans durée propre. Seul le détail des checks est supprimé : les uptimes gardent tout leur historique. Minimum 7 jours.',
+		validation: 'La rétention doit être comprise entre 7 et 3650 jours',
 		alerts: {
 			updated: 'Rétention mise à jour',
 		},

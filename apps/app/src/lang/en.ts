@@ -421,7 +421,8 @@ const en = {
 				'The check fails when the response is slower. Between 1 and 5000 ms, since the HTTP client times out after 5 s. Leave empty to disable the threshold.',
 			remove: 'This action is irreversible. All associated data will be permanently deleted',
 			check_now_disabled: 'Resume this monitor to run a check.',
-			purge_logs: 'This will permanently delete the full history for this monitor.',
+			purge_logs:
+				'This will permanently delete the detailed check results of this monitor. Its uptime history is kept.',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
 			smtp_security:
@@ -824,10 +825,6 @@ const en = {
 			default_layout_description: 'Visitors can still switch; their choice is remembered.',
 			uptime_period: 'Availability shown',
 			uptime_period_description: 'How far back the bar of each monitor goes.',
-			uptime_period_description_limited:
-				'How far back the bar of each monitor goes. A monitor of this page keeps its checks {{days}} days.',
-			uptime_period_retention: '(retention {{days}} d)',
-			uptime_period_too_long: 'A monitor of this page keeps its checks {{days}} days: choose a shorter period.',
 			save: 'Save',
 			unsaved: 'Unsaved changes',
 			layout_title: 'Groups and monitors',
@@ -1001,10 +998,10 @@ const en = {
 			custom: 'Custom…',
 		},
 		description_probe:
-			'Check results older than this are deleted every night. 24h / 7d / 30d uptimes need at least 30 days.',
+			'Detailed check results older than this are deleted every night. The uptime history is kept in hourly summaries and is not affected.',
 		description_default:
-			'Applies to every monitor that has no retention of its own. Minimum 30 days, so that the 30-day uptime stays accurate.',
-		validation: 'Retention must be at least 30 days and at most 3650 days',
+			'Applies to every monitor that has no retention of its own. Only detailed check results are deleted: uptimes keep their whole history. Minimum 7 days.',
+		validation: 'Retention must be at least 7 days and at most 3650 days',
 		alerts: {
 			updated: 'Retention updated',
 		},

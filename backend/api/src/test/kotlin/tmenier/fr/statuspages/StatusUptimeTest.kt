@@ -8,13 +8,15 @@ import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.statuspages.StatusPageUptimePeriod
-import tmenier.fr.common.exceptions.common.BadRequestException
 import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.deployments.ApiOnlyProfile
+import tmenier.fr.deployments.RollupFixtures
 import tmenier.fr.incidents.IncidentFixtures
+import tmenier.fr.schedulers.jobs.ProbeLogRollupService
 import tmenier.fr.statuspages.actions.StoreStatusPageAction
 import tmenier.fr.statuspages.requests.StoreStatusPageGroupRequest
 import tmenier.fr.statuspages.requests.StoreStatusPageRequest
@@ -39,6 +41,12 @@ class StatusUptimeTest {
     @Inject
     lateinit var uptime: StatusUptimeService
 
+    @Inject
+    lateinit var rollups: RollupFixtures
+
+    @Inject
+    lateinit var rollupJob: ProbeLogRollupService
+
     private val createdProbes = mutableListOf<UUID>()
     private val createdPages = mutableListOf<UUID>()
 
@@ -47,10 +55,14 @@ class StatusUptimeTest {
     /** 14:00 in Paris (UTC+2). */
     private val now = Instant.parse("2026-10-20T12:00:00Z")
 
+    @BeforeEach
+    fun readRawChecks() = rollups.setWatermark(null)
+
     @AfterEach
     fun cleanUp() {
         createdPages.forEach(fixtures::deletePage)
         createdProbes.forEach(probes::delete)
+        rollups.setWatermark(null)
     }
 
     @Test
@@ -102,13 +114,32 @@ class StatusUptimeTest {
     }
 
     @Test
-    fun `a page cannot go back further than the shortest retention of its monitors`() {
-        val short = probe().also { fixtures.retention(it, 30) }
+    fun `a page shows 90 days whatever the retention of its monitors`() {
+        val short = probe().also { fixtures.retention(it, 7) }
         val forever = probe().also { fixtures.retention(it, 0) }
 
-        assertThrows(BadRequestException::class.java) { page(StatusPageUptimePeriod.D60, short, forever) }
-        assertDoesNotThrow { page(StatusPageUptimePeriod.D30, short, forever) }
-        assertDoesNotThrow { page(StatusPageUptimePeriod.D90, forever) }
+        assertDoesNotThrow { page(StatusPageUptimePeriod.D90, short, forever) }
+    }
+
+    @Test
+    fun `day buckets past the raw retention come from the hourly rollups`() {
+        val probe = probe()
+        val slug = page(StatusPageUptimePeriod.D30, probe)
+        // 1 October, 10:00 in Paris; and 20 October, 11:00 in Paris.
+        fixtures.log(probe, Instant.parse("2026-10-01T08:00:00Z"), SUCCESS)
+        fixtures.log(probe, Instant.parse("2026-10-01T08:30:00Z"), FAILURE)
+        fixtures.log(probe, Instant.parse("2026-10-20T09:00:00Z"), SUCCESS)
+
+        rollups.setWatermark(Instant.parse("2026-09-20T00:00:00Z"))
+        rollupJob.rollUp(now)
+        rollups.deleteRawBefore(probe, Instant.parse("2026-10-20T00:00:00Z"))
+
+        val bar = uptime.forPage(slug, paris, now).probes.single()
+        val firstOfOctober = bar.buckets.single { it.startsAt == Instant.parse("2026-09-30T22:00:00Z") }
+        assertEquals(2, firstOfOctober.total, "the raw checks are gone, their hour is not")
+        assertEquals(1, firstOfOctober.failures)
+        assertEquals(1, bar.buckets.last().successes)
+        assertEquals(2 * 100.0 / 3, bar.uptimePercent!!, 0.001)
     }
 
     @Test

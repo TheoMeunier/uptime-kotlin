@@ -7,7 +7,7 @@ import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.databases.dtos.ProbeUptimeBarDto
 import tmenier.fr.databases.dtos.PublicStatusUptimeDto
 import tmenier.fr.databases.dtos.UptimeBucketDto
-import tmenier.fr.databases.repositories.ProbeMonitorRepository
+import tmenier.fr.databases.repositories.ProbeLogRollupRepository
 import tmenier.fr.databases.repositories.StatusPageRepository
 import java.time.Duration
 import java.time.Instant
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
 @ApplicationScoped
 class StatusUptimeService(
     private val statusPageRepository: StatusPageRepository,
-    private val probeMonitorRepository: ProbeMonitorRepository,
+    private val rollupRepository: ProbeLogRollupRepository,
 ) {
     private val cache = ConcurrentHashMap<String, Entry>()
 
@@ -57,8 +57,8 @@ class StatusUptimeService(
         val starts = bucketStarts(period, LocalDateTime.ofInstant(now, zone))
         val from = starts.first().atZone(zone).toInstant()
         val rows =
-            probeMonitorRepository
-                .uptimeBuckets(probeIds, from, zone, period.bucket)
+            rollupRepository
+                .uptimeBuckets(probeIds, from, now, zone, period.bucket)
                 .associateBy { it.probeId to it.localStart }
 
         return probeIds.map { probeId ->
