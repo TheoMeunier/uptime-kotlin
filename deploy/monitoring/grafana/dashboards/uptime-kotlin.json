@@ -11,7 +11,7 @@
   "liveNow": false,
   "fiscalYearStartMonth": 0,
   "schemaVersion": 39,
-  "version": 6,
+  "version": 9,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -142,6 +142,7 @@
         "type": "query",
         "name": "instance",
         "label": "Instance",
+        "description": "Filters what each process measures itself: checks run, CPU, memory, API. Not the probes, queues and alerts, read from the shared database.",
         "datasource": {
           "type": "prometheus",
           "uid": "prometheus"
@@ -167,8 +168,37 @@
       },
       {
         "type": "query",
+        "name": "region",
+        "label": "Region",
+        "description": "Worker region (SCHEDULER_WORKER_NAME). Filters the worker panels.",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": "label_values(uptime_worker_heartbeat_age_seconds, region)",
+        "definition": "label_values(uptime_worker_heartbeat_age_seconds, region)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "sort": 1,
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": [],
+        "hide": 0
+      },
+      {
+        "type": "query",
         "name": "protocol",
         "label": "Protocol",
+        "description": "",
         "datasource": {
           "type": "prometheus",
           "uid": "prometheus"
@@ -212,7 +242,7 @@
       "type": "table",
       "id": 2,
       "title": "Alerts firing",
-      "description": "Alerts of deploy/monitoring/alerts.yml firing now. They are also drawn as red bands on every graph.",
+      "description": "Alerts of deploy/monitoring/alerts.yml firing now. They are also drawn as red bands on every graph. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -386,8 +416,103 @@
     {
       "type": "stat",
       "id": 3,
+      "title": "Monitoring",
+      "description": "Down: the Probe Checks are not run (no active worker, or the queue lags by more than a minute). Degraded: any other alert firing, listed above. OK: no alert. Same value for every instance (shared database): the Instance filter does not apply.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(ALERTS{alertstate=\"firing\",alertname=~\"UptimeKotlinNoActiveWorker|UptimeKotlinProbeChecksLagging\"}) * 2) or max(ALERTS{alertstate=\"firing\",alertname=~\"UptimeKotlin.*\"}) or vector(0)",
+          "legendFormat": "",
+          "range": false,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "OK",
+                  "color": "green",
+                  "index": 0
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange",
+                  "index": 1
+                },
+                "2": {
+                  "text": "Down",
+                  "color": "red",
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "wideLayout": true,
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 56
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "id": 4,
       "title": "Probes failing",
-      "description": "Enabled probes whose last check failed.",
+      "description": "Enabled probes whose last check failed. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -395,7 +520,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 0,
+        "x": 8,
         "y": 5
       },
       "targets": [
@@ -435,82 +560,7 @@
             {
               "title": "Open Probes now, by state",
               "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-18&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 4,
-      "title": "Checks per minute",
-      "description": "Probe Checks run by the selected instances, averaged over 5 minutes.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 4,
-        "y": 5
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(rate(uptime_probe_checks_total{instance=~\"$instance\"}[5m])) * 60",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "noValue": "0",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          },
-          "decimals": 1,
-          "links": [
-            {
-              "title": "Open Checks per minute, by result",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-16&${__url_time_range}&${instance:queryparam}"
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-15&${__url_time_range}&${instance:queryparam}"
             }
           ]
         },
@@ -539,8 +589,8 @@
     {
       "type": "stat",
       "id": 5,
-      "title": "Failed checks",
-      "description": "Share of checks ending in failure or technical error over 5 minutes, retries of a failing probe included.",
+      "title": "Checks on schedule",
+      "description": "Checks run per minute by all the instances over 15 minutes, and the share of the expected checks (60 / interval for every enabled probe) that were not run. Retries of failing probes add checks and can hide a shortfall. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -548,7 +598,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 8,
+        "x": 12,
         "y": 5
       },
       "targets": [
@@ -558,7 +608,155 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(uptime_probe_checks_total{result=~\"failure|error\",instance=~\"$instance\"}[5m])) / sum(rate(uptime_probe_checks_total{instance=~\"$instance\"}[5m]))",
+          "expr": "(sum(rate(uptime_probe_checks_total[15m])) or vector(0)) * 60",
+          "legendFormat": "per min",
+          "range": false,
+          "instant": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "clamp_min(1 - (sum(rate(uptime_probe_checks_total[15m])) or vector(0)) * 60 / max(uptime_probe_expected_checks_per_minute > 0), 0)",
+          "legendFormat": "missed",
+          "range": false,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "links": [
+            {
+              "title": "Open Checks per minute, by result",
+              "targetBlank": false,
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-13&${__url_time_range}&${instance:queryparam}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "per min"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "missed"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.05
+                    },
+                    {
+                      "color": "red",
+                      "value": 0.2
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "wideLayout": true,
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 28,
+          "titleSize": 12
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "id": 6,
+      "title": "Technical errors",
+      "description": "Checks that threw instead of producing a result, over the selected period: a problem of Uptime Kotlin, not of the monitored service (see the worker logs). Failing probes are counted apart.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(increase(uptime_probe_checks_total{result=\"error\",instance=~\"$instance\"}[$__range]))",
           "legendFormat": "",
           "range": false,
           "instant": true
@@ -566,7 +764,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percentunit",
+          "unit": "short",
           "noValue": "0",
           "color": {
             "mode": "thresholds"
@@ -580,20 +778,16 @@
               },
               {
                 "color": "orange",
-                "value": 0.05
-              },
-              {
-                "color": "red",
-                "value": 0.2
+                "value": 1
               }
             ]
           },
-          "decimals": 1,
+          "decimals": 0,
           "links": [
             {
               "title": "Open Checks per minute, by result",
               "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-16&${__url_time_range}&${instance:queryparam}"
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-13&${__url_time_range}&${instance:queryparam}"
             }
           ]
         },
@@ -621,9 +815,9 @@
     },
     {
       "type": "stat",
-      "id": 6,
+      "id": 7,
       "title": "Check queue lag",
-      "description": "Age of the oldest due Probe Check nobody has claimed yet. A few seconds at most when all is well.",
+      "description": "Age of the oldest due Probe Check nobody has claimed yet. A few seconds at most when all is well. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -631,7 +825,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 12,
+        "x": 20,
         "y": 5
       },
       "targets": [
@@ -675,7 +869,7 @@
             {
               "title": "Open Queue lag",
               "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-24&${__url_time_range}&${instance:queryparam}"
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-20&${__url_time_range}&${instance:queryparam}"
             }
           ]
         },
@@ -703,9 +897,281 @@
     },
     {
       "type": "stat",
-      "id": 7,
+      "id": 8,
+      "title": "Workers",
+      "description": "Instances running the Probe Checks (workers and all-in-one). Silent: no heartbeat for 30 s, their checks move to the others; listed for an hour, then purged. Filtered by Region, not by Instance.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "count(max by (worker, region) (uptime_worker_heartbeat_age_seconds{region=~\"$region\"}) < 30) or vector(0)",
+          "legendFormat": "active",
+          "range": false,
+          "instant": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "count(max by (worker, region) (uptime_worker_heartbeat_age_seconds{region=~\"$region\"}) >= 30) or vector(0)",
+          "legendFormat": "silent",
+          "range": false,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "links": [
+            {
+              "title": "Open Workers · heartbeat age",
+              "targetBlank": false,
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-18&${__url_time_range}&${instance:queryparam}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "active"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "text",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "silent"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "wideLayout": true,
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 28,
+          "titleSize": 12
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "id": 9,
+      "title": "Processes",
+      "description": "API and worker processes answering Prometheus on their management port. Details in Instances.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "count(up{job=~\"uptime-kotlin.*\"} == 1) or vector(0)",
+          "legendFormat": "up",
+          "range": false,
+          "instant": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "count(up{job=~\"uptime-kotlin.*\"} == 0) or vector(0)",
+          "legendFormat": "down",
+          "range": false,
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 0,
+          "noValue": "0",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "links": [
+            {
+              "title": "Open Instances",
+              "targetBlank": false,
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-23&${__url_time_range}&${instance:queryparam}"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "up"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": null
+                    },
+                    {
+                      "color": "text",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "down"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "justifyMode": "center",
+        "orientation": "vertical",
+        "wideLayout": true,
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 28,
+          "titleSize": 12
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "id": 10,
       "title": "Dead-lettered tasks",
-      "description": "Probe Checks and notifications that reached their maximum delivery attempts: they will not be retried.",
+      "description": "Probe Checks and notifications that reached their maximum delivery attempts: they will not be retried. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -714,7 +1180,7 @@
         "h": 4,
         "w": 4,
         "x": 16,
-        "y": 5
+        "y": 9
       },
       "targets": [
         {
@@ -753,7 +1219,7 @@
             {
               "title": "Open Queues now",
               "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-25&${__url_time_range}&${instance:queryparam}"
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-21&${__url_time_range}&${instance:queryparam}"
             }
           ]
         },
@@ -781,9 +1247,9 @@
     },
     {
       "type": "stat",
-      "id": 8,
-      "title": "Failed notifications · 24 h",
-      "description": "Failed delivery attempts over 24 hours. A retried delivery counts once per attempt.",
+      "id": 11,
+      "title": "Failed notifications",
+      "description": "Failed delivery attempts over the selected period. A retried delivery counts once per attempt.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -792,7 +1258,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 5
+        "y": 9
       },
       "targets": [
         {
@@ -801,7 +1267,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(increase(uptime_notification_deliveries_total{result=\"failed\"}[24h]))",
+          "expr": "sum(increase(uptime_notification_deliveries_total{result=\"failed\"}[$__range]))",
           "legendFormat": "",
           "range": false,
           "instant": true
@@ -832,490 +1298,7 @@
             {
               "title": "Open Failed attempts, by channel",
               "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-36&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 9,
-      "title": "Active workers",
-      "description": "Instances running the Probe Checks (workers and all-in-one) with a heartbeat younger than 30 s.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 0,
-        "y": 9
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "count(max by (worker, region) (uptime_worker_heartbeat_age_seconds) < 30) or vector(0)",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "noValue": "0",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "text",
-                "value": 1
-              }
-            ]
-          },
-          "links": [
-            {
-              "title": "Open Workers",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-21&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 10,
-      "title": "Silent workers",
-      "description": "No heartbeat for 30 s: their checks are taken over by the others. Listed for an hour, then purged.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 4,
-        "y": 9
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "count(max by (worker, region) (uptime_worker_heartbeat_age_seconds) >= 30)",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "noValue": "0",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          },
-          "links": [
-            {
-              "title": "Open Workers",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-21&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 11,
-      "title": "Processes down",
-      "description": "API and worker processes that do not answer Prometheus on their management port.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 8,
-        "y": 9
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "count(up{job=~\"uptime-kotlin.*\"} == 0)",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "noValue": "0",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          },
-          "links": [
-            {
-              "title": "Open Instances",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-27&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 12,
-      "title": "Worker saturation",
-      "description": "Busiest region: running checks / SCHEDULER_WORKER_CONCURRENCY.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 12,
-        "y": 9
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "max(sum by (region) (uptime_probe_worker_active) / sum by (region) (uptime_probe_worker_concurrency))",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percentunit",
-          "noValue": "0",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.8
-              },
-              {
-                "color": "red",
-                "value": 0.95
-              }
-            ]
-          },
-          "decimals": 0,
-          "links": [
-            {
-              "title": "Open Worker saturation",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-23&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 13,
-      "title": "Memory · highest",
-      "description": "Most loaded process: RAM used against its container limit. n/a without a limit or outside Linux (quarkusDev on macOS).",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 16,
-        "y": 9
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "max(process_resident_memory_bytes{job=~\"uptime-kotlin.*\",instance=~\"$instance\"} / process_memory_limit_bytes{job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percentunit",
-          "noValue": "n/a",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.8
-              },
-              {
-                "color": "red",
-                "value": 0.9
-              }
-            ]
-          },
-          "decimals": 0,
-          "links": [
-            {
-              "title": "Open Memory used",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-29&${__url_time_range}&${instance:queryparam}"
-            }
-          ]
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "wideLayout": true,
-        "showPercentChange": false,
-        "text": {
-          "valueSize": 34
-        }
-      }
-    },
-    {
-      "type": "stat",
-      "id": 14,
-      "title": "CPU · highest",
-      "description": "Most loaded process, share of the CPUs available to it.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 20,
-        "y": 9
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "max(process_cpu_usage{job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
-          "legendFormat": "",
-          "range": false,
-          "instant": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percentunit",
-          "noValue": "n/a",
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.7
-              },
-              {
-                "color": "red",
-                "value": 0.9
-              }
-            ]
-          },
-          "decimals": 0,
-          "links": [
-            {
-              "title": "Open CPU",
-              "targetBlank": false,
-              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-28&${__url_time_range}&${instance:queryparam}"
+              "url": "/d/uptime-kotlin/uptime-kotlin?viewPanel=panel-33&${__url_time_range}&${instance:queryparam}"
             }
           ]
         },
@@ -1343,7 +1326,7 @@
     },
     {
       "type": "row",
-      "id": 15,
+      "id": 12,
       "title": "Probe Checks",
       "collapsed": false,
       "gridPos": {
@@ -1356,9 +1339,9 @@
     },
     {
       "type": "timeseries",
-      "id": 16,
+      "id": 13,
       "title": "Checks per minute, by result",
-      "description": "Averaged over 5 minutes. error: the check threw instead of producing a result (see the worker logs).",
+      "description": "Averaged over 5 minutes. Dashed: the checks the enabled probes should produce. Below it for long: checks are missed. error: the check threw instead of producing a result (see the worker logs).",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1378,6 +1361,16 @@
           },
           "expr": "sum by (result) (rate(uptime_probe_checks_total{instance=~\"$instance\",protocol=~\"$protocol\"}[5m])) * 60",
           "legendFormat": "{{result}}",
+          "range": true
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(uptime_probe_expected_checks_per_minute)",
+          "legendFormat": "expected",
           "range": true
         }
       ],
@@ -1492,6 +1485,42 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "expected"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    6
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8e8e8e"
+                }
+              },
+              {
+                "id": "custom.stacking",
+                "value": {
+                  "mode": "none",
+                  "group": "A"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1513,7 +1542,7 @@
     },
     {
       "type": "timeseries",
-      "id": 17,
+      "id": 14,
       "title": "Check duration · mean, by protocol",
       "description": "Wall-clock duration of a check, timeout included, averaged over 5 minutes.",
       "datasource": {
@@ -1593,9 +1622,9 @@
     },
     {
       "type": "bargauge",
-      "id": 18,
+      "id": 15,
       "title": "Probes now, by state",
-      "description": "State of the last check of each probe. Refreshed every 30 s from the database.",
+      "description": "State of the last check of each probe. Refreshed every 30 s from the database. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -1717,7 +1746,7 @@
     },
     {
       "type": "timeseries",
-      "id": 19,
+      "id": 16,
       "title": "Checks per minute, by protocol",
       "description": "",
       "datasource": {
@@ -1798,7 +1827,7 @@
     },
     {
       "type": "row",
-      "id": 20,
+      "id": 17,
       "title": "Workers and queues",
       "collapsed": false,
       "gridPos": {
@@ -1810,17 +1839,17 @@
       "panels": []
     },
     {
-      "type": "table",
-      "id": 21,
-      "title": "Workers",
-      "description": "Instances running the Probe Checks, from the heartbeat they write every 10 s. Silent from 30 s: their checks move to the others.",
+      "type": "state-timeline",
+      "id": 18,
+      "title": "Workers · heartbeat age",
+      "description": "One lane per worker, coloured by the age of its last heartbeat (written every 10 s): green up to 20 s, orange up to 30 s, red beyond: silent, its checks move to the others. Hover for the age. A worker stopped on purpose stays listed for an hour before its heartbeat is purged. Filtered by Region, not by Instance.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "h": 6,
-        "w": 8,
+        "w": 24,
         "x": 0,
         "y": 30
       },
@@ -1831,256 +1860,32 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max by (worker, region) (uptime_worker_heartbeat_age_seconds)",
-          "legendFormat": "",
-          "range": false,
-          "instant": true,
-          "format": "table"
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "max by (worker, region) (uptime_worker_heartbeat_age_seconds) < bool 30",
-          "legendFormat": "",
-          "range": false,
-          "instant": true,
-          "format": "table"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "merge",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "job": true
-            },
-            "renameByName": {
-              "worker": "Worker",
-              "region": "Region",
-              "Value #A": "Last heartbeat",
-              "Value #B": "Status"
-            },
-            "indexByName": {
-              "worker": 0,
-              "region": 1,
-              "Value #A": 2,
-              "Value #B": 3
-            }
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Last heartbeat"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "s"
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": null
-                    },
-                    {
-                      "color": "orange",
-                      "value": 20
-                    },
-                    {
-                      "color": "red",
-                      "value": 30
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Status"
-            },
-            "properties": [
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "type": "value",
-                    "options": {
-                      "1": {
-                        "text": "Active",
-                        "color": "green",
-                        "index": 0
-                      },
-                      "0": {
-                        "text": "Silent",
-                        "color": "red",
-                        "index": 1
-                      }
-                    }
-                  }
-                ]
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background",
-                  "mode": "basic"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "thresholds"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "red",
-                      "value": null
-                    },
-                    {
-                      "color": "green",
-                      "value": 1
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm",
-        "footer": {
-          "show": false
-        },
-        "sortBy": [
-          {
-            "displayName": "Worker",
-            "desc": false
-          }
-        ]
-      }
-    },
-    {
-      "type": "state-timeline",
-      "id": 22,
-      "title": "Worker activity",
-      "description": "A worker stopped on purpose stays listed, silent, for an hour before its heartbeat is purged.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 16,
-        "x": 8,
-        "y": 30
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "max by (worker, region) (uptime_worker_heartbeat_age_seconds) < bool 30",
+          "expr": "max by (worker, region) (uptime_worker_heartbeat_age_seconds{region=~\"$region\"})",
           "legendFormat": "{{worker}}",
           "range": true
         }
       ],
       "fieldConfig": {
         "defaults": {
+          "unit": "s",
+          "decimals": 0,
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "1": {
-                  "text": "Active",
-                  "color": "green",
-                  "index": 0
-                },
-                "0": {
-                  "text": "Silent",
-                  "color": "red",
-                  "index": 1
-                }
-              }
-            }
-          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "green",
                 "value": null
               },
               {
-                "color": "green",
-                "value": 1
+                "color": "orange",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 30
               }
             ]
           },
@@ -2093,11 +1898,13 @@
       },
       "options": {
         "showValue": "never",
-        "mergeValues": true,
+        "mergeValues": false,
         "rowHeight": 0.7,
         "alignValue": "left",
         "legend": {
-          "showLegend": false
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
         },
         "tooltip": {
           "mode": "single"
@@ -2106,9 +1913,9 @@
     },
     {
       "type": "timeseries",
-      "id": 23,
+      "id": 19,
       "title": "Worker saturation",
-      "description": "Running checks / SCHEDULER_WORKER_CONCURRENCY. Above the line for long: add workers or concurrency.",
+      "description": "Running checks / SCHEDULER_WORKER_CONCURRENCY. Above the line for long: add workers or concurrency. Filtered by Region, not by Instance.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -2126,7 +1933,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (region) (avg_over_time(uptime_probe_worker_active[1m])) / sum by (region) (uptime_probe_worker_concurrency)",
+          "expr": "sum by (region) (avg_over_time(uptime_probe_worker_active{region=~\"$region\"}[1m])) / sum by (region) (uptime_probe_worker_concurrency{region=~\"$region\"})",
           "legendFormat": "{{region}}",
           "range": true
         }
@@ -2191,9 +1998,9 @@
     },
     {
       "type": "timeseries",
-      "id": 24,
+      "id": 20,
       "title": "Queue lag",
-      "description": "Age of the oldest due task waiting to be claimed. The line is the alert threshold of the Probe Checks.",
+      "description": "Age of the oldest due task waiting to be claimed. The line is the alert threshold of the Probe Checks. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -2275,9 +2082,9 @@
     },
     {
       "type": "table",
-      "id": 25,
+      "id": 21,
       "title": "Queues now",
-      "description": "Scheduled includes the next run of every enabled probe. Given up: maximum delivery attempts reached, never retried.",
+      "description": "Scheduled includes the next run of every enabled probe. Given up: maximum delivery attempts reached, never retried. Same value for every instance (shared database): the Instance filter does not apply.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -2489,7 +2296,7 @@
     },
     {
       "type": "row",
-      "id": 26,
+      "id": 22,
       "title": "Instances · CPU and memory",
       "collapsed": false,
       "gridPos": {
@@ -2502,7 +2309,7 @@
     },
     {
       "type": "table",
-      "id": 27,
+      "id": 23,
       "title": "Instances",
       "description": "Every API and worker process scraped by Prometheus. Several versions at once: a rolling upgrade is unfinished. Restarts in a loop show here first.",
       "datasource": {
@@ -2546,7 +2353,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max by (job, role, instance, version) (((changes(uptime_process_start_time_seconds{job=~\"uptime-kotlin.*\"}[24h]) or on (job, instance) changes(process_start_time_seconds{job=~\"uptime-kotlin.*\"}[24h]))) * on (job, instance) group_left (version) uptime_build_info{job=~\"uptime-kotlin.*\"} or on (job, instance) label_replace(((changes(uptime_process_start_time_seconds{job=~\"uptime-kotlin.*\"}[24h]) or on (job, instance) changes(process_start_time_seconds{job=~\"uptime-kotlin.*\"}[24h]))), \"version\", \"unknown\", \"\", \"\"))",
+          "expr": "max by (job, role, instance, version) (((changes(uptime_process_start_time_seconds{job=~\"uptime-kotlin.*\"}[$__range]) or on (job, instance) changes(process_start_time_seconds{job=~\"uptime-kotlin.*\"}[$__range]))) * on (job, instance) group_left (version) uptime_build_info{job=~\"uptime-kotlin.*\"} or on (job, instance) label_replace(((changes(uptime_process_start_time_seconds{job=~\"uptime-kotlin.*\"}[$__range]) or on (job, instance) changes(process_start_time_seconds{job=~\"uptime-kotlin.*\"}[$__range]))), \"version\", \"unknown\", \"\", \"\"))",
           "legendFormat": "",
           "range": false,
           "instant": true,
@@ -2596,7 +2403,7 @@
               "version": "Version",
               "Value #A": "State",
               "Value #B": "Up for",
-              "Value #C": "Restarts · 24 h",
+              "Value #C": "Restarts",
               "Value #D": "CPU",
               "Value #E": "Memory"
             },
@@ -2712,7 +2519,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Restarts · 24 h"
+              "options": "Restarts"
             },
             "properties": [
               {
@@ -2859,7 +2666,7 @@
     },
     {
       "type": "timeseries",
-      "id": 28,
+      "id": 24,
       "title": "CPU",
       "description": "Share of the CPUs available to the process.",
       "datasource": {
@@ -2868,7 +2675,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
+        "w": 12,
         "x": 0,
         "y": 53
       },
@@ -2944,7 +2751,7 @@
     },
     {
       "type": "timeseries",
-      "id": 29,
+      "id": 25,
       "title": "Memory used",
       "description": "RAM actually used (VmRSS) against the container limit, dashed.",
       "datasource": {
@@ -2953,8 +2760,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 8,
+        "w": 12,
+        "x": 12,
         "y": 53
       },
       "targets": [
@@ -3064,368 +2871,383 @@
       }
     },
     {
-      "type": "timeseries",
-      "id": 30,
-      "title": "Heap used",
-      "description": "Saw teeth are the garbage collector at work. Native images publish fewer JVM metrics.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "type": "row",
+      "id": 26,
+      "title": "Runtime details",
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 53
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum by (role, instance) (jvm_memory_used_bytes{area=\"heap\",job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
-          "legendFormat": "{{role}} · {{instance}}",
-          "range": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "spanNulls": true,
-            "axisBorderShow": false,
-            "axisSoftMin": 0,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "color": {
-            "mode": "palette-classic"
-          },
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
-          "calcs": [
-            "mean",
-            "max"
-          ]
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      }
-    },
-    {
-      "type": "timeseries",
-      "id": 31,
-      "title": "Database connections",
-      "description": "Connection pool of each process. Waiting above 0 for long: raise QUARKUS_DATASOURCE_JDBC_MAX_SIZE.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
+        "h": 1,
+        "w": 24,
         "x": 0,
         "y": 61
       },
-      "targets": [
+      "panels": [
         {
-          "refId": "A",
+          "type": "timeseries",
+          "id": 27,
+          "title": "Heap used",
+          "description": "Saw teeth are the garbage collector at work. Native images publish fewer JVM metrics.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (role, instance) (agroal_active_count{job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
-          "legendFormat": "{{role}} · {{instance}} · active",
-          "range": true
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 62
           },
-          "expr": "sum by (role, instance) (agroal_awaiting_count{job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
-          "legendFormat": "{{role}} · {{instance}} · waiting",
-          "range": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "spanNulls": true,
-            "axisBorderShow": false,
-            "axisSoftMin": 0,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (role, instance) (jvm_memory_used_bytes{area=\"heap\",job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
+              "legendFormat": "{{role}} · {{instance}}",
+              "range": true
             }
-          },
-          "color": {
-            "mode": "palette-classic"
-          },
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "decimals": 0
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": ".* waiting$"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "red"
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisBorderShow": false,
+                "axisSoftMin": 0,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
                 }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
               }
-            ]
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "mean",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
           }
-        ]
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
-          "calcs": [
-            "max"
-          ]
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      }
-    },
-    {
-      "type": "timeseries",
-      "id": 32,
-      "title": "Threads",
-      "description": "",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 8,
-        "y": 61
-      },
-      "targets": [
         {
-          "refId": "A",
+          "type": "timeseries",
+          "id": 28,
+          "title": "Database connections",
+          "description": "Connection pool of each process. Waiting above 0 for long: raise QUARKUS_DATASOURCE_JDBC_MAX_SIZE.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "jvm_threads_live_threads{job=~\"uptime-kotlin.*\",instance=~\"$instance\"}",
-          "legendFormat": "{{role}} · {{instance}}",
-          "range": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "spanNulls": true,
-            "axisBorderShow": false,
-            "axisSoftMin": 0,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 62
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (role, instance) (agroal_active_count{job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
+              "legendFormat": "{{role}} · {{instance}} · active",
+              "range": true
             },
-            "thresholdsStyle": {
-              "mode": "off"
+            {
+              "refId": "B",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum by (role, instance) (agroal_awaiting_count{job=~\"uptime-kotlin.*\",instance=~\"$instance\"})",
+              "legendFormat": "{{role}} · {{instance}} · waiting",
+              "range": true
             }
-          },
-          "color": {
-            "mode": "palette-classic"
-          },
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "fillOpacity": 10,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisBorderShow": false,
+                "axisSoftMin": 0,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "decimals": 0,
+              "noValue": "Off: set QUARKUS_DATASOURCE_JDBC_METRICS_ENABLED=true"
+            },
+            "overrides": [
               {
-                "color": "green",
-                "value": null
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": ".* waiting$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "red"
+                    }
+                  }
+                ]
               }
             ]
           },
-          "decimals": 0
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
         },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
-          "calcs": [
-            "mean",
-            "max"
-          ]
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      }
-    },
-    {
-      "type": "timeseries",
-      "id": 33,
-      "title": "Host CPU",
-      "description": "CPU of the machine, or of the container, as seen by each process.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 61
-      },
-      "targets": [
         {
-          "refId": "A",
+          "type": "timeseries",
+          "id": 29,
+          "title": "Threads",
+          "description": "",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "system_cpu_usage{job=~\"uptime-kotlin.*\",instance=~\"$instance\"}",
-          "legendFormat": "{{role}} · {{instance}}",
-          "range": true
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percentunit",
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "spanNulls": true,
-            "axisBorderShow": false,
-            "axisSoftMin": 0,
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 0,
+            "y": 69
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "jvm_threads_live_threads{job=~\"uptime-kotlin.*\",instance=~\"$instance\"}",
+              "legendFormat": "{{role}} · {{instance}}",
+              "range": true
             }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisBorderShow": false,
+                "axisSoftMin": 0,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "decimals": 0
+            },
+            "overrides": []
           },
-          "color": {
-            "mode": "palette-classic"
-          },
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "max": 1
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "mean",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
         },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true,
-          "calcs": [
-            "mean",
-            "max"
-          ]
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+        {
+          "type": "timeseries",
+          "id": 30,
+          "title": "Host CPU",
+          "description": "CPU of the machine, or of the container, as seen by each process.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 12,
+            "x": 12,
+            "y": 69
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "system_cpu_usage{job=~\"uptime-kotlin.*\",instance=~\"$instance\"}",
+              "legendFormat": "{{role}} · {{instance}}",
+              "range": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "gradientMode": "opacity",
+                "showPoints": "never",
+                "spanNulls": true,
+                "axisBorderShow": false,
+                "axisSoftMin": 0,
+                "stacking": {
+                  "mode": "none",
+                  "group": "A"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "color": {
+                "mode": "palette-classic"
+              },
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "max": 1
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "calcs": [
+                "mean",
+                "max"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
         }
-      }
+      ]
     },
     {
       "type": "row",
-      "id": 34,
+      "id": 31,
       "title": "Notifications",
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 76
       },
       "panels": [
         {
           "type": "timeseries",
-          "id": 35,
+          "id": 32,
           "title": "Delivery attempts",
           "description": "",
           "datasource": {
@@ -3436,7 +3258,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 69
+            "y": 77
           },
           "targets": [
             {
@@ -3537,7 +3359,7 @@
         },
         {
           "type": "timeseries",
-          "id": 36,
+          "id": 33,
           "title": "Failed attempts, by channel",
           "description": "Check the token or the webhook URL of the channel in Uptime Kotlin.",
           "datasource": {
@@ -3548,7 +3370,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 69
+            "y": 77
           },
           "targets": [
             {
@@ -3618,9 +3440,9 @@
         },
         {
           "type": "timeseries",
-          "id": 37,
+          "id": 34,
           "title": "Notification queue lag",
-          "description": "Age of the oldest notification due and not sent yet. The line is the alert threshold.",
+          "description": "Age of the oldest notification due and not sent yet. The line is the alert threshold. Same value for every instance (shared database): the Instance filter does not apply.",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -3629,7 +3451,7 @@
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 69
+            "y": 77
           },
           "targets": [
             {
@@ -3703,19 +3525,19 @@
     },
     {
       "type": "row",
-      "id": 38,
+      "id": 35,
       "title": "API",
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 77
+        "y": 85
       },
       "panels": [
         {
           "type": "timeseries",
-          "id": 39,
+          "id": 36,
           "title": "Requests per second, by status",
           "description": "",
           "datasource": {
@@ -3726,7 +3548,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 78
+            "y": 86
           },
           "targets": [
             {
@@ -3795,7 +3617,7 @@
         },
         {
           "type": "timeseries",
-          "id": 40,
+          "id": 37,
           "title": "Latency",
           "description": "Quarkus publishes no latency histogram by default: mean and slowest request only.",
           "datasource": {
@@ -3806,7 +3628,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 78
+            "y": 86
           },
           "targets": [
             {
@@ -3885,7 +3707,7 @@
         },
         {
           "type": "table",
-          "id": 41,
+          "id": 38,
           "title": "Slowest endpoints · mean over 5 min",
           "description": "",
           "datasource": {
@@ -3896,7 +3718,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 86
+            "y": 94
           },
           "targets": [
             {

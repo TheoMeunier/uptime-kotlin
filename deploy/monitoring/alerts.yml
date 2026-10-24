@@ -26,6 +26,20 @@ groups:
             Due Probe Checks wait in the queue: no worker claims them, or the workers are saturated
             (see uptime_probe_worker_active / uptime_probe_worker_concurrency, SCHEDULER_WORKER_CONCURRENCY).
 
+      - alert: UptimeKotlinProbeChecksMissed
+        expr: >-
+          (1 - (sum(rate(uptime_probe_checks_total[15m])) or vector(0)) * 60
+            / max(uptime_probe_expected_checks_per_minute > 0)) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $value | humanizePercentage }} of the expected Probe Checks are not run"
+          description: >-
+            Fewer checks run than the intervals of the enabled probes require, without a queue backlog:
+            look for technical errors and discarded tasks in the worker logs. Retries of failing probes
+            add checks and can hide a shortfall.
+
       - alert: UptimeKotlinNotificationsLagging
         expr: max(uptime_queue_lag_seconds{queue="notifications"}) > 120
         for: 5m

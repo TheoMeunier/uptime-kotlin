@@ -21,6 +21,9 @@ class QueueMetrics(
 ) {
     private val values = ConcurrentHashMap<String, AtomicLong>()
 
+    @Volatile
+    private var expectedChecksPerMinute = 0.0
+
     fun register(
         @Observes event: StartupEvent,
     ) {
@@ -29,6 +32,10 @@ class QueueMetrics(
             lagGauge(queue)
         }
         PROBE_STATES.forEach { state -> probeGauge(state) }
+        Gauge
+            .builder(EXPECTED_CHECKS, this) { metrics -> metrics.expectedChecksPerMinute }
+            .description("Probe Checks per minute the enabled probes should produce, retries excluded")
+            .register(registry)
     }
 
     @Scheduled(every = "30s", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
@@ -41,6 +48,8 @@ class QueueMetrics(
 
             val probes = repository.probesByState().groupBy({ probeState(it.enabled, it.status) }, { it.count })
             PROBE_STATES.forEach { state -> probeGauge(state).set(probes[state]?.sum() ?: 0L) }
+
+            expectedChecksPerMinute = expectedPerMinute(repository.enabledProbeIntervals())
         } catch (error: Exception) {
             logger.warn(error) { "Failed to refresh the queue and probe metrics" }
         }
@@ -87,12 +96,15 @@ class QueueMetrics(
         const val QUEUE_TASKS = "uptime.queue.tasks"
         const val QUEUE_LAG = "uptime.queue.lag.seconds"
         const val PROBES = "uptime.probes"
+        const val EXPECTED_CHECKS = "uptime.probe.expected.checks.per.minute"
         const val QUEUE_PROBE_CHECKS = "probe_checks"
         const val QUEUE_NOTIFICATIONS = "notifications"
         const val STATE_DISABLED = "disabled"
 
         private val QUEUES = listOf(QUEUE_PROBE_CHECKS, QUEUE_NOTIFICATIONS)
         private val PROBE_STATES = ProbeMonitorLogStatus.entries.map { it.name.lowercase() } + STATE_DISABLED
+
+        fun expectedPerMinute(intervalsSeconds: List<Int>): Double = intervalsSeconds.sumOf { interval -> 60.0 / maxOf(1, interval) }
 
         fun probeState(
             enabled: Boolean,

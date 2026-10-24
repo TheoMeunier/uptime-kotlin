@@ -82,6 +82,7 @@ class PrometheusMetricsTest {
             "uptime_queue_lag_seconds{",
             "uptime_worker_heartbeat_age_seconds{",
             "uptime_build_info{",
+            "uptime_probe_expected_checks_per_minute ",
             "uptime_process_start_time_seconds ",
         ).forEach { series -> assertTrue(body.contains(series), "$series missing from /q/metrics") }
     }
