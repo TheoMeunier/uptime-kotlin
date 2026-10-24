@@ -32,6 +32,12 @@ class OperationalMetricsRepository(
             .resultList
 
     @Transactional
+    fun enabledProbeIntervals(): List<Int> =
+        em
+            .createQuery("select p.interval from ProbesEntity p where p.enabled = true", Int::class.javaObjectType)
+            .resultList
+
+    @Transactional
     fun probesByState(): List<ProbeStateCount> =
         em
             .createQuery(
