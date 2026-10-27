@@ -57,6 +57,29 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				description: t('form.description.message_thread_id'),
 			},
 		],
+		[NotificationTypeEnum.MATRIX]: [
+			{
+				name: 'homeserver_url',
+				label: t('form.label.homeserver_url'),
+				input_type: 'text',
+				placeholder: 'https://matrix.example.org',
+				description: t('form.description.homeserver_url'),
+			},
+			{
+				name: 'access_token',
+				label: t('form.label.matrix_access_token'),
+				input_type: 'password',
+				placeholder: 'syt_...',
+				description: t('form.description.matrix_access_token'),
+			},
+			{
+				name: 'room_id',
+				label: t('form.label.room_id'),
+				input_type: 'text',
+				placeholder: '!abcdefghijkl:example.org',
+				description: t('form.description.room_id'),
+			},
+		],
 		[NotificationTypeEnum.NTFY]: [
 			{
 				name: 'server_url',

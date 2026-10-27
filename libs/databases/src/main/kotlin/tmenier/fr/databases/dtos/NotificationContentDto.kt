@@ -57,6 +57,13 @@ sealed interface NotificationContent {
     ) : NotificationContent
 
     @RegisterForReflection
+    data class Matrix(
+        val homeserverUrl: String,
+        val accessToken: String,
+        val roomId: String,
+    ) : NotificationContent
+
+    @RegisterForReflection
     data class WebPush(
         val subscriptions: List<WebPushSubscription> = emptyList(),
     ) : NotificationContent

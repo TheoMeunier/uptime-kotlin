@@ -61,6 +61,16 @@ const pagerDutyNotificationSchema = baseStoreNotificationSchema.extend({
 	severity: z.enum(['critical', 'error', 'warning', 'info']).optional().nullable(),
 });
 
+const matrixNotificationSchema = baseStoreNotificationSchema.extend({
+	notification_type: z.literal('MATRIX'),
+	homeserver_url: z.url(),
+	access_token: z.string().trim().max(1024).optional().nullable(),
+	room_id: z
+		.string()
+		.trim()
+		.regex(/^![^\s:]+(:\S+)?$/, i18n.t('validation.matrix_room_id')),
+});
+
 const webPushSubscriptionSchema = z.object({
 	endpoint: z.string(),
 	p256dh: z.string().optional().nullable(),
@@ -97,6 +107,7 @@ export const storeNotificationSchema = z.discriminatedUnion('notification_type',
 	gotifyNotificationSchema,
 	webPushNotificationSchema,
 	pagerDutyNotificationSchema,
+	matrixNotificationSchema,
 ]);
 
 export type NotificationFormMode = 'create' | 'update';
@@ -154,6 +165,14 @@ function createNotificationSchema(mode: NotificationFormMode) {
 				code: z.ZodIssueCode.custom,
 				message: i18n.t('validation.pagerduty_routing_key'),
 				path: ['routing_key'],
+			});
+		}
+
+		if (mode === 'create' && data.notification_type === 'MATRIX' && !data.access_token) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: i18n.t('validation.matrix_access_token'),
+				path: ['access_token'],
 			});
 		}
 

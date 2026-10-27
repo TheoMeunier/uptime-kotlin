@@ -11,4 +11,5 @@ enum class NotificationChannelsEnum {
     GOTIFY,
     WEB_PUSH,
     PAGERDUTY,
+    MATRIX,
 }

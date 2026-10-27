@@ -72,6 +72,9 @@ const es: typeof en = {
 			remove_access_token: 'Eliminar el token de acceso',
 			app_token: 'Token de aplicación',
 			routing_key: 'Clave de integración',
+			homeserver_url: 'URL del homeserver',
+			matrix_access_token: 'Token de acceso',
+			room_id: 'ID de la sala',
 			severity: 'Gravedad',
 			web_push: 'Notificaciones del navegador',
 		},
@@ -93,6 +96,12 @@ const es: typeof en = {
 			gotify_server_url:
 				'La dirección del servidor, sin /message. Detrás de un proxy inverso, incluya su ruta (p. ej. https://example.com/gotify).',
 			app_token: 'Se crea en la pestaña Apps de Gotify. Al editar, déjelo vacío para conservar el token actual.',
+			homeserver_url:
+				'Dirección del homeserver que aloja la cuenta del bot (p. ej. https://matrix.org). Detrás de un proxy inverso, incluya su ruta.',
+			matrix_access_token:
+				'Token de acceso de la cuenta del bot (Ajustes → Ayuda y acerca de en Element, o la API de inicio de sesión). Al editar, déjelo vacío para conservar el token actual.',
+			room_id:
+				'ID interno de la sala (!…:servidor, en Ajustes → Avanzado de Element), no un alias. El bot debe haberse unido a la sala. Las salas con cifrado de extremo a extremo no son compatibles: use una sala sin cifrar.',
 			routing_key:
 				'Clave de integración Events API v2 de un servicio de PagerDuty (pestaña Integrations). Al editar, déjela vacía para conservar la clave actual.',
 			severity:
@@ -169,6 +178,8 @@ const es: typeof en = {
 		ntfy_topic: 'Tema no válido (letras, dígitos, - y _, máx. 64 caracteres)',
 		gotify_app_token: 'Token de aplicación obligatorio',
 		pagerduty_routing_key: 'Clave de integración obligatoria',
+		matrix_room_id: 'ID de sala no válido (se espera !abcdef:example.org)',
+		matrix_access_token: 'Token de acceso obligatorio',
 		web_push_subscription: 'Añada al menos un navegador',
 		hostname: 'Nombre de host o dirección IP no válidos (p. ej. smtp.gmail.com)',
 	},
@@ -773,7 +784,7 @@ const es: typeof en = {
 			settings: {
 				title: 'Ajustes',
 				description:
-					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, ntfy, Gotify, PagerDuty, navegador, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
+					'Su cuenta, su contraseña y sobre todo las notificaciones — Discord, Slack, Teams, Telegram, Matrix, ntfy, Gotify, PagerDuty, navegador, correo o webhook — para enterarse de una caída al momento. El idioma, la retención de registros y esta guía también están aquí.',
 			},
 			done: {
 				title: 'Todo listo',

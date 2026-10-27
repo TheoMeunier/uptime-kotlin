@@ -40,6 +40,16 @@ class NotificationHttpClient(
             .POST(HttpRequest.BodyPublishers.ofString(json))
             .build()
 
+    fun putJson(
+        url: String,
+        json: String,
+        headers: Map<String, String> = emptyMap(),
+    ): HttpRequest =
+        request(url)
+            .apply { headers.forEach { (name, value) -> header(name, value) } }
+            .PUT(HttpRequest.BodyPublishers.ofString(json))
+            .build()
+
     fun send(request: HttpRequest): HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
 
     fun deliver(

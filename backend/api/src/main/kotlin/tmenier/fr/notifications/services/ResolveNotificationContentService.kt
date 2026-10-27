@@ -12,6 +12,7 @@ import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelMatrixRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelPagerDutyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelSlackRequest
@@ -101,6 +102,16 @@ class ResolveNotificationContentService(
                             ?.trim()
                             ?.lowercase()
                             ?.ifBlank { null },
+                )
+
+            is ValidNotificationChannelMatrixRequest ->
+                NotificationContent.Matrix(
+                    homeserverUrl = request.homeserverUrl.trim(),
+                    accessToken =
+                        requireNotNull(resolveToken(request.accessToken, existingContent<NotificationContent.Matrix>(existingNotification)?.accessToken)) {
+                            "Access token is required"
+                        },
+                    roomId = request.roomId.trim(),
                 )
 
             is ValidNotificationChannelWebPushRequest -> resolveWebPush(request, existingContent(existingNotification), isTesting)
