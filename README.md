@@ -42,8 +42,8 @@
 
 <a href="https://demo.uptime-kotlin.com">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.webp">
-    <img src="docs/images/demo.webp" alt="Uptime Kotlin demo: dashboard, creating a monitor with its notifications, monitor details, incidents, announcements and a public status page" width="900">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif">
+    <img src="docs/images/demo.gif" alt="Uptime Kotlin demo: dashboard, creating a monitor with its notifications, monitor details, incidents, announcements and a public status page" width="900">
   </picture>
 </a>
 </div>
