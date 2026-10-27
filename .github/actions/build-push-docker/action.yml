@@ -56,6 +56,7 @@ runs:
         load: ${{ inputs.push != 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
 
     - name: Build and push
       if: ${{ inputs.docker-path-file == '' }}
@@ -66,3 +67,4 @@ runs:
         load: ${{ inputs.push != 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: APP_VERSION=${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}

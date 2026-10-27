@@ -996,6 +996,7 @@ const es: typeof en = {
 			guide: 'Guía de uso',
 			documentation: 'Documentación',
 			new_tab: '(se abre en una pestaña nueva)',
+			release_notes: 'Notas de la versión',
 			dashboard: 'Panel',
 			status_page: 'Páginas de estado',
 			announcements: 'Anuncios',

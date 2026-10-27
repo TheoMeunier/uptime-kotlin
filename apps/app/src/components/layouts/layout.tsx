@@ -52,6 +52,7 @@ import useTabStatus from '@/hooks/use-tab-status.ts';
 import ThemeToggle from '@/components/molecules/theme-toggle.tsx';
 import LastUpdated from '@/components/molecules/last-updated.tsx';
 import SidebarMonitors from '@/components/molecules/sidebar-monitors.tsx';
+import SidebarVersion from '@/components/molecules/sidebar-version.tsx';
 import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
 import GuidedTour from '@/features/onboarding/components/guided-tour.tsx';
 import useOnboardingTour from '@/features/onboarding/hooks/useOnboardingTour.ts';
@@ -145,13 +146,14 @@ export default function Layout() {
 				<SidebarFooter>
 					<SidebarMenu>
 						<SidebarMenuItem>
-							<SidebarMenuButton asChild>
+							<SidebarMenuButton asChild className="pr-20">
 								<a href={DOCUMENTATION_URL} target="_blank" rel="noopener noreferrer">
 									<BookOpen />
 									{t('layout.sidebar.documentation')}
 									<span className="sr-only">{t('layout.sidebar.new_tab')}</span>
 								</a>
 							</SidebarMenuButton>
+							<SidebarVersion />
 						</SidebarMenuItem>
 					</SidebarMenu>
 					<SidebarSeparator className="mx-0" />

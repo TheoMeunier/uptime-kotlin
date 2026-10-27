@@ -1003,6 +1003,7 @@ const de: typeof en = {
 			guide: 'Benutzerhandbuch',
 			documentation: 'Dokumentation',
 			new_tab: '(öffnet in neuem Tab)',
+			release_notes: 'Versionshinweise',
 			dashboard: 'Übersicht',
 			status_page: 'Statusseiten',
 			announcements: 'Ankündigungen',
