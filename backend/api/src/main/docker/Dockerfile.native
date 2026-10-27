@@ -23,6 +23,9 @@ RUN chown 1001 /work \
     && chown 1001:root /work
 COPY --chown=1001:root --chmod=0755 build/*-runner /work/application
 
+ARG APP_VERSION=dev
+ENV UPTIME_VERSION=${APP_VERSION}
+
 EXPOSE 8080
 USER 1001
 

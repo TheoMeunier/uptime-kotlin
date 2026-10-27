@@ -984,6 +984,7 @@ const en = {
 			guide: 'User guide',
 			documentation: 'Documentation',
 			new_tab: '(opens in a new tab)',
+			release_notes: 'Release notes',
 			dashboard: 'Dashboard',
 			status_page: 'Status pages',
 			announcements: 'Announcements',
