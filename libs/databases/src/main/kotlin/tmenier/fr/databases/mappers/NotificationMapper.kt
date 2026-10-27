@@ -31,6 +31,7 @@ object NotificationContentMapper {
             is NotificationContent.Ntfy -> content.copy(accessToken = null)
             is NotificationContent.Gotify -> content.copy(appToken = "")
             is NotificationContent.PagerDuty -> content.copy(routingKey = "")
+            is NotificationContent.Matrix -> content.copy(accessToken = "")
             is NotificationContent.WebPush -> content.copy(subscriptions = content.subscriptions.map { it.copy(auth = "") })
             else -> content
         }
@@ -47,6 +48,7 @@ object NotificationContentMapper {
             NotificationChannelsEnum.GOTIFY -> NotificationContent.Gotify::class.java
             NotificationChannelsEnum.WEB_PUSH -> NotificationContent.WebPush::class.java
             NotificationChannelsEnum.PAGERDUTY -> NotificationContent.PagerDuty::class.java
+            NotificationChannelsEnum.MATRIX -> NotificationContent.Matrix::class.java
         }
 
     fun toEntity(content: NotificationContent): Pair<JsonNode, NotificationChannelsEnum> {
@@ -62,6 +64,7 @@ object NotificationContentMapper {
                 is NotificationContent.Gotify -> NotificationChannelsEnum.GOTIFY
                 is NotificationContent.WebPush -> NotificationChannelsEnum.WEB_PUSH
                 is NotificationContent.PagerDuty -> NotificationChannelsEnum.PAGERDUTY
+                is NotificationContent.Matrix -> NotificationChannelsEnum.MATRIX
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
 

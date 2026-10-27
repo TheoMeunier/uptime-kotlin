@@ -13,6 +13,7 @@ import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.dtos.WebPushSubscription
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelMatrixRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelPagerDutyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelTelegramRequest
@@ -55,6 +56,16 @@ class ResolveNotificationContentServiceTest {
         ValidNotificationChannelGotifyRequest(serverUrl = " https://push.example.com/ ", appToken = appToken).apply {
             name = "Gotify"
             notificationType = NotificationChannelsEnum.GOTIFY
+        }
+
+    private fun matrix(accessToken: String?) =
+        ValidNotificationChannelMatrixRequest(
+            homeserverUrl = " https://matrix.example.org ",
+            accessToken = accessToken,
+            roomId = " !room:example.org ",
+        ).apply {
+            name = "Matrix"
+            notificationType = NotificationChannelsEnum.MATRIX
         }
 
     private fun stored(content: NotificationContent) =
@@ -153,6 +164,31 @@ class ResolveNotificationContentServiceTest {
         val gotify = NotificationContentMapper.withoutTokens(NotificationContent.Gotify("https://push.example.com", "secret"))
 
         assertEquals("", (gotify as NotificationContent.Gotify).appToken)
+    }
+
+    @Test
+    fun `encrypts the Matrix token on creation and keeps it when left empty on update`() {
+        val created = service.resolve(matrix("syt_secret"), isUpdate = false, existingNotification = null) as NotificationContent.Matrix
+
+        assertEquals("https://matrix.example.org", created.homeserverUrl)
+        assertEquals("!room:example.org", created.roomId)
+        assertTrue(encryption.isEncryptedWithCurrentKey(created.accessToken), created.accessToken)
+        assertEquals("syt_secret", encryption.decrypt(created.accessToken))
+
+        val kept = service.resolve(matrix(""), isUpdate = true, existingNotification = stored(created)) as NotificationContent.Matrix
+        assertEquals(created.accessToken, kept.accessToken)
+    }
+
+    @Test
+    fun `refuses to create a Matrix channel without a token`() {
+        assertThrows<IllegalArgumentException> { service.resolve(matrix(null), isUpdate = false, existingNotification = null) }
+    }
+
+    @Test
+    fun `never sends the Matrix token back`() {
+        val content = NotificationContentMapper.withoutTokens(NotificationContent.Matrix("https://matrix.example.org", "secret", "!room:example.org"))
+
+        assertEquals("", (content as NotificationContent.Matrix).accessToken)
     }
 
     private fun webPush(vararg browsers: WebPushSubscriptionRequest) =

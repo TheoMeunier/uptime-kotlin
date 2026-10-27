@@ -87,6 +87,13 @@ class NotificationHttpTimeoutTest {
         }
 
     @Test
+    fun `matrix gives up on a homeserver that never answers`() =
+        assertTimesOut {
+            MatrixNotificationService(http, NotificationDateFormatter("UTC"), encryption)
+                .sendTest(NotificationContent.Matrix(url, "token", "!room:example.org"))
+        }
+
+    @Test
     fun `pagerduty gives up on a receiver that never answers`() =
         assertTimesOut {
             PagerDutyNotificationService(http, encryption, url).sendTest(NotificationContent.PagerDuty("key"))

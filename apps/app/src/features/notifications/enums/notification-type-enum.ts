@@ -9,6 +9,7 @@ enum NotificationTypeEnum {
 	GOTIFY = 'GOTIFY',
 	WEB_PUSH = 'WEB_PUSH',
 	PAGERDUTY = 'PAGERDUTY',
+	MATRIX = 'MATRIX',
 }
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationTypeEnum, string> = {
@@ -22,6 +23,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationTypeEnum, string> = {
 	[NotificationTypeEnum.GOTIFY]: 'Gotify',
 	[NotificationTypeEnum.WEB_PUSH]: 'Web Push',
 	[NotificationTypeEnum.PAGERDUTY]: 'PagerDuty',
+	[NotificationTypeEnum.MATRIX]: 'Matrix',
 };
 
 export const NOTIFICATION_TYPE_GROUPS: { labelKey: string; types: NotificationTypeEnum[] }[] = [
@@ -32,6 +34,7 @@ export const NOTIFICATION_TYPE_GROUPS: { labelKey: string; types: NotificationTy
 			NotificationTypeEnum.SLACK,
 			NotificationTypeEnum.TEAMS,
 			NotificationTypeEnum.TELEGRAM,
+			NotificationTypeEnum.MATRIX,
 		],
 	},
 	{

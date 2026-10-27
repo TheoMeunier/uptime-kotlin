@@ -74,6 +74,9 @@ const de: typeof en = {
 			remove_access_token: 'Zugriffstoken entfernen',
 			app_token: 'Anwendungstoken',
 			routing_key: 'Integrationsschlüssel',
+			homeserver_url: 'Homeserver-URL',
+			matrix_access_token: 'Zugriffstoken',
+			room_id: 'Raum-ID',
 			severity: 'Schweregrad',
 			web_push: 'Browser-Benachrichtigungen',
 		},
@@ -98,6 +101,12 @@ const de: typeof en = {
 			gotify_server_url:
 				'Die Serveradresse, ohne /message. Hinter einem Reverse-Proxy dessen Pfad angeben (z. B. https://example.com/gotify).',
 			app_token: 'Wird in Gotify unter Apps erstellt. Beim Bearbeiten leer lassen, um das aktuelle Token zu behalten.',
+			homeserver_url:
+				'Adresse des Homeservers, der das Bot-Konto hostet (z. B. https://matrix.org). Hinter einem Reverse Proxy dessen Pfad angeben.',
+			matrix_access_token:
+				'Zugriffstoken des Bot-Kontos (Einstellungen → Hilfe und Info in Element oder über die Login-API). Beim Bearbeiten leer lassen, um das aktuelle Token zu behalten.',
+			room_id:
+				'Interne Raum-ID (!…:server, in Element unter Einstellungen → Erweitert), kein Alias. Der Bot muss dem Raum beigetreten sein. Ende-zu-Ende-verschlüsselte Räume werden nicht unterstützt: verwenden Sie einen unverschlüsselten Raum.',
 			routing_key:
 				'Events-API-v2-Integrationsschlüssel eines PagerDuty-Dienstes (Reiter Integrations). Beim Bearbeiten leer lassen, um den aktuellen Schlüssel zu behalten.',
 			severity:
@@ -175,6 +184,8 @@ const de: typeof en = {
 		ntfy_topic: 'Ungültiges Thema (Buchstaben, Ziffern, - und _, max. 64 Zeichen)',
 		gotify_app_token: 'Anwendungstoken erforderlich',
 		pagerduty_routing_key: 'Integrationsschlüssel erforderlich',
+		matrix_room_id: 'Ungültige Raum-ID (erwartet: !abcdef:example.org)',
+		matrix_access_token: 'Zugriffstoken erforderlich',
 		web_push_subscription: 'Fügen Sie mindestens einen Browser hinzu',
 		hostname: 'Ungültiger Hostname oder ungültige IP-Adresse (z. B. smtp.gmail.com)',
 	},
@@ -779,7 +790,7 @@ const de: typeof en = {
 			settings: {
 				title: 'Einstellungen',
 				description:
-					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, ntfy, Gotify, PagerDuty, Browser, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
+					'Ihr Konto, Ihr Passwort und vor allem Benachrichtigungen – Discord, Slack, Teams, Telegram, Matrix, ntfy, Gotify, PagerDuty, Browser, E-Mail oder Webhook –, um sofort von einem Ausfall zu erfahren. Sprache, Log-Aufbewahrung und diese Anleitung finden Sie dort ebenfalls.',
 			},
 			done: {
 				title: 'Alles bereit',

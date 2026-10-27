@@ -33,6 +33,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidNotificationChannelGotifyRequest::class, name = "GOTIFY"),
     JsonSubTypes.Type(value = ValidNotificationChannelWebPushRequest::class, name = "WEB_PUSH"),
     JsonSubTypes.Type(value = ValidNotificationChannelPagerDutyRequest::class, name = "PAGERDUTY"),
+    JsonSubTypes.Type(value = ValidNotificationChannelMatrixRequest::class, name = "MATRIX"),
 )
 @RegisterForReflection
 abstract class BaseStoreNotificationRequest {
@@ -114,6 +115,19 @@ data class ValidNotificationChannelPagerDutyRequest(
     val routingKey: String? = null,
     @field:Pattern(regexp = "^(critical|error|warning|info)?$", message = "Severity must be critical, error, warning or info")
     val severity: String? = null,
+) : BaseStoreNotificationRequest()
+
+@RegisterForReflection
+data class ValidNotificationChannelMatrixRequest(
+    @field:NotBlank(message = "Homeserver URL is required")
+    @field:URL(message = "Invalid URL format")
+    val homeserverUrl: String,
+    @field:NotBlank(message = "Access token is required", groups = [OnCreate::class])
+    @field:Size(max = 1024, message = "Access token is too long")
+    val accessToken: String? = null,
+    @field:NotBlank(message = "Room id is required")
+    @field:Pattern(regexp = "^\\s*![^\\s:]+(:\\S+)?\\s*$", message = "Invalid room id (expected !abcdef:example.org)")
+    val roomId: String,
 ) : BaseStoreNotificationRequest()
 
 @RegisterForReflection

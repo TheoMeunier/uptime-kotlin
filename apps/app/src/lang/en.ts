@@ -69,6 +69,9 @@ const en = {
 			remove_access_token: 'Remove the access token',
 			app_token: 'Application token',
 			routing_key: 'Integration key',
+			homeserver_url: 'Homeserver URL',
+			matrix_access_token: 'Access token',
+			room_id: 'Room ID',
 			severity: 'Severity',
 			web_push: 'Browser notifications',
 		},
@@ -90,6 +93,12 @@ const en = {
 			gotify_server_url:
 				'The server address, without /message. Behind a reverse proxy, include its path (e.g. https://example.com/gotify).',
 			app_token: 'Created under Apps in Gotify. When editing, leave empty to keep the current token.',
+			homeserver_url:
+				'Address of the homeserver hosting the bot account (e.g. https://matrix.org). Behind a reverse proxy, include its path.',
+			matrix_access_token:
+				'Access token of the bot account (Settings → Help & About in Element, or the login API). When editing, leave empty to keep the current token.',
+			room_id:
+				'Internal room ID (!…:server, under Settings → Advanced in Element), not an alias. The bot must have joined the room. End-to-end encrypted rooms are not supported: use an unencrypted room.',
 			routing_key:
 				'Events API v2 integration key of a PagerDuty service (Integrations tab). When editing, leave empty to keep the current key.',
 			severity:
@@ -165,6 +174,8 @@ const en = {
 		ntfy_topic: 'Invalid topic (letters, digits, - and _, 64 characters max)',
 		gotify_app_token: 'Application token required',
 		pagerduty_routing_key: 'Integration key required',
+		matrix_room_id: 'Invalid room ID (expected !abcdef:example.org)',
+		matrix_access_token: 'Access token required',
 		web_push_subscription: 'Add at least one browser',
 		hostname: 'Invalid hostname or IP address (e.g. smtp.gmail.com)',
 	},
@@ -763,7 +774,7 @@ const en = {
 			settings: {
 				title: 'Settings',
 				description:
-					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, ntfy, Gotify, PagerDuty, browser, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
+					'Your account, your password and above all notifications — Discord, Slack, Teams, Telegram, Matrix, ntfy, Gotify, PagerDuty, browser, email or webhook — to hear about an outage right away. Language, log retention and this guide live here too.',
 			},
 			done: {
 				title: "You're all set",
