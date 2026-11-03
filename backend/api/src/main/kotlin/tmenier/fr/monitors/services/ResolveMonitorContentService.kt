@@ -221,11 +221,6 @@ class ResolveMonitorContentService(
         return "$host:$port$path"
     }
 
-    /**
-     * MongoDB URIs can list several hosts (replica sets) or use mongodb+srv://,
-     * which java.net.URI cannot parse, so the display target is extracted by hand.
-     * Credentials are never part of the result.
-     */
     internal fun mongoDbTarget(connectionString: String): String {
         val srv = connectionString.startsWith("mongodb+srv://")
         require(srv || connectionString.startsWith("mongodb://")) {
