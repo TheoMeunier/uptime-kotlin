@@ -117,6 +117,12 @@ const redisProbeSchema = baseStoreProbeSchema.extend({
 	command: z.string().min(1),
 });
 
+const mongoDbProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('MONGODB'),
+	connection_string: z.string().regex(/^mongodb(?:\+srv)?:\/\/\S+$/),
+	command: z.string().regex(/^\s*\{[\s\S]*\}\s*$/),
+});
+
 const smtpProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('SMTP'),
 	hostname: z.string().min(1),
@@ -150,6 +156,7 @@ export const storeProbeSchema = z
 		sqlServerProbeSchema,
 		mySqlProbeSchema,
 		redisProbeSchema,
+		mongoDbProbeSchema,
 		smtpProbeSchema,
 		kafkaProbeSchema,
 		rabbitMqProbeSchema,

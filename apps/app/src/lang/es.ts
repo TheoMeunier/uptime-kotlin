@@ -367,6 +367,8 @@ const es: typeof en = {
 			mysql_query: 'Consulta',
 			redis_connection_string: 'Cadena de conexión de Redis',
 			redis_command: 'Comando',
+			mongodb_connection_string: 'Cadena de conexión de MongoDB',
+			mongodb_command: 'Comando (documento JSON)',
 			smtp_hostname: 'Nombre de host / dirección IP',
 			smtp_port: 'Puerto',
 			smtp_security: 'Seguridad SMTP',
@@ -749,7 +751,7 @@ const es: typeof en = {
 			new_monitor: {
 				title: 'Crear un monitor',
 				description:
-					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka o RabbitMQ. Empiece por aquí.',
+					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Redis, MongoDB), SMTP, Kafka o RabbitMQ. Empiece por aquí.',
 			},
 			dashboard: {
 				title: 'Panel',

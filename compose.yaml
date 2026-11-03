@@ -36,9 +36,19 @@ services:
     networks:
       - app_network
 
-  # Monitoring of Uptime Kotlin itself: docker compose --profile monitoring up -d
-  # Prometheus on http://localhost:9090, Grafana on http://localhost:3000 (admin / admin), dashboard "Uptime Kotlin".
-  # Scrapes the API (:9000) and the worker (:9002) started on the host. See deploy/monitoring.
+  mongodb:
+    image: mongo:8.0
+    container_name: uptime_kotlin_mongodb
+    restart: unless-stopped
+    profiles: [ mongodb ]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: uptime
+      MONGO_INITDB_ROOT_PASSWORD: uptime
+    ports:
+      - "27017:27017"
+    networks:
+      - app_network
+
   prometheus:
     image: prom/prometheus:v3.13.4
     container_name: uptime_kotlin_prometheus

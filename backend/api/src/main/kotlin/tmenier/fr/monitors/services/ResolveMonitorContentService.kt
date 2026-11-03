@@ -9,6 +9,7 @@ import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolKafkaRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolMongoDbRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
@@ -124,6 +125,20 @@ class ResolveMonitorContentService(
                 )
             }
 
+            is ValidProbeProtocolMongoDbRequest -> {
+                val value =
+                    resolveEncryptedValue(
+                        incoming = request.connectionString,
+                        existing = (existingProbe?.content as? ProbeContent.MongoDb)?.connectionString,
+                        requiredMessage = "MongoDB connection string is required on creation",
+                    )
+                ProbeContent.MongoDb(
+                    connectionString = value.encrypted,
+                    host = mongoDbTarget(value.plainText),
+                    command = request.command.trim(),
+                )
+            }
+
             is ValidProbeProtocolSmtpRequest ->
                 ProbeContent.Smtp(
                     hostname = request.hostname,
@@ -206,6 +221,39 @@ class ResolveMonitorContentService(
         return "$host:$port$path"
     }
 
+    /**
+     * MongoDB URIs can list several hosts (replica sets) or use mongodb+srv://,
+     * which java.net.URI cannot parse, so the display target is extracted by hand.
+     * Credentials are never part of the result.
+     */
+    internal fun mongoDbTarget(connectionString: String): String {
+        val srv = connectionString.startsWith("mongodb+srv://")
+        require(srv || connectionString.startsWith("mongodb://")) {
+            "Connection string must start with mongodb:// or mongodb+srv://"
+        }
+        val rest = connectionString.substringAfter("://")
+        val authority = rest.substringBefore('/').substringBefore('?')
+        val hosts = authority.substringAfterLast('@')
+        require(hosts.isNotBlank()) { "MongoDB host is required" }
+
+        val withPorts =
+            if (srv) {
+                hosts
+            } else {
+                hosts.split(',').joinToString(",") { host ->
+                    val hasPort = if (host.startsWith("[")) host.contains("]:") else host.contains(':')
+                    if (hasPort) host else "$host:$MONGODB_DEFAULT_PORT"
+                }
+            }
+        val database =
+            rest
+                .substringAfter(authority, "")
+                .removePrefix("/")
+                .substringBefore('?')
+
+        return if (database.isBlank()) withPorts else "$withPorts/$database"
+    }
+
     private enum class ConnectionKind(
         val displayName: String,
         val defaultPort: Int,
@@ -215,6 +263,10 @@ class ResolveMonitorContentService(
         SQL_SERVER("SQL Server", 1433, true),
         MYSQL("MySQL/MariaDB", 3306, true),
         REDIS("Redis", 6379, false),
+    }
+
+    private companion object {
+        const val MONGODB_DEFAULT_PORT = 27017
     }
 
     private data class ResolvedConnection(

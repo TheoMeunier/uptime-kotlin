@@ -7,6 +7,7 @@ enum ProbeProtocol {
 	SQLSERVER = 'MICROSOFT SQL SERVER',
 	MYSQL = 'MYSQL / MARIADB',
 	REDIS = 'REDIS',
+	MONGODB = 'MONGODB',
 	SMTP = 'SMTP',
 	KAFKA = 'KAFKA PRODUCER',
 	RABBITMQ = 'RABBITMQ',
@@ -21,6 +22,7 @@ export const PROTOCOL_LABELS: Record<ProbeProtocol, string> = {
 	[ProbeProtocol.SQLSERVER]: 'Microsoft SQL Server',
 	[ProbeProtocol.MYSQL]: 'MySQL / MariaDB',
 	[ProbeProtocol.REDIS]: 'Redis',
+	[ProbeProtocol.MONGODB]: 'MongoDB',
 	[ProbeProtocol.SMTP]: 'SMTP',
 	[ProbeProtocol.KAFKA]: 'Kafka producer',
 	[ProbeProtocol.RABBITMQ]: 'RabbitMQ',
@@ -33,7 +35,13 @@ export const PROTOCOL_GROUPS: { labelKey: string; protocols: ProbeProtocol[] }[]
 	},
 	{
 		labelKey: 'monitors.protocol_group.database',
-		protocols: [ProbeProtocol.POSTGRESQL, ProbeProtocol.MYSQL, ProbeProtocol.SQLSERVER, ProbeProtocol.REDIS],
+		protocols: [
+			ProbeProtocol.POSTGRESQL,
+			ProbeProtocol.MYSQL,
+			ProbeProtocol.SQLSERVER,
+			ProbeProtocol.REDIS,
+			ProbeProtocol.MONGODB,
+		],
 	},
 	{
 		labelKey: 'monitors.protocol_group.messaging',

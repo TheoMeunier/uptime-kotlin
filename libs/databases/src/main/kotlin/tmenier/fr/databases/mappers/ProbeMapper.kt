@@ -62,6 +62,10 @@ object ProbeContentMapper {
                 objectMapper.treeToValue(probe.content, ProbeContent.Redis::class.java)
             }
 
+            ProbeProtocol.MONGODB -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.MongoDb::class.java)
+            }
+
             ProbeProtocol.SMTP -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Smtp::class.java)
             }
@@ -86,6 +90,7 @@ object ProbeContentMapper {
                 is ProbeContent.SqlServer -> ProbeProtocol.SQLSERVER
                 is ProbeContent.MySql -> ProbeProtocol.MYSQL
                 is ProbeContent.Redis -> ProbeProtocol.REDIS
+                is ProbeContent.MongoDb -> ProbeProtocol.MONGODB
                 is ProbeContent.Smtp -> ProbeProtocol.SMTP
                 is ProbeContent.Kafka -> ProbeProtocol.KAFKA
                 is ProbeContent.RabbitMq -> ProbeProtocol.RABBITMQ
@@ -102,6 +107,7 @@ object ProbeContentMapper {
             is ProbeContent.SqlServer -> content.copy(connectionString = "")
             is ProbeContent.MySql -> content.copy(connectionString = "")
             is ProbeContent.Redis -> content.copy(connectionString = "")
+            is ProbeContent.MongoDb -> content.copy(connectionString = "")
             is ProbeContent.RabbitMq -> content.copy(password = "")
             else -> content
         }
@@ -115,6 +121,7 @@ object ProbeContentMapper {
             is ProbeContent.SqlServer -> content.copy(connectionString = decrypt(content.connectionString))
             is ProbeContent.MySql -> content.copy(connectionString = decrypt(content.connectionString))
             is ProbeContent.Redis -> content.copy(connectionString = decrypt(content.connectionString))
+            is ProbeContent.MongoDb -> content.copy(connectionString = decrypt(content.connectionString))
             is ProbeContent.RabbitMq -> content.copy(password = decrypt(content.password))
             else -> content
         }
@@ -129,6 +136,7 @@ object ProbeContentMapper {
             is ProbeContent.SqlServer -> content.host
             is ProbeContent.MySql -> content.host
             is ProbeContent.Redis -> content.host
+            is ProbeContent.MongoDb -> content.host
             is ProbeContent.Smtp -> "${content.hostname}:${content.port}"
             is ProbeContent.Kafka -> content.brokers
             is ProbeContent.RabbitMq -> content.managementNodes

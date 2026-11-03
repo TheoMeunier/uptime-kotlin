@@ -17,6 +17,7 @@ enum class ProbeProtocol(
     SMTP("SMTP"),
     KAFKA("KAFKA PRODUCER"),
     RABBITMQ("RABBITMQ"),
+    MONGODB("MONGODB"),
     ;
 
     companion object {
