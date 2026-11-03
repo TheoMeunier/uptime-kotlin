@@ -15,6 +15,7 @@ import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.monitors.requests.OnCreate
 import tmenier.fr.monitors.requests.OnUpdate
+import tmenier.fr.monitors.requests.ValidProbeProtocolMongoDbRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
@@ -232,6 +233,41 @@ class ResolveMonitorContentServiceTest {
             ) as ProbeContent.Redis
 
         assertEquals("localhost:6379/2", content.host)
+    }
+
+    @Test
+    fun `resolves MongoDB replica set target without credentials`() {
+        val connectionString = "mongodb://monitor:s3cret@db1.example.com,db2.example.com:27018/app?replicaSet=rs0"
+        val content =
+            service.resolve(
+                ValidProbeProtocolMongoDbRequest(
+                    connectionString = connectionString,
+                    command = "{\"ping\": 1}",
+                ),
+            ) as ProbeContent.MongoDb
+
+        assertEquals("db1.example.com:27017,db2.example.com:27018/app", content.host)
+        assertFalse(content.host.contains("s3cret"))
+        assertNotEquals(connectionString, content.connectionString)
+        assertEquals(connectionString, encryptionService.decryptIfEncrypted(content.connectionString))
+    }
+
+    @Test
+    fun `resolves MongoDB SRV target without database`() {
+        assertEquals("cluster0.example.net", service.mongoDbTarget("mongodb+srv://user:pwd@cluster0.example.net/?retryWrites=true"))
+        assertEquals("localhost:27017", service.mongoDbTarget("mongodb://localhost"))
+        assertEquals("[::1]:27017/app", service.mongoDbTarget("mongodb://[::1]/app"))
+    }
+
+    @Test
+    fun `validates MongoDB command and connection string format`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+
+        val invalid =
+            ValidProbeProtocolMongoDbRequest(connectionString = "postgres://localhost/app", command = "ping")
+
+        val fields = validator.validate(invalid, OnCreate::class.java).map { it.propertyPath.toString() }.toSet()
+        assertTrue(fields.containsAll(setOf("connectionString", "command")))
     }
 
     @Test

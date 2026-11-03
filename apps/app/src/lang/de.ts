@@ -373,6 +373,8 @@ const de: typeof en = {
 			mysql_query: 'Abfrage',
 			redis_connection_string: 'Redis-Verbindungszeichenfolge',
 			redis_command: 'Befehl',
+			mongodb_connection_string: 'MongoDB-Verbindungszeichenfolge',
+			mongodb_command: 'Befehl (JSON-Dokument)',
 			smtp_hostname: 'Hostname / IP-Adresse',
 			smtp_port: 'Port',
 			smtp_security: 'SMTP-Sicherheit',
@@ -755,7 +757,7 @@ const de: typeof en = {
 			new_monitor: {
 				title: 'Monitor erstellen',
 				description:
-					'Ein Monitor prüft regelmäßig, ob ein Dienst antwortet: Website (HTTP), TCP-Port, Ping, DNS, Datenbanken (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka oder RabbitMQ. Beginnen Sie hier.',
+					'Ein Monitor prüft regelmäßig, ob ein Dienst antwortet: Website (HTTP), TCP-Port, Ping, DNS, Datenbanken (PostgreSQL, MySQL, SQL Server, Redis, MongoDB), SMTP, Kafka oder RabbitMQ. Beginnen Sie hier.',
 			},
 			dashboard: {
 				title: 'Dashboard',

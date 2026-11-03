@@ -38,6 +38,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidProbeProtocolSqlServerRequest::class, name = "MICROSOFT SQL SERVER"),
     JsonSubTypes.Type(value = ValidProbeProtocolMySqlRequest::class, name = "MYSQL / MARIADB"),
     JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
+    JsonSubTypes.Type(value = ValidProbeProtocolMongoDbRequest::class, name = "MONGODB"),
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
     JsonSubTypes.Type(value = ValidProbeProtocolRabbitMqRequest::class, name = "RABBITMQ"),
@@ -225,6 +226,25 @@ data class ValidProbeProtocolRedisRequest(
     val connectionString: String = "",
     @field:NotBlank(message = "Redis command is required")
     val command: String = "PING",
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolMongoDbRequest(
+    @field:NotBlank(
+        message = "MongoDB connection string is required",
+        groups = [OnCreate::class],
+    )
+    @field:Pattern(
+        regexp = "(?:|mongodb(?:\\+srv)?://[^\\s]+)",
+        message = "Invalid MongoDB connection string",
+    )
+    val connectionString: String = "",
+    @field:NotBlank(message = "MongoDB command is required")
+    @field:Pattern(
+        regexp = "\\s*\\{[\\s\\S]*}\\s*",
+        message = "MongoDB command must be a JSON document",
+    )
+    val command: String = ProbeContent.MongoDb.DEFAULT_MONGODB_COMMAND,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection

@@ -111,6 +111,17 @@ sealed interface ProbeContent {
     ) : ProbeContent
 
     @RegisterForReflection
+    data class MongoDb(
+        val connectionString: String,
+        val host: String,
+        val command: String = DEFAULT_MONGODB_COMMAND,
+    ) : ProbeContent {
+        companion object {
+            const val DEFAULT_MONGODB_COMMAND = "{\"ping\": 1}"
+        }
+    }
+
+    @RegisterForReflection
     data class Smtp(
         val hostname: String,
         val port: Int,

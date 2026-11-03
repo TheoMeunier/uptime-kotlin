@@ -371,6 +371,8 @@ const fr: typeof en = {
 			mysql_query: 'Requête',
 			redis_connection_string: 'Chaîne de connexion Redis',
 			redis_command: 'Commande',
+			mongodb_connection_string: 'Chaîne de connexion MongoDB',
+			mongodb_command: 'Commande (document JSON)',
 			smtp_hostname: 'Nom d’hôte / adresse IP',
 			smtp_port: 'Port',
 			smtp_security: 'Sécurité SMTP',
@@ -755,7 +757,7 @@ const fr: typeof en = {
 			new_monitor: {
 				title: 'Créer une sonde',
 				description:
-					'Une sonde vérifie régulièrement qu’un service répond : site web (HTTP), port TCP, ping, DNS, bases de données (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka ou RabbitMQ. Commencez par là.',
+					'Une sonde vérifie régulièrement qu’un service répond : site web (HTTP), port TCP, ping, DNS, bases de données (PostgreSQL, MySQL, SQL Server, Redis, MongoDB), SMTP, Kafka ou RabbitMQ. Commencez par là.',
 			},
 			dashboard: {
 				title: 'Tableau de bord',

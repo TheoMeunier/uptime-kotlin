@@ -361,6 +361,8 @@ const en = {
 			mysql_query: 'Query',
 			redis_connection_string: 'Redis connection string',
 			redis_command: 'Command',
+			mongodb_connection_string: 'MongoDB connection string',
+			mongodb_command: 'Command (JSON document)',
 			smtp_hostname: 'Hostname / IP address',
 			smtp_port: 'Port',
 			smtp_security: 'SMTP security',
@@ -740,7 +742,7 @@ const en = {
 			new_monitor: {
 				title: 'Create a monitor',
 				description:
-					'A monitor regularly checks that a service answers: website (HTTP), TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Redis), SMTP, Kafka or RabbitMQ. Start here.',
+					'A monitor regularly checks that a service answers: website (HTTP), TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Redis, MongoDB), SMTP, Kafka or RabbitMQ. Start here.',
 			},
 			dashboard: {
 				title: 'Dashboard',

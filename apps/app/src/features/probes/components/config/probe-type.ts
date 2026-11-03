@@ -223,6 +223,24 @@ export function buildProbeFieldsConfig(t: TFunction) {
 			],
 			advanced_fields: [],
 		},
+		[ProbeProtocol.MONGODB]: {
+			fields: [
+				{
+					name: 'connection_string',
+					label: t('monitors.label.mongodb_connection_string'),
+					input_type: 'text',
+					default_value: 'mongodb://username:password@host:27017/database?authSource=admin',
+				},
+				{
+					name: 'command',
+					label: t('monitors.label.mongodb_command'),
+					input_type: 'textarea',
+					placeholder: '{"ping": 1}',
+					default_value: '{"ping": 1}',
+				},
+			],
+			advanced_fields: [],
+		},
 		[ProbeProtocol.SMTP]: {
 			fields: [
 				{
