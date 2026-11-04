@@ -105,6 +105,12 @@ const sqlServerProbeSchema = baseStoreProbeSchema.extend({
 	query: z.string().min(1),
 });
 
+const oracleProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('ORACLE'),
+	connection_string: z.string().regex(/^oracle:\/\/\S+$/),
+	query: z.string().min(1),
+});
+
 const mySqlProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('MYSQL / MARIADB'),
 	connection_string: z.string().regex(/^(?:mysql|mariadb):\/\/\S+$/),
@@ -157,6 +163,7 @@ export const storeProbeSchema = z
 		mySqlProbeSchema,
 		redisProbeSchema,
 		mongoDbProbeSchema,
+		oracleProbeSchema,
 		smtpProbeSchema,
 		kafkaProbeSchema,
 		rabbitMqProbeSchema,

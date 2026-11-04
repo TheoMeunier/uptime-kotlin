@@ -49,6 +49,20 @@ services:
     networks:
       - app_network
 
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: uptime_kotlin_oracle
+    restart: unless-stopped
+    profiles: [ oracle ]
+    environment:
+      ORACLE_PASSWORD: uptime
+      APP_USER: uptime
+      APP_USER_PASSWORD: uptime
+    ports:
+      - "1521:1521"
+    networks:
+      - app_network
+
   prometheus:
     image: prom/prometheus:v3.13.4
     container_name: uptime_kotlin_prometheus

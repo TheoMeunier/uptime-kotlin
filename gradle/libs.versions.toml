@@ -37,6 +37,7 @@ quarkus-jdbc-postgresql = { module = "io.quarkus:quarkus-jdbc-postgresql", versi
 quarkus-jdbc-mssql = { module = "io.quarkus:quarkus-jdbc-mssql", version.ref = "quarkus" }
 quarkus-jdbc-mysql = { module = "io.quarkus:quarkus-jdbc-mysql", version.ref = "quarkus" }
 quarkus-jdbc-mariadb = { module = "io.quarkus:quarkus-jdbc-mariadb", version.ref = "quarkus" }
+quarkus-jdbc-oracle = { module = "io.quarkus:quarkus-jdbc-oracle", version.ref = "quarkus" }
 quarkus-hibernate-validator = { module = "io.quarkus:quarkus-hibernate-validator", version.ref = "quarkus" }
 quarkus-flyway = { module = "io.quarkus:quarkus-flyway", version.ref = "quarkus" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }

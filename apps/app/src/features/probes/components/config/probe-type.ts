@@ -187,6 +187,24 @@ export function buildProbeFieldsConfig(t: TFunction) {
 			],
 			advanced_fields: [],
 		},
+		[ProbeProtocol.ORACLE]: {
+			fields: [
+				{
+					name: 'connection_string',
+					label: t('monitors.label.oracle_connection_string'),
+					input_type: 'text',
+					default_value: 'oracle://username:password@host:1521/service_name',
+				},
+				{
+					name: 'query',
+					label: t('monitors.label.oracle_query'),
+					input_type: 'textarea',
+					placeholder: 'SELECT 1 FROM DUAL',
+					default_value: 'SELECT 1 FROM DUAL',
+				},
+			],
+			advanced_fields: [],
+		},
 		[ProbeProtocol.MYSQL]: {
 			fields: [
 				{

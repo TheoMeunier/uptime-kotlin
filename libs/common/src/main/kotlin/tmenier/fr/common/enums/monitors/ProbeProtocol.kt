@@ -18,6 +18,7 @@ enum class ProbeProtocol(
     KAFKA("KAFKA PRODUCER"),
     RABBITMQ("RABBITMQ"),
     MONGODB("MONGODB"),
+    ORACLE("ORACLE"),
     ;
 
     companion object {

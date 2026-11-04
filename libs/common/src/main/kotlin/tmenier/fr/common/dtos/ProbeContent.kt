@@ -104,6 +104,17 @@ sealed interface ProbeContent {
     ) : ProbeContent
 
     @RegisterForReflection
+    data class Oracle(
+        val connectionString: String,
+        val host: String,
+        val query: String = DEFAULT_ORACLE_QUERY,
+    ) : ProbeContent {
+        companion object {
+            const val DEFAULT_ORACLE_QUERY = "SELECT 1 FROM DUAL"
+        }
+    }
+
+    @RegisterForReflection
     data class Redis(
         val connectionString: String,
         val host: String,

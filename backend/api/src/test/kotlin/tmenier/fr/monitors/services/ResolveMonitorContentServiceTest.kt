@@ -17,6 +17,7 @@ import tmenier.fr.monitors.requests.OnCreate
 import tmenier.fr.monitors.requests.OnUpdate
 import tmenier.fr.monitors.requests.ValidProbeProtocolMongoDbRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolOracleRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
@@ -268,6 +269,31 @@ class ResolveMonitorContentServiceTest {
 
         val fields = validator.validate(invalid, OnCreate::class.java).map { it.propertyPath.toString() }.toSet()
         assertTrue(fields.containsAll(setOf("connectionString", "command")))
+    }
+
+    @Test
+    fun `resolves Oracle target without credentials and encrypts the connection string`() {
+        val connectionString = "oracle://monitor:s3cret@db.example.com/FREEPDB1"
+        val content =
+            service.resolve(
+                ValidProbeProtocolOracleRequest(connectionString = connectionString),
+            ) as ProbeContent.Oracle
+
+        assertEquals("db.example.com:1521/FREEPDB1", content.host)
+        assertEquals(ProbeContent.Oracle.DEFAULT_ORACLE_QUERY, content.query)
+        assertFalse(content.host.contains("s3cret"))
+        assertNotEquals(connectionString, content.connectionString)
+        assertEquals(connectionString, encryptionService.decryptIfEncrypted(content.connectionString))
+    }
+
+    @Test
+    fun `validates Oracle connection string format`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+
+        val invalid = ValidProbeProtocolOracleRequest(connectionString = "jdbc:oracle:thin:@//localhost:1521/FREEPDB1")
+
+        val fields = validator.validate(invalid, OnCreate::class.java).map { it.propertyPath.toString() }.toSet()
+        assertTrue(fields.contains("connectionString"))
     }
 
     @Test
