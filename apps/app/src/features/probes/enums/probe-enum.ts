@@ -35,13 +35,7 @@ export const PROTOCOL_LABELS: Record<ProbeProtocol, string> = {
 export const PROTOCOL_GROUPS: { labelKey: string; protocols: ProbeProtocol[] }[] = [
 	{
 		labelKey: 'monitors.protocol_group.network',
-		protocols: [
-			ProbeProtocol.HTTP,
-			ProbeProtocol.WEBSOCKET,
-			ProbeProtocol.TCP,
-			ProbeProtocol.PING,
-			ProbeProtocol.DNS,
-		],
+		protocols: [ProbeProtocol.HTTP, ProbeProtocol.WEBSOCKET, ProbeProtocol.TCP, ProbeProtocol.PING, ProbeProtocol.DNS],
 	},
 	{
 		labelKey: 'monitors.protocol_group.database',
