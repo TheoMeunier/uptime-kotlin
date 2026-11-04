@@ -26,7 +26,6 @@ services:
     networks:
       - app_network
 
-  # Redis service
   redis:
     image: redis:latest
     container_name: uptime_kotlin_redis
@@ -63,8 +62,6 @@ services:
     networks:
       - app_network
 
-  # Container to test the Docker probe: docker compose --profile docker up -d
-  # Monitor "uptime_kotlin_docker_test" on unix:///var/run/docker.sock (healthy after ~10 s).
   docker-test:
     image: nginx:alpine
     container_name: uptime_kotlin_docker_test
