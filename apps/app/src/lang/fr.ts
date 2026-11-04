@@ -356,6 +356,9 @@ const fr: typeof en = {
 			dns_port: 'Port DNS',
 			notification_certificate: 'Notification d’expiration du certificat',
 			ignore_certificate_errors: 'Ignorer les erreurs TLS / SSL pour les sites HTTPS',
+			websocket_url: 'URL WebSocket',
+			websocket_subprotocol: 'Sous-protocole (facultatif)',
+			websocket_ignore_certificate_errors: 'Ignorer les erreurs TLS / SSL des URL wss://',
 			http_code_allowed: 'Codes de statut acceptés',
 			dns_record: 'Enregistrement DNS',
 			ping_ip: 'Adresse IP',
@@ -449,6 +452,7 @@ const fr: typeof en = {
 			purge_logs:
 				'Cela supprimera définitivement le détail des checks de cette sonde. Son historique d’uptime est conservé.',
 			dns_server: 'Cloudflare est le serveur par défaut. Vous pouvez changer de résolveur à tout moment.',
+			websocket_subprotocol: 'Envoyé dans Sec-WebSocket-Protocol. Le serveur doit l’accepter, sinon la sonde échoue.',
 			dns_port: 'Port du serveur DNS. 53 par défaut. Vous pouvez le changer à tout moment.',
 			smtp_security:
 				'« SMTPS » teste le SMTP/TLS implicite ; « Ignorer TLS » se connecte en clair ; « STARTTLS » se connecte, envoie STARTTLS et vérifie le certificat du serveur. Aucune de ces vérifications n’envoie de courriel.',
@@ -759,7 +763,7 @@ const fr: typeof en = {
 			new_monitor: {
 				title: 'Créer une sonde',
 				description:
-					'Une sonde vérifie régulièrement qu’un service répond : site web (HTTP), port TCP, ping, DNS, bases de données (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka ou RabbitMQ. Commencez par là.',
+					'Une sonde vérifie régulièrement qu’un service répond : site web (HTTP), WebSocket, port TCP, ping, DNS, bases de données (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka ou RabbitMQ. Commencez par là.',
 			},
 			dashboard: {
 				title: 'Tableau de bord',

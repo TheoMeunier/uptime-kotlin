@@ -69,6 +69,31 @@ export function buildProbeFieldsConfig(t: TFunction) {
 				},
 			],
 		},
+		[ProbeProtocol.WEBSOCKET]: {
+			fields: [
+				{
+					name: 'url',
+					label: t('monitors.label.websocket_url'),
+					input_type: 'text',
+					placeholder: 'wss://',
+				},
+			],
+			advanced_fields: [
+				{
+					name: 'subprotocol',
+					label: t('monitors.label.websocket_subprotocol'),
+					input_type: 'text',
+					placeholder: 'graphql-ws',
+					description: t('monitors.description.websocket_subprotocol'),
+				},
+				{
+					name: 'ignore_certificate_errors',
+					label: t('monitors.label.websocket_ignore_certificate_errors'),
+					input_type: 'switch',
+					default_value: false,
+				},
+			],
+		},
 		[ProbeProtocol.TCP]: {
 			fields: [
 				{

@@ -70,6 +70,10 @@ object ProbeContentMapper {
                 objectMapper.treeToValue(probe.content, ProbeContent.Oracle::class.java)
             }
 
+            ProbeProtocol.WEBSOCKET -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.WebSocketUpgrade::class.java)
+            }
+
             ProbeProtocol.SMTP -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Smtp::class.java)
             }
@@ -96,6 +100,7 @@ object ProbeContentMapper {
                 is ProbeContent.Redis -> ProbeProtocol.REDIS
                 is ProbeContent.MongoDb -> ProbeProtocol.MONGODB
                 is ProbeContent.Oracle -> ProbeProtocol.ORACLE
+                is ProbeContent.WebSocketUpgrade -> ProbeProtocol.WEBSOCKET
                 is ProbeContent.Smtp -> ProbeProtocol.SMTP
                 is ProbeContent.Kafka -> ProbeProtocol.KAFKA
                 is ProbeContent.RabbitMq -> ProbeProtocol.RABBITMQ
@@ -136,6 +141,7 @@ object ProbeContentMapper {
     fun toUrl(content: ProbeContent): String =
         when (content) {
             is ProbeContent.Http -> content.url
+            is ProbeContent.WebSocketUpgrade -> content.url
             is ProbeContent.Dns -> content.hostname
             is ProbeContent.Tcp -> "${content.url}:${content.tcpPort}"
             is ProbeContent.Ping -> content.ip

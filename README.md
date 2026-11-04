@@ -59,7 +59,7 @@ Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin
 
 ## Features
 
-- **Many protocols**: HTTP/HTTPS, TCP, DNS, ping, SMTP, PostgreSQL, MySQL/MariaDB, Microsoft SQL Server, Oracle Database, Redis, MongoDB,
+- **Many protocols**: HTTP/HTTPS, WebSocket, TCP, DNS, ping, SMTP, PostgreSQL, MySQL/MariaDB, Microsoft SQL Server, Oracle Database, Redis, MongoDB,
   Kafka and RabbitMQ
 - **Real-time dashboard** with response times, uptime history and log export
 - **Incidents** opened and closed automatically, with the downtime duration, and a CSV export for monthly reports

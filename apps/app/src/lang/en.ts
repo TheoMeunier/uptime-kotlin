@@ -346,6 +346,9 @@ const en = {
 			dns_port: 'DNS port',
 			notification_certificate: 'Certificate expiry notification',
 			ignore_certificate_errors: 'Ignore TLS / SSL errors for HTTS websites',
+			websocket_url: 'WebSocket URL',
+			websocket_subprotocol: 'Subprotocol (optional)',
+			websocket_ignore_certificate_errors: 'Ignore TLS / SSL errors for wss:// URLs',
 			http_code_allowed: 'Accepted Status Codes',
 			dns_record: 'DNS record',
 			ping_ip: 'IP address',
@@ -439,6 +442,7 @@ const en = {
 			purge_logs:
 				'This will permanently delete the detailed check results of this monitor. Its uptime history is kept.',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
+			websocket_subprotocol: 'Sent in Sec-WebSocket-Protocol. The server must accept it, otherwise the monitor fails.',
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
 			smtp_security:
 				"'SMTPS' tests implicit SMTP/TLS; 'Ignore TLS' connects in plain text; 'STARTTLS' connects, sends STARTTLS and verifies the server certificate. None of these checks sends an email.",
@@ -744,7 +748,7 @@ const en = {
 			new_monitor: {
 				title: 'Create a monitor',
 				description:
-					'A monitor regularly checks that a service answers: website (HTTP), TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka or RabbitMQ. Start here.',
+					'A monitor regularly checks that a service answers: website (HTTP), WebSocket, TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka or RabbitMQ. Start here.',
 			},
 			dashboard: {
 				title: 'Dashboard',

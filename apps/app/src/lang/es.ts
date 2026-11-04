@@ -352,6 +352,9 @@ const es: typeof en = {
 			dns_port: 'Puerto DNS',
 			notification_certificate: 'Aviso de caducidad del certificado',
 			ignore_certificate_errors: 'Ignorar los errores TLS / SSL en sitios HTTPS',
+			websocket_url: 'URL de WebSocket',
+			websocket_subprotocol: 'Subprotocolo (opcional)',
+			websocket_ignore_certificate_errors: 'Ignorar errores TLS / SSL en URL wss://',
 			http_code_allowed: 'Códigos de estado aceptados',
 			dns_record: 'Registro DNS',
 			ping_ip: 'Dirección IP',
@@ -445,6 +448,7 @@ const es: typeof en = {
 			purge_logs:
 				'Esto eliminará definitivamente los resultados detallados de este monitor. Su historial de disponibilidad se conserva.',
 			dns_server: 'Cloudflare es el servidor predeterminado. Puede cambiar de resolutor en cualquier momento.',
+			websocket_subprotocol: 'Se envía en Sec-WebSocket-Protocol. El servidor debe aceptarlo; si no, el monitor falla.',
 			dns_port: 'Puerto del servidor DNS. 53 de forma predeterminada. Puede cambiarlo en cualquier momento.',
 			smtp_security:
 				'«SMTPS» prueba SMTP/TLS implícito; «Ignorar TLS» conecta en texto plano; «STARTTLS» conecta, envía STARTTLS y verifica el certificado del servidor. Ninguna de estas comprobaciones envía un correo.',
@@ -753,7 +757,7 @@ const es: typeof en = {
 			new_monitor: {
 				title: 'Crear un monitor',
 				description:
-					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka o RabbitMQ. Empiece por aquí.',
+					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), WebSocket, puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka o RabbitMQ. Empiece por aquí.',
 			},
 			dashboard: {
 				title: 'Panel',
