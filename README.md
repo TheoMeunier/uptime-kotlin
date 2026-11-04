@@ -60,7 +60,7 @@ Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin
 ## Features
 
 - **Many protocols**: HTTP/HTTPS, WebSocket, TCP, DNS, ping, SMTP, PostgreSQL, MySQL/MariaDB, Microsoft SQL Server, Oracle Database, Redis, MongoDB,
-  Kafka and RabbitMQ
+  Kafka, RabbitMQ and Docker containers
 - **Real-time dashboard** with response times, uptime history and log export
 - **Incidents** opened and closed automatically, with the downtime duration, and a CSV export for monthly reports
 - **TLS certificate expiry** tracking
@@ -155,6 +155,41 @@ Set both variables and mount the files: `MP_JWT_VERIFY_PUBLICKEY_LOCATION` (publ
 `SMALLRYE_JWT_SIGN_KEY_LOCATION` (private key, PKCS#8).
 
 </details>
+
+### Docker container monitors
+
+A *Docker container* monitor reads the container state from the Docker Engine API. It is up when the container is
+running and, if it defines a `HEALTHCHECK`, healthy. The checks run in the application (or in the workers in cluster
+mode), so that container needs access to the engine.
+
+The safest option is a read-only proxy that only exposes the container endpoints. Use `tcp://docker-socket-proxy:2375`
+as the Docker host of the monitor:
+
+```yaml
+docker-socket-proxy:
+  image: tecnativa/docker-socket-proxy:latest
+  container_name: uptime_kotlin_docker_proxy
+  restart: unless-stopped
+  environment:
+    CONTAINERS: 1
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+```
+
+Or mount the socket directly and keep the default host `unix:///var/run/docker.sock`. The image runs as user `1001`, so
+it also needs the group that owns the socket (`stat -c %g /var/run/docker.sock` on the host):
+
+```yaml
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock:ro
+group_add:
+  - "999" # GID of the socket
+```
+
+> [!WARNING]
+> Access to the Docker socket is equivalent to root access on the host, and `:ro` does not change that. Prefer the proxy.
+> Remote engines are reached with `tcp://host:2375` (plain HTTP) or `https://host:2376`; TLS client certificates are not
+> supported.
 
 ### Cluster mode
 

@@ -140,6 +140,12 @@ const mongoDbProbeSchema = baseStoreProbeSchema.extend({
 	command: z.string().regex(/^\s*\{[\s\S]*\}\s*$/),
 });
 
+const dockerProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('DOCKER CONTAINER'),
+	container_name: z.string().regex(/^\s*\/?[a-zA-Z0-9][a-zA-Z0-9_.-]*\s*$/),
+	docker_host: z.string().regex(/^\s*(?:unix:\/\/\/\S+|(?:tcp|https?):\/\/[^\s/?#]+\/?)\s*$/),
+});
+
 const smtpProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('SMTP'),
 	hostname: z.string().min(1),
@@ -176,6 +182,7 @@ export const storeProbeSchema = z
 		redisProbeSchema,
 		mongoDbProbeSchema,
 		oracleProbeSchema,
+		dockerProbeSchema,
 		smtpProbeSchema,
 		kafkaProbeSchema,
 		rabbitMqProbeSchema,

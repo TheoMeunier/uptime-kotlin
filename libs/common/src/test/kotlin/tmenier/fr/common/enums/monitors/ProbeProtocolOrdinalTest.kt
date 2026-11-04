@@ -22,6 +22,7 @@ class ProbeProtocolOrdinalTest {
                 "MONGODB",
                 "ORACLE",
                 "WEBSOCKET",
+                "DOCKER",
             ),
             ProbeProtocol.entries.map { it.name },
         )

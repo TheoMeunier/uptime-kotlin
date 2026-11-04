@@ -307,6 +307,7 @@ const de: typeof en = {
 			network: 'Web und Netzwerk',
 			database: 'Datenbanken',
 			messaging: 'Messaging und E-Mail',
+			containers: 'Container',
 		},
 
 		section: {
@@ -361,6 +362,8 @@ const de: typeof en = {
 			websocket_url: 'WebSocket-URL',
 			websocket_subprotocol: 'Subprotokoll (optional)',
 			websocket_ignore_certificate_errors: 'TLS-/SSL-Fehler bei wss://-URLs ignorieren',
+			docker_container_name: 'Container-Name oder -ID',
+			docker_host: 'Docker-Host',
 			http_code_allowed: 'Akzeptierte Statuscodes',
 			dns_record: 'DNS-Eintrag',
 			ping_ip: 'IP-Adresse',
@@ -456,6 +459,8 @@ const de: typeof en = {
 			dns_server: 'Cloudflare ist der Standardserver. Sie können den Resolver jederzeit wechseln.',
 			websocket_subprotocol:
 				'Wird in Sec-WebSocket-Protocol gesendet. Der Server muss es akzeptieren, sonst schlägt der Monitor fehl.',
+			docker_host:
+				'unix:///var/run/docker.sock für die lokale Engine oder tcp://host:2375 (z. B. ein schreibgeschützter docker-socket-proxy). Der Worker braucht Zugriff darauf.',
 			dns_port: 'Port des DNS-Servers. Standard ist 53. Jederzeit änderbar.',
 			smtp_security:
 				'„SMTPS“ prüft implizites SMTP/TLS; „TLS ignorieren“ verbindet im Klartext; „STARTTLS“ verbindet, sendet STARTTLS und prüft das Serverzertifikat. Keine dieser Prüfungen versendet eine E-Mail.',
@@ -764,7 +769,7 @@ const de: typeof en = {
 			new_monitor: {
 				title: 'Monitor erstellen',
 				description:
-					'Ein Monitor prüft regelmäßig, ob ein Dienst antwortet: Website (HTTP), WebSocket, TCP-Port, Ping, DNS, Datenbanken (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka oder RabbitMQ. Beginnen Sie hier.',
+					'Ein Monitor prüft regelmäßig, ob ein Dienst antwortet: Website (HTTP), WebSocket, TCP-Port, Ping, DNS, Datenbanken (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka, RabbitMQ oder Docker-Container. Beginnen Sie hier.',
 			},
 			dashboard: {
 				title: 'Dashboard',

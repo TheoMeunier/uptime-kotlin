@@ -140,6 +140,16 @@ sealed interface ProbeContent {
     }
 
     @RegisterForReflection
+    data class DockerContainer(
+        val containerName: String,
+        val dockerHost: String = DEFAULT_DOCKER_HOST,
+    ) : ProbeContent {
+        companion object {
+            const val DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock"
+        }
+    }
+
+    @RegisterForReflection
     data class Smtp(
         val hostname: String,
         val port: Int,

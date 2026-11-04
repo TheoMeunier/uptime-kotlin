@@ -7,6 +7,7 @@ import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.monitors.requests.BaseStoreProbeRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolDnsRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolDockerContainerRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolKafkaRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMongoDbRequest
@@ -161,6 +162,12 @@ class ResolveMonitorContentService(
                     command = request.command.trim(),
                 )
             }
+
+            is ValidProbeProtocolDockerContainerRequest ->
+                ProbeContent.DockerContainer(
+                    containerName = request.containerName.trim().removePrefix("/"),
+                    dockerHost = request.dockerHost.trim().removeSuffix("/"),
+                )
 
             is ValidProbeProtocolSmtpRequest ->
                 ProbeContent.Smtp(

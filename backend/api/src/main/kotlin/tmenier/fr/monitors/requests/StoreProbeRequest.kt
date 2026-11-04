@@ -41,6 +41,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidProbeProtocolMongoDbRequest::class, name = "MONGODB"),
     JsonSubTypes.Type(value = ValidProbeProtocolOracleRequest::class, name = "ORACLE"),
     JsonSubTypes.Type(value = ValidProbeProtocolWebSocketUpgradeRequest::class, name = "WEBSOCKET UPGRADE"),
+    JsonSubTypes.Type(value = ValidProbeProtocolDockerContainerRequest::class, name = "DOCKER CONTAINER"),
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
     JsonSubTypes.Type(value = ValidProbeProtocolRabbitMqRequest::class, name = "RABBITMQ"),
@@ -279,6 +280,22 @@ data class ValidProbeProtocolOracleRequest(
     val connectionString: String = "",
     @field:NotBlank(message = "Oracle query is required")
     val query: String = ProbeContent.Oracle.DEFAULT_ORACLE_QUERY,
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolDockerContainerRequest(
+    @field:NotBlank(message = "Container name is required")
+    @field:Pattern(
+        regexp = "\\s*/?[a-zA-Z0-9][a-zA-Z0-9_.-]*\\s*",
+        message = "Invalid container name or ID",
+    )
+    val containerName: String = "",
+    @field:NotBlank(message = "Docker host is required")
+    @field:Pattern(
+        regexp = "\\s*(?:unix:///\\S+|(?:tcp|https?)://[^\\s/?#]+/?)\\s*",
+        message = "Docker host must look like unix:///var/run/docker.sock or tcp://host:2375",
+    )
+    val dockerHost: String = ProbeContent.DockerContainer.DEFAULT_DOCKER_HOST,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection

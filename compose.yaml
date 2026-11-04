@@ -63,6 +63,19 @@ services:
     networks:
       - app_network
 
+  # Container to test the Docker probe: docker compose --profile docker up -d
+  # Monitor "uptime_kotlin_docker_test" on unix:///var/run/docker.sock (healthy after ~10 s).
+  docker-test:
+    image: nginx:alpine
+    container_name: uptime_kotlin_docker_test
+    restart: unless-stopped
+    profiles: [ docker ]
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
   prometheus:
     image: prom/prometheus:v3.13.4
     container_name: uptime_kotlin_prometheus

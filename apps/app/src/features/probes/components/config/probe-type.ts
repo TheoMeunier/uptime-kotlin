@@ -284,6 +284,24 @@ export function buildProbeFieldsConfig(t: TFunction) {
 			],
 			advanced_fields: [],
 		},
+		[ProbeProtocol.DOCKER]: {
+			fields: [
+				{
+					name: 'container_name',
+					label: t('monitors.label.docker_container_name'),
+					input_type: 'text',
+					placeholder: 'my-container',
+				},
+				{
+					name: 'docker_host',
+					label: t('monitors.label.docker_host'),
+					input_type: 'text',
+					default_value: 'unix:///var/run/docker.sock',
+					description: t('monitors.description.docker_host'),
+				},
+			],
+			advanced_fields: [],
+		},
 		[ProbeProtocol.SMTP]: {
 			fields: [
 				{
