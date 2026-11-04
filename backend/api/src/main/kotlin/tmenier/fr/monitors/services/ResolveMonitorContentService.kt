@@ -19,6 +19,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolWebSocketUpgradeRequest
 import java.net.URI
 
 @ApplicationScoped
@@ -45,6 +46,13 @@ class ResolveMonitorContentService(
                     maxLatencyMs = request.maxLatencyMs,
                     tlsExpiryWarningDays = request.tlsExpiryWarningDays,
                     steps = request.steps,
+                )
+
+            is ValidProbeProtocolWebSocketUpgradeRequest ->
+                ProbeContent.WebSocketUpgrade(
+                    url = request.url.trim(),
+                    ignoreCertificateErrors = request.ignoreCertificateErrors,
+                    subprotocol = request.subprotocol?.trim()?.takeIf { it.isNotEmpty() },
                 )
 
             is ValidProbeProtocolTcpRequest ->

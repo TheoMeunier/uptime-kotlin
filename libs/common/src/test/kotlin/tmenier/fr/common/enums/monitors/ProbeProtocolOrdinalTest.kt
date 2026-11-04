@@ -21,6 +21,7 @@ class ProbeProtocolOrdinalTest {
                 "RABBITMQ",
                 "MONGODB",
                 "ORACLE",
+                "WEBSOCKET",
             ),
             ProbeProtocol.entries.map { it.name },
         )

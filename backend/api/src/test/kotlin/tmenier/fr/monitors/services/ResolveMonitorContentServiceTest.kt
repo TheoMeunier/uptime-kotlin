@@ -23,6 +23,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolWebSocketUpgradeRequest
 import java.time.Instant
 import java.util.UUID
 
@@ -294,6 +295,34 @@ class ResolveMonitorContentServiceTest {
 
         val fields = validator.validate(invalid, OnCreate::class.java).map { it.propertyPath.toString() }.toSet()
         assertTrue(fields.contains("connectionString"))
+    }
+
+    @Test
+    fun `resolves WebSocket upgrade settings and drops a blank subprotocol`() {
+        val content =
+            service.resolve(
+                ValidProbeProtocolWebSocketUpgradeRequest(
+                    url = " wss://ws.example.com/socket ",
+                    ignoreCertificateErrors = true,
+                    subprotocol = "  ",
+                ),
+            ) as ProbeContent.WebSocketUpgrade
+
+        assertEquals("wss://ws.example.com/socket", content.url)
+        assertTrue(content.ignoreCertificateErrors)
+        assertEquals(null, content.subprotocol)
+    }
+
+    @Test
+    fun `validates WebSocket URL and subprotocol format`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+
+        val valid = ValidProbeProtocolWebSocketUpgradeRequest(url = "ws://localhost:8080/ws", subprotocol = "graphql-ws")
+        val invalid = ValidProbeProtocolWebSocketUpgradeRequest(url = "https://example.com", subprotocol = "chat, v2")
+
+        assertTrue(validator.validate(valid).none { it.propertyPath.toString() in setOf("url", "subprotocol") })
+        val fields = validator.validate(invalid).map { it.propertyPath.toString() }.toSet()
+        assertTrue(fields.containsAll(setOf("url", "subprotocol")))
     }
 
     @Test

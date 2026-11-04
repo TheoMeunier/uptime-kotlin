@@ -40,6 +40,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
     JsonSubTypes.Type(value = ValidProbeProtocolMongoDbRequest::class, name = "MONGODB"),
     JsonSubTypes.Type(value = ValidProbeProtocolOracleRequest::class, name = "ORACLE"),
+    JsonSubTypes.Type(value = ValidProbeProtocolWebSocketUpgradeRequest::class, name = "WEBSOCKET UPGRADE"),
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
     JsonSubTypes.Type(value = ValidProbeProtocolRabbitMqRequest::class, name = "RABBITMQ"),
@@ -126,6 +127,23 @@ data class ValidProbeProtocolHttpRequest(
     @JsonIgnore
     fun isTlsExpiryWarningValid(): Boolean = tlsExpiryWarningDays in setOf(30, 15, 7)
 }
+
+@RegisterForReflection
+data class ValidProbeProtocolWebSocketUpgradeRequest(
+    @field:NotBlank(message = "WebSocket URL is required")
+    @field:Pattern(
+        regexp = "\\s*wss?://[^\\s/?#]+\\S*\\s*",
+        message = "WebSocket URL must start with ws:// or wss://",
+    )
+    val url: String = "",
+    val ignoreCertificateErrors: Boolean = false,
+    @field:Size(max = 255, message = "WebSocket subprotocol must be at most 255 characters")
+    @field:Pattern(
+        regexp = "\\s*[!#$%&'*+.^_`|~0-9A-Za-z-]*\\s*",
+        message = "Invalid WebSocket subprotocol",
+    )
+    val subprotocol: String? = null,
+) : BaseStoreProbeRequest()
 
 @RegisterForReflection
 data class ValidProbeProtocolTcpRequest(

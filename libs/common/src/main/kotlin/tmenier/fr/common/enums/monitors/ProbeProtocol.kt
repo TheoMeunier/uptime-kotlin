@@ -19,6 +19,7 @@ enum class ProbeProtocol(
     RABBITMQ("RABBITMQ"),
     MONGODB("MONGODB"),
     ORACLE("ORACLE"),
+    WEBSOCKET("WEBSOCKET UPGRADE"),
     ;
 
     companion object {

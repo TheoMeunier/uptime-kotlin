@@ -77,6 +77,13 @@ sealed interface ProbeContent {
     ) : ProbeContent
 
     @RegisterForReflection
+    data class WebSocketUpgrade(
+        val url: String,
+        val ignoreCertificateErrors: Boolean = false,
+        val subprotocol: String? = null,
+    ) : ProbeContent
+
+    @RegisterForReflection
     data class Tcp(
         val url: String,
         val tcpPort: Int,

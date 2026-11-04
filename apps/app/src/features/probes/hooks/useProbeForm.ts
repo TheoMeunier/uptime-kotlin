@@ -69,6 +69,17 @@ const httpProbeSchema = baseStoreProbeSchema.extend({
 	steps: z.array(z.record(z.string(), z.unknown())).optional(),
 });
 
+const webSocketProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('WEBSOCKET UPGRADE'),
+	url: z.string().regex(/^\s*wss?:\/\/[^\s/?#]+\S*\s*$/),
+	ignore_certificate_errors: z.boolean().optional(),
+	subprotocol: z
+		.string()
+		.regex(/^\s*[!#$%&'*+.^_`|~0-9A-Za-z-]*\s*$/)
+		.max(255)
+		.nullish(),
+});
+
 const tcpProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('TCP'),
 	url: z.ipv4(),
@@ -155,6 +166,7 @@ const rabbitMqProbeSchema = baseStoreProbeSchema.extend({
 export const storeProbeSchema = z
 	.discriminatedUnion('protocol', [
 		httpProbeSchema,
+		webSocketProbeSchema,
 		tcpProbeSchema,
 		pingProbeSchema,
 		dnsProbeSchema,

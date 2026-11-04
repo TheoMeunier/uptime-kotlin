@@ -1,6 +1,7 @@
 enum ProbeProtocol {
 	HTTP = 'HTTP',
 	TCP = 'TCP',
+	WEBSOCKET = 'WEBSOCKET UPGRADE',
 	PING = 'PING',
 	DNS = 'DNS',
 	POSTGRESQL = 'POSTGRESQL',
@@ -17,6 +18,7 @@ enum ProbeProtocol {
 export const PROTOCOL_LABELS: Record<ProbeProtocol, string> = {
 	[ProbeProtocol.HTTP]: 'HTTP',
 	[ProbeProtocol.TCP]: 'TCP',
+	[ProbeProtocol.WEBSOCKET]: 'WebSocket Upgrade',
 	[ProbeProtocol.PING]: 'Ping',
 	[ProbeProtocol.DNS]: 'DNS',
 	[ProbeProtocol.POSTGRESQL]: 'PostgreSQL',
@@ -33,7 +35,13 @@ export const PROTOCOL_LABELS: Record<ProbeProtocol, string> = {
 export const PROTOCOL_GROUPS: { labelKey: string; protocols: ProbeProtocol[] }[] = [
 	{
 		labelKey: 'monitors.protocol_group.network',
-		protocols: [ProbeProtocol.HTTP, ProbeProtocol.TCP, ProbeProtocol.PING, ProbeProtocol.DNS],
+		protocols: [
+			ProbeProtocol.HTTP,
+			ProbeProtocol.WEBSOCKET,
+			ProbeProtocol.TCP,
+			ProbeProtocol.PING,
+			ProbeProtocol.DNS,
+		],
 	},
 	{
 		labelKey: 'monitors.protocol_group.database',
