@@ -2,6 +2,7 @@ package tmenier.fr.schedulers.services
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.runtime.annotations.RegisterForReflection
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.dtos.ProbeContent
 import java.io.ByteArrayOutputStream
@@ -23,7 +24,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-/** State of a container as reported by GET /containers/{id}/json. */
+@RegisterForReflection
 data class DockerContainerState(
     val name: String,
     val status: String,
