@@ -20,6 +20,7 @@ class ProbeProtocolOrdinalTest {
                 "KAFKA",
                 "RABBITMQ",
                 "MONGODB",
+                "ORACLE",
             ),
             ProbeProtocol.entries.map { it.name },
         )

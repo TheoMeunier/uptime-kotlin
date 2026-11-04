@@ -11,6 +11,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolHttpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolKafkaRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMongoDbRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolOracleRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
@@ -105,6 +106,20 @@ class ResolveMonitorContentService(
                         kind = ConnectionKind.MYSQL,
                     )
                 ProbeContent.MySql(
+                    connectionString = connection.encrypted,
+                    host = connection.target,
+                    query = request.query,
+                )
+            }
+
+            is ValidProbeProtocolOracleRequest -> {
+                val connection =
+                    resolveConnection(
+                        incoming = request.connectionString,
+                        existing = (existingProbe?.content as? ProbeContent.Oracle)?.connectionString,
+                        kind = ConnectionKind.ORACLE,
+                    )
+                ProbeContent.Oracle(
                     connectionString = connection.encrypted,
                     host = connection.target,
                     query = request.query,
@@ -257,6 +272,7 @@ class ResolveMonitorContentService(
         POSTGRESQL("PostgreSQL", 5432, true),
         SQL_SERVER("SQL Server", 1433, true),
         MYSQL("MySQL/MariaDB", 3306, true),
+        ORACLE("Oracle", 1521, true),
         REDIS("Redis", 6379, false),
     }
 

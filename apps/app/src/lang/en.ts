@@ -363,6 +363,8 @@ const en = {
 			redis_command: 'Command',
 			mongodb_connection_string: 'MongoDB connection string',
 			mongodb_command: 'Command (JSON document)',
+			oracle_connection_string: 'Oracle connection string',
+			oracle_query: 'Query',
 			smtp_hostname: 'Hostname / IP address',
 			smtp_port: 'Port',
 			smtp_security: 'SMTP security',
@@ -742,7 +744,7 @@ const en = {
 			new_monitor: {
 				title: 'Create a monitor',
 				description:
-					'A monitor regularly checks that a service answers: website (HTTP), TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Redis, MongoDB), SMTP, Kafka or RabbitMQ. Start here.',
+					'A monitor regularly checks that a service answers: website (HTTP), TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka or RabbitMQ. Start here.',
 			},
 			dashboard: {
 				title: 'Dashboard',

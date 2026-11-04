@@ -54,6 +54,7 @@ jobs:
           platforms: linux/amd64
           build-args: |
             VITE_DEMO=${{ env.VITE_DEMO }}
+            APP_VERSION=demo
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

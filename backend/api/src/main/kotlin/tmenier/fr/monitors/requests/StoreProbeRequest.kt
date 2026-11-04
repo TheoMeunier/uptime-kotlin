@@ -39,6 +39,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidProbeProtocolMySqlRequest::class, name = "MYSQL / MARIADB"),
     JsonSubTypes.Type(value = ValidProbeProtocolRedisRequest::class, name = "REDIS"),
     JsonSubTypes.Type(value = ValidProbeProtocolMongoDbRequest::class, name = "MONGODB"),
+    JsonSubTypes.Type(value = ValidProbeProtocolOracleRequest::class, name = "ORACLE"),
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
     JsonSubTypes.Type(value = ValidProbeProtocolRabbitMqRequest::class, name = "RABBITMQ"),
@@ -245,6 +246,21 @@ data class ValidProbeProtocolMongoDbRequest(
         message = "MongoDB command must be a JSON document",
     )
     val command: String = ProbeContent.MongoDb.DEFAULT_MONGODB_COMMAND,
+) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolOracleRequest(
+    @field:NotBlank(
+        message = "Oracle connection string is required",
+        groups = [OnCreate::class],
+    )
+    @field:Pattern(
+        regexp = "(?:|oracle://[^\\s]+)",
+        message = "Invalid Oracle connection string",
+    )
+    val connectionString: String = "",
+    @field:NotBlank(message = "Oracle query is required")
+    val query: String = ProbeContent.Oracle.DEFAULT_ORACLE_QUERY,
 ) : BaseStoreProbeRequest()
 
 @RegisterForReflection

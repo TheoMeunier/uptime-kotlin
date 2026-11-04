@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.quarkus.jdbc.mssql)
     implementation(libs.quarkus.jdbc.mysql)
     implementation(libs.quarkus.jdbc.mariadb)
+    implementation(libs.quarkus.jdbc.oracle)
     implementation(libs.quarkus.messaging.kafka)
     implementation(libs.quarkus.mongodb.client)
     implementation(libs.minidns)
