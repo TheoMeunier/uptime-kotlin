@@ -1,8 +1,8 @@
 [versions]
 kotlin = "2.3.21"
 quarkus = "3.35.3"
+restassured = "6.0.1"
 junit = "6.1.3"
-restassured = "5.4.0"
 coroutines = "1.10.2"
 kotlinLogging = "8.0.02"
 slf4j = "2.0.17"
