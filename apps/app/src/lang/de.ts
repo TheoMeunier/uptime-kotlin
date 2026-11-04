@@ -454,7 +454,8 @@ const de: typeof en = {
 			purge_logs:
 				'Dies löscht die einzelnen Prüfergebnisse dieses Monitors endgültig. Die Uptime-Historie bleibt erhalten.',
 			dns_server: 'Cloudflare ist der Standardserver. Sie können den Resolver jederzeit wechseln.',
-			websocket_subprotocol: 'Wird in Sec-WebSocket-Protocol gesendet. Der Server muss es akzeptieren, sonst schlägt der Monitor fehl.',
+			websocket_subprotocol:
+				'Wird in Sec-WebSocket-Protocol gesendet. Der Server muss es akzeptieren, sonst schlägt der Monitor fehl.',
 			dns_port: 'Port des DNS-Servers. Standard ist 53. Jederzeit änderbar.',
 			smtp_security:
 				'„SMTPS“ prüft implizites SMTP/TLS; „TLS ignorieren“ verbindet im Klartext; „STARTTLS“ verbindet, sendet STARTTLS und prüft das Serverzertifikat. Keine dieser Prüfungen versendet eine E-Mail.',
