@@ -297,6 +297,7 @@ const en = {
 			network: 'Web & network',
 			database: 'Databases',
 			messaging: 'Messaging & mail',
+			containers: 'Containers',
 		},
 
 		section: {
@@ -349,6 +350,8 @@ const en = {
 			websocket_url: 'WebSocket URL',
 			websocket_subprotocol: 'Subprotocol (optional)',
 			websocket_ignore_certificate_errors: 'Ignore TLS / SSL errors for wss:// URLs',
+			docker_container_name: 'Container name or ID',
+			docker_host: 'Docker host',
 			http_code_allowed: 'Accepted Status Codes',
 			dns_record: 'DNS record',
 			ping_ip: 'IP address',
@@ -443,6 +446,8 @@ const en = {
 				'This will permanently delete the detailed check results of this monitor. Its uptime history is kept.',
 			dns_server: 'Cloudflare is the default server. You can change the resolver server anytime.',
 			websocket_subprotocol: 'Sent in Sec-WebSocket-Protocol. The server must accept it, otherwise the monitor fails.',
+			docker_host:
+				'unix:///var/run/docker.sock for the local engine, or tcp://host:2375 (e.g. a read-only docker-socket-proxy). The worker needs access to it.',
 			dns_port: 'DNS server port. Defaults to 53. You can change the port at any time.',
 			smtp_security:
 				"'SMTPS' tests implicit SMTP/TLS; 'Ignore TLS' connects in plain text; 'STARTTLS' connects, sends STARTTLS and verifies the server certificate. None of these checks sends an email.",
@@ -748,7 +753,7 @@ const en = {
 			new_monitor: {
 				title: 'Create a monitor',
 				description:
-					'A monitor regularly checks that a service answers: website (HTTP), WebSocket, TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka or RabbitMQ. Start here.',
+					'A monitor regularly checks that a service answers: website (HTTP), WebSocket, TCP port, ping, DNS, databases (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka, RabbitMQ or Docker containers. Start here.',
 			},
 			dashboard: {
 				title: 'Dashboard',

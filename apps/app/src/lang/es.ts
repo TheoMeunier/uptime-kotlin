@@ -301,6 +301,7 @@ const es: typeof en = {
 			network: 'Web y red',
 			database: 'Bases de datos',
 			messaging: 'Mensajería y correo',
+			containers: 'Contenedores',
 		},
 
 		section: {
@@ -355,6 +356,8 @@ const es: typeof en = {
 			websocket_url: 'URL de WebSocket',
 			websocket_subprotocol: 'Subprotocolo (opcional)',
 			websocket_ignore_certificate_errors: 'Ignorar errores TLS / SSL en URL wss://',
+			docker_container_name: 'Nombre o ID del contenedor',
+			docker_host: 'Host de Docker',
 			http_code_allowed: 'Códigos de estado aceptados',
 			dns_record: 'Registro DNS',
 			ping_ip: 'Dirección IP',
@@ -449,6 +452,8 @@ const es: typeof en = {
 				'Esto eliminará definitivamente los resultados detallados de este monitor. Su historial de disponibilidad se conserva.',
 			dns_server: 'Cloudflare es el servidor predeterminado. Puede cambiar de resolutor en cualquier momento.',
 			websocket_subprotocol: 'Se envía en Sec-WebSocket-Protocol. El servidor debe aceptarlo; si no, el monitor falla.',
+			docker_host:
+				'unix:///var/run/docker.sock para el motor local, o tcp://host:2375 (por ejemplo un docker-socket-proxy de solo lectura). El worker necesita acceso.',
 			dns_port: 'Puerto del servidor DNS. 53 de forma predeterminada. Puede cambiarlo en cualquier momento.',
 			smtp_security:
 				'«SMTPS» prueba SMTP/TLS implícito; «Ignorar TLS» conecta en texto plano; «STARTTLS» conecta, envía STARTTLS y verifica el certificado del servidor. Ninguna de estas comprobaciones envía un correo.',
@@ -757,7 +762,7 @@ const es: typeof en = {
 			new_monitor: {
 				title: 'Crear un monitor',
 				description:
-					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), WebSocket, puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka o RabbitMQ. Empiece por aquí.',
+					'Un monitor comprueba periódicamente que un servicio responde: sitio web (HTTP), WebSocket, puerto TCP, ping, DNS, bases de datos (PostgreSQL, MySQL, SQL Server, Oracle, Redis, MongoDB), SMTP, Kafka, RabbitMQ o contenedores Docker. Empiece por aquí.',
 			},
 			dashboard: {
 				title: 'Panel',

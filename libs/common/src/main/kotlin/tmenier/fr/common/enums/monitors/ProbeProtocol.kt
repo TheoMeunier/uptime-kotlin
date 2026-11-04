@@ -20,6 +20,7 @@ enum class ProbeProtocol(
     MONGODB("MONGODB"),
     ORACLE("ORACLE"),
     WEBSOCKET("WEBSOCKET UPGRADE"),
+    DOCKER("DOCKER CONTAINER"),
     ;
 
     companion object {

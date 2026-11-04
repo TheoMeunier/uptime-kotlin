@@ -15,6 +15,7 @@ import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.monitors.requests.OnCreate
 import tmenier.fr.monitors.requests.OnUpdate
+import tmenier.fr.monitors.requests.ValidProbeProtocolDockerContainerRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMongoDbRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolOracleRequest
@@ -323,6 +324,33 @@ class ResolveMonitorContentServiceTest {
         assertTrue(validator.validate(valid).none { it.propertyPath.toString() in setOf("url", "subprotocol") })
         val fields = validator.validate(invalid).map { it.propertyPath.toString() }.toSet()
         assertTrue(fields.containsAll(setOf("url", "subprotocol")))
+    }
+
+    @Test
+    fun `resolves Docker container settings`() {
+        val content =
+            service.resolve(
+                ValidProbeProtocolDockerContainerRequest(containerName = " /web ", dockerHost = "tcp://docker-proxy:2375/"),
+            ) as ProbeContent.DockerContainer
+
+        assertEquals("web", content.containerName)
+        assertEquals("tcp://docker-proxy:2375", content.dockerHost)
+        assertEquals(
+            ProbeContent.DockerContainer.DEFAULT_DOCKER_HOST,
+            ValidProbeProtocolDockerContainerRequest(containerName = "web").dockerHost,
+        )
+    }
+
+    @Test
+    fun `validates Docker container name and host format`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+
+        val valid = ValidProbeProtocolDockerContainerRequest(containerName = "3f2a9c1b7d0e", dockerHost = "unix:///var/run/docker.sock")
+        val invalid = ValidProbeProtocolDockerContainerRequest(containerName = "my container", dockerHost = "ssh://user@host")
+
+        assertTrue(validator.validate(valid).none { it.propertyPath.toString() in setOf("containerName", "dockerHost") })
+        val fields = validator.validate(invalid).map { it.propertyPath.toString() }.toSet()
+        assertTrue(fields.containsAll(setOf("containerName", "dockerHost")))
     }
 
     @Test

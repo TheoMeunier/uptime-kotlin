@@ -13,6 +13,7 @@ enum ProbeProtocol {
 	SMTP = 'SMTP',
 	KAFKA = 'KAFKA PRODUCER',
 	RABBITMQ = 'RABBITMQ',
+	DOCKER = 'DOCKER CONTAINER',
 }
 
 export const PROTOCOL_LABELS: Record<ProbeProtocol, string> = {
@@ -30,6 +31,7 @@ export const PROTOCOL_LABELS: Record<ProbeProtocol, string> = {
 	[ProbeProtocol.SMTP]: 'SMTP',
 	[ProbeProtocol.KAFKA]: 'Kafka producer',
 	[ProbeProtocol.RABBITMQ]: 'RabbitMQ',
+	[ProbeProtocol.DOCKER]: 'Docker container',
 };
 
 export const PROTOCOL_GROUPS: { labelKey: string; protocols: ProbeProtocol[] }[] = [
@@ -51,6 +53,10 @@ export const PROTOCOL_GROUPS: { labelKey: string; protocols: ProbeProtocol[] }[]
 	{
 		labelKey: 'monitors.protocol_group.messaging',
 		protocols: [ProbeProtocol.SMTP, ProbeProtocol.KAFKA, ProbeProtocol.RABBITMQ],
+	},
+	{
+		labelKey: 'monitors.protocol_group.containers',
+		protocols: [ProbeProtocol.DOCKER],
 	},
 ];
 
