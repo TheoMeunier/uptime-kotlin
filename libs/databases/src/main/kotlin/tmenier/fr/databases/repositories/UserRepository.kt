@@ -2,7 +2,9 @@ package tmenier.fr.databases.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepository
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.persistence.LockModeType
 import jakarta.ws.rs.NotFoundException
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.databases.entities.UserEntity
 import tmenier.fr.databases.mappers.UserDto
 import tmenier.fr.databases.mappers.UserMapper
@@ -18,15 +20,46 @@ class UserRepository : PanacheRepository<UserEntity> {
             .firstResult()
             ?.let { UserMapper.fromEntity(it) }
 
+    fun findByIdOrNull(id: UUID): UserEntity? = find("id = ?1", id).firstResult()
+
+    fun existsByEmail(
+        email: String,
+        excludingId: UUID? = null,
+    ): Boolean =
+        if (excludingId == null) {
+            count("lower(email) = lower(?1)", email) > 0
+        } else {
+            count("lower(email) = lower(?1) and id <> ?2", email, excludingId) > 0
+        }
+
+    fun findAllOrdered(): List<UserEntity> = list("order by createdAt asc, name asc")
+
+    fun roleOf(id: UUID): UserRole? = findByIdOrNull(id)?.role
+
+    fun lockAdmins(): List<UserEntity> =
+        find("role = ?1 order by id", UserRole.ADMIN)
+            .withLock(LockModeType.PESSIMISTIC_WRITE)
+            .list()
+
+    fun updateRole(
+        id: UUID,
+        role: UserRole,
+    ) {
+        findById(id).role = role
+    }
+
+    fun delete(id: UUID): Boolean = delete("id = ?1", id) > 0
+
     fun countAll() = count()
 
     fun store(dto: UserDto) {
         UserEntity()
             .apply {
-                id = UUID.randomUUID()
+                id = dto.id
                 name = dto.name
                 email = dto.email
                 password = dto.password
+                role = dto.role
             }.persist()
     }
 

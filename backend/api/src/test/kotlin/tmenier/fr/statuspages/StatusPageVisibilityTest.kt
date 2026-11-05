@@ -11,17 +11,20 @@ import org.hamcrest.Matchers.hasItem
 import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import tmenier.fr.auth.services.JwtService
 import tmenier.fr.deployments.ApiOnlyProfile
 import tmenier.fr.incidents.IncidentFixtures
 import tmenier.fr.statuspages.actions.StoreStatusPageAction
 import tmenier.fr.statuspages.requests.StoreStatusPageGroupRequest
 import tmenier.fr.statuspages.requests.StoreStatusPageRequest
+import tmenier.fr.users.UserFixtures
 import java.util.UUID
 
 @QuarkusTest
 @TestProfile(ApiOnlyProfile::class)
 class StatusPageVisibilityTest {
+    @Inject
+    lateinit var users: UserFixtures
+
     @Inject
     lateinit var probes: IncidentFixtures
 
@@ -30,9 +33,6 @@ class StatusPageVisibilityTest {
 
     @Inject
     lateinit var storePage: StoreStatusPageAction
-
-    @Inject
-    lateinit var jwtService: JwtService
 
     private val createdProbes = mutableListOf<UUID>()
     private val createdPages = mutableListOf<UUID>()
@@ -129,7 +129,7 @@ class StatusPageVisibilityTest {
             .body("is_private", equalTo(true))
     }
 
-    private fun signedIn(): RequestSpecification = given().auth().oauth2(jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com"))
+    private fun signedIn(): RequestSpecification = given().auth().oauth2(users.token())
 
     private fun probe(): UUID = probes.probe().also(createdProbes::add)
 

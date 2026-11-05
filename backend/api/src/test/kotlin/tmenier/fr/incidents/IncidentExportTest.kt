@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import tmenier.fr.auth.services.JwtService
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.deployments.ApiOnlyProfile
 import tmenier.fr.incidents.actions.ListIncidentsAction
 import tmenier.fr.schedulers.services.SaveProbeMonitor
+import tmenier.fr.users.UserFixtures
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
@@ -27,6 +27,9 @@ import java.util.UUID
 @TestProfile(ApiOnlyProfile::class)
 class IncidentExportTest {
     @Inject
+    lateinit var users: UserFixtures
+
+    @Inject
     lateinit var fixtures: IncidentFixtures
 
     @Inject
@@ -34,9 +37,6 @@ class IncidentExportTest {
 
     @Inject
     lateinit var action: ListIncidentsAction
-
-    @Inject
-    lateinit var jwtService: JwtService
 
     private val probes = mutableListOf<UUID>()
     private val t0 = Instant.now().truncatedTo(ChronoUnit.SECONDS)
@@ -95,7 +95,7 @@ class IncidentExportTest {
         val response =
             given()
                 .auth()
-                .oauth2(jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com"))
+                .oauth2(users.token())
                 .queryParam("probe_id", probe.toString())
                 .queryParam("from", "2026-08-31T22:00:00Z")
                 .queryParam("to", "2026-09-30T22:00:00Z")

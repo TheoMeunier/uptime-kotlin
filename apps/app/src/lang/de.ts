@@ -1066,6 +1066,56 @@ const de: typeof en = {
 			confirm: 'Verkürzen',
 		},
 	},
+	users: {
+		tab: 'Benutzer',
+		title: {
+			index: 'Benutzer',
+			create: 'Benutzer hinzufügen',
+			remove: 'Diesen Benutzer entfernen?',
+		},
+		description: {
+			index:
+				'Alle, die sich anmelden können. Admins ändern alles; Benutzer mit Lesezugriff verfolgen die Überwachung, ohne sie zu ändern.',
+			create: 'Wählen Sie das Anfangspasswort und geben Sie es selbst weiter. Es kann im Profil geändert werden.',
+			remove: '{{name}} wird überall abgemeldet und kann sich nicht mehr anmelden.',
+		},
+		actions: {
+			create: 'Benutzer hinzufügen',
+		},
+		form: {
+			password: 'Anfangspasswort',
+			password_description: 'Mindestens 8 Zeichen.',
+			role: 'Rolle',
+		},
+		role: {
+			ADMIN: 'Admin',
+			VIEWER: 'Nur Lesen',
+		},
+		role_description: {
+			ADMIN: 'Voller Zugriff, einschließlich Benutzerverwaltung.',
+			VIEWER: 'Sieht Monitore, Vorfälle und Statusseiten; ändert nur das eigene Profil.',
+		},
+		you: 'Sie',
+		hint: {
+			own_account: 'Ein anderer Admin kann Ihre Rolle ändern.',
+			last_admin: 'Der letzte Admin behält die Admin-Rolle.',
+		},
+		alerts: {
+			created: '{{name}} hinzugefügt',
+			role_updated: 'Rolle aktualisiert',
+			removed: 'Benutzer entfernt',
+		},
+		errors: {
+			last_admin: 'Die Instanz braucht mindestens einen Admin.',
+			own_account: 'Sie können weder Ihre eigene Rolle ändern noch sich selbst entfernen.',
+			email_already_used: 'Diese E-Mail-Adresse wird bereits von einem Konto verwendet.',
+			read_only: 'Ihr Konto hat nur Lesezugriff: Bitten Sie einen Admin um diese Änderung.',
+		},
+		read_only: {
+			title: 'Nur Lesezugriff',
+			description: 'Sie sehen alles; für Änderungen wenden Sie sich an einen Admin.',
+		},
+	},
 };
 
 export default de;

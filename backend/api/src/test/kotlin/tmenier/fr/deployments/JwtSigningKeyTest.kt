@@ -12,8 +12,10 @@ import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import tmenier.fr.auth.services.JwtService
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.databases.repositories.JwtSigningKeyRepository
 import tmenier.fr.databases.repositories.StoredJwtSigningKey
+import tmenier.fr.users.UserFixtures
 import java.time.Instant
 import java.util.Base64
 import java.util.UUID
@@ -25,6 +27,9 @@ import java.util.concurrent.TimeUnit
 @TestProfile(ApiOnlyProfile::class)
 class JwtSigningKeyTest {
     @Inject
+    lateinit var users: UserFixtures
+
+    @Inject
     lateinit var jwtService: JwtService
 
     @Inject
@@ -35,7 +40,7 @@ class JwtSigningKeyTest {
 
     @Test
     fun `a token signed by the API is accepted on an authenticated endpoint`() {
-        val token = jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com")
+        val token = users.token()
 
         given()
             .auth()
@@ -47,7 +52,7 @@ class JwtSigningKeyTest {
 
     @Test
     fun `an access token is only valid for fifteen minutes`() {
-        val token = jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com")
+        val token = jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com", UserRole.ADMIN)
         val payload = String(Base64.getUrlDecoder().decode(token.split('.')[1]))
 
         val issuedAt = Regex("\"iat\":(\\d+)").find(payload)!!.groupValues[1].toLong()

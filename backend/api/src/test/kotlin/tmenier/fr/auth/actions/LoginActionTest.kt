@@ -15,6 +15,7 @@ import tmenier.fr.auth.dtos.requests.LoginRequest
 import tmenier.fr.auth.services.JwtService
 import tmenier.fr.auth.services.SessionContextService
 import tmenier.fr.common.bcrypt.BcryptService
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
 import tmenier.fr.databases.mappers.UserDto
 import tmenier.fr.databases.repositories.RefreshTokenRepository
@@ -219,6 +220,7 @@ private class FakeJwtService : JwtService() {
         userId: UUID,
         username: String,
         email: String,
+        role: UserRole,
     ): String = "jwt-for-$email"
 
     override fun generateRefreshToken(): UUID = UUID.randomUUID()
