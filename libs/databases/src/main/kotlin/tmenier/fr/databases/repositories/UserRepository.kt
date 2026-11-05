@@ -41,13 +41,6 @@ class UserRepository : PanacheRepository<UserEntity> {
             .withLock(LockModeType.PESSIMISTIC_WRITE)
             .list()
 
-    fun updateRole(
-        id: UUID,
-        role: UserRole,
-    ) {
-        findById(id).role = role
-    }
-
     fun delete(id: UUID): Boolean = delete("id = ?1", id) > 0
 
     fun countAll() = count()

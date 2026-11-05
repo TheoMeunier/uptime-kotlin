@@ -1096,18 +1096,13 @@ const de: typeof en = {
 			VIEWER: 'Sieht Monitore, Vorfälle und Statusseiten; ändert nur das eigene Profil.',
 		},
 		you: 'Sie',
-		hint: {
-			own_account: 'Ein anderer Admin kann Ihre Rolle ändern.',
-			last_admin: 'Der letzte Admin behält die Admin-Rolle.',
-		},
 		alerts: {
 			created: '{{name}} hinzugefügt',
-			role_updated: 'Rolle aktualisiert',
 			removed: 'Benutzer entfernt',
 		},
 		errors: {
 			last_admin: 'Die Instanz braucht mindestens einen Admin.',
-			own_account: 'Sie können weder Ihre eigene Rolle ändern noch sich selbst entfernen.',
+			own_account: 'Sie können sich nicht selbst entfernen.',
 			email_already_used: 'Diese E-Mail-Adresse wird bereits von einem Konto verwendet.',
 			read_only: 'Ihr Konto hat nur Lesezugriff: Bitten Sie einen Admin um diese Änderung.',
 		},
