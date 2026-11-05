@@ -42,6 +42,9 @@ class StatusPageEntity : PanacheEntityBase {
     @Column(name = "uptime_period", nullable = false, length = 4)
     var uptimePeriod: StatusPageUptimePeriod = StatusPageUptimePeriod.H1
 
+    @Column(name = "is_private", nullable = false)
+    var isPrivate: Boolean = false
+
     @OneToMany(mappedBy = "statusPage", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("position ASC")
     var groups: MutableList<StatusPageGroupEntity> = mutableListOf()

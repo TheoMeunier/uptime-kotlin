@@ -12,7 +12,7 @@ class PublicStatusPageCacheTest {
     private val cache = PublicStatusPageCache()
     private val now = Instant.parse("2026-10-09T10:00:00Z")
 
-    private fun page(title: String) = PublicStatusPageDto("prod", title, null, StatusPageLayout.GRID, StatusPageUptimePeriod.H1, emptyList())
+    private fun page(title: String) = PublicStatusPageDto("prod", title, null, StatusPageLayout.GRID, StatusPageUptimePeriod.H1, false, emptyList())
 
     @Test
     fun `reuses the page for the same slug and tag within 30 seconds`() {

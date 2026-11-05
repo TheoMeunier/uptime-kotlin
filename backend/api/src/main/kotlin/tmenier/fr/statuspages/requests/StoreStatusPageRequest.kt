@@ -32,6 +32,8 @@ class StoreStatusPageRequest {
     @field:NotNull(message = "Uptime period is required")
     var uptimePeriod: StatusPageUptimePeriod = StatusPageUptimePeriod.H1
 
+    var isPrivate: Boolean = false
+
     @field:Valid
     @field:Size(max = 50, message = "A status page holds at most 50 groups")
     var groups: List<StoreStatusPageGroupRequest> = emptyList()

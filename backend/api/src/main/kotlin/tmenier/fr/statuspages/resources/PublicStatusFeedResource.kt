@@ -10,16 +10,21 @@ import jakarta.ws.rs.core.Request
 import jakarta.ws.rs.core.Response
 import tmenier.fr.statuspages.actions.PublicStatusFeedAction
 import tmenier.fr.statuspages.services.PublicJsonResponder
+import tmenier.fr.statuspages.services.StatusPageAccessGuard
 
 @Path("/api/status/{slug}/feed")
 @Produces(MediaType.APPLICATION_JSON)
 class PublicStatusFeedResource(
     private val publicStatusFeedAction: PublicStatusFeedAction,
     private val responder: PublicJsonResponder,
+    private val accessGuard: StatusPageAccessGuard,
 ) {
     @GET
     fun feed(
         @PathParam("slug") slug: String,
         @Context request: Request,
-    ): Response = responder.respond(request, publicStatusFeedAction.forPage(slug))
+    ): Response {
+        val cachePolicy = accessGuard.ensureReadable(slug)
+        return responder.respond(request, publicStatusFeedAction.forPage(slug), cachePolicy)
+    }
 }

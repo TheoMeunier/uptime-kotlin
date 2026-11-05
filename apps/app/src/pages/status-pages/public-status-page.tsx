@@ -1,9 +1,13 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router';
+import { Link, useLocation, useParams } from 'react-router';
+import { Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/api/api-error.ts';
+import { Button } from '@/components/atoms/button.tsx';
 import ErrorState from '@/components/molecules/error-state.tsx';
+import authService from '@/features/auth/services/authServices.ts';
+import { loginPath } from '@/features/auth/lib/redirect.ts';
 import StatusBoard from '@/features/status-pages/components/board/status-board.tsx';
 import StatusBoardFrame from '@/features/status-pages/components/board/status-board-frame.tsx';
 import StatusBoardSkeleton from '@/features/status-pages/components/board/status-board-skeleton.tsx';
@@ -19,6 +23,7 @@ const isNotFound = (error: unknown) => error instanceof ApiError && error.status
 export default function PublicStatusPage() {
 	const { t } = useTranslation();
 	const { slug = '' } = useParams();
+	const location = useLocation();
 
 	const { data, isLoading, isError, error, refetch } = useQuery({
 		queryKey: ['status-page-public', slug],
@@ -28,7 +33,7 @@ export default function PublicStatusPage() {
 		meta: { silentError: true },
 	});
 
-	const { data: feed } = useStatusFeed(slug);
+	const { data: feed } = useStatusFeed(slug, Boolean(data));
 	const period = data?.uptime_period;
 	const { data: uptimeData } = useStatusUptime(slug, period);
 	const uptime = useMemo<BoardUptime>(
@@ -49,7 +54,18 @@ export default function PublicStatusPage() {
 	if (isError || !data) {
 		return (
 			<StatusBoardFrame>
-				{isNotFound(error) ? (
+				{isNotFound(error) && !authService.getAccessToken() ? (
+					<ErrorState
+						icon={Lock}
+						title={t('pages.status_page.restricted.title')}
+						description={t('pages.status_page.restricted.description')}
+						action={
+							<Button asChild>
+								<Link to={loginPath(location.pathname + location.search)}>{t('button.login')}</Link>
+							</Button>
+						}
+					/>
+				) : isNotFound(error) ? (
 					<ErrorState
 						title={t('pages.status_page.not_found.title')}
 						description={t('pages.status_page.not_found.description', { slug })}

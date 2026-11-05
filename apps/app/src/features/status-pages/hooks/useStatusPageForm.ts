@@ -18,6 +18,7 @@ export interface StatusPageFormValues {
 	description: string;
 	defaultLayout: StatusPageLayoutValue;
 	uptimePeriod: UptimePeriod;
+	isPrivate: boolean;
 	groups: EditorGroup[];
 }
 
@@ -31,6 +32,7 @@ function initialValues(page?: StatusPageDetail): StatusPageFormValues {
 			description: '',
 			defaultLayout: 'GRID',
 			uptimePeriod: 'H1',
+			isPrivate: false,
 			groups: [emptyGroup()],
 		};
 	}
@@ -41,6 +43,7 @@ function initialValues(page?: StatusPageDetail): StatusPageFormValues {
 		description: page.description ?? '',
 		defaultLayout: page.default_layout,
 		uptimePeriod: page.uptime_period,
+		isPrivate: page.is_private,
 		groups: page.groups.map((group) => ({
 			key: newGroupKey(),
 			name: group.name ?? '',
@@ -56,6 +59,7 @@ function toPayload(values: StatusPageFormValues): StatusPagePayload {
 		description: values.description.trim(),
 		default_layout: values.defaultLayout,
 		uptime_period: values.uptimePeriod,
+		is_private: values.isPrivate,
 		groups: values.groups.map((group) => ({ name: group.name.trim(), probe_ids: group.probeIds })),
 	};
 }
@@ -97,6 +101,7 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 		setDescription: (description: string) => update({ description }),
 		setDefaultLayout: (defaultLayout: StatusPageLayoutValue) => update({ defaultLayout }),
 		setUptimePeriod: (uptimePeriod: UptimePeriod) => update({ uptimePeriod }),
+		setIsPrivate: (isPrivate: boolean) => update({ isPrivate }),
 		setGroups: (groups: EditorGroup[]) => update({ groups }),
 		handleSubmit:
 			<T>(onSubmit: (payload: StatusPagePayload) => Promise<T>, onSaved?: (result: T) => void) =>

@@ -29,7 +29,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/atoms/avatar.tsx';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { Suspense, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import probeService from '@/features/probes/services/probeService.ts';
 import type { ProbeListItem } from '@/features/probes/schemas/probe-response.schema.ts';
 import {
@@ -64,6 +64,7 @@ export default function Layout() {
 	const isMobile = useIsMobile();
 	const user = authServices.getUser();
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const { pathname } = useLocation();
 	const tour = useOnboardingTour(user.email);
 
@@ -92,6 +93,8 @@ export default function Layout() {
 	const logout = async () => {
 		await authServices.logout();
 		navigate('/login');
+		// Drops what was fetched while signed in (private status pages included), once the layout is left.
+		queryClient.clear();
 	};
 
 	return (

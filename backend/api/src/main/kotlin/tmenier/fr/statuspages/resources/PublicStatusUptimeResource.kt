@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Request
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.exceptions.common.BadRequestException
 import tmenier.fr.statuspages.services.PublicJsonResponder
+import tmenier.fr.statuspages.services.StatusPageAccessGuard
 import tmenier.fr.statuspages.services.StatusUptimeService
 import java.time.DateTimeException
 import java.time.ZoneId
@@ -21,6 +22,7 @@ import java.time.ZoneOffset
 class PublicStatusUptimeResource(
     private val statusUptimeService: StatusUptimeService,
     private val responder: PublicJsonResponder,
+    private val accessGuard: StatusPageAccessGuard,
 ) {
     @GET
     fun uptime(
@@ -28,6 +30,7 @@ class PublicStatusUptimeResource(
         @QueryParam("tz") tz: String?,
         @Context request: Request,
     ): Response {
+        val cachePolicy = accessGuard.ensureReadable(slug)
         val zone =
             try {
                 tz?.takeIf { it.isNotBlank() }?.let(ZoneId::of) ?: ZoneOffset.UTC
@@ -35,6 +38,10 @@ class PublicStatusUptimeResource(
                 throw BadRequestException("Unknown time zone: $tz")
             }
 
-        return responder.respond(request, statusUptimeService.forPage(slug, zone))
+        return responder.respond(
+            request,
+            statusUptimeService.forPage(slug, zone),
+            cachePolicy,
+        )
     }
 }

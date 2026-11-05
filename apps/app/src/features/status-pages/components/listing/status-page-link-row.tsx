@@ -3,12 +3,13 @@ import { ExternalLink } from 'lucide-react';
 interface StatusPageLinkRowProps {
 	icon: React.ReactNode;
 	title: string;
+	badge?: React.ReactNode;
 	href: string;
 	meta: string;
 	actions?: React.ReactNode;
 }
 
-export default function StatusPageLinkRow({ icon, title, href, meta, actions }: StatusPageLinkRowProps) {
+export default function StatusPageLinkRow({ icon, title, badge, href, meta, actions }: StatusPageLinkRowProps) {
 	return (
 		<div className="flex items-center gap-3 px-4 py-4 sm:gap-4 sm:px-6">
 			<span className="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
@@ -16,7 +17,10 @@ export default function StatusPageLinkRow({ icon, title, href, meta, actions }: 
 			</span>
 
 			<div className="min-w-0 flex-1">
-				<p className="truncate font-medium">{title}</p>
+				<p className="flex min-w-0 items-center gap-2 font-medium">
+					<span className="truncate">{title}</span>
+					{badge}
+				</p>
 				<p className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-2 text-sm">
 					<a
 						href={href}
