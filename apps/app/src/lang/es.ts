@@ -1088,18 +1088,13 @@ const es: typeof en = {
 			VIEWER: 'Ve monitores, incidentes y páginas de estado; solo cambia su propio perfil.',
 		},
 		you: 'Tú',
-		hint: {
-			own_account: 'Otro admin puede cambiar tu rol.',
-			last_admin: 'El último admin conserva el rol de admin.',
-		},
 		alerts: {
 			created: '{{name}} añadido',
-			role_updated: 'Rol actualizado',
 			removed: 'Usuario quitado',
 		},
 		errors: {
 			last_admin: 'La instancia necesita al menos un admin.',
-			own_account: 'No puedes cambiar tu propio rol ni quitarte.',
+			own_account: 'No puedes quitarte a ti mismo.',
 			email_already_used: 'Ya hay una cuenta con esta dirección de correo.',
 			read_only: 'Tu cuenta es de solo lectura: pide este cambio a un admin.',
 		},

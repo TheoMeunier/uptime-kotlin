@@ -1076,18 +1076,13 @@ const en = {
 			VIEWER: 'Sees monitors, incidents and status pages; only changes their own profile.',
 		},
 		you: 'You',
-		hint: {
-			own_account: 'Another admin can change your role.',
-			last_admin: 'The last admin keeps the admin role.',
-		},
 		alerts: {
 			created: '{{name}} added',
-			role_updated: 'Role updated',
 			removed: 'User removed',
 		},
 		errors: {
 			last_admin: 'The instance needs at least one admin.',
-			own_account: 'You cannot change your own role or remove yourself.',
+			own_account: 'You cannot remove yourself.',
 			email_already_used: 'An account already uses this email address.',
 			read_only: 'Your account is read-only: ask an admin to make this change.',
 		},

@@ -1095,18 +1095,13 @@ const fr: typeof en = {
 			VIEWER: 'Voit les sondes, incidents et status pages ; ne modifie que son propre profil.',
 		},
 		you: 'Vous',
-		hint: {
-			own_account: 'Un autre admin peut changer votre rôle.',
-			last_admin: 'Le dernier admin garde son rôle.',
-		},
 		alerts: {
 			created: '{{name}} ajouté',
-			role_updated: 'Rôle mis à jour',
 			removed: 'Utilisateur retiré',
 		},
 		errors: {
 			last_admin: 'L’instance doit garder au moins un admin.',
-			own_account: 'Vous ne pouvez ni changer votre propre rôle ni vous retirer.',
+			own_account: 'Vous ne pouvez pas vous retirer vous-même.',
 			email_already_used: 'Un compte utilise déjà cette adresse e-mail.',
 			read_only: 'Votre compte est en lecture seule : demandez cette modification à un admin.',
 		},

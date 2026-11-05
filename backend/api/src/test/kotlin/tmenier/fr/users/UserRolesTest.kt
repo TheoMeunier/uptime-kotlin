@@ -103,36 +103,6 @@ class UserRolesTest {
     }
 
     @Test
-    fun `a demoted admin loses admin rights on the next request`() {
-        val admin = user(UserRole.ADMIN)
-        val demoted = user(UserRole.ADMIN)
-        val demotedToken = users.token(demoted)
-
-        given()
-            .auth()
-            .oauth2(demotedToken)
-            .get("/api/users")
-            .then()
-            .statusCode(200)
-
-        given()
-            .auth()
-            .oauth2(users.token(admin))
-            .contentType(ContentType.JSON)
-            .body(mapOf("role" to "VIEWER"))
-            .post("/api/users/${demoted.id}/role")
-            .then()
-            .statusCode(204)
-
-        given()
-            .auth()
-            .oauth2(demotedToken)
-            .get("/api/users")
-            .then()
-            .statusCode(403)
-    }
-
-    @Test
     fun `a removed user's token is refused immediately`() {
         val admin = user(UserRole.ADMIN)
         val removed = users.user(UserRole.VIEWER)
@@ -161,26 +131,16 @@ class UserRolesTest {
     }
 
     @Test
-    fun `an admin cannot change their own role or remove themselves`() {
+    fun `an admin cannot remove themselves`() {
         val admin = user(UserRole.ADMIN)
-        val token = users.token(admin)
 
         given()
             .auth()
-            .oauth2(token)
-            .contentType(ContentType.JSON)
-            .body(mapOf("role" to "VIEWER"))
-            .post("/api/users/${admin.id}/role")
-            .then()
-            .statusCode(409)
-            .body("error", equalTo("OWN_ACCOUNT"))
-
-        given()
-            .auth()
-            .oauth2(token)
+            .oauth2(users.token(admin))
             .post("/api/users/${admin.id}/remove")
             .then()
             .statusCode(409)
+            .body("error", equalTo("OWN_ACCOUNT"))
     }
 
     @Test
