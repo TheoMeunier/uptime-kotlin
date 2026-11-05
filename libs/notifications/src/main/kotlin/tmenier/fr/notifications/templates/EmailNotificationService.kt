@@ -135,7 +135,7 @@ class EmailNotificationService(
     override fun getNotificationType() = NotificationChannelsEnum.MAIL.name
 
     private fun getMailClient(credential: NotificationContent.Mail): MailClient {
-        val password = encryptionService.decrypt(credential.password!!)
+        val password = encryptionService.decryptIfEncrypted(credential.password!!)
         val hostname = credential.hostname.removePrefix("https://").removePrefix("http://")
 
         val config =
