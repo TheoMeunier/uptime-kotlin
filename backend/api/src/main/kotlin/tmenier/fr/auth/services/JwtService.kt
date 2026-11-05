@@ -4,6 +4,7 @@ import io.smallrye.jwt.build.Jwt
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import tmenier.fr.common.enums.users.UserRole
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -20,6 +21,7 @@ class JwtService {
         userId: UUID,
         username: String,
         email: String,
+        role: UserRole,
     ): String {
         val now = Instant.now()
 
@@ -31,6 +33,7 @@ class JwtService {
             .expiresAt(now.plus(ACCESS_TOKEN_LIFETIME))
             .claim("name", username)
             .claim("email", email)
+            .claim("role", role.securityRole)
             .sign(keyProvider.privateKey)
     }
 

@@ -4,10 +4,13 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheEntityBase
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import tmenier.fr.common.enums.users.UserRole
 import java.time.Instant
 import java.util.UUID
 
@@ -26,6 +29,10 @@ class UserEntity : PanacheEntityBase {
 
     @Column(nullable = false)
     lateinit var password: String
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
+    var role: UserRole = UserRole.ADMIN
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

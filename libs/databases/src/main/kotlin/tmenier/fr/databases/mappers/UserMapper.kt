@@ -1,6 +1,8 @@
 package tmenier.fr.databases.mappers
 
 import io.quarkus.runtime.annotations.RegisterForReflection
+import tmenier.fr.common.enums.users.UserRole
+import tmenier.fr.databases.dtos.UserListItemDto
 import tmenier.fr.databases.entities.UserEntity
 import java.time.Instant
 import java.util.UUID
@@ -12,6 +14,7 @@ data class UserDto(
     val email: String,
     val password: String,
     val createdAt: Instant? = null,
+    val role: UserRole = UserRole.ADMIN,
 )
 
 object UserMapper {
@@ -22,6 +25,20 @@ object UserMapper {
             email = userEntity.email,
             password = userEntity.password,
             createdAt = userEntity.createdAt,
+            role = userEntity.role,
+        )
+
+    fun toListItemDto(
+        userEntity: UserEntity,
+        currentUserId: UUID,
+    ): UserListItemDto =
+        UserListItemDto(
+            id = userEntity.id,
+            name = userEntity.name,
+            email = userEntity.email,
+            role = userEntity.role,
+            createdAt = userEntity.createdAt,
+            current = userEntity.id == currentUserId,
         )
 
     fun toEntity(userDto: UserDto): UserEntity =
@@ -31,5 +48,6 @@ object UserMapper {
             email = userDto.email
             password = userDto.password
             createdAt = userDto.createdAt ?: Instant.now()
+            role = userDto.role
         }
 }

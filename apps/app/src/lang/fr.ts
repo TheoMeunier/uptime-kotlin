@@ -1065,6 +1065,56 @@ const fr: typeof en = {
 			confirm: 'Raccourcir',
 		},
 	},
+	users: {
+		tab: 'Utilisateurs',
+		title: {
+			index: 'Utilisateurs',
+			create: 'Ajouter un utilisateur',
+			remove: 'Retirer cet utilisateur ?',
+		},
+		description: {
+			index:
+				'Toutes les personnes qui peuvent se connecter. Les admins modifient tout ; les utilisateurs en lecture seule suivent la supervision sans la changer.',
+			create: 'Choisissez le mot de passe initial et transmettez-le vous-même. Il pourra le changer depuis son profil.',
+			remove: '{{name}} sera déconnecté partout et ne pourra plus se connecter.',
+		},
+		actions: {
+			create: 'Ajouter un utilisateur',
+		},
+		form: {
+			password: 'Mot de passe initial',
+			password_description: 'Au moins 8 caractères.',
+			role: 'Rôle',
+		},
+		role: {
+			ADMIN: 'Admin',
+			VIEWER: 'Lecture seule',
+		},
+		role_description: {
+			ADMIN: 'Accès complet, gestion des utilisateurs comprise.',
+			VIEWER: 'Voit les sondes, incidents et status pages ; ne modifie que son propre profil.',
+		},
+		you: 'Vous',
+		hint: {
+			own_account: 'Un autre admin peut changer votre rôle.',
+			last_admin: 'Le dernier admin garde son rôle.',
+		},
+		alerts: {
+			created: '{{name}} ajouté',
+			role_updated: 'Rôle mis à jour',
+			removed: 'Utilisateur retiré',
+		},
+		errors: {
+			last_admin: 'L’instance doit garder au moins un admin.',
+			own_account: 'Vous ne pouvez ni changer votre propre rôle ni vous retirer.',
+			email_already_used: 'Un compte utilise déjà cette adresse e-mail.',
+			read_only: 'Votre compte est en lecture seule : demandez cette modification à un admin.',
+		},
+		read_only: {
+			title: 'Accès en lecture seule',
+			description: 'Vous voyez tout ; demandez à un admin pour toute modification.',
+		},
+	},
 };
 
 export default fr;

@@ -29,7 +29,7 @@ class RefreshTokenAction(
         }
 
         val newRefreshToken = jwtService.generateRefreshToken()
-        val token = jwtService.generateJwt(rt.user.id, rt.user.name, rt.user.email)
+        val token = jwtService.generateJwt(rt.user.id, rt.user.name, rt.user.email, rt.user.role)
 
         refreshTokenRepository.rotateRefreshToken(
             rt.id,

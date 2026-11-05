@@ -1,33 +1,39 @@
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Bell, Database, Lock, SlidersHorizontal, User } from 'lucide-react';
+import { Bell, Database, Lock, SlidersHorizontal, User, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UpdateProfileForm from '@/features/profile/components/forms/update-profile-form.tsx';
 import UpdatePasswordProfileForm from '@/features/profile/components/forms/update-password-profile-form.tsx';
 import ListingNotification from '@/features/notifications/components/listing-notification.tsx';
 import PreferencesForm from '@/features/profile/components/forms/preferences-form.tsx';
 import LogRetentionForm from '@/features/settings/components/forms/log-retention-form.tsx';
+import ListingUsers from '@/features/users/components/listing/listing-users.tsx';
+import { useRole } from '@/features/auth/lib/role.ts';
 
 const SECTIONS = [
-	{ id: 'account', labelKey: 'profile.tabs.account', icon: User },
-	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock },
-	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell },
-	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal },
-	{ id: 'retention', labelKey: 'retention.tab', icon: Database },
+	{ id: 'account', labelKey: 'profile.tabs.account', icon: User, adminOnly: false },
+	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock, adminOnly: false },
+	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell, adminOnly: true },
+	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal, adminOnly: false },
+	{ id: 'retention', labelKey: 'retention.tab', icon: Database, adminOnly: true },
+	{ id: 'users', labelKey: 'users.tab', icon: Users, adminOnly: true },
 ] as const;
 
 export default function Profile() {
 	const { t } = useTranslation();
 
+	const { isAdmin } = useRole();
+	const sections = SECTIONS.filter((section) => isAdmin || !section.adminOnly);
+
 	const [searchParams, setSearchParams] = useSearchParams();
 	const requested = searchParams.get('tab');
-	const active = SECTIONS.some((section) => section.id === requested) ? requested! : 'account';
+	const active = sections.some((section) => section.id === requested) ? requested! : 'account';
 
 	return (
 		<div className="flex flex-col gap-8 md:flex-row md:gap-10">
 			<aside className="md:w-52 md:shrink-0">
 				<nav className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 md:mx-0 md:flex-col md:overflow-visible md:px-0 md:pb-0">
-					{SECTIONS.map(({ id, labelKey, icon: Icon }) => {
+					{sections.map(({ id, labelKey, icon: Icon }) => {
 						const isActive = active === id;
 
 						return (
@@ -59,6 +65,7 @@ export default function Profile() {
 				{active === 'notifications' && <ListingNotification />}
 				{active === 'preferences' && <PreferencesForm />}
 				{active === 'retention' && <LogRetentionForm />}
+				{active === 'users' && <ListingUsers />}
 			</div>
 		</div>
 	);

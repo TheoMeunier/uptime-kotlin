@@ -7,22 +7,21 @@ import jakarta.inject.Inject
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import tmenier.fr.auth.services.JwtService
 import tmenier.fr.deployments.ApiOnlyProfile
+import tmenier.fr.users.UserFixtures
 import tmenier.fr.version.resources.ShowVersionResource
-import java.util.UUID
 
 @QuarkusTest
 @TestProfile(ApiOnlyProfile::class)
 class ShowVersionResourceTest {
     @Inject
-    lateinit var jwtService: JwtService
+    lateinit var users: UserFixtures
 
     @Test
     fun `a signed-in user gets the running version`() {
         given()
             .auth()
-            .oauth2(jwtService.generateJwt(UUID.randomUUID(), "Jane Doe", "jane@example.com"))
+            .oauth2(users.token())
             .get("/api/version")
             .then()
             .statusCode(200)

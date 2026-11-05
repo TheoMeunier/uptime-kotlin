@@ -1046,6 +1046,56 @@ const en = {
 			confirm: 'Shorten',
 		},
 	},
+	users: {
+		tab: 'Users',
+		title: {
+			index: 'Users',
+			create: 'Add a user',
+			remove: 'Remove this user?',
+		},
+		description: {
+			index:
+				'Everyone who can sign in. Admins change everything; read-only users follow the monitoring without changing it.',
+			create: 'Choose the initial password and send it to them yourself. They can change it from their profile.',
+			remove: '{{name}} will be signed out everywhere and will no longer be able to sign in.',
+		},
+		actions: {
+			create: 'Add a user',
+		},
+		form: {
+			password: 'Initial password',
+			password_description: 'At least 8 characters.',
+			role: 'Role',
+		},
+		role: {
+			ADMIN: 'Admin',
+			VIEWER: 'Read-only',
+		},
+		role_description: {
+			ADMIN: 'Full access, including user management.',
+			VIEWER: 'Sees monitors, incidents and status pages; only changes their own profile.',
+		},
+		you: 'You',
+		hint: {
+			own_account: 'Another admin can change your role.',
+			last_admin: 'The last admin keeps the admin role.',
+		},
+		alerts: {
+			created: '{{name}} added',
+			role_updated: 'Role updated',
+			removed: 'User removed',
+		},
+		errors: {
+			last_admin: 'The instance needs at least one admin.',
+			own_account: 'You cannot change your own role or remove yourself.',
+			email_already_used: 'An account already uses this email address.',
+			read_only: 'Your account is read-only: ask an admin to make this change.',
+		},
+		read_only: {
+			title: 'Read-only access',
+			description: 'You see everything; ask an admin to make changes.',
+		},
+	},
 };
 
 export default en;
