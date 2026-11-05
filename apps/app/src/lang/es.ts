@@ -240,6 +240,10 @@ const es: typeof en = {
 					service: 'Servicio',
 				},
 			},
+			restricted: {
+				title: 'Inicio de sesión requerido',
+				description: 'Esta página de estado no existe o está reservada a usuarios con sesión iniciada.',
+			},
 			not_found: {
 				title: 'Página de estado no encontrada',
 				description: 'No hay ninguna página de estado publicada en /status/{{slug}}.',
@@ -807,6 +811,7 @@ const es: typeof en = {
 	},
 
 	status_pages: {
+		private: 'Privada',
 		uptime_period: {
 			H1: 'Última hora, comprobación a comprobación',
 			D1: '24 horas',
@@ -859,6 +864,9 @@ const es: typeof en = {
 			default_layout_description: 'Los visitantes pueden cambiarla; su elección se recuerda.',
 			uptime_period: 'Disponibilidad mostrada',
 			uptime_period_description: 'Hasta dónde llega la barra de cada monitor.',
+			private: 'Página privada',
+			private_description:
+				'Solo los usuarios con sesión iniciada en esta instancia pueden verla. Sus monitores también se ocultan a los visitantes en /status.',
 			save: 'Guardar',
 			unsaved: 'Cambios sin guardar',
 			layout_title: 'Grupos y monitores',

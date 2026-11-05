@@ -3,6 +3,7 @@ package tmenier.fr.databases.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.persistence.EntityManager
 import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.databases.dtos.StoreStatusPageDto
 import tmenier.fr.databases.dtos.StoreStatusPageGroupDto
@@ -14,10 +15,34 @@ import java.util.UUID
 @ApplicationScoped
 class StatusPageRepository(
     private val probeRepository: ProbeRepository,
+    private val em: EntityManager,
 ) : PanacheRepositoryBase<StatusPageEntity, UUID> {
     override fun findById(id: UUID): StatusPageEntity = find("id = ?1", id).firstResult() ?: throw NotFoundException("Status page not found: $id")
 
     fun findBySlug(slug: String): StatusPageEntity? = find("slug = ?1", slug).firstResult()
+
+    /** `null` when no page has this slug. */
+    fun isPrivateBySlug(slug: String): Boolean? =
+        em
+            .createQuery("SELECT p.isPrivate FROM StatusPageEntity p WHERE p.slug = :slug", Boolean::class.javaObjectType)
+            .setParameter("slug", slug)
+            .resultList
+            .firstOrNull()
+
+    fun findPrivateOnlyProbeIds(): Set<UUID> =
+        em
+            .createQuery(
+                """
+                SELECT DISTINCT probe.id FROM StatusPageGroupEntity g JOIN g.probes probe
+                WHERE g.statusPage.isPrivate = true
+                AND probe.id NOT IN (
+                    SELECT p2.id FROM StatusPageGroupEntity g2 JOIN g2.probes p2
+                    WHERE g2.statusPage.isPrivate = false
+                )
+                """.trimIndent(),
+                UUID::class.java,
+            ).resultList
+            .toSet()
 
     fun getAll(): List<StatusPageEntity> = findAll(Sort.by("title")).list()
 
@@ -40,6 +65,7 @@ class StatusPageRepository(
                 description = dto.description
                 defaultLayout = dto.defaultLayout
                 uptimePeriod = dto.uptimePeriod
+                isPrivate = dto.isPrivate
             }
 
         replaceGroups(entity, dto.groups)
@@ -55,6 +81,7 @@ class StatusPageRepository(
         entity.description = dto.description
         entity.defaultLayout = dto.defaultLayout
         entity.uptimePeriod = dto.uptimePeriod
+        entity.isPrivate = dto.isPrivate
         entity.updatedAt = Instant.now()
 
         replaceGroups(entity, dto.groups)

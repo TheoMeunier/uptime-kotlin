@@ -16,6 +16,7 @@ export interface StatusPagePayload {
 	description: string;
 	default_layout: StatusPageLayoutValue;
 	uptime_period: UptimePeriod;
+	is_private: boolean;
 	groups: { name: string; probe_ids: string[] }[];
 }
 
@@ -26,6 +27,7 @@ function toBody(payload: StatusPagePayload) {
 		description: payload.description || null,
 		default_layout: payload.default_layout,
 		uptime_period: payload.uptime_period,
+		is_private: payload.is_private,
 		groups: payload.groups.map((group) => ({ name: group.name || null, probe_ids: group.probe_ids })),
 	});
 }

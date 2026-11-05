@@ -92,6 +92,8 @@ class StatusSnapshotService(
 
         const val CACHE_POLICY = "public, max-age=$CACHE_MAX_AGE_SECONDS, must-revalidate"
 
+        const val PRIVATE_CACHE_POLICY = "private, no-cache"
+
         private const val ETAG_LENGTH = 22
     }
 }

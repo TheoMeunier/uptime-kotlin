@@ -14,6 +14,7 @@ export const StatusPageListSchema = z.array(
 		description: z.string().nullable(),
 		default_layout: z.enum(StatusPageLayoutEnum),
 		uptime_period: z.enum(UptimePeriodEnum),
+		is_private: z.boolean(),
 		group_count: z.number(),
 		probe_count: z.number(),
 		updated_at: z.string(),
@@ -40,6 +41,7 @@ export const StatusPageDetailSchema = z.object({
 	description: z.string().nullable(),
 	default_layout: z.enum(StatusPageLayoutEnum),
 	uptime_period: z.enum(UptimePeriodEnum),
+	is_private: z.boolean(),
 	groups: z.array(
 		z.object({
 			name: z.string().nullable(),

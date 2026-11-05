@@ -246,6 +246,10 @@ const de: typeof en = {
 					service: 'Dienst',
 				},
 			},
+			restricted: {
+				title: 'Anmeldung erforderlich',
+				description: 'Diese Statusseite existiert nicht oder ist angemeldeten Benutzern vorbehalten.',
+			},
 			not_found: {
 				title: 'Statusseite nicht gefunden',
 				description: 'Unter /status/{{slug}} ist keine Statusseite veröffentlicht.',
@@ -815,6 +819,7 @@ const de: typeof en = {
 	},
 
 	status_pages: {
+		private: 'Privat',
 		uptime_period: {
 			H1: 'Letzte Stunde, Prüfung für Prüfung',
 			D1: '24 Stunden',
@@ -867,6 +872,9 @@ const de: typeof en = {
 			default_layout_description: 'Besucher können weiterhin wechseln; ihre Wahl wird gespeichert.',
 			uptime_period: 'Angezeigte Verfügbarkeit',
 			uptime_period_description: 'Wie weit der Balken jedes Monitors zurückreicht.',
+			private: 'Private Seite',
+			private_description:
+				'Nur bei dieser Instanz angemeldete Benutzer können sie sehen. Ihre Monitore werden Besuchern auch auf /status nicht angezeigt.',
 			save: 'Speichern',
 			unsaved: 'Ungespeicherte Änderungen',
 			layout_title: 'Gruppen und Monitore',

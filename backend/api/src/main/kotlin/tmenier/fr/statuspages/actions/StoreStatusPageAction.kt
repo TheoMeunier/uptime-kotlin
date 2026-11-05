@@ -29,6 +29,7 @@ class StoreStatusPageAction(
                 description = payload.description?.trim()?.ifEmpty { null },
                 defaultLayout = payload.defaultLayout,
                 uptimePeriod = payload.uptimePeriod,
+                isPrivate = payload.isPrivate,
                 groups =
                     payload.groups.map { group ->
                         StoreStatusPageGroupDto(

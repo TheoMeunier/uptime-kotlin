@@ -18,6 +18,7 @@ class PublicJsonResponder(
     fun respond(
         request: Request,
         body: Any,
+        cachePolicy: String = CACHE_POLICY,
     ): Response {
         val json = objectMapper.writeValueAsBytes(body)
         val tag = EntityTag(fingerprint(json), true)
@@ -25,14 +26,16 @@ class PublicJsonResponder(
         request.evaluatePreconditions(tag)?.let { notModified ->
             return notModified
                 .tag(tag)
-                .header(HttpHeaders.CACHE_CONTROL, CACHE_POLICY)
+                .header(HttpHeaders.CACHE_CONTROL, cachePolicy)
+                .header(HttpHeaders.VARY, HttpHeaders.AUTHORIZATION)
                 .build()
         }
 
         return Response
             .ok(json, MediaType.APPLICATION_JSON_TYPE)
             .tag(tag)
-            .header(HttpHeaders.CACHE_CONTROL, CACHE_POLICY)
+            .header(HttpHeaders.CACHE_CONTROL, cachePolicy)
+            .header(HttpHeaders.VARY, HttpHeaders.AUTHORIZATION)
             .build()
     }
 

@@ -1,0 +1,2 @@
+ALTER TABLE status_pages
+    ADD COLUMN is_private BOOLEAN NOT NULL DEFAULT FALSE;

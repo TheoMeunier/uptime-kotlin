@@ -20,6 +20,7 @@ data class StoreStatusPageDto(
     val description: String?,
     val defaultLayout: StatusPageLayout,
     val uptimePeriod: StatusPageUptimePeriod,
+    val isPrivate: Boolean,
     val groups: List<StoreStatusPageGroupDto>,
 )
 
@@ -31,6 +32,7 @@ data class StatusPageListItemDto(
     val description: String?,
     val defaultLayout: StatusPageLayout,
     val uptimePeriod: StatusPageUptimePeriod,
+    val isPrivate: Boolean,
     val groupCount: Int,
     val probeCount: Int,
     val updatedAt: Instant,
@@ -50,6 +52,7 @@ data class StatusPageDto(
     val description: String?,
     val defaultLayout: StatusPageLayout,
     val uptimePeriod: StatusPageUptimePeriod,
+    val isPrivate: Boolean,
     val groups: List<StatusPageGroupDto>,
     val createdAt: Instant,
     val updatedAt: Instant,
@@ -68,5 +71,6 @@ data class PublicStatusPageDto(
     val description: String?,
     val defaultLayout: StatusPageLayout,
     val uptimePeriod: StatusPageUptimePeriod,
+    val isPrivate: Boolean,
     val groups: List<PublicStatusPageGroupDto>,
 )

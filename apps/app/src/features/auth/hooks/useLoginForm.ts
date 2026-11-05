@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import authService from '@/features/auth/services/authServices.ts';
+import { safeRedirect } from '@/features/auth/lib/redirect.ts';
 
 const loginSchema = z.object({
 	email: z.email(),
@@ -14,6 +15,7 @@ type LoginSchema = z.infer<typeof loginSchema>;
 
 export default function useLoginForm() {
 	const navigation = useNavigate();
+	const [searchParams] = useSearchParams();
 	const form = useForm<LoginSchema>({
 		resolver: zodResolver(loginSchema),
 	});
@@ -22,7 +24,7 @@ export default function useLoginForm() {
 		mutationFn: async (data: LoginSchema) => {
 			return authService.login(data.email, data.password);
 		},
-		onSuccess: () => navigation('/dashboard'),
+		onSuccess: () => navigation(safeRedirect(searchParams.get('redirect')), { replace: true }),
 	});
 
 	const onsubmit: SubmitHandler<LoginSchema> = async (data: LoginSchema) => {

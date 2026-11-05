@@ -3,6 +3,7 @@
 import { auth } from '@/features/auth/enums/auth-enum.ts';
 import jwtDecode from '@/lib/jwt-decode.ts';
 import { createApiError } from '@/api/api-error.ts';
+import { loginPathFromHere } from '@/features/auth/lib/redirect.ts';
 
 const REFRESH_LOCK = 'uptime-auth-refresh';
 
@@ -29,7 +30,7 @@ const authService = {
 		const user = localStorage.getItem('user');
 
 		if (!user) {
-			window.location.href = '/login';
+			window.location.href = loginPathFromHere();
 			throw new Error('User not found. Please login again.');
 		}
 
@@ -77,7 +78,7 @@ const authService = {
 	async tryRefreshToken(): Promise<boolean> {
 		const refresh = this.getRefreshToken();
 		if (!refresh) {
-			window.location.href = '/login';
+			window.location.href = loginPathFromHere();
 			return false;
 		}
 
@@ -107,7 +108,7 @@ const authService = {
 			if (!res.ok) {
 				const error = await createApiError(res, 'Unable to refresh your session.');
 				this.clearSession();
-				window.location.href = '/login';
+				window.location.href = loginPathFromHere();
 				throw error;
 			}
 
@@ -118,7 +119,7 @@ const authService = {
 			return true;
 		} catch {
 			this.clearSession();
-			window.location.href = '/login';
+			window.location.href = loginPathFromHere();
 			return false;
 		}
 	},

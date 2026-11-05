@@ -243,6 +243,10 @@ const fr: typeof en = {
 					service: 'Service',
 				},
 			},
+			restricted: {
+				title: 'Connexion requise',
+				description: 'Cette page de statut n’existe pas ou est réservée aux utilisateurs connectés.',
+			},
 			not_found: {
 				title: 'Page de statut introuvable',
 				description: 'Aucune page de statut n’est publiée à l’adresse /status/{{slug}}.',
@@ -814,6 +818,7 @@ const fr: typeof en = {
 	},
 
 	status_pages: {
+		private: 'Privée',
 		uptime_period: {
 			H1: 'Dernière heure, check par check',
 			D1: '24 heures',
@@ -866,6 +871,9 @@ const fr: typeof en = {
 			default_layout_description: 'Les visiteurs peuvent toujours changer ; leur choix est mémorisé.',
 			uptime_period: 'Disponibilité affichée',
 			uptime_period_description: 'Jusqu’où remonte la barre de chaque sonde.',
+			private: 'Page privée',
+			private_description:
+				'Seuls les utilisateurs connectés à cette instance peuvent la voir. Ses sondes disparaissent aussi de /status pour les visiteurs.',
 			save: 'Enregistrer',
 			unsaved: 'Modifications non enregistrées',
 			layout_title: 'Groupes et sondes',

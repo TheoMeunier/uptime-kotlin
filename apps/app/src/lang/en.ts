@@ -236,6 +236,10 @@ const en = {
 					service: 'Service',
 				},
 			},
+			restricted: {
+				title: 'Sign-in required',
+				description: 'This status page does not exist or is restricted to signed-in users.',
+			},
 			not_found: {
 				title: 'Status page not found',
 				description: 'No status page is published at /status/{{slug}}.',
@@ -798,6 +802,7 @@ const en = {
 	},
 
 	status_pages: {
+		private: 'Private',
 		uptime_period: {
 			H1: 'Last hour, check by check',
 			D1: '24 hours',
@@ -849,6 +854,9 @@ const en = {
 			default_layout_description: 'Visitors can still switch; their choice is remembered.',
 			uptime_period: 'Availability shown',
 			uptime_period_description: 'How far back the bar of each monitor goes.',
+			private: 'Private page',
+			private_description:
+				'Only users signed in to this instance can see it. Its monitors are also hidden from visitors on /status.',
 			save: 'Save',
 			unsaved: 'Unsaved changes',
 			layout_title: 'Groups and monitors',
