@@ -23,7 +23,7 @@ export default function CreateNotificationDialogue() {
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className="sm:max-w-xl">
+			<DialogContent className="sm:max-w-xl" onInteractOutside={(event) => event.preventDefault()}>
 				<FormNotification mode="create" onSubmit={onSubmit} isLoading={isLoading} defaultValues={defaultValues} />
 			</DialogContent>
 		</Dialog>
