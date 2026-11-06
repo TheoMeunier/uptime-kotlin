@@ -2,6 +2,11 @@ import type en from '@/lang/en.ts';
 
 // Typé sur `en` : une clé manquante ou en trop est une erreur de compilation.
 const fr: typeof en = {
+	clipboard: {
+		copy: 'Copier',
+		copied: 'Copié',
+		failed: 'Impossible de copier dans le presse-papiers',
+	},
 	errors: {
 		chunk: {
 			title: 'Une nouvelle version est disponible',
@@ -309,6 +314,33 @@ const fr: typeof en = {
 			database: 'Bases de données',
 			messaging: 'Messagerie et courriel',
 			containers: 'Conteneurs',
+			jobs: 'Jobs et crons',
+		},
+
+		push: {
+			title: 'URL de push',
+			description: 'Appelez cette URL à la fin de votre job. Sans appel dans les temps, la sonde passe en panne.',
+			schedule_description:
+				'Votre job appelle l’URL de la sonde ; rien n’est contacté d’ici. Sans appel pendant {{ deadline }}, la sonde passe en panne. L’échéance est vérifiée chaque minute.',
+			equals: '≈ {{ duration }}',
+			check_description: 'Échéance vérifiée chaque minute',
+			never: 'Aucun appel reçu pour l’instant.',
+			example_cron: 'Tâche cron',
+			example_failure: 'Signaler un échec',
+			regenerate: 'Nouvelle URL',
+			regenerate_title: 'Générer une nouvelle URL ?',
+			regenerate_description:
+				'L’URL actuelle cesse immédiatement de fonctionner. Tous les jobs qui l’appellent doivent être mis à jour, sinon la sonde passera en panne.',
+			regenerated: 'Nouvelle URL de push générée',
+			last_call: 'Dernier appel',
+			expected_every: 'Attendu toutes les',
+			grace: '+ {{ grace }} de marge',
+			calls_received: 'Appels reçus',
+			just_now: 'À l’instant',
+			ago: 'Il y a {{ duration }}',
+			never_short: 'Jamais',
+			failure_reported: 'échec signalé',
+			examples: 'Exemples d’intégration',
 		},
 
 		section: {
@@ -346,6 +378,8 @@ const fr: typeof en = {
 			duplicate: 'Dupliquer la sonde',
 		},
 		label: {
+			period_seconds: 'Fréquence attendue',
+			grace_seconds: 'Marge de tolérance',
 			http_method: 'Méthode HTTP',
 			follow_redirects: 'Suivre les redirections',
 			max_latency_ms: 'Latence maximale (ms)',

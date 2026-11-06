@@ -21,6 +21,8 @@ import ProbeActionsMenu from '@/features/probes/components/actions/probe-actions
 import MaintenanceBanner from '@/features/maintenances/components/maintenance-banner.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/atoms/tabs.tsx';
 import ProbeIncidents from '@/features/incidents/components/probe-incidents.tsx';
+import ProbePushUrl from '@/features/probes/components/modules/probe-push-url.tsx';
+import ProbeProtocol from '@/features/probes/enums/probe-enum.ts';
 
 const POLL_MIN_MS = 15_000;
 const POLL_MAX_MS = 120_000;
@@ -98,9 +100,11 @@ export function ShowProbe() {
 							<div>
 								<CardTitle className="text-xl">{t('monitors.title.final_hour')}</CardTitle>
 								<CardDescription className="mt-1">
-									{t('monitors.description.check_interval', {
-										interval: data.probe.interval,
-									})}
+									{data.probe.protocol === ProbeProtocol.PUSH
+										? t('monitors.push.check_description')
+										: t('monitors.description.check_interval', {
+												interval: data.probe.interval,
+											})}
 								</CardDescription>
 							</div>
 							<div className="flex items-center gap-2">
@@ -121,6 +125,17 @@ export function ShowProbe() {
 					</CardContent>
 				</Card>
 			</section>
+
+			{data.push && (
+				<section>
+					<ProbePushUrl
+						probeId={data.probe.id}
+						push={data.push}
+						periodSeconds={data.probe.content?.period_seconds}
+						graceSeconds={data.probe.content?.grace_seconds}
+					/>
+				</section>
+			)}
 
 			<section
 				className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}

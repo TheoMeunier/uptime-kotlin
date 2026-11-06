@@ -11,6 +11,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
@@ -19,6 +20,7 @@ import tmenier.fr.databases.repositories.IncidentRepository
 import tmenier.fr.databases.repositories.MaintenanceOccurrenceRepository
 import tmenier.fr.databases.repositories.ProbeLogRollupRepository
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
+import tmenier.fr.databases.repositories.ProbePushStateRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import java.time.Duration
 import java.time.Instant
@@ -34,6 +36,7 @@ class ShowProbeResource(
     private val maintenanceOccurrenceRepository: MaintenanceOccurrenceRepository,
     private val incidentRepository: IncidentRepository,
     private val rollupRepository: ProbeLogRollupRepository,
+    private val probePushStateRepository: ProbePushStateRepository,
 ) {
     @GET
     @Authenticated
@@ -85,6 +88,10 @@ class ShowProbeResource(
                     maintenance = maintenance,
                     maintenancePeriods = maintenancePeriods,
                     incidentPeriods = incidentPeriods,
+                    push =
+                        probePushStateRepository
+                            .takeIf { probeEntity.protocol == ProbeProtocol.PUSH }
+                            ?.findByProbeId(probeId),
                 ),
             ).build()
     }

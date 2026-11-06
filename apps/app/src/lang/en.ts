@@ -1,4 +1,9 @@
 const en = {
+	clipboard: {
+		copy: 'Copy',
+		copied: 'Copied',
+		failed: 'Could not copy to the clipboard',
+	},
 	errors: {
 		chunk: {
 			title: 'A new version is available',
@@ -302,6 +307,33 @@ const en = {
 			database: 'Databases',
 			messaging: 'Messaging & mail',
 			containers: 'Containers',
+			jobs: 'Jobs & crons',
+		},
+
+		push: {
+			title: 'Push URL',
+			description: 'Call this URL at the end of your job. The monitor goes down if no call arrives in time.',
+			schedule_description:
+				'Your job calls the monitor URL; nothing is contacted from here. Without a call for {{ deadline }}, the monitor goes down. The deadline is checked every minute.',
+			equals: '≈ {{ duration }}',
+			check_description: 'Deadline checked every minute',
+			never: 'No call received yet.',
+			example_cron: 'Cron job',
+			example_failure: 'Report a failure',
+			regenerate: 'New URL',
+			regenerate_title: 'Generate a new URL?',
+			regenerate_description:
+				'The current URL stops working immediately. Every job calling it must be updated, otherwise the monitor will go down.',
+			regenerated: 'New push URL generated',
+			last_call: 'Last call',
+			expected_every: 'Expected every',
+			grace: '+ {{ grace }} grace',
+			calls_received: 'Calls received',
+			just_now: 'Just now',
+			ago: '{{ duration }} ago',
+			never_short: 'Never',
+			failure_reported: 'failure reported',
+			examples: 'Integration examples',
 		},
 
 		section: {
@@ -336,6 +368,8 @@ const en = {
 			duplicate: 'Duplicate monitor',
 		},
 		label: {
+			period_seconds: 'Expected every',
+			grace_seconds: 'Grace period',
 			http_method: 'HTTP method',
 			follow_redirects: 'Follow redirects',
 			max_latency_ms: 'Maximum latency (ms)',

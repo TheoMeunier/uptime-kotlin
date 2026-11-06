@@ -169,6 +169,16 @@ const rabbitMqProbeSchema = baseStoreProbeSchema.extend({
 	password: z.string().min(1),
 });
 
+export const PUSH_FIXED_SCHEDULE = { interval: 60, timeout: 5, retry: 1, interval_retry: 60 } as const;
+export const PUSH_DEFAULTS = { period_seconds: 86_400, grace_seconds: 3_600 } as const;
+
+const pushProbeSchema = baseStoreProbeSchema.extend({
+	protocol: z.literal('PUSH'),
+	retry: z.number().min(0).max(10).optional(),
+	period_seconds: z.number().int().min(60).max(2_592_000),
+	grace_seconds: z.number().int().min(0).max(604_800),
+});
+
 export const storeProbeSchema = z
 	.discriminatedUnion('protocol', [
 		httpProbeSchema,
@@ -186,6 +196,7 @@ export const storeProbeSchema = z
 		smtpProbeSchema,
 		kafkaProbeSchema,
 		rabbitMqProbeSchema,
+		pushProbeSchema,
 	])
 	.refine((probe) => probe.timeout < probe.interval, {
 		path: ['timeout'],

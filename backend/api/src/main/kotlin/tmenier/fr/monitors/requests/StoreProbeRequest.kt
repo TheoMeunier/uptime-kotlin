@@ -45,6 +45,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidProbeProtocolSmtpRequest::class, name = "SMTP"),
     JsonSubTypes.Type(value = ValidProbeProtocolKafkaRequest::class, name = "KAFKA PRODUCER"),
     JsonSubTypes.Type(value = ValidProbeProtocolRabbitMqRequest::class, name = "RABBITMQ"),
+    JsonSubTypes.Type(value = ValidProbeProtocolPushRequest::class, name = "PUSH"),
 )
 @RegisterForReflection
 abstract class BaseStoreProbeRequest {
@@ -333,3 +334,23 @@ data class ValidProbeProtocolRabbitMqRequest(
     )
     val password: String = "",
 ) : BaseStoreProbeRequest()
+
+@RegisterForReflection
+data class ValidProbeProtocolPushRequest(
+    @field:Min(value = 60, message = "Expected period must be at least 60 seconds")
+    @field:Max(value = 2_592_000, message = "Expected period must be at most 30 days")
+    val periodSeconds: Int = 86_400,
+    @field:Min(value = 0, message = "Grace period must be 0 or a positive number of seconds")
+    @field:Max(value = 604_800, message = "Grace period must be at most 7 days")
+    val graceSeconds: Int = 3_600,
+) : BaseStoreProbeRequest() {
+    init {
+        interval = PUSH_EVALUATION_INTERVAL_SECONDS
+        retry = 1
+        intervalRetry = PUSH_EVALUATION_INTERVAL_SECONDS
+    }
+
+    companion object {
+        const val PUSH_EVALUATION_INTERVAL_SECONDS = 60
+    }
+}

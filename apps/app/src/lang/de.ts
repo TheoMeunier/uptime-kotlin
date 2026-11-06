@@ -2,6 +2,11 @@ import type en from '@/lang/en.ts';
 
 // Typisiert auf `en`: ein fehlender oder überzähliger Schlüssel ist ein Compile-Fehler.
 const de: typeof en = {
+	clipboard: {
+		copy: 'Kopieren',
+		copied: 'Kopiert',
+		failed: 'Kopieren in die Zwischenablage fehlgeschlagen',
+	},
 	errors: {
 		chunk: {
 			title: 'Eine neue Version ist verfügbar',
@@ -312,6 +317,34 @@ const de: typeof en = {
 			database: 'Datenbanken',
 			messaging: 'Messaging und E-Mail',
 			containers: 'Container',
+			jobs: 'Jobs & Crons',
+		},
+
+		push: {
+			title: 'Push-URL',
+			description:
+				'Rufen Sie diese URL am Ende Ihres Jobs auf. Kommt kein Aufruf rechtzeitig, gilt der Monitor als ausgefallen.',
+			schedule_description:
+				'Ihr Job ruft die URL des Monitors auf; von hier aus wird nichts kontaktiert. Ohne Aufruf innerhalb von {{ deadline }} gilt der Monitor als ausgefallen. Die Frist wird jede Minute geprüft.',
+			equals: '≈ {{ duration }}',
+			check_description: 'Frist wird jede Minute geprüft',
+			never: 'Noch kein Aufruf empfangen.',
+			example_cron: 'Cronjob',
+			example_failure: 'Fehler melden',
+			regenerate: 'Neue URL',
+			regenerate_title: 'Neue URL erzeugen?',
+			regenerate_description:
+				'Die aktuelle URL funktioniert sofort nicht mehr. Alle Jobs, die sie aufrufen, müssen angepasst werden, sonst fällt der Monitor aus.',
+			regenerated: 'Neue Push-URL erzeugt',
+			last_call: 'Letzter Aufruf',
+			expected_every: 'Erwartet alle',
+			grace: '+ {{ grace }} Toleranz',
+			calls_received: 'Empfangene Aufrufe',
+			just_now: 'Gerade eben',
+			ago: 'Vor {{ duration }}',
+			never_short: 'Nie',
+			failure_reported: 'Fehler gemeldet',
+			examples: 'Integrationsbeispiele',
 		},
 
 		section: {
@@ -348,6 +381,8 @@ const de: typeof en = {
 			duplicate: 'Monitor duplizieren',
 		},
 		label: {
+			period_seconds: 'Erwartet alle',
+			grace_seconds: 'Toleranz',
 			http_method: 'HTTP-Methode',
 			follow_redirects: 'Weiterleitungen folgen',
 			max_latency_ms: 'Maximale Latenz (ms)',

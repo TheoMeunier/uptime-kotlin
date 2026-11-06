@@ -2,6 +2,11 @@ import type en from '@/lang/en.ts';
 
 // Tipado sobre `en`: una clave que falte o que sobre es un error de compilación.
 const es: typeof en = {
+	clipboard: {
+		copy: 'Copiar',
+		copied: 'Copiado',
+		failed: 'No se pudo copiar al portapapeles',
+	},
 	errors: {
 		chunk: {
 			title: 'Hay una nueva versión disponible',
@@ -306,6 +311,33 @@ const es: typeof en = {
 			database: 'Bases de datos',
 			messaging: 'Mensajería y correo',
 			containers: 'Contenedores',
+			jobs: 'Jobs y crons',
+		},
+
+		push: {
+			title: 'URL de push',
+			description: 'Llame a esta URL al final de su job. Si no llega ninguna llamada a tiempo, la sonda pasa a caída.',
+			schedule_description:
+				'Su job llama a la URL de la sonda; desde aquí no se contacta nada. Sin llamada durante {{ deadline }}, la sonda pasa a caída. El plazo se comprueba cada minuto.',
+			equals: '≈ {{ duration }}',
+			check_description: 'Plazo comprobado cada minuto',
+			never: 'Aún no se ha recibido ninguna llamada.',
+			example_cron: 'Tarea cron',
+			example_failure: 'Notificar un fallo',
+			regenerate: 'Nueva URL',
+			regenerate_title: '¿Generar una nueva URL?',
+			regenerate_description:
+				'La URL actual deja de funcionar de inmediato. Todos los jobs que la llaman deben actualizarse, o la sonda pasará a caída.',
+			regenerated: 'Nueva URL de push generada',
+			last_call: 'Última llamada',
+			expected_every: 'Esperada cada',
+			grace: '+ {{ grace }} de margen',
+			calls_received: 'Llamadas recibidas',
+			just_now: 'Ahora mismo',
+			ago: 'Hace {{ duration }}',
+			never_short: 'Nunca',
+			failure_reported: 'fallo notificado',
+			examples: 'Ejemplos de integración',
 		},
 
 		section: {
@@ -342,6 +374,8 @@ const es: typeof en = {
 			duplicate: 'Duplicar monitor',
 		},
 		label: {
+			period_seconds: 'Frecuencia esperada',
+			grace_seconds: 'Margen de tolerancia',
 			http_method: 'Método HTTP',
 			follow_redirects: 'Seguir redirecciones',
 			max_latency_ms: 'Latencia máxima (ms)',

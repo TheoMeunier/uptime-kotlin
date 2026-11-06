@@ -15,6 +15,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolMySqlRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolOracleRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPingRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolPostgreSqlRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolPushRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
@@ -195,6 +196,12 @@ class ResolveMonitorContentService(
                             existing = (existingProbe?.content as? ProbeContent.RabbitMq)?.password,
                             requiredMessage = "RabbitMQ password is required on creation",
                         ).encrypted,
+                )
+
+            is ValidProbeProtocolPushRequest ->
+                ProbeContent.Push(
+                    periodSeconds = request.periodSeconds,
+                    graceSeconds = request.graceSeconds,
                 )
 
             else -> throw IllegalArgumentException("Unsupported protocol")
