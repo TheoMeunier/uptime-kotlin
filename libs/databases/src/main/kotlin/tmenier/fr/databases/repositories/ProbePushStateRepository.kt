@@ -15,6 +15,8 @@ import java.util.UUID
 class ProbePushStateRepository(
     private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbePushStateEntity, UUID> {
+    private val random = SecureRandom()
+
     @Transactional
     fun findByProbeId(probeId: UUID): ProbePushStateEntity? = findById(probeId)
 
@@ -62,10 +64,7 @@ class ProbePushStateRepository(
     }
 
     companion object {
-        /** 32 octets → 43 caractères base64url. */
         private const val TOKEN_BYTES = 32
-        private val random = SecureRandom()
-
         val TOKEN_FORMAT = Regex("^[A-Za-z0-9_-]{16,64}$")
     }
 }
