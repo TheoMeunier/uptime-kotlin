@@ -50,6 +50,19 @@ export const ProbeUptimeSchema = z.object({
 	d30: z.number(),
 });
 
+export const ProbePushSchema = z.object({
+	token: z.string(),
+	armed_at: z.string(),
+	last_push_at: z.string().nullable(),
+	last_push_signal: z.enum(['UP', 'DOWN']).nullable(),
+	last_push_message: z.string().nullable(),
+	push_count: z.number(),
+});
+
+export type ProbePush = z.infer<typeof ProbePushSchema>;
+
+export const RegeneratePushTokenResponseSchema = z.object({ token: z.string() });
+
 export const ProbeShowSchema = z.object({
 	probe: ProbeResponseSchema,
 	monitors: ProbeMonitorsSchema,
@@ -58,6 +71,7 @@ export const ProbeShowSchema = z.object({
 	next_maintenance: ProbeMaintenanceSchema.nullable().optional(),
 	maintenance_periods: z.array(MaintenanceOccurrenceSchema).optional().default([]),
 	incident_periods: z.array(IncidentSpanSchema).optional().default([]),
+	push: ProbePushSchema.nullable().optional(),
 });
 
 export type ProbeShow = z.infer<typeof ProbeShowSchema>;

@@ -12,6 +12,7 @@ import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.ProbeListDTO
 import tmenier.fr.databases.dtos.ProbeMaintenanceState
 import tmenier.fr.databases.dtos.ProbeMonitorDTO
+import tmenier.fr.databases.dtos.ProbePushDTO
 import tmenier.fr.databases.dtos.ProbeShowDTO
 import tmenier.fr.databases.dtos.ProbeStatusDTO
 import tmenier.fr.databases.dtos.ProbeStatusMetrics
@@ -20,6 +21,7 @@ import tmenier.fr.databases.dtos.ProbeWithNotificationsDTO
 import tmenier.fr.databases.dtos.ProbeWithNotificationsIdsDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.entities.MaintenanceOccurrenceEntity
+import tmenier.fr.databases.entities.ProbePushStateEntity
 import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import java.time.Duration
@@ -78,6 +80,10 @@ object ProbeContentMapper {
                 objectMapper.treeToValue(probe.content, ProbeContent.DockerContainer::class.java)
             }
 
+            ProbeProtocol.PUSH -> {
+                objectMapper.treeToValue(probe.content, ProbeContent.Push::class.java)
+            }
+
             ProbeProtocol.SMTP -> {
                 objectMapper.treeToValue(probe.content, ProbeContent.Smtp::class.java)
             }
@@ -109,6 +115,7 @@ object ProbeContentMapper {
                 is ProbeContent.Smtp -> ProbeProtocol.SMTP
                 is ProbeContent.Kafka -> ProbeProtocol.KAFKA
                 is ProbeContent.RabbitMq -> ProbeProtocol.RABBITMQ
+                is ProbeContent.Push -> ProbeProtocol.PUSH
             }
 
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
@@ -158,6 +165,7 @@ object ProbeContentMapper {
             is ProbeContent.MongoDb -> content.host
             is ProbeContent.Oracle -> content.host
             is ProbeContent.Smtp -> "${content.hostname}:${content.port}"
+            is ProbeContent.Push -> "Push heartbeat"
             is ProbeContent.Kafka -> content.brokers
             is ProbeContent.RabbitMq -> content.managementNodes
         }
@@ -279,6 +287,7 @@ object ProbeMapper {
         maintenance: ProbeMaintenanceState? = null,
         maintenancePeriods: List<MaintenanceOccurrenceEntity> = emptyList(),
         incidentPeriods: List<IncidentPeriodDto> = emptyList(),
+        push: ProbePushStateEntity? = null,
     ): ProbeShowDTO {
         val content = ProbeContentMapper.toDto(entity)
 
@@ -321,6 +330,17 @@ object ProbeMapper {
             nextMaintenance = maintenance?.next,
             maintenancePeriods = maintenancePeriods.map(MaintenanceMapper::toOccurrenceDto),
             incidentPeriods = incidentPeriods,
+            push =
+                push?.let {
+                    ProbePushDTO(
+                        token = it.token,
+                        armedAt = it.armedAt,
+                        lastPushAt = it.lastPushAt,
+                        lastPushSignal = it.lastPushSignal,
+                        lastPushMessage = it.lastPushMessage,
+                        pushCount = it.pushCount,
+                    )
+                },
         )
     }
 

@@ -1,4 +1,9 @@
-import { type StoreProbeSchema, useProbeForm } from '@/features/probes/hooks/useProbeForm.ts';
+import {
+	PUSH_DEFAULTS,
+	PUSH_FIXED_SCHEDULE,
+	type StoreProbeSchema,
+	useProbeForm,
+} from '@/features/probes/hooks/useProbeForm.ts';
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/atoms/field.tsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/atoms/card.tsx';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +31,7 @@ import type { LogRetentionPreview } from '@/features/settings/schemas/log-retent
 import { usePreviewProbeLogRetention } from '@/features/settings/hooks/useLogRetentionPreview.ts';
 import FormErrorSummary from '@/components/molecules/forms/form-error-summary.tsx';
 import { applyServerViolations } from '@/lib/apply-server-violations.ts';
+import { formatDuration } from '@/lib/datetime.ts';
 
 type ProbeFormMode = 'create' | 'edit';
 
@@ -102,6 +108,52 @@ function FormSection({
 	);
 }
 
+function PushScheduleFields({ form }: { form: ReturnType<typeof useProbeForm>['form'] }) {
+	const { t } = useTranslation();
+	const errors = form.formState.errors as Partial<Record<'period_seconds' | 'grace_seconds', { message?: string }>>;
+	const period = Number(form.watch('period_seconds' as FieldPath<StoreProbeSchema>)) || 0;
+	const grace = Number(form.watch('grace_seconds' as FieldPath<StoreProbeSchema>)) || 0;
+
+	return (
+		<div className="flex flex-col gap-4">
+			<p className="text-muted-foreground text-xs leading-relaxed">
+				{t('monitors.push.schedule_description', {
+					deadline: formatDuration(period + grace),
+				})}
+			</p>
+			<div className="grid grid-cols-2 items-start gap-3">
+				<Field>
+					<FieldLabel htmlFor="period_seconds">{t('monitors.label.period_seconds')}</FieldLabel>
+					<InputWithUnit
+						{...form.register('period_seconds' as FieldPath<StoreProbeSchema>, { valueAsNumber: true })}
+						id="period_seconds"
+						unit={t('monitors.section.unit_seconds')}
+						min={60}
+						max={2_592_000}
+						required
+					/>
+					<FieldDescription>{t('monitors.push.equals', { duration: formatDuration(period) })}</FieldDescription>
+					<FieldError>{errors.period_seconds?.message}</FieldError>
+				</Field>
+
+				<Field>
+					<FieldLabel htmlFor="grace_seconds">{t('monitors.label.grace_seconds')}</FieldLabel>
+					<InputWithUnit
+						{...form.register('grace_seconds' as FieldPath<StoreProbeSchema>, { valueAsNumber: true })}
+						id="grace_seconds"
+						unit={t('monitors.section.unit_seconds')}
+						min={0}
+						max={604_800}
+						required
+					/>
+					<FieldDescription>{t('monitors.push.equals', { duration: formatDuration(grace) })}</FieldDescription>
+					<FieldError>{errors.grace_seconds?.message}</FieldError>
+				</Field>
+			</div>
+		</div>
+	);
+}
+
 export default function ProbeForm({
 	mode,
 	defaultValues,
@@ -125,7 +177,8 @@ export default function ProbeForm({
 		values: StoreProbeSchema;
 	} | null>(null);
 
-	const submit = async (values: StoreProbeSchema) => {
+	const submit = async (submitted: StoreProbeSchema) => {
+		const values = submitted.protocol === ProbeProtocol.PUSH ? { ...submitted, ...PUSH_FIXED_SCHEDULE } : submitted;
 		const retention = values.log_retention_days ?? null;
 		const initialRetention = defaultValues.log_retention_days ?? null;
 
@@ -163,6 +216,15 @@ export default function ProbeForm({
 				shouldValidate: false,
 			});
 		});
+
+		if (nextProtocol === ProbeProtocol.PUSH) {
+			Object.entries({ ...PUSH_FIXED_SCHEDULE, ...PUSH_DEFAULTS }).forEach(([name, value]) => {
+				form.setValue(name as FieldPath<StoreProbeSchema>, value as never, {
+					shouldDirty: true,
+					shouldValidate: false,
+				});
+			});
+		}
 	};
 
 	return (
@@ -211,69 +273,73 @@ export default function ProbeForm({
 						description={t('monitors.section.schedule_description')}
 						icon={Clock}
 					>
-						<div className="flex flex-col divide-y">
-							<ScheduleGroup
-								title={t('monitors.section.schedule_check')}
-								description={t('monitors.section.schedule_check_description')}
-							>
-								<Field>
-									<FieldLabel htmlFor="interval">{t('monitors.label.interval')}</FieldLabel>
-									<InputWithUnit
-										{...form.register('interval', { valueAsNumber: true })}
-										id="interval"
-										unit={t('monitors.section.unit_seconds')}
-										min={10}
-										max={3600}
-										required
-									/>
-									<FieldError>{errors.interval?.message}</FieldError>
-								</Field>
+						{protocol === ProbeProtocol.PUSH ? (
+							<PushScheduleFields form={form} />
+						) : (
+							<div className="flex flex-col divide-y">
+								<ScheduleGroup
+									title={t('monitors.section.schedule_check')}
+									description={t('monitors.section.schedule_check_description')}
+								>
+									<Field>
+										<FieldLabel htmlFor="interval">{t('monitors.label.interval')}</FieldLabel>
+										<InputWithUnit
+											{...form.register('interval', { valueAsNumber: true })}
+											id="interval"
+											unit={t('monitors.section.unit_seconds')}
+											min={10}
+											max={3600}
+											required
+										/>
+										<FieldError>{errors.interval?.message}</FieldError>
+									</Field>
 
-								<Field>
-									<FieldLabel htmlFor="timeout">{t('monitors.label.timeout')}</FieldLabel>
-									<InputWithUnit
-										{...form.register('timeout', { valueAsNumber: true })}
-										id="timeout"
-										unit={t('monitors.section.unit_seconds')}
-										min={1}
-										max={120}
-										required
-									/>
-									<FieldError>{errors.timeout?.message}</FieldError>
-								</Field>
-							</ScheduleGroup>
+									<Field>
+										<FieldLabel htmlFor="timeout">{t('monitors.label.timeout')}</FieldLabel>
+										<InputWithUnit
+											{...form.register('timeout', { valueAsNumber: true })}
+											id="timeout"
+											unit={t('monitors.section.unit_seconds')}
+											min={1}
+											max={120}
+											required
+										/>
+										<FieldError>{errors.timeout?.message}</FieldError>
+									</Field>
+								</ScheduleGroup>
 
-							<ScheduleGroup
-								title={t('monitors.section.schedule_retry')}
-								description={t('monitors.section.schedule_retry_description')}
-							>
-								<Field>
-									<FieldLabel htmlFor="retry">{t('monitors.label.retry')}</FieldLabel>
-									<InputWithUnit
-										{...form.register('retry', { valueAsNumber: true })}
-										id="retry"
-										unit={t('monitors.section.unit_times')}
-										min={1}
-										max={10}
-										required
-									/>
-									<FieldError>{errors.retry?.message}</FieldError>
-								</Field>
+								<ScheduleGroup
+									title={t('monitors.section.schedule_retry')}
+									description={t('monitors.section.schedule_retry_description')}
+								>
+									<Field>
+										<FieldLabel htmlFor="retry">{t('monitors.label.retry')}</FieldLabel>
+										<InputWithUnit
+											{...form.register('retry', { valueAsNumber: true })}
+											id="retry"
+											unit={t('monitors.section.unit_times')}
+											min={1}
+											max={10}
+											required
+										/>
+										<FieldError>{errors.retry?.message}</FieldError>
+									</Field>
 
-								<Field>
-									<FieldLabel htmlFor="interval_retry">{t('monitors.label.interval_retry')}</FieldLabel>
-									<InputWithUnit
-										{...form.register('interval_retry', { valueAsNumber: true })}
-										id="interval_retry"
-										unit={t('monitors.section.unit_seconds')}
-										min={1}
-										max={3600}
-										required
-									/>
-									<FieldError>{errors.interval_retry?.message}</FieldError>
-								</Field>
-							</ScheduleGroup>
-						</div>
+									<Field>
+										<FieldLabel htmlFor="interval_retry">{t('monitors.label.interval_retry')}</FieldLabel>
+										<InputWithUnit
+											{...form.register('interval_retry', { valueAsNumber: true })}
+											id="interval_retry"
+											unit={t('monitors.section.unit_seconds')}
+											min={1}
+											max={3600}
+											required
+										/>
+										<FieldError>{errors.interval_retry?.message}</FieldError>
+									</Field>
+								</ScheduleGroup>
+							</div>
+						)}
 					</FormSection>
 
 					{protocol === ProbeProtocol.HTTP && (

@@ -21,6 +21,7 @@ enum class ProbeProtocol(
     ORACLE("ORACLE"),
     WEBSOCKET("WEBSOCKET UPGRADE"),
     DOCKER("DOCKER CONTAINER"),
+    PUSH("PUSH"),
     ;
 
     companion object {

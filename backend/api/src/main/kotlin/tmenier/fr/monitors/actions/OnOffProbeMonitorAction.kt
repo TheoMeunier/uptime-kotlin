@@ -3,12 +3,14 @@ package tmenier.fr.monitors.actions
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.databases.dtos.ProbeOnOffDto
+import tmenier.fr.databases.repositories.ProbePushStateRepository
 import tmenier.fr.databases.repositories.ProbeRepository
 import java.util.UUID
 
 @ApplicationScoped
 class OnOffProbeMonitorAction(
     val probeRepository: ProbeRepository,
+    private val probePushStateRepository: ProbePushStateRepository,
 ) {
     fun execute(
         probeId: UUID,
@@ -22,5 +24,7 @@ class OnOffProbeMonitorAction(
             )
 
         probeRepository.onOff(dto)
+
+        if (enabled) probePushStateRepository.rearm(probeId)
     }
 }

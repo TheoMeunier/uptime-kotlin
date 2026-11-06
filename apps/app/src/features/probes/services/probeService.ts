@@ -4,6 +4,7 @@ import probeResponseSchema, {
 	type CheckProbeNowResponse,
 	type ProbeListItem,
 	ProbeStatusShowSchema,
+	RegeneratePushTokenResponseSchema,
 } from '@/features/probes/schemas/probe-response.schema.ts';
 
 import { z } from 'zod';
@@ -64,6 +65,12 @@ const probeService = {
 		const response = await api.post(`probes/${id}/check-now`).json();
 
 		return CheckProbeNowResponseSchema.parse(response);
+	},
+
+	async regeneratePushToken(id: string): Promise<string> {
+		const response = await api.post(`probes/${id}/push/regenerate`).json();
+
+		return RegeneratePushTokenResponseSchema.parse(response).token;
 	},
 
 	async purgeProbeLogs(id: string) {

@@ -5,6 +5,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.dtos.ProbeContent
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.enums.probes.PushSignal
 import java.time.Instant
 import java.util.UUID
 
@@ -28,6 +29,17 @@ data class ProbeShowDTO(
     val nextMaintenance: ProbeMaintenanceDto? = null,
     val maintenancePeriods: List<MaintenanceOccurrenceDto> = emptyList(),
     val incidentPeriods: List<IncidentPeriodDto> = emptyList(),
+    val push: ProbePushDTO? = null,
+)
+
+@RegisterForReflection
+data class ProbePushDTO(
+    val token: String,
+    val armedAt: Instant,
+    val lastPushAt: Instant?,
+    val lastPushSignal: PushSignal?,
+    val lastPushMessage: String?,
+    val pushCount: Long,
 )
 
 @RegisterForReflection

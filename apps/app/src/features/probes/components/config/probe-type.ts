@@ -302,6 +302,10 @@ export function buildProbeFieldsConfig(t: TFunction) {
 			],
 			advanced_fields: [],
 		},
+		[ProbeProtocol.PUSH]: {
+			fields: [],
+			advanced_fields: [],
+		},
 		[ProbeProtocol.SMTP]: {
 			fields: [
 				{

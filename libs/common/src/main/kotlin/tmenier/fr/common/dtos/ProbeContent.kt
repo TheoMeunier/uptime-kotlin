@@ -171,4 +171,10 @@ sealed interface ProbeContent {
         val username: String,
         val password: String,
     ) : ProbeContent
+
+    @RegisterForReflection
+    data class Push(
+        val periodSeconds: Int,
+        val graceSeconds: Int,
+    ) : ProbeContent
 }
