@@ -42,7 +42,6 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 		type: NOTIFICATION_TYPE_LABELS[notificationType ?? NotificationTypeEnum.DISCORD],
 	});
 
-	// On creation, the name follows the type ("Discord alerts" → "ntfy alerts") until the user types their own.
 	const lastSuggestedName = useRef<string | undefined>(undefined);
 	useEffect(() => {
 		if (mode !== 'create') return;
@@ -53,8 +52,6 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 		lastSuggestedName.current = suggestedName;
 	}, [mode, suggestedName, form]);
 
-	// On creation, switching type resets its fields to their defaults (e.g. https://ntfy.sh),
-	// so values typed for another type (shared names like server_url) don't leak across.
 	const previousType = useRef(notificationType);
 	useEffect(() => {
 		if (mode !== 'create' || !notificationType || previousType.current === notificationType) return;
@@ -131,12 +128,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 					</Field>
 					<Field>
 						<FieldLabel htmlFor="name">{t('notifications.label.notification_name')}</FieldLabel>
-						<Input
-							{...form.register('name')}
-							id="name"
-							placeholder={suggestedName}
-							required
-						/>
+						<Input {...form.register('name')} id="name" placeholder={suggestedName} required />
 					</Field>
 					<FieldError>{errors.name?.message}</FieldError>
 				</FieldGroup>
