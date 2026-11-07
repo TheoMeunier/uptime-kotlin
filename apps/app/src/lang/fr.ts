@@ -294,7 +294,7 @@ const fr: typeof en = {
 			notification_name: 'Nom de la notification',
 		},
 		placeholder: {
-			notification_name: 'Bot Discord',
+			notification_name: 'Alertes {{ type }}',
 		},
 		alerts: {
 			invalid: 'Certains champs sont invalides : vérifiez le formulaire.',

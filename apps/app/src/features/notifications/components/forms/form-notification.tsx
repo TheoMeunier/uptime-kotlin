@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import { DialogFooter, DialogHeader, DialogTitle } from '@/components/atoms/dialog.tsx';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,36 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 	const notificationType = form.watch('notification_type');
 
 	const NOTIFICATION_FIELDS_CONFIG = useMemo(() => buildNotificationFieldsConfig(t), [t]);
+
+	const suggestedName = t('notifications.placeholder.notification_name', {
+		type: NOTIFICATION_TYPE_LABELS[notificationType ?? NotificationTypeEnum.DISCORD],
+	});
+
+	// On creation, the name follows the type ("Discord alerts" → "ntfy alerts") until the user types their own.
+	const lastSuggestedName = useRef<string | undefined>(undefined);
+	useEffect(() => {
+		if (mode !== 'create') return;
+		const currentName = form.getValues('name');
+		if (!currentName || currentName === lastSuggestedName.current) {
+			form.setValue('name', suggestedName, { shouldDirty: true, shouldValidate: false });
+		}
+		lastSuggestedName.current = suggestedName;
+	}, [mode, suggestedName, form]);
+
+	// On creation, switching type resets its fields to their defaults (e.g. https://ntfy.sh),
+	// so values typed for another type (shared names like server_url) don't leak across.
+	const previousType = useRef(notificationType);
+	useEffect(() => {
+		if (mode !== 'create' || !notificationType || previousType.current === notificationType) return;
+		previousType.current = notificationType;
+
+		NOTIFICATION_FIELDS_CONFIG[notificationType]?.forEach((field: FieldConfig) => {
+			form.setValue(field.name as never, field.default_value as never, {
+				shouldDirty: true,
+				shouldValidate: false,
+			});
+		});
+	}, [mode, notificationType, NOTIFICATION_FIELDS_CONFIG, form]);
 
 	const dynamicFields: FieldConfig[] = (
 		notificationType
@@ -104,7 +134,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 						<Input
 							{...form.register('name')}
 							id="name"
-							placeholder={t('notifications.placeholder.notification_name')}
+							placeholder={suggestedName}
 							required
 						/>
 					</Field>

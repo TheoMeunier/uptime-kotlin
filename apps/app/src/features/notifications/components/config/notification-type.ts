@@ -33,6 +33,7 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				label: t('form.label.method'),
 				input_type: 'select',
 				options: ['POST', 'GET'],
+				default_value: 'POST',
 			},
 		],
 		[NotificationTypeEnum.TELEGRAM]: [
@@ -63,6 +64,7 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				label: t('form.label.homeserver_url'),
 				input_type: 'text',
 				placeholder: 'https://matrix.example.org',
+				default_value: 'https://matrix.org',
 				description: t('form.description.homeserver_url'),
 			},
 			{
@@ -86,6 +88,7 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				label: t('form.label.server_url'),
 				input_type: 'text',
 				placeholder: 'https://ntfy.sh',
+				default_value: 'https://ntfy.sh',
 				description: t('form.description.server_url'),
 			},
 			{
