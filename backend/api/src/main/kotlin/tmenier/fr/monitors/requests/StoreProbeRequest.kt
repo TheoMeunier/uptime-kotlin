@@ -20,6 +20,7 @@ import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.RecordDnsEnum
 import tmenier.fr.common.enums.monitors.SmtpSecurity
+import tmenier.fr.common.validations.HostnameOrIp
 import tmenier.fr.common.validations.UrlOrIp
 import tmenier.fr.databases.dtos.LogRetention
 import java.util.UUID
@@ -150,7 +151,7 @@ data class ValidProbeProtocolWebSocketUpgradeRequest(
 @RegisterForReflection
 data class ValidProbeProtocolTcpRequest(
     @field:NotBlank(message = "Url is required")
-    @field:UrlOrIp(message = "Invalid URL or IP format")
+    @field:HostnameOrIp(message = "Invalid hostname or IP address")
     var url: String,
     @field:Min(1)
     @field:Max(65535)

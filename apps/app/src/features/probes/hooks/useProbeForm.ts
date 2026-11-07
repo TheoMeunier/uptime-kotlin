@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import HttpStatusCode from '@/features/probes/enums/http-status-code.ts';
 import i18n from '@/lang/i18n.ts';
+import { isValidHostnameOrIp } from '@/lib/hostname.ts';
 import { isValidRetentionDays, LOG_RETENTION_KEEP_FOREVER } from '@/features/settings/schemas/log-retention.schema.ts';
 
 const baseStoreProbeSchema = z.object({
@@ -82,8 +83,8 @@ const webSocketProbeSchema = baseStoreProbeSchema.extend({
 
 const tcpProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('TCP'),
-	url: z.ipv4(),
-	tcp_port: z.number().min(1).max(65535),
+	url: z.string().trim().refine(isValidHostnameOrIp, i18n.t('validation.hostname')),
+	tcp_port: z.number().int().min(1).max(65535),
 });
 
 const pingProbeSchema = baseStoreProbeSchema.extend({

@@ -59,7 +59,7 @@ class ResolveMonitorContentService(
 
             is ValidProbeProtocolTcpRequest ->
                 ProbeContent.Tcp(
-                    url = request.url,
+                    url = request.url.trim().replaceFirst(LEGACY_SCHEME, ""),
                     tcpPort = request.tcpPort,
                 )
 
@@ -300,6 +300,7 @@ class ResolveMonitorContentService(
 
     private companion object {
         const val MONGODB_DEFAULT_PORT = 27017
+        val LEGACY_SCHEME = Regex("^https?://", RegexOption.IGNORE_CASE)
     }
 
     private data class ResolvedConnection(

@@ -24,6 +24,7 @@ import tmenier.fr.monitors.requests.ValidProbeProtocolRabbitMqRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolRedisRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSmtpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolSqlServerRequest
+import tmenier.fr.monitors.requests.ValidProbeProtocolTcpRequest
 import tmenier.fr.monitors.requests.ValidProbeProtocolWebSocketUpgradeRequest
 import java.time.Instant
 import java.util.UUID
@@ -351,6 +352,33 @@ class ResolveMonitorContentServiceTest {
         assertTrue(validator.validate(valid).none { it.propertyPath.toString() in setOf("containerName", "dockerHost") })
         val fields = validator.validate(invalid).map { it.propertyPath.toString() }.toSet()
         assertTrue(fields.containsAll(setOf("containerName", "dockerHost")))
+    }
+
+    @Test
+    fun `resolves TCP host by trimming whitespace and a legacy scheme`() {
+        val content =
+            service.resolve(
+                ValidProbeProtocolTcpRequest(url = "  https://minecraft.example.com ", tcpPort = 25565),
+            ) as ProbeContent.Tcp
+
+        assertEquals("minecraft.example.com", content.url)
+        assertEquals(25565, content.tcpPort)
+    }
+
+    @Test
+    fun `validates TCP host as hostname or IP address`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+
+        listOf("minecraft.example.com", "192.168.1.10", "2001:db8::1", "[::1]", "localhost").forEach { host ->
+            val violations = validator.validate(ValidProbeProtocolTcpRequest(url = host, tcpPort = 25565))
+            assertTrue(violations.none { it.propertyPath.toString() == "url" }, host)
+        }
+        listOf("not a host", "256.1.1.1", "exa_mple.com").forEach { host ->
+            val violations = validator.validate(ValidProbeProtocolTcpRequest(url = host, tcpPort = 25565))
+            assertTrue(violations.any { it.propertyPath.toString() == "url" }, host)
+        }
+        val badPort = validator.validate(ValidProbeProtocolTcpRequest(url = "example.com", tcpPort = 70000))
+        assertTrue(badPort.any { it.propertyPath.toString() == "tcpPort" })
     }
 
     @Test

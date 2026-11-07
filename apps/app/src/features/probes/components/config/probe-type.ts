@@ -104,7 +104,9 @@ export function buildProbeFieldsConfig(t: TFunction) {
 				{
 					name: 'tcp_port',
 					label: t('monitors.label.tcp_port'),
-					input_type: 'text',
+					input_type: 'number',
+					min: 1,
+					max: 65535,
 				},
 			],
 			advanced_fields: [],
