@@ -3,6 +3,7 @@ import api from '@/api/kyClient.ts';
 import {
 	apiNotificationDetailResponseSchema,
 	apiNotificationListingResponseSchema,
+	apiStoreNotificationResponseSchema,
 	type NotificationDetailApi,
 	type NotificationListingApi,
 } from '@/features/notifications/schemas/notifications-reponse.schema.ts';
@@ -18,12 +19,13 @@ const notificationService = {
 		return apiNotificationDetailResponseSchema.parse(response);
 	},
 
-	async storeNotification(data: StoreNotificationSchema) {
-		await api
+	async storeNotification(data: StoreNotificationSchema): Promise<{ id: string }> {
+		const response = await api
 			.post('notifications/new', {
 				body: JSON.stringify(data),
 			})
 			.json();
+		return apiStoreNotificationResponseSchema.parse(response);
 	},
 
 	async updateNotification(notificationId: string, data: StoreNotificationSchema) {

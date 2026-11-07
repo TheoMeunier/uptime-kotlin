@@ -24,8 +24,8 @@ class StoreNotificationResource(
     fun store(
         @Valid @ConvertGroup(to = OnCreate::class) payload: BaseStoreNotificationRequest,
     ): Response {
-        storeNotificationAction.execute(payload)
+        val id = storeNotificationAction.execute(payload)
 
-        return Response.ok().build()
+        return Response.ok(mapOf("id" to id)).build()
     }
 }

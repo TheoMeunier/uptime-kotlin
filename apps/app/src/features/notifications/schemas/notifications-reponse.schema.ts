@@ -25,3 +25,5 @@ export const apiNotificationDetailResponseSchema = z.array(notificationDetail);
 
 export type NotificationDetail = z.infer<typeof notificationDetail>;
 export type NotificationDetailApi = z.infer<typeof apiNotificationDetailResponseSchema>;
+
+export const apiStoreNotificationResponseSchema = z.object({ id: z.uuid() });
