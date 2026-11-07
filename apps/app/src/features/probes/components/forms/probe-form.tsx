@@ -359,7 +359,14 @@ export default function ProbeForm({
 					>
 						<FormSelectNotification form={form} name="notifications" />
 						<FieldError>{errors.notifications?.message}</FieldError>
-						<CreateNotificationDialogue />
+						<CreateNotificationDialogue
+							onCreated={(notificationId) => {
+								const current = form.getValues('notifications') ?? [];
+								if (!current.includes(notificationId)) {
+									form.setValue('notifications', [...current, notificationId], { shouldDirty: true });
+								}
+							}}
+						/>
 
 						<Field>
 							<FieldLabel htmlFor="alert_repeat_seconds">{t('monitors.label.alert_repeat_seconds')}</FieldLabel>

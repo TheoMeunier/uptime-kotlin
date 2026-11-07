@@ -6,9 +6,13 @@ import useStoreNotification from '@/features/notifications/hooks/useStoreNotific
 import FormNotification from '@/features/notifications/components/forms/form-notification.tsx';
 import NotificationTypeEnum from '@/features/notifications/enums/notification-type-enum.ts';
 
-export default function CreateNotificationDialogue() {
+interface CreateNotificationDialogueProps {
+	onCreated?: (notificationId: string) => void;
+}
+
+export default function CreateNotificationDialogue({ onCreated }: CreateNotificationDialogueProps = {}) {
 	const { t } = useTranslation();
-	const { openDialogue, setOpenDialogue, onSubmit, isLoading } = useStoreNotification();
+	const { openDialogue, setOpenDialogue, onSubmit, isLoading } = useStoreNotification({ onCreated });
 
 	const defaultValues = {
 		notification_type: NotificationTypeEnum.DISCORD,

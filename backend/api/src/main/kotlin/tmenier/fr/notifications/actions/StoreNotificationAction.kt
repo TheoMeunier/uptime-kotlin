@@ -18,7 +18,7 @@ class StoreNotificationAction(
     fun execute(
         payload: BaseStoreNotificationRequest,
         notificationId: UUID? = null,
-    ) {
+    ): UUID {
         val isUpdate = notificationId != null
         val existingNotification =
             if (isUpdate) {
@@ -41,5 +41,7 @@ class StoreNotificationAction(
         } else {
             notificationChanelRepository.save(dto)
         }
+
+        return dto.id
     }
 }

@@ -5,7 +5,11 @@ import notificationService from '@/features/notifications/services/notification-
 import { toast } from 'sonner';
 import { useState } from 'react';
 
-export default function useStoreNotification() {
+interface UseStoreNotificationOptions {
+	onCreated?: (notificationId: string) => void;
+}
+
+export default function useStoreNotification({ onCreated }: UseStoreNotificationOptions = {}) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [openDialogue, setOpenDialogue] = useState(false);
@@ -14,7 +18,8 @@ export default function useStoreNotification() {
 		mutationFn: async (data: StoreNotificationSchema) => {
 			return notificationService.storeNotification(data);
 		},
-		onSuccess: (_, v) => {
+		onSuccess: (created, v) => {
+			onCreated?.(created.id);
 			queryClient.invalidateQueries({ queryKey: ['notifications'] }).then(() => {
 				setOpenDialogue(false);
 				toast.success(t('notifications.alerts.create', { data: v.name }));
