@@ -297,7 +297,7 @@ const de: typeof en = {
 			notification_name: 'Name der Benachrichtigung',
 		},
 		placeholder: {
-			notification_name: 'Discord-Bot',
+			notification_name: '{{ type }}-Benachrichtigungen',
 		},
 		alerts: {
 			invalid: 'Einige Felder sind ungültig: Bitte prüfen Sie das Formular.',

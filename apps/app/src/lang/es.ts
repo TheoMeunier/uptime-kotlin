@@ -291,7 +291,7 @@ const es: typeof en = {
 			notification_name: 'Nombre de la notificación',
 		},
 		placeholder: {
-			notification_name: 'Bot de Discord',
+			notification_name: 'Alertas de {{ type }}',
 		},
 		alerts: {
 			invalid: 'Algunos campos no son válidos: revise el formulario.',

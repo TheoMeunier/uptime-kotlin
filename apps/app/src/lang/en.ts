@@ -287,7 +287,7 @@ const en = {
 			notification_name: 'Notification name',
 		},
 		placeholder: {
-			notification_name: 'Discord bot',
+			notification_name: '{{ type }} alerts',
 		},
 		alerts: {
 			invalid: 'Some fields are invalid: check the form.',
