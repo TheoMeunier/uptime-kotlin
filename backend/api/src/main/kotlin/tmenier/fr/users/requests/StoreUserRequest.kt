@@ -19,7 +19,7 @@ class StoreUserRequest {
     lateinit var email: String
 
     @field:NotBlank(message = "Password is required")
-    @field:Size(min = 8, message = "Password must be at least 8 characters long")
+    @field:Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters long")
     lateinit var password: String
 
     @field:NotNull(message = "Role is required")
