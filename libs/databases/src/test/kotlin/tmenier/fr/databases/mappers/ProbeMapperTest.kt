@@ -2,6 +2,7 @@ package tmenier.fr.databases.mappers
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
@@ -10,6 +11,7 @@ import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.StoreProbeDto
+import tmenier.fr.databases.entities.ProbePushStateEntity
 import java.time.Instant
 import java.util.UUID
 
@@ -195,5 +197,42 @@ class ProbeMapperTest {
         assertEquals(ProbeContent.HttpAuthenticationType.BEARER, content.steps.single().authentication?.type)
         assertEquals("https://api.example.com/health", content.url)
         assertEquals(HttpMethodEnum.POST, content.method)
+    }
+
+    @Test
+    fun `only reveals the push token when asked to`() {
+        val entity =
+            ProbeMapper
+                .toEntity(
+                    StoreProbeDto(
+                        id = UUID.randomUUID(),
+                        name = "Nightly backup",
+                        interval = 60,
+                        timeout = 5,
+                        intervalRetry = 60,
+                        retry = 3,
+                        protocol = ProbeProtocol.PUSH,
+                        enabled = true,
+                        description = null,
+                        content = ProbeContent.Push(periodSeconds = 86_400, graceSeconds = 600),
+                    ),
+                ).apply {
+                    createdAt = Instant.now()
+                    updatedAt = Instant.now()
+                }
+        val push =
+            ProbePushStateEntity().apply {
+                probeId = entity.id
+                token = "SENTINEL_PUSH_TOKEN"
+                armedAt = Instant.now()
+                pushCount = 3
+            }
+
+        val hidden = ProbeMapper.toShowDto(entity = entity, monitors = emptyList(), push = push).push
+        val revealed = ProbeMapper.toShowDto(entity = entity, monitors = emptyList(), push = push, revealPushToken = true).push
+
+        assertNull(hidden?.token)
+        assertEquals(3L, hidden?.pushCount)
+        assertEquals("SENTINEL_PUSH_TOKEN", revealed?.token)
     }
 }

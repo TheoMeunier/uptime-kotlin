@@ -34,7 +34,7 @@ data class ProbeShowDTO(
 
 @RegisterForReflection
 data class ProbePushDTO(
-    val token: String,
+    val token: String?,
     val armedAt: Instant,
     val lastPushAt: Instant?,
     val lastPushSignal: PushSignal?,

@@ -315,6 +315,7 @@ const en = {
 		push: {
 			title: 'Push URL',
 			description: 'Call this URL at the end of your job. The monitor goes down if no call arrives in time.',
+			token_hidden: 'Only admins can see the push URL: it is enough to report the probe up or down.',
 			schedule_description:
 				'Your job calls the monitor URL; nothing is contacted from here. Without a call for {{ deadline }}, the monitor goes down. The deadline is checked every minute.',
 			equals: '≈ {{ duration }}',

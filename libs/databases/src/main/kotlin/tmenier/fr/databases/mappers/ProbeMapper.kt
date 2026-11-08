@@ -317,6 +317,7 @@ object ProbeMapper {
         maintenancePeriods: List<MaintenanceOccurrenceEntity> = emptyList(),
         incidentPeriods: List<IncidentPeriodDto> = emptyList(),
         push: ProbePushStateEntity? = null,
+        revealPushToken: Boolean = false,
     ): ProbeShowDTO {
         val content = ProbeContentMapper.toDto(entity)
 
@@ -362,7 +363,7 @@ object ProbeMapper {
             push =
                 push?.let {
                     ProbePushDTO(
-                        token = it.token,
+                        token = it.token.takeIf { revealPushToken },
                         armedAt = it.armedAt,
                         lastPushAt = it.lastPushAt,
                         lastPushSignal = it.lastPushSignal,

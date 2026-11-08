@@ -326,6 +326,8 @@ const de: typeof en = {
 			title: 'Push-URL',
 			description:
 				'Rufen Sie diese URL am Ende Ihres Jobs auf. Kommt kein Aufruf rechtzeitig, gilt der Monitor als ausgefallen.',
+			token_hidden:
+				'Nur Administratoren sehen die Push-URL: Sie genügt, um den Monitor als erreichbar oder ausgefallen zu melden.',
 			schedule_description:
 				'Ihr Job ruft die URL des Monitors auf; von hier aus wird nichts kontaktiert. Ohne Aufruf innerhalb von {{ deadline }} gilt der Monitor als ausgefallen. Die Frist wird jede Minute geprüft.',
 			equals: '≈ {{ duration }}',

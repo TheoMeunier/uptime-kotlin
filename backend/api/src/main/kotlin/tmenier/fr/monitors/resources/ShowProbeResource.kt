@@ -1,6 +1,7 @@
 package tmenier.fr.monitors.resources
 
 import io.quarkus.security.Authenticated
+import io.quarkus.security.identity.SecurityIdentity
 import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
@@ -12,6 +13,7 @@ import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.utils.MonitoringClock
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.ProbeUptimeDTO
@@ -37,6 +39,7 @@ class ShowProbeResource(
     private val incidentRepository: IncidentRepository,
     private val rollupRepository: ProbeLogRollupRepository,
     private val probePushStateRepository: ProbePushStateRepository,
+    private val identity: SecurityIdentity,
 ) {
     @GET
     @Authenticated
@@ -92,6 +95,7 @@ class ShowProbeResource(
                         probePushStateRepository
                             .takeIf { probeEntity.protocol == ProbeProtocol.PUSH }
                             ?.findByProbeId(probeId),
+                    revealPushToken = identity.hasRole(UserRole.ADMIN_ROLE),
                 ),
             ).build()
     }

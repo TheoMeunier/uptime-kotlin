@@ -51,7 +51,7 @@ export const ProbeUptimeSchema = z.object({
 });
 
 export const ProbePushSchema = z.object({
-	token: z.string(),
+	token: z.string().nullable(),
 	armed_at: z.string(),
 	last_push_at: z.string().nullable(),
 	last_push_signal: z.enum(['UP', 'DOWN']).nullable(),
