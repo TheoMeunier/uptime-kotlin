@@ -1,5 +1,9 @@
 import api from '@/api/kyClient.ts';
 import {
+	type DefaultStatusPageSettings,
+	DefaultStatusPageSettingsSchema,
+} from '@/features/settings/schemas/default-status-page.schema.ts';
+import {
 	type LogRetentionPreview,
 	LogRetentionPreviewSchema,
 	type LogRetentionSettings,
@@ -19,6 +23,16 @@ const settingsService = {
 	async updateLogRetention(days: number | null): Promise<LogRetentionSettings> {
 		const response = await api.put('settings/retention', { json: { log_retention_days: days } }).json();
 		return LogRetentionSettingsSchema.parse(response);
+	},
+
+	async getDefaultStatusPage(): Promise<DefaultStatusPageSettings> {
+		const response = await api.get('settings/status-page').json();
+		return DefaultStatusPageSettingsSchema.parse(response);
+	},
+
+	async updateDefaultStatusPage(isPrivate: boolean): Promise<DefaultStatusPageSettings> {
+		const response = await api.put('settings/status-page', { json: { is_private: isPrivate } }).json();
+		return DefaultStatusPageSettingsSchema.parse(response);
 	},
 
 	async previewLogRetention(days: number | null): Promise<LogRetentionPreview> {

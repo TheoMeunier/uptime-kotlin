@@ -261,6 +261,7 @@ const de: typeof en = {
 			not_found: {
 				title: 'Statusseite nicht gefunden',
 				description: 'Unter /status/{{slug}} ist keine Statusseite veröffentlicht.',
+				description_global: 'Unter dieser Adresse ist keine öffentliche Statusseite verfügbar.',
 			},
 			empty: {
 				title: 'Noch kein Monitor',
@@ -888,6 +889,11 @@ const de: typeof en = {
 		global: {
 			title: 'Alle Monitore',
 			description: 'Integrierte Seite, alle aktiven Monitore',
+			private_description: 'Nur bei dieser Instanz angemeldete Benutzer können /status sehen.',
+			alerts: {
+				private: 'Die Seite „Alle Monitore“ ist jetzt privat.',
+				public: 'Die Seite „Alle Monitore“ ist jetzt öffentlich.',
+			},
 		},
 		count: {
 			groups_one: '{{count}} Gruppe',

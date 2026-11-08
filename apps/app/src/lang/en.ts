@@ -251,6 +251,7 @@ const en = {
 			not_found: {
 				title: 'Status page not found',
 				description: 'No status page is published at /status/{{slug}}.',
+				description_global: 'No public status page is available at this address.',
 			},
 			empty: {
 				title: 'No monitor yet',
@@ -869,6 +870,11 @@ const en = {
 		global: {
 			title: 'All monitors',
 			description: 'Built-in page, every enabled monitor',
+			private_description: 'Only users signed in to this instance can see /status.',
+			alerts: {
+				private: 'The “All monitors” page is now private.',
+				public: 'The “All monitors” page is now public.',
+			},
 		},
 		count: {
 			groups_one: '{{count}} group',

@@ -18,6 +18,9 @@ class InstanceSettingsEntity : PanacheEntityBase {
     @Column(name = "log_retention_days")
     var logRetentionDays: Int? = null
 
+    @Column(name = "default_status_page_private", nullable = false)
+    var defaultStatusPagePrivate: Boolean = false
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     lateinit var updatedAt: Instant

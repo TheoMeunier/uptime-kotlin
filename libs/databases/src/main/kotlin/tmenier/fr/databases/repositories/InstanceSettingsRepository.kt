@@ -17,4 +17,12 @@ class InstanceSettingsRepository : PanacheRepositoryBase<InstanceSettingsEntity,
         settings.logRetentionDays = days
         return settings
     }
+
+    fun isDefaultStatusPagePrivate(): Boolean = findById(InstanceSettingsEntity.SINGLETON_ID)?.defaultStatusPagePrivate ?: false
+
+    fun updateDefaultStatusPagePrivate(isPrivate: Boolean): InstanceSettingsEntity {
+        val settings = get()
+        settings.defaultStatusPagePrivate = isPrivate
+        return settings
+    }
 }

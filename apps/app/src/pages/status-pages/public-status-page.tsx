@@ -12,6 +12,7 @@ import StatusBoard from '@/features/status-pages/components/board/status-board.t
 import StatusBoardSkeleton from '@/features/status-pages/components/board/status-board-skeleton.tsx';
 import useStatusLayout from '@/features/status-pages/hooks/useStatusLayout.ts';
 import useStatusFeed from '@/features/status-pages/hooks/useStatusFeed.ts';
+import { STATUS_QUERY_TIMING } from '@/features/status-pages/lib/status-refresh.ts';
 import useStatusUptime from '@/features/status-pages/hooks/useStatusUptime.ts';
 import type { BoardUptime } from '@/features/status-pages/lib/board-uptime-context.ts';
 import { fromApiLayout, readStoredLayout } from '@/features/status-pages/lib/status-layout.ts';
@@ -27,7 +28,7 @@ export default function PublicStatusPage() {
 	const { data, isLoading, isError, error, refetch } = useQuery({
 		queryKey: ['status-page-public', slug],
 		queryFn: () => statusPageService.getPublicStatusPage(slug),
-		refetchInterval: 120000,
+		...STATUS_QUERY_TIMING,
 		retry: (failureCount, failure) => !isNotFound(failure) && failureCount < 3,
 		meta: { silentError: true },
 	});
