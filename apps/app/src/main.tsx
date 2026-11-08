@@ -1,7 +1,7 @@
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './assets/index.css';
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router';
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router';
 import { ProtectedRouteProvider } from '@/features/auth/contexts/protected-route-provider.tsx';
 import { AdminRoute } from '@/features/auth/contexts/admin-route.tsx';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -16,6 +16,7 @@ import { Toaster } from '@/components/atoms/sonner.tsx';
 import { ThemeProvider } from 'next-themes';
 import AppErrorBoundary from '@/components/molecules/app-error-boundary.tsx';
 import RouteErrorBoundary from '@/components/molecules/route-error-boundary.tsx';
+import NotFoundPage from '@/pages/errors/not-found-page.tsx';
 import { reloadOnce } from '@/lib/chunk-error.ts';
 import {
 	Announcements,
@@ -94,7 +95,7 @@ const router = createBrowserRouter(
 				<Route path="/status/:slug" element={<PublicStatusPage />} />
 				<Route path="/login" element={<Login />} />
 
-				<Route path="*" element={<Navigate to="/dashboard" replace />} />
+				<Route path="*" element={<NotFoundPage />} />
 			</Route>
 
 			<Route path="/setup" element={<SetupPage />} errorElement={<RouteErrorBoundary fullscreen />} />

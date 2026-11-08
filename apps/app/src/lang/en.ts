@@ -19,6 +19,11 @@ const en = {
 		actions: {
 			reload: 'Reload',
 			dashboard: 'Back to dashboard',
+			status: 'Global status',
+		},
+		not_found: {
+			title: 'Page not found',
+			description: 'This address doesn’t match any page. Check the link, or go back to the dashboard.',
 		},
 		load: {
 			title: 'Could not load this data',
@@ -241,10 +246,6 @@ const en = {
 				columns: {
 					service: 'Service',
 				},
-			},
-			restricted: {
-				title: 'Sign-in required',
-				description: 'This status page does not exist or is restricted to signed-in users.',
 			},
 			not_found: {
 				title: 'Status page not found',

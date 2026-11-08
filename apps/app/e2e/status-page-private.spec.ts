@@ -34,7 +34,7 @@ async function fillLogin(page: Page) {
 	await page.getByRole('button', { name: 'Login', exact: true }).click();
 }
 
-test('a private status page asks anonymous visitors to sign in, then brings them back to it', async ({
+test('a private status page looks missing to anonymous visitors, then is served once signed in', async ({
 	page,
 	browser,
 }) => {
@@ -52,16 +52,14 @@ test('a private status page asks anonymous visitors to sign in, then brings them
 	await page.waitForURL(/\/status-pages\/[0-9a-f-]+$/);
 	const slug = await page.getByLabel('Address').inputValue();
 
-	// Signed in: the page is served.
 	await page.goto(`/status/${slug}`);
 	await expect(page.getByText(title)).toBeVisible();
 
-	// Anonymous visitor, in a fresh context: sign-in screen, then back on the page once signed in.
 	const visitorContext = await browser.newContext();
 	const visitor = await visitorContext.newPage();
 	await skipOnboarding(visitor);
 	await visitor.goto(`/status/${slug}`);
-	await expect(visitor.getByText('Sign-in required')).toBeVisible();
+	await expect(visitor.getByText('Status page not found')).toBeVisible();
 	await expect(visitor.getByText(title)).toHaveCount(0);
 
 	await visitor.getByRole('link', { name: 'Login' }).click();

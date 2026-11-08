@@ -205,3 +205,17 @@
 @utility animate-loader-sweep {
 	animation: loader-sweep 1.4s ease-in-out infinite;
 }
+
+@keyframes error-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.35;
+	}
+}
+
+@utility animate-error-pulse {
+	animation: error-pulse 1.6s ease-in-out infinite;
+}
