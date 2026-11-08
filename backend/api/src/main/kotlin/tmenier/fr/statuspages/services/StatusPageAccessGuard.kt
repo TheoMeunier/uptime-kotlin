@@ -4,6 +4,7 @@ import io.quarkus.security.identity.SecurityIdentity
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.exceptions.common.NotFoundException
+import tmenier.fr.databases.repositories.InstanceSettingsRepository
 import tmenier.fr.databases.repositories.StatusPageRepository
 import tmenier.fr.monitors.services.StatusSnapshotService.Companion.CACHE_POLICY
 import tmenier.fr.monitors.services.StatusSnapshotService.Companion.PRIVATE_CACHE_POLICY
@@ -11,6 +12,7 @@ import tmenier.fr.monitors.services.StatusSnapshotService.Companion.PRIVATE_CACH
 @ApplicationScoped
 class StatusPageAccessGuard(
     private val statusPageRepository: StatusPageRepository,
+    private val instanceSettingsRepository: InstanceSettingsRepository,
     private val identity: SecurityIdentity,
 ) {
     @Transactional
@@ -22,5 +24,12 @@ class StatusPageAccessGuard(
         }
 
         return if (isPrivate) PRIVATE_CACHE_POLICY else CACHE_POLICY
+    }
+
+    @Transactional
+    fun ensureGlobalReadable() {
+        if (identity.isAnonymous && instanceSettingsRepository.isDefaultStatusPagePrivate()) {
+            throw NotFoundException("Status page not found")
+        }
     }
 }

@@ -15,6 +15,7 @@ import tmenier.fr.databases.repositories.StatusPageRepository
 import tmenier.fr.monitors.services.StatusSnapshotService
 import tmenier.fr.monitors.services.StatusSnapshotService.Companion.CACHE_POLICY
 import tmenier.fr.monitors.services.StatusSnapshotService.Companion.PRIVATE_CACHE_POLICY
+import tmenier.fr.statuspages.services.StatusPageAccessGuard
 import java.time.Instant
 
 @Path("/api/probes/status")
@@ -23,12 +24,15 @@ import java.time.Instant
 class ListingStatusProbes(
     private val statusSnapshotService: StatusSnapshotService,
     private val statusPageRepository: StatusPageRepository,
+    private val accessGuard: StatusPageAccessGuard,
     private val identity: SecurityIdentity,
 ) {
     @GET
     fun list(
         @Context request: Request,
     ): Response {
+        accessGuard.ensureGlobalReadable()
+
         val now = Instant.now()
         val anonymous = identity.isAnonymous
         val hidden = if (anonymous) statusPageRepository.findPrivateOnlyProbeIds() else emptySet()

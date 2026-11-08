@@ -258,6 +258,7 @@ const fr: typeof en = {
 			not_found: {
 				title: 'Page de statut introuvable',
 				description: 'Aucune page de statut n’est publiée à l’adresse /status/{{slug}}.',
+				description_global: 'Aucune page de status publique n’est disponible à cette adresse.',
 			},
 			empty: {
 				title: 'Aucune sonde pour l’instant',
@@ -886,6 +887,11 @@ const fr: typeof en = {
 		global: {
 			title: 'Toutes les sondes',
 			description: 'Page intégrée, toutes les sondes actives',
+			private_description: 'Seuls les utilisateurs connectés à cette instance peuvent voir /status.',
+			alerts: {
+				private: 'La page « Toutes les sondes » est maintenant privée.',
+				public: 'La page « Toutes les sondes » est maintenant publique.',
+			},
 		},
 		count: {
 			groups_one: '{{count}} groupe',

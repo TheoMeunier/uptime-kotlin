@@ -255,6 +255,7 @@ const es: typeof en = {
 			not_found: {
 				title: 'Página de estado no encontrada',
 				description: 'No hay ninguna página de estado publicada en /status/{{slug}}.',
+				description_global: 'No hay ninguna página de estado pública disponible en esta dirección.',
 			},
 			empty: {
 				title: 'Todavía no hay ningún monitor',
@@ -879,6 +880,11 @@ const es: typeof en = {
 		global: {
 			title: 'Todos los monitores',
 			description: 'Página integrada, todos los monitores activos',
+			private_description: 'Solo los usuarios con sesión iniciada en esta instancia pueden ver /status.',
+			alerts: {
+				private: 'La página «Todos los monitores» ahora es privada.',
+				public: 'La página «Todos los monitores» ahora es pública.',
+			},
 		},
 		count: {
 			groups_one: '{{count}} grupo',
