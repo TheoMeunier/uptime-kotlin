@@ -1,9 +1,12 @@
 package tmenier.fr.databases.mappers
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import tmenier.fr.common.dtos.ProbeContent
+import tmenier.fr.common.enums.monitors.HttpCodeEnum
+import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.StoreProbeDto
@@ -148,5 +151,49 @@ class ProbeMapperTest {
 
         assertEquals("", content.password)
         assertEquals("monitor", content.username)
+    }
+
+    @Test
+    fun `redacts HTTP headers, body and credentials from probe responses`() {
+        val content =
+            ProbeContentMapper.redactSecrets(
+                ProbeContent.Http(
+                    url = "https://api.example.com/health",
+                    notificationCertified = false,
+                    ignoreCertificateErrors = false,
+                    httpCodeAllowed = listOf(HttpCodeEnum.SUCCESS),
+                    method = HttpMethodEnum.POST,
+                    headers = mapOf("Authorization" to "Bearer SENTINEL_HEADER", "X-Custom" to "SENTINEL_CUSTOM"),
+                    body = """{"apiKey":"SENTINEL_BODY"}""",
+                    authentication =
+                        ProbeContent.HttpAuthentication(
+                            type = ProbeContent.HttpAuthenticationType.BASIC,
+                            username = "SENTINEL_USER",
+                            password = "SENTINEL_PASSWORD",
+                        ),
+                    steps =
+                        listOf(
+                            ProbeContent.HttpStep(
+                                name = "login",
+                                url = "https://api.example.com/login",
+                                headers = mapOf("Cookie" to "SENTINEL_STEP_HEADER"),
+                                body = "SENTINEL_STEP_BODY",
+                                authentication =
+                                    ProbeContent.HttpAuthentication(
+                                        type = ProbeContent.HttpAuthenticationType.BEARER,
+                                        token = "SENTINEL_STEP_TOKEN",
+                                    ),
+                            ),
+                        ),
+                ),
+            ) as ProbeContent.Http
+
+        assertFalse(content.toString().contains("SENTINEL"), "Secret leaked: $content")
+        assertEquals(setOf("Authorization", "X-Custom"), content.headers.keys)
+        assertTrue(content.headers.values.all { it == ProbeContentMapper.REDACTED })
+        assertEquals(ProbeContent.HttpAuthenticationType.BASIC, content.authentication?.type)
+        assertEquals(ProbeContent.HttpAuthenticationType.BEARER, content.steps.single().authentication?.type)
+        assertEquals("https://api.example.com/health", content.url)
+        assertEquals(HttpMethodEnum.POST, content.method)
     }
 }
