@@ -194,7 +194,13 @@ class ProbeMapperTest {
         assertEquals(setOf("Authorization", "X-Custom"), content.headers.keys)
         assertTrue(content.headers.values.all { it == ProbeContentMapper.REDACTED })
         assertEquals(ProbeContent.HttpAuthenticationType.BASIC, content.authentication?.type)
-        assertEquals(ProbeContent.HttpAuthenticationType.BEARER, content.steps.single().authentication?.type)
+        assertEquals(
+            ProbeContent.HttpAuthenticationType.BEARER,
+            content.steps
+                .single()
+                .authentication
+                ?.type,
+        )
         assertEquals("https://api.example.com/health", content.url)
         assertEquals(HttpMethodEnum.POST, content.method)
     }
