@@ -319,6 +319,8 @@ const es: typeof en = {
 		push: {
 			title: 'URL de push',
 			description: 'Llame a esta URL al final de su job. Si no llega ninguna llamada a tiempo, la sonda pasa a caída.',
+			token_hidden:
+				'Solo los administradores ven la URL de push: basta para notificar la sonda como disponible o caída.',
 			schedule_description:
 				'Su job llama a la URL de la sonda; desde aquí no se contacta nada. Sin llamada durante {{ deadline }}, la sonda pasa a caída. El plazo se comprueba cada minuto.',
 			equals: '≈ {{ duration }}',

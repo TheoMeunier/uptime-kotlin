@@ -102,7 +102,7 @@ export default function ProbePushUrl({ probeId, push, periodSeconds, graceSecond
 	const { t, i18n } = useTranslation();
 	const [regenerateOpen, setRegenerateOpen] = useState(false);
 	const [showExamples, setShowExamples] = useState(false);
-	const url = pushUrlFor(push.token);
+	const url = push.token ? pushUrlFor(push.token) : null;
 	const cronExample = `0 2 * * *  /usr/local/bin/backup.sh && curl -fsS -m 10 --retry 3 ${url} > /dev/null`;
 	const failureExample = `/usr/local/bin/backup.sh || curl -fsS -m 10 "${url}?status=down&msg=backup%20failed"`;
 
@@ -123,27 +123,33 @@ export default function ProbePushUrl({ probeId, push, periodSeconds, graceSecond
 				<div className="flex items-start justify-between gap-4">
 					<div className="min-w-0">
 						<CardTitle className="text-xl">{t('monitors.push.title')}</CardTitle>
-						<CardDescription className="mt-1">{t('monitors.push.description')}</CardDescription>
+						<CardDescription className="mt-1">
+							{url ? t('monitors.push.description') : t('monitors.push.token_hidden')}
+						</CardDescription>
 					</div>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" size="icon" className="size-8" aria-label={t('button.actions.more')}>
-								<MoreHorizontal className="size-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-52">
-							<DropdownMenuItem variant="destructive" onSelect={() => setRegenerateOpen(true)}>
-								<RotateCcw />
-								{t('monitors.push.regenerate')}
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-					<RegeneratePushTokenDialogue probeId={probeId} open={regenerateOpen} setOpen={setRegenerateOpen} />
+					{url && (
+						<>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="ghost" size="icon" className="size-8" aria-label={t('button.actions.more')}>
+										<MoreHorizontal className="size-4" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-52">
+									<DropdownMenuItem variant="destructive" onSelect={() => setRegenerateOpen(true)}>
+										<RotateCcw />
+										{t('monitors.push.regenerate')}
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+							<RegeneratePushTokenDialogue probeId={probeId} open={regenerateOpen} setOpen={setRegenerateOpen} />
+						</>
+					)}
 				</div>
 			</CardHeader>
 
 			<CardContent className="flex flex-col gap-6">
-				<CopyableCode value={url} size="md" />
+				{url && <CopyableCode value={url} size="md" />}
 
 				<MetricRow>
 					<Metric
@@ -162,32 +168,34 @@ export default function ProbePushUrl({ probeId, push, periodSeconds, graceSecond
 					<Metric variant="inline" label={t('monitors.push.calls_received')} value={push.push_count} />
 				</MetricRow>
 
-				<div className="border-t pt-4">
-					<button
-						type="button"
-						className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm font-medium transition-colors"
-						aria-expanded={showExamples}
-						onClick={() => setShowExamples((value) => !value)}
-					>
-						<ChevronDown className={cn('size-4 transition-transform', showExamples ? 'rotate-0' : '-rotate-90')} />
-						{t('monitors.push.examples')}
-					</button>
+				{url && (
+					<div className="border-t pt-4">
+						<button
+							type="button"
+							className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm font-medium transition-colors"
+							aria-expanded={showExamples}
+							onClick={() => setShowExamples((value) => !value)}
+						>
+							<ChevronDown className={cn('size-4 transition-transform', showExamples ? 'rotate-0' : '-rotate-90')} />
+							{t('monitors.push.examples')}
+						</button>
 
-					{showExamples && (
-						<Tabs defaultValue="cron" className="mt-3">
-							<TabsList>
-								<TabsTrigger value="cron">{t('monitors.push.example_cron')}</TabsTrigger>
-								<TabsTrigger value="failure">{t('monitors.push.example_failure')}</TabsTrigger>
-							</TabsList>
-							<TabsContent value="cron">
-								<CopyableCode value={cronExample} />
-							</TabsContent>
-							<TabsContent value="failure">
-								<CopyableCode value={failureExample} />
-							</TabsContent>
-						</Tabs>
-					)}
-				</div>
+						{showExamples && (
+							<Tabs defaultValue="cron" className="mt-3">
+								<TabsList>
+									<TabsTrigger value="cron">{t('monitors.push.example_cron')}</TabsTrigger>
+									<TabsTrigger value="failure">{t('monitors.push.example_failure')}</TabsTrigger>
+								</TabsList>
+								<TabsContent value="cron">
+									<CopyableCode value={cronExample} />
+								</TabsContent>
+								<TabsContent value="failure">
+									<CopyableCode value={failureExample} />
+								</TabsContent>
+							</Tabs>
+						)}
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	);

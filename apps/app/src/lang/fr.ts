@@ -322,6 +322,8 @@ const fr: typeof en = {
 		push: {
 			title: 'URL de push',
 			description: 'Appelez cette URL à la fin de votre job. Sans appel dans les temps, la sonde passe en panne.',
+			token_hidden:
+				'Seuls les administrateurs voient l’URL de push : elle suffit pour déclarer la sonde en ligne ou en panne.',
 			schedule_description:
 				'Votre job appelle l’URL de la sonde ; rien n’est contacté d’ici. Sans appel pendant {{ deadline }}, la sonde passe en panne. L’échéance est vérifiée chaque minute.',
 			equals: '≈ {{ duration }}',
