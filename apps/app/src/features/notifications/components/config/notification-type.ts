@@ -191,7 +191,7 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 			{
 				name: 'to',
 				label: t('form.label.address_to'),
-				input_type: 'email',
+				input_type: 'text',
 				placeholder: 'uptime-kotlin@exemple.com, uptime-kotlin2@exemple.com',
 			},
 		],

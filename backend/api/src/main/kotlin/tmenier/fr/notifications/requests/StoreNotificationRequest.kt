@@ -15,6 +15,7 @@ import jakarta.validation.groups.Default
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
+import tmenier.fr.common.validations.EmailList
 import tmenier.fr.common.validations.HostnameOrIp
 
 interface OnCreate : Default
@@ -168,6 +169,6 @@ data class ValidNotificationChannelMailRequest(
     @field:Email(message = "Invalid email format")
     var from: String,
     @field:NotBlank(message = "To address is required")
-    @field:Email(message = "Invalid email format")
+    @field:EmailList(message = "Invalid email list format")
     var to: String,
 ) : BaseStoreNotificationRequest()

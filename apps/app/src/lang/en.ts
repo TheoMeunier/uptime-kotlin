@@ -183,6 +183,7 @@ const en = {
 		matrix_access_token: 'Access token required',
 		web_push_subscription: 'Add at least one browser',
 		hostname: 'Invalid hostname or IP address (e.g. smtp.gmail.com)',
+		email_list: 'Invalid email list (separate addresses with commas)',
 	},
 
 	select: {
