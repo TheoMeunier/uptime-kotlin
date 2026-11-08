@@ -22,6 +22,11 @@ const de: typeof en = {
 		actions: {
 			reload: 'Neu laden',
 			dashboard: 'Zurück zum Dashboard',
+			status: 'Globaler Status',
+		},
+		not_found: {
+			title: 'Seite nicht gefunden',
+			description: 'Diese Adresse entspricht keiner Seite. Prüfen Sie den Link oder kehren Sie zum Dashboard zurück.',
 		},
 		load: {
 			title: 'Diese Daten konnten nicht geladen werden',
@@ -251,10 +256,6 @@ const de: typeof en = {
 				columns: {
 					service: 'Dienst',
 				},
-			},
-			restricted: {
-				title: 'Anmeldung erforderlich',
-				description: 'Diese Statusseite existiert nicht oder ist angemeldeten Benutzern vorbehalten.',
 			},
 			not_found: {
 				title: 'Statusseite nicht gefunden',

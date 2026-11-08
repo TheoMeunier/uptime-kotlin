@@ -22,6 +22,11 @@ const es: typeof en = {
 		actions: {
 			reload: 'Recargar',
 			dashboard: 'Volver al panel',
+			status: 'Estado global',
+		},
+		not_found: {
+			title: 'Página no encontrada',
+			description: 'Esta dirección no corresponde a ninguna página. Revise el enlace o vuelva al panel.',
 		},
 		load: {
 			title: 'No se han podido cargar estos datos',
@@ -245,10 +250,6 @@ const es: typeof en = {
 				columns: {
 					service: 'Servicio',
 				},
-			},
-			restricted: {
-				title: 'Inicio de sesión requerido',
-				description: 'Esta página de estado no existe o está reservada a usuarios con sesión iniciada.',
 			},
 			not_found: {
 				title: 'Página de estado no encontrada',

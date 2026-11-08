@@ -1,15 +1,14 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useLocation, useParams } from 'react-router';
-import { Lock } from 'lucide-react';
+import { RotateCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '@/api/api-error.ts';
 import { Button } from '@/components/atoms/button.tsx';
-import ErrorState from '@/components/molecules/error-state.tsx';
+import ErrorPage from '@/components/molecules/error-page.tsx';
 import authService from '@/features/auth/services/authServices.ts';
 import { loginPath } from '@/features/auth/lib/redirect.ts';
 import StatusBoard from '@/features/status-pages/components/board/status-board.tsx';
-import StatusBoardFrame from '@/features/status-pages/components/board/status-board-frame.tsx';
 import StatusBoardSkeleton from '@/features/status-pages/components/board/status-board-skeleton.tsx';
 import useStatusLayout from '@/features/status-pages/hooks/useStatusLayout.ts';
 import useStatusFeed from '@/features/status-pages/hooks/useStatusFeed.ts';
@@ -52,28 +51,40 @@ export default function PublicStatusPage() {
 	if (isLoading) return <StatusBoardSkeleton layout={readStoredLayout(slug) ?? 'grid'} />;
 
 	if (isError || !data) {
-		return (
-			<StatusBoardFrame>
-				{isNotFound(error) && !authService.getAccessToken() ? (
-					<ErrorState
-						icon={Lock}
-						title={t('pages.status_page.restricted.title')}
-						description={t('pages.status_page.restricted.description')}
-						action={
-							<Button asChild>
-								<Link to={loginPath(location.pathname + location.search)}>{t('button.login')}</Link>
+		if (isNotFound(error)) {
+			return (
+				<ErrorPage
+					code="404"
+					title={t('pages.status_page.not_found.title')}
+					description={t('pages.status_page.not_found.description', { slug })}
+					actions={
+						<>
+							{!authService.getAccessToken() && (
+								<Button asChild>
+									<Link to={loginPath(location.pathname + location.search)}>{t('button.login')}</Link>
+								</Button>
+							)}
+							<Button variant="outline" asChild>
+								<Link to="/status">{t('errors.actions.status')}</Link>
 							</Button>
-						}
-					/>
-				) : isNotFound(error) ? (
-					<ErrorState
-						title={t('pages.status_page.not_found.title')}
-						description={t('pages.status_page.not_found.description', { slug })}
-					/>
-				) : (
-					<ErrorState onRetry={() => refetch()} />
-				)}
-			</StatusBoardFrame>
+						</>
+					}
+				/>
+			);
+		}
+
+		return (
+			<ErrorPage
+				code="500"
+				title={t('errors.load.title')}
+				description={t('errors.load.description')}
+				actions={
+					<Button onClick={() => refetch()}>
+						<RotateCw className="size-4" />
+						{t('button.retry')}
+					</Button>
+				}
+			/>
 		);
 	}
 

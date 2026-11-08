@@ -22,6 +22,11 @@ const fr: typeof en = {
 		actions: {
 			reload: 'Recharger',
 			dashboard: 'Retour au tableau de bord',
+			status: 'Voir le statut global',
+		},
+		not_found: {
+			title: 'Page introuvable',
+			description: 'Cette adresse ne correspond à aucune page. Vérifiez le lien, ou revenez au tableau de bord.',
 		},
 		load: {
 			title: 'Impossible de charger ces données',
@@ -248,10 +253,6 @@ const fr: typeof en = {
 				columns: {
 					service: 'Service',
 				},
-			},
-			restricted: {
-				title: 'Connexion requise',
-				description: 'Cette page de statut n’existe pas ou est réservée aux utilisateurs connectés.',
 			},
 			not_found: {
 				title: 'Page de statut introuvable',
