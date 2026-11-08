@@ -1,7 +1,7 @@
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './assets/index.css';
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router';
 import { ProtectedRouteProvider } from '@/features/auth/contexts/protected-route-provider.tsx';
 import { AdminRoute } from '@/features/auth/contexts/admin-route.tsx';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -67,6 +67,7 @@ const router = createBrowserRouter(
 				<Route path="/" element={<ProtectedRouteProvider />}>
 					<Route path="/" element={<Layout />}>
 						<Route errorElement={<RouteErrorBoundary />}>
+							<Route index element={<Navigate to="/dashboard" replace />} />
 							<Route path="/dashboard" element={<Dashboard />} />
 
 							<Route element={<AdminRoute />}>
