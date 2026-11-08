@@ -202,6 +202,7 @@ const es: typeof en = {
 
 	pages: {
 		status_page: {
+			powered_by: 'Funciona con',
 			uptime: {
 				state: {
 					up: 'Operativo',

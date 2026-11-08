@@ -1,4 +1,5 @@
 export const DOCUMENTATION_URL = 'https://uptime-kotlin.com/docs';
+export const WEBSITE_URL = 'https://uptime-kotlin.com';
 export const RELEASES_URL = 'https://github.com/TheoMeunier/uptime-kotlin/releases';
 
 export function releaseNotesUrl(version: string): string {
