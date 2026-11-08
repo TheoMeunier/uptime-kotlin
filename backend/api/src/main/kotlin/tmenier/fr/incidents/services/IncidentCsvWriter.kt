@@ -1,6 +1,7 @@
 package tmenier.fr.incidents.services
 
 import tmenier.fr.common.enums.incidents.IncidentState
+import tmenier.fr.common.utils.CsvCell
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.incidents.dtos.IncidentExport
 import tmenier.fr.incidents.dtos.IncidentExportRow
@@ -14,7 +15,6 @@ import java.time.temporal.ChronoUnit
 object IncidentCsvWriter {
     private const val BYTE_ORDER_MARK = "﻿"
     private const val LINE_END = "\r\n"
-    private val FORMULA_TRIGGERS = setOf('=', '+', '-', '@', '\t', '\r')
 
     private val HEADER =
         listOf(
@@ -40,7 +40,6 @@ object IncidentCsvWriter {
         return lines.joinToString(LINE_END, prefix = BYTE_ORDER_MARK, postfix = LINE_END)
     }
 
-    /** `incidents-2026-09.csv` for a calendar month, `incidents-2026-09-16_2026-10-16.csv` otherwise. */
     fun fileName(export: IncidentExport): String {
         val firstDay = export.from.atZone(export.zone).toLocalDate()
         val month = YearMonth.from(firstDay)
@@ -88,12 +87,5 @@ object IncidentCsvWriter {
             ?.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
             .orEmpty()
 
-    private fun text(value: String?): String {
-        if (value.isNullOrEmpty()) return ""
-
-        val inert = if (value.first() in FORMULA_TRIGGERS) "'$value" else value
-        if (inert.none { it == '"' || it == ',' || it == '\n' || it == '\r' }) return inert
-
-        return "\"${inert.replace("\"", "\"\"")}\""
-    }
+    private fun text(value: String?): String = CsvCell.text(value)
 }

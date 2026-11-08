@@ -8,6 +8,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.utils.CsvCell
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
 import tmenier.fr.databases.repositories.ProbeRepository
@@ -43,20 +44,12 @@ class ExportProbeLogsResource(
                     log.id.toString(),
                     log.status.name,
                     log.responseTime.toString(),
-                    log.message,
+                    CsvCell.text(log.message),
                     log.runAt.toString(),
                 )
             }
 
         return (listOf(listOf("id", "status", "response_time_ms", "message", "run_at")) + rows)
-            .joinToString("\n") { row -> row.joinToString(",") { escapeCsvValue(it) } }
-    }
-
-    private fun escapeCsvValue(value: String): String {
-        if (value.none { it == '"' || it == ',' || it == '\n' || it == '\r' }) {
-            return value
-        }
-
-        return "\"${value.replace("\"", "\"\"")}\""
+            .joinToString("\n") { row -> row.joinToString(",") }
     }
 }
