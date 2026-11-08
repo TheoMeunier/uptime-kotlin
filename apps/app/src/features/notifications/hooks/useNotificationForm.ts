@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import i18n from '@/lang/i18n.ts';
 import { isValidHostnameOrIp } from '@/lib/hostname.ts';
+import { isValidEmailList } from '@/lib/email-list.ts';
 
 const baseStoreNotificationSchema = z.object({
 	name: z.string().min(3).max(255),
@@ -92,7 +93,7 @@ const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	username: z.email().min(3).max(255),
 	password: z.string().max(255).nullish(),
 	starttls: z.boolean().optional(),
-	to: z.email().min(3).max(255),
+	to: z.string().trim().min(3).max(1000).refine(isValidEmailList, i18n.t('validation.email_list')),
 	from: z.email().min(3).max(255),
 });
 

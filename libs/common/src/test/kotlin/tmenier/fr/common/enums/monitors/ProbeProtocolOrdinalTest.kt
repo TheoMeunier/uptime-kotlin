@@ -23,6 +23,7 @@ class ProbeProtocolOrdinalTest {
                 "ORACLE",
                 "WEBSOCKET",
                 "DOCKER",
+                "PUSH",
             ),
             ProbeProtocol.entries.map { it.name },
         )

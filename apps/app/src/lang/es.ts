@@ -187,6 +187,7 @@ const es: typeof en = {
 		matrix_access_token: 'Token de acceso obligatorio',
 		web_push_subscription: 'Añada al menos un navegador',
 		hostname: 'Nombre de host o dirección IP no válidos (p. ej. smtp.gmail.com)',
+		email_list: 'Lista de correos no válida (separe las direcciones con comas)',
 	},
 
 	select: {

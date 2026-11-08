@@ -190,6 +190,7 @@ const fr: typeof en = {
 		matrix_access_token: 'Jeton d’accès requis',
 		web_push_subscription: 'Ajoutez au moins un navigateur',
 		hostname: 'Nom d’hôte ou adresse IP invalide (ex. smtp.gmail.com)',
+		email_list: 'Liste d’adresses e-mail invalide (séparez les adresses par des virgules)',
 	},
 
 	select: {

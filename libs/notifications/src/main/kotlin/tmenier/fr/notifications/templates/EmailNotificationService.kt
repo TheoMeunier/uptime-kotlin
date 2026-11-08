@@ -12,6 +12,7 @@ import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.toHumanReadable
+import tmenier.fr.common.validations.EmailListValidator
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.notifications.NotificationDateFormatter
@@ -36,7 +37,7 @@ class EmailNotificationService(
         val message =
             MailMessage()
                 .setFrom(content.from)
-                .setTo(content.to)
+                .setTo(EmailListValidator.parse(content.to))
                 .setSubject("✅ Monitor Success: ${probe.name}${OutageWindow.suffix(downtime)}")
                 .setText(
                     listOfNotNull(
@@ -66,7 +67,7 @@ class EmailNotificationService(
         val message =
             MailMessage()
                 .setFrom(content.from)
-                .setTo(content.to)
+                .setTo(EmailListValidator.parse(content.to))
                 .setSubject("❌ Monitor Failure: ${probe.name}")
                 .setText(
                     """
@@ -96,7 +97,7 @@ class EmailNotificationService(
         val message =
             MailMessage()
                 .setFrom(content.from)
-                .setTo(content.to)
+                .setTo(EmailListValidator.parse(content.to))
                 .setSubject("🔁 Still down: ${probe.name} (reminder #$reminderIndex)")
                 .setText(
                     """
@@ -120,7 +121,7 @@ class EmailNotificationService(
         val message =
             MailMessage()
                 .setFrom(content.from)
-                .setTo(content.to)
+                .setTo(EmailListValidator.parse(content.to))
                 .setSubject("Send Mail: Uptime kotlin")
                 .setText("Send test mail")
 

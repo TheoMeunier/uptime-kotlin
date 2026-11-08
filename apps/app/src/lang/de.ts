@@ -193,6 +193,7 @@ const de: typeof en = {
 		matrix_access_token: 'Zugriffstoken erforderlich',
 		web_push_subscription: 'Fügen Sie mindestens einen Browser hinzu',
 		hostname: 'Ungültiger Hostname oder ungültige IP-Adresse (z. B. smtp.gmail.com)',
+		email_list: 'Ungültige E-Mail-Liste (Adressen durch Kommas trennen)',
 	},
 
 	select: {
