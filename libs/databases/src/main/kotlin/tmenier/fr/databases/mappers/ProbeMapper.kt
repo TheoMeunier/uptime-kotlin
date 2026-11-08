@@ -132,8 +132,37 @@ object ProbeContentMapper {
             is ProbeContent.MongoDb -> content.copy(connectionString = "")
             is ProbeContent.Oracle -> content.copy(connectionString = "")
             is ProbeContent.RabbitMq -> content.copy(password = "")
-            else -> content
+            is ProbeContent.Http ->
+                content.copy(
+                    headers = redactHeaders(content.headers),
+                    body = null,
+                    authentication = redactAuthentication(content.authentication),
+                    steps =
+                        content.steps.map { step ->
+                            step.copy(
+                                headers = redactHeaders(step.headers),
+                                body = null,
+                                authentication = redactAuthentication(step.authentication),
+                            )
+                        },
+                )
+            is ProbeContent.Dns,
+            is ProbeContent.Tcp,
+            is ProbeContent.Ping,
+            is ProbeContent.WebSocketUpgrade,
+            is ProbeContent.DockerContainer,
+            is ProbeContent.Smtp,
+            is ProbeContent.Kafka,
+            is ProbeContent.Push,
+            -> content
         }
+
+    private fun redactHeaders(headers: Map<String, String>): Map<String, String> = headers.mapValues { REDACTED }
+
+    private fun redactAuthentication(authentication: ProbeContent.HttpAuthentication?): ProbeContent.HttpAuthentication? =
+        authentication?.let { ProbeContent.HttpAuthentication(type = it.type) }
+
+    const val REDACTED = "\u2022\u2022\u2022\u2022"
 
     fun revealSecrets(
         content: ProbeContent,
