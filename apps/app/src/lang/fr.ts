@@ -205,6 +205,7 @@ const fr: typeof en = {
 
 	pages: {
 		status_page: {
+			powered_by: 'Propulsé par',
 			uptime: {
 				state: {
 					up: 'Opérationnel',

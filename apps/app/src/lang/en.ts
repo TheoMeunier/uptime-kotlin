@@ -198,6 +198,7 @@ const en = {
 
 	pages: {
 		status_page: {
+			powered_by: 'Powered by',
 			uptime: {
 				state: {
 					up: 'Operational',

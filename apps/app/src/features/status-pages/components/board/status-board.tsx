@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { summarizeAttention } from '@/lib/status.ts';
 import useTabStatus from '@/hooks/use-tab-status.ts';
+import StatusBoardFooter from '@/features/status-pages/components/board/status-board-footer.tsx';
 import StatusBoardHeader from '@/features/status-pages/components/board/status-board-header.tsx';
 import StatusEmptyState from '@/features/status-pages/components/board/status-empty-state.tsx';
 import StatusGrid from '@/features/status-pages/components/board/status-grid.tsx';
@@ -45,7 +46,7 @@ export default function StatusBoard({
 
 	return (
 		<BoardUptimeContext.Provider value={uptime}>
-			<div className="bg-background min-h-screen">
+			<div className="bg-background flex min-h-screen flex-col">
 				<StatusBoardHeader
 					title={title}
 					subtitle={subtitle}
@@ -67,6 +68,8 @@ export default function StatusBoard({
 						<StatusEmptyState />
 					)}
 				</div>
+
+				<StatusBoardFooter />
 			</div>
 		</BoardUptimeContext.Provider>
 	);

@@ -208,6 +208,7 @@ const de: typeof en = {
 
 	pages: {
 		status_page: {
+			powered_by: 'Bereitgestellt von',
 			uptime: {
 				state: {
 					up: 'Betriebsbereit',
