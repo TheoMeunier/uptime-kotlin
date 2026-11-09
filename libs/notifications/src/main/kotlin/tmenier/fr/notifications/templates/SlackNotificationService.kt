@@ -83,7 +83,7 @@ class SlackNotificationService(
 
     override fun getNotificationType() = NotificationChannelsEnum.SLACK.name
 
-    private fun buildSlackMessage(
+    internal fun buildSlackMessage(
         title: String,
         message: String,
         color: String,
@@ -93,6 +93,7 @@ class SlackNotificationService(
         val escapedTitle = JsonText.escape(title)
         val escapedMessage = JsonText.escape(message)
         val formattedDate = dates.format(runAt)
+        val previewText = JsonText.escape(if (message.isBlank()) title else "$title: $message")
 
         val emoji =
             when (status) {
@@ -103,9 +104,11 @@ class SlackNotificationService(
 
         return """
             {
+                "text": "$previewText",
                 "attachments": [
                     {
                         "color": "$color",
+                        "fallback": "$previewText",
                         "blocks": [
                             {
                                 "type": "header",
