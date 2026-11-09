@@ -148,7 +148,7 @@ export function buildProbeFieldsConfig(t: TFunction) {
 					name: 'ip',
 					label: t('monitors.label.ping_ip'),
 					input_type: 'text',
-					placeholder: '192.168.1.1',
+					placeholder: 'home.example.com or 192.168.1.1',
 				},
 				{
 					name: 'ping_heartbeat_interval',

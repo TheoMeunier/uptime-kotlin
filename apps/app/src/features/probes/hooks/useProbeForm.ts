@@ -89,7 +89,7 @@ const tcpProbeSchema = baseStoreProbeSchema.extend({
 
 const pingProbeSchema = baseStoreProbeSchema.extend({
 	protocol: z.literal('PING'),
-	ip: z.ipv4(),
+	ip: z.string().trim().refine(isValidHostnameOrIp, i18n.t('validation.hostname')),
 	ping_heartbeat_interval: z.number().min(1).max(60),
 	ping_max_packet: z.number().min(1).max(10),
 	ping_size: z.number().min(32).max(65500),

@@ -404,7 +404,7 @@ const es: typeof en = {
 			docker_host: 'Host de Docker',
 			http_code_allowed: 'Códigos de estado aceptados',
 			dns_record: 'Registro DNS',
-			ping_ip: 'Dirección IP',
+			ping_ip: 'Nombre de host / dirección IP',
 			ping_heartbeat_interval: 'Intervalo de latido',
 			ping_max_packet: 'Pérdida máxima de paquetes',
 			ping_size: 'Tamaño de los paquetes',

@@ -23,13 +23,15 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
         val start = now()
 
         return try {
-            val cleanUrl = parseUrl(content.ip)
+            val cleanUrl = PingTarget.host(content.ip)
             val maxPackets = content.pingMaxPacket
             val delay = content.pingDelay.toLong()
 
             var successfulPings = 0
             var totalResponseTime = 0.0
             val pingResults = mutableListOf<Boolean>()
+            var resolvedAddress: String? = null
+            var unresolvedHost = false
 
             repeat(maxPackets) { iteration ->
                 if (iteration > 0) {
@@ -38,6 +40,8 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
 
                 val reply = systemPing(cleanUrl, timeoutSeconds(probe))
                 pingResults.add(reply.reachable)
+                reply.resolvedAddress?.let { resolvedAddress = it }
+                if (reply.unresolvedHost) unresolvedHost = true
 
                 if (reply.reachable) {
                     successfulPings++
@@ -61,13 +65,16 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
                     else -> if (isLastAttempt) ProbeMonitorLogStatus.FAILURE else ProbeMonitorLogStatus.WARNING
                 }
 
+            val target = PingTarget.describe(cleanUrl, resolvedAddress)
             val message =
                 if (status == ProbeMonitorLogStatus.SUCCESS) {
-                    "Ping successful to $cleanUrl: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
+                    "Ping successful to $target: $successfulPings/$maxPackets packets received - Avg: ${avgResponseTime}ms"
                 } else if (successfulPings > 0) {
-                    "Ping warning to $cleanUrl: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
+                    "Ping warning to $target: $successfulPings/$maxPackets packets received (${successRate.toInt()}%) - Avg: ${avgResponseTime}ms"
+                } else if (unresolvedHost) {
+                    "Ping failed to $cleanUrl: DNS resolution failed - hostname could not be resolved"
                 } else {
-                    "Ping failed to $cleanUrl: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
+                    "Ping failed to $target: 0/$maxPackets packets received - Host unreachable or ICMP blocked"
                 }
 
             ProbeResult(
@@ -87,13 +94,6 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
     }
 
     override fun getProtocolType() = ProbeProtocol.PING.name
-
-    private fun parseUrl(url: String): String =
-        url
-            .replace("http://", "")
-            .replace("https://", "")
-            .split("/")[0]
-            .split(":")[0]
 
     private fun systemPing(
         host: String,
@@ -131,10 +131,19 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
 
             if (!success) {
                 logger.info { "Ping failed for $host. Exit code: $exitCode. Output: ${output.trim()}" }
-                return PingReply(false, wallClockMillis)
+                return PingReply(
+                    reachable = false,
+                    rttMillis = wallClockMillis,
+                    resolvedAddress = PingOutputParser.resolvedAddress(output),
+                    unresolvedHost = PingOutputParser.isUnresolvedHost(output),
+                )
             }
 
-            PingReply(true, PingOutputParser.rttMillis(output) ?: wallClockMillis)
+            PingReply(
+                reachable = true,
+                rttMillis = PingOutputParser.rttMillis(output) ?: wallClockMillis,
+                resolvedAddress = PingOutputParser.resolvedAddress(output),
+            )
         } catch (e: PingUnavailableException) {
             throw e
         } catch (e: Exception) {
@@ -159,14 +168,46 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
     private data class PingReply(
         val reachable: Boolean,
         val rttMillis: Double,
+        val resolvedAddress: String? = null,
+        val unresolvedHost: Boolean = false,
     )
+}
+
+internal object PingTarget {
+    private val SCHEME = Regex("^[A-Za-z][A-Za-z0-9+.-]*://")
+
+    fun host(target: String): String {
+        val authority = target.trim().replaceFirst(SCHEME, "").substringBefore('/')
+        if (authority.startsWith("[")) return authority.substringAfter('[').substringBefore(']')
+        return if (authority.count { it == ':' } == 1) authority.substringBefore(':') else authority
+    }
+
+    fun describe(
+        host: String,
+        resolvedAddress: String?,
+    ): String =
+        if (resolvedAddress.isNullOrBlank() || resolvedAddress.equals(host, ignoreCase = true)) {
+            host
+        } else {
+            "$host ($resolvedAddress)"
+        }
 }
 
 internal object PingOutputParser {
     private val TIME_REGEX = Regex("""time\s*[=<]\s*(\d+(?:[.,]\d+)?)\s*ms""", RegexOption.IGNORE_CASE)
-
-    /** Ligne de résumé : `rtt min/avg/max/mdev = 1/2/3/4 ms` (Linux) ou `round-trip min/avg/max/stddev = …` (macOS, BusyBox). */
     private val SUMMARY_REGEX = Regex("""min/avg/max\S*\s*=\s*[\d.,]+/([\d.,]+)/""")
+    private val RESOLVED_REGEX = Regex("""^PING\b[^\n]*?\(([0-9A-Fa-f.:]+)\)""", RegexOption.MULTILINE)
+
+    private val UNRESOLVED_REGEX =
+        Regex(
+            "Name or service not known|Temporary failure in name resolution|No address associated with hostname|" +
+                "cannot resolve|Unknown host|bad address",
+            RegexOption.IGNORE_CASE,
+        )
+
+    fun resolvedAddress(output: String): String? = RESOLVED_REGEX.find(output)?.groupValues?.get(1)
+
+    fun isUnresolvedHost(output: String): Boolean = UNRESOLVED_REGEX.containsMatchIn(output)
 
     fun rttMillis(output: String): Double? =
         (TIME_REGEX.find(output) ?: SUMMARY_REGEX.find(output))
