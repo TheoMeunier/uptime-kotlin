@@ -32,7 +32,6 @@ class UrlOrIpValidator : ConstraintValidator<UrlOrIp, String> {
         return isValidHttpUrl(value) || isValidIpv4(value)
     }
 
-
     private fun isValidHttpUrl(value: String): Boolean =
         try {
             val uri = URI(value)
