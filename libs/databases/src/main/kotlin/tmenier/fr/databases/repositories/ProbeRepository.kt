@@ -1,7 +1,6 @@
 package tmenier.fr.databases.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
-import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import jakarta.persistence.LockModeType
@@ -63,7 +62,7 @@ class ProbeRepository(
         return find(
             "SELECT DISTINCT p FROM ProbesEntity p JOIN FETCH p.probesMonitorLogs pml WHERE pml.runAt > ?1 AND p.enabled = true ${scope}ORDER BY p.name ASC",
             *params,
-        ).list().sortedBy { it.name.lowercase() }
+        ).list().sortedWith(ProbeNameOrder.by { it.name })
     }
 
     fun getProbesStatusMetrics(probeIds: Collection<UUID>? = null): Map<UUID, ProbeStatusMetrics> {
@@ -138,7 +137,7 @@ class ProbeRepository(
 
     fun getActiveProbes(): List<ProbeDTO> = find("enabled = ?1 ORDER BY name ASC", true).list().map { ProbeMapper.toDto(it) }
 
-    fun getAll(): List<ProbesEntity> = findAll(Sort.by("name")).list()
+    fun getAll(): List<ProbesEntity> = listAll().sortedWith(ProbeNameOrder.by { it.name })
 
     fun attach(
         notifications: List<UUID>,

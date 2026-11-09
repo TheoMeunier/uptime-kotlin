@@ -6,6 +6,7 @@ import tmenier.fr.databases.dtos.MaintenanceWindowListDto
 import tmenier.fr.databases.dtos.StoreMaintenanceWindowDto
 import tmenier.fr.databases.entities.MaintenanceOccurrenceEntity
 import tmenier.fr.databases.entities.MaintenanceWindowEntity
+import tmenier.fr.databases.repositories.ProbeNameOrder
 
 object MaintenanceMapper {
     fun toEntity(dto: StoreMaintenanceWindowDto): MaintenanceWindowEntity =
@@ -47,7 +48,7 @@ object MaintenanceMapper {
             timezone = entity.timezone,
             active = entity.active,
             isPublic = entity.isPublic,
-            probes = entity.probes.map(ProbeMapper::toProbeListDto).sortedBy { it.name.lowercase() },
+            probes = entity.probes.map(ProbeMapper::toProbeListDto).sortedWith(ProbeNameOrder.by { it.name }),
             probeIds = entity.probes.map { it.id },
             currentOccurrence = current?.let(::toOccurrenceDto),
             nextOccurrence = next?.let(::toOccurrenceDto),
