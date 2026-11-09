@@ -22,22 +22,3 @@ jobs:
           project-path-build: :backend:api
           registry-token: ${{ secrets.GH_TOKEN }}
           context: ./backend/api
-
-  api-build-native-arm64:
-    name: api native arm64 build and push docker image
-    runs-on: ubuntu-24.04-arm
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Api native arm64 build
-        uses: ./.github/actions/backend/build-push-docker-native
-        with:
-          name: api
-          docker-image: api-arm64
-          artifact-name: backend-api-native-arm64
-          dockerfile-path: ./backend/api/src/main/docker/Dockerfile.native
-          project-path-build: :backend:api
-          registry-token: ${{ secrets.GH_TOKEN }}
-          context: ./backend/api
-          container-build: 'true'
