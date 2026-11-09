@@ -106,7 +106,7 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+		<ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
 			<AppErrorBoundary>
 				<QueryClientProvider client={queryClient}>
 					<SetupProvider>
