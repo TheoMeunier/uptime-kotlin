@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 )
 @Retention(AnnotationRetention.RUNTIME)
 annotation class UrlOrIp(
-    val message: String = "Must be a valid https URL or IPv4 address",
+    val message: String = "Must be a valid http(s) URL or IPv4 address",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = [],
 )
@@ -25,17 +25,18 @@ annotation class UrlOrIp(
 class UrlOrIpValidator : ConstraintValidator<UrlOrIp, String> {
     override fun isValid(
         value: String?,
-        context: ConstraintValidatorContext,
+        context: ConstraintValidatorContext?,
     ): Boolean {
         if (value.isNullOrBlank()) return false
 
-        return isValidHttpsUrl(value) || isValidIpv4(value)
+        return isValidHttpUrl(value) || isValidIpv4(value)
     }
 
-    private fun isValidHttpsUrl(value: String): Boolean =
+
+    private fun isValidHttpUrl(value: String): Boolean =
         try {
             val uri = URI(value)
-            uri.scheme == "https" && !uri.host.isNullOrBlank()
+            uri.scheme?.lowercase() in HTTP_SCHEMES && !uri.host.isNullOrBlank()
         } catch (e: Exception) {
             false
         }
@@ -46,4 +47,8 @@ class UrlOrIpValidator : ConstraintValidator<UrlOrIp, String> {
         } catch (e: Exception) {
             false
         }
+
+    private companion object {
+        val HTTP_SCHEMES = setOf("http", "https")
+    }
 }
