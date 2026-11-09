@@ -173,8 +173,8 @@ data class ValidProbeProtocolDnsRequest(
 
 @RegisterForReflection
 data class ValidProbeProtocolPingRequest(
-    @field:NotBlank(message = "Url is required")
-    @field:UrlOrIp(message = "Invalid URL or IP format")
+    @field:NotBlank(message = "Hostname or IP address is required")
+    @field:HostnameOrIp(message = "Invalid hostname or IP address")
     var ip: String,
     @field:Min(1)
     @field:Max(60)

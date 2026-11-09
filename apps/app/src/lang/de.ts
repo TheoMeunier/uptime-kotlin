@@ -411,7 +411,7 @@ const de: typeof en = {
 			docker_host: 'Docker-Host',
 			http_code_allowed: 'Akzeptierte Statuscodes',
 			dns_record: 'DNS-Eintrag',
-			ping_ip: 'IP-Adresse',
+			ping_ip: 'Hostname / IP-Adresse',
 			ping_heartbeat_interval: 'Heartbeat-Intervall',
 			ping_max_packet: 'Maximaler Paketverlust',
 			ping_size: 'Paketgröße',

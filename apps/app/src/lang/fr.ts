@@ -408,7 +408,7 @@ const fr: typeof en = {
 			docker_host: 'Hôte Docker',
 			http_code_allowed: 'Codes de statut acceptés',
 			dns_record: 'Enregistrement DNS',
-			ping_ip: 'Adresse IP',
+			ping_ip: 'Nom d’hôte / adresse IP',
 			ping_heartbeat_interval: 'Intervalle de battement',
 			ping_max_packet: 'Perte de paquets maximale',
 			ping_size: 'Taille des paquets',
