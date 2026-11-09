@@ -14,7 +14,7 @@ export function buildProbeFieldsConfig(t: TFunction) {
 					name: 'url',
 					label: t('form.label.url'),
 					input_type: 'text',
-					placeholder: 'https://',
+					placeholder: 'https:// or http://',
 				},
 				{
 					name: 'method',
