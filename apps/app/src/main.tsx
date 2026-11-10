@@ -10,6 +10,7 @@ import './lang/i18n.ts';
 import { SetupProvider } from '@/features/setup/contexts/setup-context.tsx';
 import { SetupAppProvider } from '@/features/setup/contexts/setup-app-provider.tsx';
 import LoaderPage from '@/features/setup/components/loader-page.tsx';
+import StatusBoardFallback from '@/features/status-pages/components/board/status-board-fallback.tsx';
 import { toast } from 'sonner';
 import { getApiErrorMessage } from '@/api/api-error.ts';
 import { Toaster } from '@/components/atoms/sonner.tsx';
@@ -92,8 +93,22 @@ const router = createBrowserRouter(
 					</Route>
 				</Route>
 
-				<Route path="/status" element={<ProbesStatus />} />
-				<Route path="/status/:slug" element={<PublicStatusPage />} />
+				<Route
+					path="/status"
+					element={
+						<Suspense fallback={<StatusBoardFallback />}>
+							<ProbesStatus />
+						</Suspense>
+					}
+				/>
+				<Route
+					path="/status/:slug"
+					element={
+						<Suspense fallback={<StatusBoardFallback />}>
+							<PublicStatusPage />
+						</Suspense>
+					}
+				/>
 				<Route path="/login" element={<Login />} />
 
 				<Route path="*" element={<NotFoundPage />} />
