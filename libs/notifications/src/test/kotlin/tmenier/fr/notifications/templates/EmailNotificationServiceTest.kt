@@ -1,6 +1,7 @@
 package tmenier.fr.notifications.templates
 
 import io.vertx.core.Vertx
+import io.vertx.ext.mail.StartTLSOptions
 import org.jboss.logging.Logger
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,6 +14,7 @@ import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.common.enums.monitors.ProbeProtocol
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.notifications.NotificationDateFormatter
@@ -119,6 +121,50 @@ class EmailNotificationServiceTest {
 
         assertTrue(email.text.contains("smtp.example.com:587"), email.text)
         assertFalse(email.text.contains("https://smtp"), email.text)
+    }
+
+    private fun mail(
+        security: SmtpSecurity? = null,
+        starttls: Boolean = false,
+    ) = NotificationContent.Mail(
+        hostname = "smtp.example.com",
+        port = 465,
+        starttls = starttls,
+        security = security,
+        username = "bot",
+        from = "uptime@example.com",
+        to = "ops@example.com",
+    )
+
+    @Test
+    fun `smtps uses implicit tls`() {
+        val config = service.mailConfig(mail(SmtpSecurity.SMTPS), "secret")
+
+        assertTrue(config.isSsl)
+        assertEquals(StartTLSOptions.DISABLED, config.starttls)
+    }
+
+    @Test
+    fun `starttls upgrades a plain connection`() {
+        val config = service.mailConfig(mail(SmtpSecurity.STARTTLS), "secret")
+
+        assertFalse(config.isSsl)
+        assertEquals(StartTLSOptions.REQUIRED, config.starttls)
+    }
+
+    @Test
+    fun `ignore tls sends in clear`() {
+        val config = service.mailConfig(mail(SmtpSecurity.IGNORE_TLS), "secret")
+
+        assertFalse(config.isSsl)
+        assertEquals(StartTLSOptions.DISABLED, config.starttls)
+    }
+
+    @Test
+    fun `legacy channels without security fall back to the starttls flag`() {
+        assertEquals(SmtpSecurity.STARTTLS, mail(starttls = true).resolvedSecurity())
+        assertEquals(SmtpSecurity.IGNORE_TLS, mail(starttls = false).resolvedSecurity())
+        assertEquals(SmtpSecurity.SMTPS, mail(SmtpSecurity.SMTPS, starttls = true).resolvedSecurity())
     }
 
     @Test

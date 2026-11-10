@@ -33,6 +33,7 @@ object NotificationContentMapper {
             is NotificationContent.PagerDuty -> content.copy(routingKey = "")
             is NotificationContent.Matrix -> content.copy(accessToken = "")
             is NotificationContent.WebPush -> content.copy(subscriptions = content.subscriptions.map { it.copy(auth = "") })
+            is NotificationContent.Mail -> content.copy(security = content.resolvedSecurity())
             else -> content
         }
 

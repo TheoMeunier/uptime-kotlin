@@ -3,6 +3,7 @@ package tmenier.fr.databases.dtos
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.quarkus.runtime.annotations.RegisterForReflection
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 
 @RegisterForReflection
 sealed interface NotificationContent {
@@ -72,14 +73,17 @@ sealed interface NotificationContent {
     data class Mail(
         val hostname: String,
         val port: Int,
-        val starttls: Boolean,
+        val starttls: Boolean = false,
         val username: String,
         @field:JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         val password: String? = null,
         val from: String,
         val to: String,
         val cc: List<String>? = null,
-    ) : NotificationContent
+        val security: SmtpSecurity? = null,
+    ) : NotificationContent {
+        fun resolvedSecurity(): SmtpSecurity = security ?: if (starttls) SmtpSecurity.STARTTLS else SmtpSecurity.IGNORE_TLS
+    }
 }
 
 @RegisterForReflection

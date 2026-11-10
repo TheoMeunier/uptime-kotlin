@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Size
 import jakarta.validation.groups.Default
 import org.hibernate.validator.constraints.URL
 import tmenier.fr.common.enums.monitors.HttpMethodEnum
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.validations.EmailList
 import tmenier.fr.common.validations.HostnameOrIp
@@ -161,6 +162,7 @@ data class ValidNotificationChannelMailRequest(
     @field:NotNull(message = "Port is required")
     var port: Int,
     var starttls: Boolean? = false,
+    var security: SmtpSecurity? = null,
     @field:NotBlank(message = "Username is required")
     var username: String,
     @field:NotBlank(message = "Password is required", groups = [OnCreate::class])

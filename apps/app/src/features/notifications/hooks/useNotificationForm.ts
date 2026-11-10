@@ -93,6 +93,7 @@ const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	username: z.email().min(3).max(255),
 	password: z.string().max(255).nullish(),
 	starttls: z.boolean().optional(),
+	security: z.enum(['SMTPS', 'STARTTLS', 'IGNORE_TLS']).optional(),
 	to: z.string().trim().min(3).max(1000).refine(isValidEmailList, i18n.t('validation.email_list')),
 	from: z.email().min(3).max(255),
 });
@@ -132,9 +133,7 @@ export default function useNotificationForm(
 ) {
 	const form = useForm<StoreNotificationSchema>({
 		resolver: zodResolver(createNotificationSchema(mode)),
-		defaultValues: {
-			...defaultValues,
-		},
+		defaultValues: withMailSecurity(defaultValues),
 	});
 
 	return {
@@ -193,4 +192,9 @@ function createNotificationSchema(mode: NotificationFormMode) {
 			});
 		}
 	});
+}
+
+function withMailSecurity(values: Partial<StoreNotificationSchema>): Partial<StoreNotificationSchema> {
+	if (values.notification_type !== 'MAIL' || values.security) return { ...values };
+	return { ...values, security: values.starttls ? 'STARTTLS' : 'IGNORE_TLS' };
 }

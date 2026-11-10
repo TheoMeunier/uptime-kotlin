@@ -1,4 +1,5 @@
 import NotificationTypeEnum from '@/features/notifications/enums/notification-type-enum.ts';
+import { EMAIL_NOTIFICATION_DOCS_URL } from '@/lib/links.ts';
 import type { TFunction } from 'i18next';
 
 export function buildNotificationFieldsConfig(t: TFunction) {
@@ -167,13 +168,22 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				span: 'narrow' as const,
 				label: t('form.label.port'),
 				input_type: 'number',
+				default_value: 587,
 				placeholder: '587',
 			},
 			{
-				name: 'starttls',
+				name: 'security',
 				section: t('form.label.section_smtp_server'),
-				label: t('form.label.starttls'),
-				input_type: 'switch',
+				label: t('monitors.label.smtp_security'),
+				input_type: 'select',
+				default_value: 'STARTTLS',
+				options: [
+					{ value: 'STARTTLS', label: 'STARTTLS' },
+					{ value: 'SMTPS', label: 'SMTPS (SSL/TLS)' },
+					{ value: 'IGNORE_TLS', label: t('monitors.option.smtp_ignore_tls') },
+				],
+				description: t('form.description.smtp_security'),
+				docs_url: EMAIL_NOTIFICATION_DOCS_URL,
 			},
 			{
 				name: 'username',

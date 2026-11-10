@@ -12,6 +12,7 @@ import org.jboss.logging.Logger
 import tmenier.fr.common.dtos.ProbeResult
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.common.enums.notifications.NotificationChannelsEnum
 import tmenier.fr.common.utils.toHumanReadable
 import tmenier.fr.common.validations.EmailListValidator
@@ -184,7 +185,7 @@ class EmailNotificationService(
     ) {
         val message =
             MailMessage()
-                .setFrom(content.from)
+                .setFrom("$SENDER_NAME <${content.from}>")
                 .setTo(EmailListValidator.parse(content.to))
                 .setSubject(email.subject)
                 .setText(email.text)
@@ -201,22 +202,31 @@ class EmailNotificationService(
             .join()
     }
 
+    private companion object {
+        const val SENDER_NAME = "Uptime Kotlin"
+    }
+
     private fun cleanHostname(hostname: String) = hostname.removePrefix("https://").removePrefix("http://")
 
     private fun getMailClient(credential: NotificationContent.Mail): MailClient {
         val password = encryptionService.decryptIfEncrypted(credential.password!!)
+        return MailClient.createShared(vertx, mailConfig(credential, password))
+    }
 
-        val config =
-            MailConfig().apply {
-                this.hostname = cleanHostname(credential.hostname)
-                port = credential.port
-                starttls = if (credential.starttls) StartTLSOptions.REQUIRED else StartTLSOptions.DISABLED
-                login = LoginOption.REQUIRED
-                username = credential.username
-                this.password = password
-                authMethods = "LOGIN PLAIN"
-            }
-
-        return MailClient.createShared(vertx, config)
+    internal fun mailConfig(
+        credential: NotificationContent.Mail,
+        password: String,
+    ): MailConfig {
+        val security = credential.resolvedSecurity()
+        return MailConfig().apply {
+            this.hostname = cleanHostname(credential.hostname)
+            port = credential.port
+            isSsl = security == SmtpSecurity.SMTPS
+            starttls = if (security == SmtpSecurity.STARTTLS) StartTLSOptions.REQUIRED else StartTLSOptions.DISABLED
+            login = LoginOption.REQUIRED
+            username = credential.username
+            this.password = password
+            authMethods = "LOGIN PLAIN"
+        }
     }
 }
