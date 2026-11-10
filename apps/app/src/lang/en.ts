@@ -68,6 +68,7 @@ const en = {
 			section_smtp_server: 'SMTP server',
 			section_authentication: 'Authentication',
 			section_addresses: 'Sender and recipients',
+			see_documentation: 'See the documentation',
 			host: 'Host',
 			url: 'Url',
 			enabled: 'Enabled',
@@ -97,6 +98,7 @@ const en = {
 			bot_name: 'Uptime Kotlin',
 		},
 		description: {
+			smtp_security: 'Which one should I pick?',
 			bot_token: 'Given by @BotFather when you create the bot. When editing, leave empty to keep the current token.',
 			chat_id: 'Numeric ID (negative for groups and channels) or @channelname. The bot must be a member of the chat.',
 			message_thread_id: 'To post in a specific topic of a forum group.',

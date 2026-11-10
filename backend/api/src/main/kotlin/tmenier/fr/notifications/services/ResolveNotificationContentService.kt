@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.encryption.EncryptionService
+import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.dtos.WebPushSubscription
@@ -116,11 +117,13 @@ class ResolveNotificationContentService(
 
             is ValidNotificationChannelWebPushRequest -> resolveWebPush(request, existingContent(existingNotification), isTesting)
 
-            is ValidNotificationChannelMailRequest ->
+            is ValidNotificationChannelMailRequest -> {
+                val security = request.security ?: if (request.starttls == true) SmtpSecurity.STARTTLS else SmtpSecurity.IGNORE_TLS
                 NotificationContent.Mail(
                     hostname = request.hostname,
                     port = request.port,
-                    starttls = request.starttls ?: false,
+                    starttls = security == SmtpSecurity.STARTTLS,
+                    security = security,
                     username = request.username,
                     password =
                         if (isTesting) {
@@ -131,6 +134,7 @@ class ResolveNotificationContentService(
                     from = request.from,
                     to = request.to,
                 )
+            }
 
             else -> throw IllegalArgumentException("Invalid notification channel type: ${request.notificationType}")
         }

@@ -7,6 +7,7 @@ export interface FieldConfig {
 	default_value?: string | number | boolean | string[] | number[];
 	placeholder?: string;
 	description?: string;
+	docs_url?: string;
 	min?: number;
 	max?: number;
 	searchable?: boolean;

@@ -72,6 +72,7 @@ const fr: typeof en = {
 			section_smtp_server: 'Serveur SMTP',
 			section_authentication: 'Authentification',
 			section_addresses: 'Expéditeur et destinataires',
+			see_documentation: 'Voir la documentation',
 			host: 'Hôte',
 			url: 'URL',
 			enabled: 'Activé',
@@ -101,6 +102,7 @@ const fr: typeof en = {
 			bot_name: 'Uptime Kotlin',
 		},
 		description: {
+			smtp_security: 'Quel protocole choisir ?',
 			bot_token:
 				'Fourni par @BotFather lors de la création du bot. En modification, laissez vide pour garder le jeton actuel.',
 			chat_id: 'ID numérique (négatif pour un groupe ou un canal) ou @nomducanal. Le bot doit être membre du chat.',

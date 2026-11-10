@@ -65,13 +65,27 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 		});
 	}, [mode, notificationType, NOTIFICATION_FIELDS_CONFIG, form]);
 
+	const mailSecurity = form.watch('security' as never) as unknown as string | undefined;
+	const previousSecurity = useRef(mailSecurity);
+	useEffect(() => {
+		const previous = previousSecurity.current;
+		previousSecurity.current = mailSecurity;
+		if (notificationType !== NotificationTypeEnum.MAIL || !previous || previous === mailSecurity) return;
+
+		const port = Number(form.getValues('port' as never));
+		if (port && ![25, 465, 587].includes(port)) return;
+		const next = mailSecurity === 'SMTPS' ? 465 : mailSecurity === 'STARTTLS' ? 587 : undefined;
+		if (next && next !== port) {
+			form.setValue('port' as never, next as never, { shouldDirty: true });
+		}
+	}, [notificationType, mailSecurity, form]);
+
 	const dynamicFields: FieldConfig[] = (
 		notificationType
 			? NOTIFICATION_FIELDS_CONFIG[notificationType]
 			: NOTIFICATION_FIELDS_CONFIG[NotificationTypeEnum.DISCORD]
 	).filter((field: FieldConfig) => mode === 'update' || !field.update_only);
 
-	// Consecutive fields sharing a `section` are grouped under one heading.
 	const fieldSections = (dynamicFields ?? []).reduce<{ title?: string; fields: FieldConfig[] }[]>((acc, field) => {
 		const last = acc[acc.length - 1];
 		if (last && last.title === field.section) last.fields.push(field);

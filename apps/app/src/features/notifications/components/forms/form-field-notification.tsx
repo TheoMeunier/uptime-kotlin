@@ -5,6 +5,8 @@ import { Textarea } from '@/components/atoms/textarea.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import FormMultiSelect from '@/components/molecules/forms/form-select-multiple.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
+import { useTranslation } from 'react-i18next';
+import { ExternalLink } from 'lucide-react';
 import FormWebPushSubscription from '@/features/notifications/components/forms/form-web-push-subscription.tsx';
 
 interface FormFieldNotificationProps {
@@ -23,7 +25,7 @@ export default function FormFieldNotification({ field, form }: FormFieldNotifica
 					defaultValue={field.default_value}
 					rows={5}
 				/>
-				{field.description && <FieldDescription>{field.description}</FieldDescription>}
+				<FieldHelp field={field} />
 				<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
 			</Field>
 		);
@@ -45,7 +47,7 @@ export default function FormFieldNotification({ field, form }: FormFieldNotifica
 					max={field.max}
 				/>
 
-				{field.description && <FieldDescription>{field.description}</FieldDescription>}
+				<FieldHelp field={field} />
 
 				<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
 			</Field>
@@ -91,7 +93,7 @@ export default function FormFieldNotification({ field, form }: FormFieldNotifica
 			<Field>
 				<FieldLabel className="block text-sm font-medium text-foreground">{field.label}</FieldLabel>
 				<FormSelect form={form} name={field.name} options={field.options as string[]} />
-				{field.description && <FieldDescription>{field.description}</FieldDescription>}
+				<FieldHelp field={field} />
 				<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
 			</Field>
 		);
@@ -106,8 +108,32 @@ export default function FormFieldNotification({ field, form }: FormFieldNotifica
 				defaultValue={field.default_value}
 				autoComplete={field.input_type === 'password' ? 'new-password' : undefined}
 			/>
-			{field.description && <FieldDescription>{field.description}</FieldDescription>}
+			<FieldHelp field={field} />
 			<FieldError>{form.formState.errors[field.name]?.message}</FieldError>
 		</Field>
+	);
+}
+
+function FieldHelp({ field }: { field: FieldConfig }) {
+	const { t } = useTranslation();
+	if (!field.description && !field.docs_url) return null;
+
+	return (
+		<FieldDescription>
+			{field.description}
+			{field.description && field.docs_url && ' '}
+			{field.docs_url && (
+				<a
+					href={field.docs_url}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="inline-flex items-center gap-1 underline underline-offset-4"
+				>
+					{t('form.label.see_documentation')}
+					<ExternalLink className="size-3" aria-hidden />
+					<span className="sr-only">{t('layout.sidebar.new_tab')}</span>
+				</a>
+			)}
+		</FieldDescription>
 	);
 }
