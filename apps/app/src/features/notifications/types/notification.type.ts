@@ -12,11 +12,8 @@ export interface FieldConfig {
 	searchable?: boolean;
 	closeOnSelect?: boolean;
 	options?: MultiSelectOption[] | MultiSelectGroup[] | readonly string[];
-	// Shown only when editing an existing channel.
 	update_only?: boolean;
-	// Optional heading; consecutive fields sharing a section are grouped under it.
 	section?: string;
-	// Width on sm+ screens inside a section grid (defaults to full width).
 	span?: 'half' | 'wide' | 'narrow';
 }
 
