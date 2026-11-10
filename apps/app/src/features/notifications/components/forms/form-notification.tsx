@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { DialogFooter, DialogHeader, DialogTitle } from '@/components/atoms/dialog.tsx';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +12,6 @@ import NotificationTypeEnum, {
 import { Input } from '@/components/atoms/input.tsx';
 import { buildNotificationFieldsConfig } from '@/features/notifications/components/config/notification-type.ts';
 import FormFieldNotification from '@/features/notifications/components/forms/form-field-notification.tsx';
-import { Separator } from '@radix-ui/react-select';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import type { FieldConfig } from '@/features/notifications/types/notification.type.ts';
@@ -71,6 +71,20 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 			: NOTIFICATION_FIELDS_CONFIG[NotificationTypeEnum.DISCORD]
 	).filter((field: FieldConfig) => mode === 'update' || !field.update_only);
 
+	// Consecutive fields sharing a `section` are grouped under one heading.
+	const fieldSections = (dynamicFields ?? []).reduce<{ title?: string; fields: FieldConfig[] }[]>((acc, field) => {
+		const last = acc[acc.length - 1];
+		if (last && last.title === field.section) last.fields.push(field);
+		else acc.push({ title: field.section, fields: [field] });
+		return acc;
+	}, []);
+
+	const SPAN_CLASSES: Record<NonNullable<FieldConfig['span']>, string> = {
+		half: 'sm:col-span-3',
+		wide: 'sm:col-span-4',
+		narrow: 'sm:col-span-2',
+	};
+
 	const handleTestNotifications = (e: React.FormEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
@@ -102,15 +116,19 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 	};
 
 	return (
-		<form onSubmit={handleSubmit} id="update-notification-form">
-			<DialogHeader>
+		<form
+			onSubmit={handleSubmit}
+			id="update-notification-form"
+			className="flex max-h-[calc(100dvh-5.5rem)] min-h-0 flex-col"
+		>
+			<DialogHeader className="shrink-0">
 				<DialogTitle>
 					{mode === 'create' ? t('notifications.title.create') : t('notifications.title.update')}
 				</DialogTitle>
 			</DialogHeader>
 
-			<div className="mt-4 space-y-4">
-				<FieldGroup>
+			<div className="-mx-1 mt-4 min-h-0 flex-1 space-y-6 overflow-y-auto px-1 pb-1">
+				<div className="grid gap-4 sm:grid-cols-2">
 					<Field>
 						<FieldLabel htmlFor="notification_type">{t('notifications.label.type_notification')}</FieldLabel>
 						<FormSelect
@@ -129,19 +147,33 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 					<Field>
 						<FieldLabel htmlFor="name">{t('notifications.label.notification_name')}</FieldLabel>
 						<Input {...form.register('name')} id="name" placeholder={suggestedName} required />
+						<FieldError>{errors.name?.message}</FieldError>
 					</Field>
-					<FieldError>{errors.name?.message}</FieldError>
-				</FieldGroup>
+				</div>
 
-				{notificationType && dynamicFields && dynamicFields.length > 0 && (
-					<FieldGroup>
-						{dynamicFields.map((field) => (
-							<FormFieldNotification key={field.name} field={field} form={form} />
-						))}
-					</FieldGroup>
-				)}
-
-				<Separator className="mb-4" />
+				{notificationType &&
+					fieldSections.map((section, index) =>
+						section.title ? (
+							<section key={section.title} className="space-y-3">
+								<h3 className="text-muted-foreground border-b pb-1 text-xs font-semibold tracking-wide uppercase">
+									{section.title}
+								</h3>
+								<div className="grid gap-4 sm:grid-cols-6">
+									{section.fields.map((field) => (
+										<div key={field.name} className={cn('col-span-full', field.span && SPAN_CLASSES[field.span])}>
+											<FormFieldNotification field={field} form={form} />
+										</div>
+									))}
+								</div>
+							</section>
+						) : (
+							<FieldGroup key={`fields-${index}`}>
+								{section.fields.map((field) => (
+									<FormFieldNotification key={field.name} field={field} form={form} />
+								))}
+							</FieldGroup>
+						)
+					)}
 
 				<FieldGroup>
 					<div className="flex items-center space-x-2">
@@ -151,7 +183,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 				</FieldGroup>
 			</div>
 
-			<DialogFooter className="flex justify-between items-center gap-4 w-full mt-4">
+			<DialogFooter className="mt-4 flex w-full shrink-0 items-center justify-between gap-4 border-t pt-4">
 				<Button variant="outline" type="button" onClick={handleTestNotifications}>
 					{t(isTesting ? 'button.loading' : 'button.test', {
 						entity: t('entity.notification'),
