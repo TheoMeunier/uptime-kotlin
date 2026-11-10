@@ -1,18 +1,11 @@
 package tmenier.fr.notifications.templates
 
-/** A rendered e-mail: the HTML part and its plain-text alternative carry the same content. */
 internal data class EmailBody(
     val subject: String,
     val html: String,
     val text: String,
 )
 
-/**
- * Layout shared by every notification e-mail.
- *
- * Built for mail clients rather than browsers: nested tables, inline styles only, no web fonts,
- * no images (often blocked by default), 600px max width so it reads well on phones and in Outlook.
- */
 internal object EmailTemplate {
     enum class Tone(
         val accent: String,
