@@ -3,7 +3,7 @@ import { Globe, Lock } from 'lucide-react';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { Label } from '@/components/atoms/label.tsx';
 import { Switch } from '@/components/atoms/switch.tsx';
-import { useRole } from '@/features/auth/lib/role.ts';
+import { usePermissions } from '@/features/auth/lib/role.ts';
 import {
 	useDefaultStatusPageSettings,
 	useUpdateDefaultStatusPage,
@@ -12,7 +12,7 @@ import StatusPageLinkRow from '@/features/status-pages/components/listing/status
 
 export default function GlobalStatusPageRow() {
 	const { t } = useTranslation();
-	const { isAdmin } = useRole();
+	const { can } = usePermissions();
 	const { data } = useDefaultStatusPageSettings();
 	const { update, isLoading } = useUpdateDefaultStatusPage();
 	const isPrivate = data?.is_private ?? false;
@@ -32,7 +32,7 @@ export default function GlobalStatusPageRow() {
 			href="/status"
 			meta={t('status_pages.global.description')}
 			actions={
-				isAdmin &&
+				can('status_pages.manage') &&
 				data && (
 					<div className="flex items-center gap-2" title={t('status_pages.global.private_description')}>
 						<Switch

@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atoms/table.tsx';
 import type { IncidentPage } from '@/features/incidents/schemas/incident.schema.ts';
 import IncidentNoteDialog from '@/features/incidents/components/incident-note-dialog.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import { formatDateTime, formatOutageDuration } from '@/lib/datetime.ts';
 
 export default function IncidentHistory({
@@ -111,7 +112,9 @@ export default function IncidentHistory({
 											</p>
 										)}
 									</div>
-									<IncidentNoteDialog incident={incident} />
+									<Can permission="incidents.annotate">
+										<IncidentNoteDialog incident={incident} />
+									</Can>
 								</div>
 							</TableCell>
 						</TableRow>

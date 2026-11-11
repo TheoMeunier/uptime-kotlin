@@ -58,7 +58,7 @@ import GuidedTour from '@/features/onboarding/components/guided-tour.tsx';
 import useOnboardingTour from '@/features/onboarding/hooks/useOnboardingTour.ts';
 import { DemoBanner } from '@/features/demo/slots.ts';
 import { DOCUMENTATION_URL } from '@/lib/links.ts';
-import { useRole } from '@/features/auth/lib/role.ts';
+import { usePermissions } from '@/features/auth/lib/role.ts';
 import ReadOnlyBanner from '@/features/users/components/read-only-banner.tsx';
 import UserRoleBadge from '@/features/users/components/listing/user-role-badge.tsx';
 
@@ -70,7 +70,7 @@ export default function Layout() {
 	const queryClient = useQueryClient();
 	const { pathname } = useLocation();
 	const tour = useOnboardingTour(user.email);
-	const { isAdmin, isViewer } = useRole();
+	const { role, can } = usePermissions();
 
 	const { data, isLoading, dataUpdatedAt } = useQuery({
 		queryKey: ['probes'],
@@ -113,7 +113,7 @@ export default function Layout() {
 
 				<SidebarContent className="flex min-h-0 flex-col gap-4 overflow-hidden p-2">
 					<SidebarGroupContent className="shrink-0">
-						{isAdmin && (
+						{can('probes.create') && (
 							<Button asChild className="mb-6 flex w-full items-center gap-2 p-3 font-medium" data-tour="new-monitor">
 								<Link to={'/monitors/new'}>
 									<Plus size={18} /> {t('layout.sidebar.new_monitor')}
@@ -202,7 +202,7 @@ export default function Layout() {
 											</div>
 										</div>
 										<div className="px-1 pb-1.5">
-											<UserRoleBadge role={isAdmin ? 'ADMIN' : 'VIEWER'} />
+											{role && <UserRoleBadge role={role === 'admin' ? 'ADMIN' : 'VIEWER'} />}
 										</div>
 									</DropdownMenuLabel>
 									<DropdownMenuSeparator />
@@ -237,7 +237,7 @@ export default function Layout() {
 						<DemoBanner />
 					</Suspense>
 				)}
-				{isViewer && <ReadOnlyBanner />}
+				{role === 'viewer' && <ReadOnlyBanner />}
 				<header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
 					<SidebarTrigger className="-ml-1" />
 					<Separator orientation="vertical" className="mr-1 data-[orientation=vertical]:h-4" />

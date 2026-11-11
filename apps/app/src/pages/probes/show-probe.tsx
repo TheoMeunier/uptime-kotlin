@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router';
 import probeService from '@/features/probes/services/probeService.ts';
 import { Button } from '@/components/atoms/button.tsx';
 import { Pencil } from 'lucide-react';
+import Can from '@/features/auth/components/can.tsx';
 import { ButtonGroup } from '@/components/atoms/button-group.tsx';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/atoms/card.tsx';
 import ProbeMonitorChartBar from '@/features/probes/components/modules/probe-monitor-chart-bar.tsx';
@@ -80,12 +81,16 @@ export function ShowProbe() {
 
 				<div className="shrink-0">
 					<ButtonGroup>
-						<CheckProbeNowButton probeId={data.probe.id} enabled={data.probe.enabled} />
-						<Button variant="outline" asChild>
-							<Link to={`/monitors/${data.probe.id}/edit`}>
-								<Pencil /> {t('button.actions.edit')}
-							</Link>
-						</Button>
+						<Can permission="probes.check">
+							<CheckProbeNowButton probeId={data.probe.id} enabled={data.probe.enabled} />
+						</Can>
+						<Can permission="probes.update">
+							<Button variant="outline" asChild>
+								<Link to={`/monitors/${data.probe.id}/edit`}>
+									<Pencil /> {t('button.actions.edit')}
+								</Link>
+							</Button>
+						</Can>
 						<ProbeActionsMenu probeId={data.probe.id} probeName={data.probe.name} enabled={data.probe.enabled} />
 					</ButtonGroup>
 				</div>

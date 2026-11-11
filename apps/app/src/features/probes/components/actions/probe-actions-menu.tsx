@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { Copy, MoreHorizontal, Pause, Play, Trash2, Wrench } from 'lucide-react';
+import { usePermissions } from '@/features/auth/lib/role.ts';
 import { Button } from '@/components/atoms/button.tsx';
 import {
 	DropdownMenu,
@@ -26,6 +27,7 @@ export default function ProbeActionsMenu({
 	enabled: boolean;
 }) {
 	const { t } = useTranslation();
+	const { can } = usePermissions();
 	const [dialog, setDialog] = useState<ProbeDialog | null>(null);
 
 	const close = (open: boolean) => {
@@ -33,6 +35,14 @@ export default function ProbeActionsMenu({
 	};
 
 	const PauseIcon = enabled ? Pause : Play;
+
+	const canMaintain = can('maintenances.manage');
+	const canToggle = can('probes.toggle');
+	const canDuplicate = can('probes.create');
+	const canDelete = can('probes.delete');
+	const hasTopItems = canMaintain || canToggle || canDuplicate;
+
+	if (!hasTopItems && !canDelete) return null;
 
 	return (
 		<>
@@ -44,29 +54,37 @@ export default function ProbeActionsMenu({
 				</DropdownMenuTrigger>
 
 				<DropdownMenuContent align="end" className="w-52">
-					<DropdownMenuItem onSelect={() => setDialog('maintenance')}>
-						<Wrench />
-						{t('maintenances.actions.start')}
-					</DropdownMenuItem>
+					{canMaintain && (
+						<DropdownMenuItem onSelect={() => setDialog('maintenance')}>
+							<Wrench />
+							{t('maintenances.actions.start')}
+						</DropdownMenuItem>
+					)}
 
-					<DropdownMenuItem onSelect={() => setDialog('on-off')}>
-						<PauseIcon />
-						{t(enabled ? 'button.actions.pause' : 'button.actions.resume')}
-					</DropdownMenuItem>
+					{canToggle && (
+						<DropdownMenuItem onSelect={() => setDialog('on-off')}>
+							<PauseIcon />
+							{t(enabled ? 'button.actions.pause' : 'button.actions.resume')}
+						</DropdownMenuItem>
+					)}
 
-					<DropdownMenuItem asChild>
-						<Link to={`/monitors/new?from=${probeId}`}>
-							<Copy />
-							{t('button.actions.duplicate')}
-						</Link>
-					</DropdownMenuItem>
+					{canDuplicate && (
+						<DropdownMenuItem asChild>
+							<Link to={`/monitors/new?from=${probeId}`}>
+								<Copy />
+								{t('button.actions.duplicate')}
+							</Link>
+						</DropdownMenuItem>
+					)}
 
-					<DropdownMenuSeparator />
+					{hasTopItems && canDelete && <DropdownMenuSeparator />}
 
-					<DropdownMenuItem variant="destructive" onSelect={() => setDialog('remove')}>
-						<Trash2 />
-						{t('button.actions.remove')}
-					</DropdownMenuItem>
+					{canDelete && (
+						<DropdownMenuItem variant="destructive" onSelect={() => setDialog('remove')}>
+							<Trash2 />
+							{t('button.actions.remove')}
+						</DropdownMenuItem>
+					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
 

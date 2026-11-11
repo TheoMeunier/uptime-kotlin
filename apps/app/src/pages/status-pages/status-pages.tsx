@@ -6,6 +6,7 @@ import ErrorState from '@/components/molecules/error-state.tsx';
 import StatusPageList from '@/features/status-pages/components/listing/status-page-list.tsx';
 import StatusPagesEmptyState from '@/features/status-pages/components/listing/status-pages-empty-state.tsx';
 import { useStatusPages } from '@/features/status-pages/hooks/useStatusPages.ts';
+import Can from '@/features/auth/components/can.tsx';
 
 export default function StatusPages() {
 	const { t } = useTranslation();
@@ -21,12 +22,14 @@ export default function StatusPages() {
 					<p className="text-muted-foreground mt-1 text-sm">{t('status_pages.description.index')}</p>
 				</div>
 
-				<Button asChild className="shrink-0">
-					<Link to="/status-pages/new">
-						<Plus className="size-4" />
-						{t('status_pages.actions.create')}
-					</Link>
-				</Button>
+				<Can permission="status_pages.manage">
+					<Button asChild className="shrink-0">
+						<Link to="/status-pages/new">
+							<Plus className="size-4" />
+							{t('status_pages.actions.create')}
+						</Link>
+					</Button>
+				</Can>
 			</section>
 
 			<StatusPageList pages={data} isLoading={isLoading} />

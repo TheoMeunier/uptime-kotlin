@@ -7,6 +7,7 @@ import { Button } from '@/components/atoms/button.tsx';
 import { Badge } from '@/components/atoms/badge.tsx';
 import PurgeProbeLogsDialogue from '@/features/probes/components/actions/purge-probe-logs-dialogue.tsx';
 import ExportProbeLogsButton from '@/features/probes/components/actions/export-probe-logs-button.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import { getStatusTokens } from '@/lib/status.ts';
 import { formatShortDateTime } from '@/lib/datetime.ts';
 
@@ -64,7 +65,9 @@ export default function ProbeMonitorLog({ probeId, monitors }: { probeId: string
 					</div>
 					<div className="flex items-center gap-3">
 						<ExportProbeLogsButton probeId={probeId} />
-						<PurgeProbeLogsDialogue probeId={probeId} disabled={sorted.length === 0} />
+						<Can permission="probes.purge_logs">
+							<PurgeProbeLogsDialogue probeId={probeId} disabled={sorted.length === 0} />
+						</Can>
 					</div>
 				</div>
 			</div>

@@ -8,22 +8,23 @@ import ListingNotification from '@/features/notifications/components/listing-not
 import PreferencesForm from '@/features/profile/components/forms/preferences-form.tsx';
 import LogRetentionForm from '@/features/settings/components/forms/log-retention-form.tsx';
 import ListingUsers from '@/features/users/components/listing/listing-users.tsx';
-import { useRole } from '@/features/auth/lib/role.ts';
+import { usePermissions } from '@/features/auth/lib/role.ts';
+import type { Permission } from '@/features/auth/lib/permissions.ts';
 
-const SECTIONS = [
-	{ id: 'account', labelKey: 'profile.tabs.account', icon: User, adminOnly: false },
-	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock, adminOnly: false },
-	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell, adminOnly: true },
-	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal, adminOnly: false },
-	{ id: 'retention', labelKey: 'retention.tab', icon: Database, adminOnly: true },
-	{ id: 'users', labelKey: 'users.tab', icon: Users, adminOnly: true },
-] as const;
+const SECTIONS: { id: string; labelKey: string; icon: typeof User; permission?: Permission }[] = [
+	{ id: 'account', labelKey: 'profile.tabs.account', icon: User },
+	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock },
+	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell, permission: 'notifications.manage' },
+	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal },
+	{ id: 'retention', labelKey: 'retention.tab', icon: Database, permission: 'retention.manage' },
+	{ id: 'users', labelKey: 'users.tab', icon: Users, permission: 'users.manage' },
+];
 
 export default function Profile() {
 	const { t } = useTranslation();
 
-	const { isAdmin } = useRole();
-	const sections = SECTIONS.filter((section) => isAdmin || !section.adminOnly);
+	const { can } = usePermissions();
+	const sections = SECTIONS.filter((section) => !section.permission || can(section.permission));
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const requested = searchParams.get('tab');

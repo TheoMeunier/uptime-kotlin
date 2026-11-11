@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { MaintenanceListItem } from '@/features/maintenances/schemas/maintenance.schema.ts';
 import DeleteMaintenanceDialogue from '@/features/maintenances/components/actions/delete-maintenance-dialogue.tsx';
 import UpdateMaintenanceDialogue from '@/features/maintenances/components/actions/update-maintenance-dialogue.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import { useEndMaintenance } from '@/features/maintenances/hooks/useMaintenanceActions.ts';
 import { formatDateTime, formatDuration, formatRelativeDuration } from '@/lib/datetime.ts';
 
@@ -67,15 +68,17 @@ export default function ListingMaintenance({ maintenances }: { maintenances: Mai
 							<TableCell className="tabular">{maintenance.probe_count}</TableCell>
 
 							<TableCell>
-								<div className="flex justify-end gap-2">
-									{maintenance.current_occurrence && (
-										<Button variant="outline" size="sm" disabled={isLoading} onClick={() => end(maintenance.id)}>
-											{t('maintenances.actions.end')}
-										</Button>
-									)}
-									<UpdateMaintenanceDialogue maintenanceId={maintenance.id} />
-									<DeleteMaintenanceDialogue maintenanceId={maintenance.id} title={maintenance.title} />
-								</div>
+								<Can permission="maintenances.manage">
+									<div className="flex justify-end gap-2">
+										{maintenance.current_occurrence && (
+											<Button variant="outline" size="sm" disabled={isLoading} onClick={() => end(maintenance.id)}>
+												{t('maintenances.actions.end')}
+											</Button>
+										)}
+										<UpdateMaintenanceDialogue maintenanceId={maintenance.id} />
+										<DeleteMaintenanceDialogue maintenanceId={maintenance.id} title={maintenance.title} />
+									</div>
+								</Can>
 							</TableCell>
 						</TableRow>
 					))}
