@@ -133,7 +133,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 		<form
 			onSubmit={handleSubmit}
 			id="update-notification-form"
-			className="flex max-h-[calc(100dvh-5.5rem)] min-h-0 flex-col"
+			className="flex min-h-0 flex-1 flex-col"
 		>
 			<DialogHeader className="shrink-0">
 				<DialogTitle>
