@@ -130,11 +130,7 @@ export default function FormNotification({ mode, defaultValues, isLoading, onSub
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			id="update-notification-form"
-			className="flex min-h-0 flex-1 flex-col"
-		>
+		<form onSubmit={handleSubmit} id="update-notification-form" className="flex min-h-0 flex-1 flex-col">
 			<DialogHeader className="shrink-0">
 				<DialogTitle>
 					{mode === 'create' ? t('notifications.title.create') : t('notifications.title.update')}
