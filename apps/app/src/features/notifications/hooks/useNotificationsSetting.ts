@@ -3,7 +3,7 @@ import notificationService from '@/features/notifications/services/notification-
 
 export default function useNotificationsSetting() {
 	const { data, isLoading } = useQuery({
-		queryKey: ['notifications-setting'],
+		queryKey: ['notifications', 'settings'],
 		queryFn: async () => {
 			return notificationService.getNotificationsSettings();
 		},

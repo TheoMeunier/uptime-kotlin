@@ -15,10 +15,7 @@ export default function useUpdateNotification(notificationId: string) {
 			return notificationService.updateNotification(notificationId, data);
 		},
 		onSuccess: (_, v) => {
-			Promise.all([
-				queryClient.invalidateQueries({ queryKey: ['notifications'] }),
-				queryClient.invalidateQueries({ queryKey: ['notifications-setting'] }),
-			]).then(() => {
+			queryClient.invalidateQueries({ queryKey: ['notifications'] }).then(() => {
 				setOpenDialogue(false);
 				toast.success(t('notifications.alerts.update', { data: v.name }));
 			});

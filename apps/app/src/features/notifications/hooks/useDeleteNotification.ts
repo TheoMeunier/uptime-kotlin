@@ -16,10 +16,7 @@ export default function useDeleteNotification(notificationId: string) {
 			return notificationService.deleteNotification(notificationId);
 		},
 		onSuccess: () => {
-			Promise.all([
-				client.invalidateQueries({ queryKey: ['notifications'] }),
-				client.invalidateQueries({ queryKey: ['notifications-setting'] }),
-			]).then(() => {
+			client.invalidateQueries({ queryKey: ['notifications'] }).then(() => {
 				toast.success(t('notifications.alerts.remove'));
 				setOpenDialogue(false);
 			});
