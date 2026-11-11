@@ -27,7 +27,10 @@ export default function CreateNotificationDialogue({ onCreated }: CreateNotifica
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent className="flex flex-col overflow-hidden sm:max-w-xl" onInteractOutside={(event) => event.preventDefault()}>
+			<DialogContent
+				className="flex flex-col overflow-hidden sm:max-w-xl"
+				onInteractOutside={(event) => event.preventDefault()}
+			>
 				<FormNotification mode="create" onSubmit={onSubmit} isLoading={isLoading} defaultValues={defaultValues} />
 			</DialogContent>
 		</Dialog>
