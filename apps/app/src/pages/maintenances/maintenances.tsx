@@ -6,6 +6,7 @@ import ErrorState from '@/components/molecules/error-state.tsx';
 import useMaintenances from '@/features/maintenances/hooks/useMaintenances.ts';
 import ListingMaintenance from '@/features/maintenances/components/listing-maintenance.tsx';
 import MaintenanceDialogue from '@/features/maintenances/components/actions/maintenance-dialogue.tsx';
+import Can from '@/features/auth/components/can.tsx';
 
 export default function Maintenances() {
 	const { t } = useTranslation();
@@ -21,9 +22,11 @@ export default function Maintenances() {
 					<p className="text-muted-foreground mt-1 text-sm">{t('maintenances.description.index')}</p>
 				</div>
 
-				<div className="shrink-0">
-					<MaintenanceDialogue />
-				</div>
+				<Can permission="maintenances.manage">
+					<div className="shrink-0">
+						<MaintenanceDialogue />
+					</div>
+				</Can>
 			</section>
 
 			<Card>

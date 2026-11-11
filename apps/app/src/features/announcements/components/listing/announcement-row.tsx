@@ -5,6 +5,7 @@ import AnnouncementTargets from '@/features/announcements/components/listing/ann
 import DeleteAnnouncementDialogue from '@/features/announcements/components/actions/delete-announcement-dialogue.tsx';
 import EndAnnouncementButton from '@/features/announcements/components/actions/end-announcement-button.tsx';
 import UpdateAnnouncementDialogue from '@/features/announcements/components/actions/update-announcement-dialogue.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import type { Announcement } from '@/features/announcements/schemas/announcement.schema.ts';
 
 export default function AnnouncementRow({ announcement }: { announcement: Announcement }) {
@@ -26,11 +27,13 @@ export default function AnnouncementRow({ announcement }: { announcement: Announ
 			</TableCell>
 
 			<TableCell>
-				<div className="flex justify-end gap-2">
-					{announcement.state === 'ACTIVE' && <EndAnnouncementButton announcementId={announcement.id} />}
-					<UpdateAnnouncementDialogue announcementId={announcement.id} />
-					<DeleteAnnouncementDialogue announcementId={announcement.id} title={announcement.title} />
-				</div>
+				<Can permission="announcements.manage">
+					<div className="flex justify-end gap-2">
+						{announcement.state === 'ACTIVE' && <EndAnnouncementButton announcementId={announcement.id} />}
+						<UpdateAnnouncementDialogue announcementId={announcement.id} />
+						<DeleteAnnouncementDialogue announcementId={announcement.id} title={announcement.title} />
+					</div>
+				</Can>
 			</TableCell>
 		</TableRow>
 	);

@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import ErrorState from '@/components/molecules/error-state.tsx';
 import useAnnouncements from '@/features/announcements/hooks/useAnnouncements.ts';
 import CreateAnnouncementDialogue from '@/features/announcements/components/actions/create-announcement-dialogue.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import ListingAnnouncements from '@/features/announcements/components/listing/listing-announcements.tsx';
 import AnnouncementsEmptyState from '@/features/announcements/components/listing/announcements-empty-state.tsx';
 
@@ -21,9 +22,11 @@ export default function Announcements() {
 					<p className="text-muted-foreground mt-1 text-sm">{t('announcements.description.index')}</p>
 				</div>
 
-				<div className="shrink-0">
-					<CreateAnnouncementDialogue />
-				</div>
+				<Can permission="announcements.manage">
+					<div className="shrink-0">
+						<CreateAnnouncementDialogue />
+					</div>
+				</Can>
 			</section>
 
 			<Card>

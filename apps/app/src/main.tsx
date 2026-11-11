@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './assets/index.css';
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router';
 import { ProtectedRouteProvider } from '@/features/auth/contexts/protected-route-provider.tsx';
-import { AdminRoute } from '@/features/auth/contexts/admin-route.tsx';
+import { RequirePermission } from '@/features/auth/contexts/require-permission.tsx';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from '@/components/layouts/layout.tsx';
 import './lang/i18n.ts';
@@ -71,9 +71,15 @@ const router = createBrowserRouter(
 							<Route index element={<Navigate to="/dashboard" replace />} />
 							<Route path="/dashboard" element={<Dashboard />} />
 
-							<Route element={<AdminRoute />}>
+							<Route element={<RequirePermission permission="probes.create" />}>
 								<Route path="monitors/new" element={<CreateProbe />} />
+							</Route>
+
+							<Route element={<RequirePermission permission="probes.update" />}>
 								<Route path="monitors/:probeId/edit" element={<EditProbe />} />
+							</Route>
+
+							<Route element={<RequirePermission permission="status_pages.manage" />}>
 								<Route path="status-pages/new" element={<StatusPageEditor />} />
 								<Route path="status-pages/:statusPageId" element={<StatusPageEditor />} />
 							</Route>

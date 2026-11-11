@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/atoms/skeleton.tsx';
 import type { Incident } from '@/features/incidents/schemas/incident.schema.ts';
 import { useAcknowledgeIncident } from '@/features/incidents/hooks/useIncidents.ts';
 import IncidentNoteDialog from '@/features/incidents/components/incident-note-dialog.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import { formatDateTime, formatOutageDuration, formatTime } from '@/lib/datetime.ts';
 
 function useNow(active: boolean): number {
@@ -110,10 +111,14 @@ export default function OngoingIncidents({
 										})}
 									</span>
 								) : (
-									<AcknowledgeButton incidentId={incident.id} />
+									<Can permission="incidents.acknowledge">
+										<AcknowledgeButton incidentId={incident.id} />
+									</Can>
 								)}
 
-								<IncidentNoteDialog incident={incident} />
+								<Can permission="incidents.annotate">
+									<IncidentNoteDialog incident={incident} />
+								</Can>
 
 								{incident.note && (
 									<p className="text-foreground/80 order-last basis-full text-xs break-words whitespace-pre-line">

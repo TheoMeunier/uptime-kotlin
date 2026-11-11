@@ -4,6 +4,7 @@ import { LayoutGrid, LayoutList, Lock, Pencil } from 'lucide-react';
 import { Badge } from '@/components/atoms/badge.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import DeleteStatusPageDialogue from '@/features/status-pages/components/actions/delete-status-page-dialogue.tsx';
+import Can from '@/features/auth/components/can.tsx';
 import StatusPageLinkRow from '@/features/status-pages/components/listing/status-page-link-row.tsx';
 import type { StatusPageListItem } from '@/features/status-pages/schemas/status-page.schema.ts';
 
@@ -29,7 +30,7 @@ export default function StatusPageRow({ page }: { page: StatusPageListItem }) {
 				t('status_pages.count.probes', { count: page.probe_count }),
 			].join(' · ')}
 			actions={
-				<>
+				<Can permission="status_pages.manage">
 					<Button variant="outline" size="sm" asChild>
 						<Link to={`/status-pages/${page.id}`}>
 							<Pencil className="size-4" />
@@ -37,7 +38,7 @@ export default function StatusPageRow({ page }: { page: StatusPageListItem }) {
 						</Link>
 					</Button>
 					<DeleteStatusPageDialogue page={page} />
-				</>
+				</Can>
 			}
 		/>
 	);
