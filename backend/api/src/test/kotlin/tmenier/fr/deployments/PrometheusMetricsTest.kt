@@ -19,7 +19,7 @@ import java.time.Instant
 import java.util.UUID
 
 @QuarkusTest
-@TestProfile(SingleInstanceProfile::class)
+@TestProfile(MetricsProfile::class)
 class PrometheusMetricsTest {
     @Inject
     lateinit var fixtures: QueueFixtures
@@ -46,7 +46,7 @@ class PrometheusMetricsTest {
 
     @Test
     fun `a Probe Check is counted and timed by protocol and result`() {
-        fixtures.createTcpProbe(SingleInstanceProfile.REGION, httpPort.toInt(), intervalSeconds = 2).also(probes::add)
+        fixtures.createTcpProbe(MetricsProfile.REGION, httpPort.toInt(), intervalSeconds = 2).also(probes::add)
 
         val deadline = Instant.now().plusSeconds(30)
         while (successfulTcpChecks() < 1.0 && Instant.now().isBefore(deadline)) {
@@ -57,14 +57,14 @@ class PrometheusMetricsTest {
         val timer = registry.find(ProbeCheckMetrics.CHECK_DURATION).tag("protocol", "tcp").timer()
         assertNotNull(timer)
         assertTrue(timer!!.count() >= 1)
-        val concurrency = registry.find(ProbeCheckMetrics.WORKER_CONCURRENCY).tag("region", SingleInstanceProfile.REGION).gauge()
+        val concurrency = registry.find(ProbeCheckMetrics.WORKER_CONCURRENCY).tag("region", MetricsProfile.REGION).gauge()
         assertEquals(2.0, concurrency?.value())
     }
 
     @Test
     fun `the gauges are published on the management interface`() {
         queueMetrics.refresh()
-        fixtures.beat(SingleInstanceProfile.REGION)
+        fixtures.beat(MetricsProfile.REGION)
         workerMetrics.refresh()
 
         val body =

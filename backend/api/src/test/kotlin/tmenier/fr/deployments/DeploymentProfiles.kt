@@ -41,8 +41,6 @@ class ApiOnlyProfile :
 class LegacyDbLockProfile :
     DeploymentProfile(
         mapOf(
-            // application.properties sets scheduler.strategy=none, which would win over the legacy property:
-            // an upgraded install has no scheduler.strategy at all, so blank it out (blank = not set).
             "scheduler.strategy" to "",
             "quarkus.scheduler.strategy" to "db-lock",
             "scheduler.worker.name" to REGION,
@@ -50,5 +48,18 @@ class LegacyDbLockProfile :
     ) {
     companion object {
         const val REGION = "it-legacy-db-lock"
+    }
+}
+
+class MetricsProfile :
+    DeploymentProfile(
+        mapOf(
+            "scheduler.strategy" to "database",
+            "scheduler.worker.name" to REGION,
+            "quarkus.management.enabled" to "true",
+        ),
+    ) {
+    companion object {
+        const val REGION = "it-metrics"
     }
 }
