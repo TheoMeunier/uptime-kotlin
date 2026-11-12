@@ -59,7 +59,7 @@ class ListIncidentsAction(
 
         return incidentRepository.summary(since, until, parseUuid(probeId, "probe_id"), now)
     }
-    
+
     @Transactional
     fun export(
         probeId: String?,
