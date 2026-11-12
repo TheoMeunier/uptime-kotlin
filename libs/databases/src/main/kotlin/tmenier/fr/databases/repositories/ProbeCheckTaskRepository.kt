@@ -24,7 +24,6 @@ class ProbeCheckTaskRepository(
     private val em: EntityManager,
     private val advisoryLockRepository: AdvisoryLockRepository,
 ) : PanacheRepositoryBase<ProbeCheckTaskEntity, UUID> {
-
     @Transactional
     fun ensureScheduledProbeChecks(
         defaultRegion: String,
@@ -245,7 +244,7 @@ class ProbeCheckTaskRepository(
 
             ImmediateCheckDecision.DO_NOTHING_ALREADY_RUNNING,
             ImmediateCheckDecision.DO_NOTHING_DISABLED,
-                -> Unit
+            -> Unit
         }
 
         return decision.toOutcome()
