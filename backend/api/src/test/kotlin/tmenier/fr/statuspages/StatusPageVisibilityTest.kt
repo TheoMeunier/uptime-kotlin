@@ -11,12 +11,16 @@ import org.hamcrest.Matchers.hasItem
 import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import tmenier.fr.common.dtos.ProbeResult
+import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
 import tmenier.fr.deployments.ApiOnlyProfile
 import tmenier.fr.incidents.IncidentFixtures
+import tmenier.fr.schedulers.services.SaveProbeMonitor
 import tmenier.fr.statuspages.actions.StoreStatusPageAction
 import tmenier.fr.statuspages.requests.StoreStatusPageGroupRequest
 import tmenier.fr.statuspages.requests.StoreStatusPageRequest
 import tmenier.fr.users.UserFixtures
+import java.time.Instant
 import java.util.UUID
 
 @QuarkusTest
@@ -33,6 +37,9 @@ class StatusPageVisibilityTest {
 
     @Inject
     lateinit var storePage: StoreStatusPageAction
+
+    @Inject
+    lateinit var saveProbeMonitor: SaveProbeMonitor
 
     private val createdProbes = mutableListOf<UUID>()
     private val createdPages = mutableListOf<UUID>()
@@ -131,7 +138,16 @@ class StatusPageVisibilityTest {
 
     private fun signedIn(): RequestSpecification = given().auth().oauth2(users.token())
 
-    private fun probe(): UUID = probes.probe().also(createdProbes::add)
+    private fun probe(): UUID =
+        probes.probe().also { id ->
+            createdProbes.add(id)
+            val now = Instant.now()
+            saveProbeMonitor.saveProbeMonitorLog(
+                probeId = id,
+                runAt = now,
+                result = ProbeResult(status = ProbeMonitorLogStatus.SUCCESS, responseTime = 1, message = "success", runAt = now),
+            )
+        }
 
     private fun page(
         isPrivate: Boolean,
