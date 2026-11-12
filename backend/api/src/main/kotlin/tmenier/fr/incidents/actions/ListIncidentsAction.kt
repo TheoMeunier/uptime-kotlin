@@ -34,6 +34,7 @@ class ListIncidentsAction(
     ): IncidentPageDto {
         if (page < 0) throw BadRequestException("page must be 0 or more")
         if (size !in 1..MAX_PAGE_SIZE) throw BadRequestException("size must be between 1 and $MAX_PAGE_SIZE")
+        if (page > Int.MAX_VALUE / size) throw BadRequestException("page is too large")
 
         val filter =
             IncidentFilter(
@@ -58,11 +59,7 @@ class ListIncidentsAction(
 
         return incidentRepository.summary(since, until, parseUuid(probeId, "probe_id"), now)
     }
-
-    /**
-     * Every incident of the period, ongoing ones included, with the same period and the same downtime rule
-     * as [summary]: the report adds up to the figures shown on the page.
-     */
+    
     @Transactional
     fun export(
         probeId: String?,

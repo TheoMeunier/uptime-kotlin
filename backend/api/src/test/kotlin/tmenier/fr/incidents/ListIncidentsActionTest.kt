@@ -29,6 +29,16 @@ class ListIncidentsActionTest {
     }
 
     @Test
+    fun `a page whose offset would overflow is refused instead of failing with a server error`() {
+        val size = 100
+        val lastValidPage = Int.MAX_VALUE / size
+
+        assertThrows(BadRequestException::class.java) { list(page = lastValidPage + 1, size = size) }
+        assertThrows(BadRequestException::class.java) { list(page = Int.MAX_VALUE, size = 2) }
+        assertEquals(0, list(page = lastValidPage, size = size).items.size)
+    }
+
+    @Test
     fun `the state filter ignores case`() {
         list(state = "OPEN")
         list(state = "closed")
