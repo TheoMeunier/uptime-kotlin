@@ -232,6 +232,10 @@ Contributions are welcome! Read [CONTRIBUTING.md](CONTRIBUTING.md), then:
 
 You can also open an issue with the `enhancement` label. If you like the project, a ⭐ helps a lot!
 
+## Security
+
+To report a vulnerability, please **do not open a public issue**: see [SECURITY.md](SECURITY.md).
+
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
