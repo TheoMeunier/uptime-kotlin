@@ -31,6 +31,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # gradle-wrapper.jar is the only binary in the repository: check it is the official one.
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
       - name: Run ktlint
         run: ./gradlew ktlintCheck
 
