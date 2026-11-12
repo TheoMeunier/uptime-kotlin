@@ -17,6 +17,9 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/github/license/TheoMeunier/uptime-kotlin" alt="License">
   </a>
+  <a href="https://www.bestpractices.dev/projects/16619">
+    <img src="https://www.bestpractices.dev/projects/16619/badge" alt="OpenSSF Best Practices">
+  </a>
   <a href="https://github.com/TheoMeunier/uptime-kotlin/actions/workflows/back-ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/TheoMeunier/uptime-kotlin/back-ci.yml?branch=main&label=backend" alt="Backend CI">
   </a>
