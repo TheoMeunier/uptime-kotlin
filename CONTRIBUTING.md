@@ -30,6 +30,13 @@ You can contribute in many ways, including:
 
 ---
 
+## Reporting Security Vulnerabilities 🔒
+
+**Do not open a public issue for a security problem.** Follow [SECURITY.md](SECURITY.md) to report it
+privately.
+
+---
+
 ## Reporting Bugs 🐛
 
 Before opening a bug report:
@@ -84,6 +91,29 @@ Use the **Feature Request** issue template when available.
    ```
 4. Follow the instructions in the README to start the project locally
 
+### Coding standards
+
+Pull requests must pass the same checks as the CI:
+
+- **Backend (Kotlin)**: formatted and linted with [ktlint](https://pinterest.github.io/ktlint/), configured by
+  `.editorconfig`. Run `./gradlew ktlintCheck` (or `./gradlew ktlintFormat` to fix most issues).
+- **Frontend (TypeScript/React)**: formatted with Prettier and linted with ESLint. In `apps/app`, run
+  `npm run format:check` and `npm run lint`.
+- Write code, comments, commit messages and pull request descriptions in English.
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
+  (`feat(scope): …`, `fix(scope): …`, `refactor(scope): …`, `chore(deps): …`).
+- Never commit secrets (tokens, passwords, private keys), even for testing.
+
+### Tests policy
+
+- **New functionality must come with automated tests.** A pull request that adds a feature or changes
+  behaviour should add or update tests covering it (unit tests, `@QuarkusTest` resource tests or
+  Playwright end-to-end tests, whichever fits).
+- **Bug fixes should come with a regression test** that fails without the fix, when practical.
+- Security fixes must include a test proving the issue is closed (e.g. a viewer account cannot read
+  a secret, a request without the right permission is rejected).
+- The whole test suite (`./gradlew test`) runs in CI on every pull request and must pass before merging.
+
 ### Backend tests
 
 The deployment tests (`backend/api/src/test/kotlin/tmenier/fr/deployments`) start the API with real background jobs,
@@ -95,6 +125,12 @@ docker exec -it uptime_kotlin_database createdb -U uptime-kotlin uptime-kotlin-t
 ```
 
 Point `UPTIME_TEST_JDBC_URL` at another JDBC URL to use a different database.
+
+### Frontend end-to-end tests
+
+The frontend has [Playwright](https://playwright.dev/) end-to-end tests (`apps/app/e2e`). They run
+against the full stack (nginx, backend, Vite); see [`apps/app/e2e/README.md`](apps/app/e2e/README.md)
+for the setup, then run `npm run test:e2e` in `apps/app`.
 
 ---
 
