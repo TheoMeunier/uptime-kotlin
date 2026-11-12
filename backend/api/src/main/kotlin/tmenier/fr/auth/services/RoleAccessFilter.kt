@@ -50,14 +50,9 @@ class RoleAccessFilter : ContainerRequestFilter {
 
     companion object {
         const val ERROR_CODE = "READ_ONLY_ACCOUNT"
-
         const val PASSWORD_CHANGE_REQUIRED = "PASSWORD_CHANGE_REQUIRED"
-
-        /** Added by [UserRoleAugmentor] when the account carries a temporary password. */
         const val PASSWORD_CHANGE_REQUIRED_ROLE = "password-change-required"
 
-        // Until the temporary password is replaced, the account may only replace it, end its session,
-        // and read what anonymous visitors can read anyway.
         private val PASSWORD_CHANGE_ALLOWED_WRITES =
             listOf(
                 Regex("^/api/auth/(login|refresh|logout)/?$"),
@@ -113,6 +108,7 @@ class RoleAccessFilter : ContainerRequestFilter {
                         method.uppercase() in READ_METHODS -> VIEWER_DENIED_READS.none { it.matches(path) }
                         else -> VIEWER_ALLOWED_WRITES.any { it.matches(path) }
                     }
+
                 null -> false
             }
     }
