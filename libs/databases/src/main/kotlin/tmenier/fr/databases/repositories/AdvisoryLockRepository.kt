@@ -23,5 +23,6 @@ class AdvisoryLockRepository(
         const val SECRET_RE_ENCRYPTION: Long = 8_110_006
         const val LOG_ROLLUP: Long = 8_110_007
         const val FIRST_USER_SETUP: Long = 8_110_008
+        const val PROBE_SCHEDULER: Long = 8_110_009
     }
 }
