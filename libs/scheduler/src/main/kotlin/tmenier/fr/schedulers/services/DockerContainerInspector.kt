@@ -8,6 +8,7 @@ import tmenier.fr.common.dtos.ProbeContent
 import java.io.ByteArrayOutputStream
 import java.net.StandardProtocolFamily
 import java.net.URI
+import java.net.URISyntaxException
 import java.net.URLEncoder
 import java.net.UnixDomainSocketAddress
 import java.net.http.HttpClient
@@ -185,7 +186,12 @@ sealed interface DockerHost {
 
         fun parse(value: String): DockerHost {
             val trimmed = value.trim().ifBlank { ProbeContent.DockerContainer.DEFAULT_DOCKER_HOST }
-            val uri = URI(trimmed)
+            val uri =
+                try {
+                    URI(trimmed)
+                } catch (e: URISyntaxException) {
+                    throw IllegalArgumentException("Invalid Docker host \"$trimmed\" (expected unix:///var/run/docker.sock or tcp://host:2375)", e)
+                }
             return when (uri.scheme) {
                 "unix" -> {
                     require(!uri.path.isNullOrBlank() && uri.path != "/") { "Docker socket path is required (unix:///var/run/docker.sock)" }
