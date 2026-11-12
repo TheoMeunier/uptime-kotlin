@@ -162,7 +162,7 @@ class ProbeRepository(
         dto: StoreProbeDto,
         notifications: List<UUID>,
     ) {
-        val entity = findById(dto.id)
+        val entity = findByIdForUpdate(dto.id)
         if (entity.enabled && !dto.enabled) {
             incidentRepository.close(entity.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
         }
