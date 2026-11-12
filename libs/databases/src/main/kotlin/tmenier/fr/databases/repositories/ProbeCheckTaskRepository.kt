@@ -22,31 +22,33 @@ import kotlin.math.max
 @ApplicationScoped
 class ProbeCheckTaskRepository(
     private val em: EntityManager,
+    private val advisoryLockRepository: AdvisoryLockRepository,
 ) : PanacheRepositoryBase<ProbeCheckTaskEntity, UUID> {
+
     @Transactional
     fun ensureScheduledProbeChecks(
         defaultRegion: String,
         now: Instant = Instant.now(),
         limit: Int = 50,
     ): Int {
+        if (!advisoryLockRepository.tryLock(AdvisoryLockRepository.PROBE_SCHEDULER)) return 0
+
         val probes = lockProbesWithoutActiveTask(limit)
         var enqueued = 0
 
         probes.forEach { probe ->
             val scheduledAt = nextUnprocessedSchedule(probe, now)
-            advanceAbsoluteSchedule(probe, scheduledAt, now)
-
             val configuredRegion = probe.regionsOrder.firstOrNull()?.asText()
-            storeEntity(
-                StoreProbeCheckTaskDto(
+            val inserted =
+                insertFirstAttemptIfNoActiveJob(
                     probeId = probe.id,
                     region = configuredRegion ?: defaultRegion,
-                    attemptNumber = 1,
-                    scheduleAt = scheduledAt,
-                    availableAt = scheduledAt,
-                ),
-            )
-            enqueued++
+                    scheduledAt = scheduledAt,
+                )
+            if (inserted) {
+                advanceAbsoluteSchedule(probe, scheduledAt, now)
+                enqueued++
+            }
         }
 
         return enqueued
@@ -243,7 +245,7 @@ class ProbeCheckTaskRepository(
 
             ImmediateCheckDecision.DO_NOTHING_ALREADY_RUNNING,
             ImmediateCheckDecision.DO_NOTHING_DISABLED,
-            -> Unit
+                -> Unit
         }
 
         return decision.toOutcome()
@@ -263,6 +265,24 @@ class ProbeCheckTaskRepository(
         em.persist(entity)
         return entity
     }
+
+    private fun insertFirstAttemptIfNoActiveJob(
+        probeId: UUID,
+        region: String,
+        scheduledAt: Instant,
+    ): Boolean =
+        em
+            .createNativeQuery(
+                """
+            INSERT INTO probe_check_jobs (id, probe_id, region, probe_attempt, status, scheduled_at, available_at)
+            VALUES (:id, :probeId, :region, 1, 'PENDING', :scheduledAt, :scheduledAt)
+            ON CONFLICT (probe_id) WHERE status IN ('PENDING', 'LEASED') DO NOTHING
+            """,
+            ).setParameter("id", UUID.randomUUID())
+            .setParameter("probeId", probeId)
+            .setParameter("region", region)
+            .setParameter("scheduledAt", scheduledAt)
+            .executeUpdate() == 1
 
     private fun lockProbesWithoutActiveTask(limit: Int): List<ProbesEntity> {
         @Suppress("UNCHECKED_CAST")
