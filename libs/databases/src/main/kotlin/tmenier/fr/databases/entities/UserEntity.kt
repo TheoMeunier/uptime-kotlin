@@ -38,6 +38,9 @@ class UserEntity : PanacheEntityBase {
     @Column(name = "created_at", nullable = false, updatable = false)
     lateinit var createdAt: Instant
 
+    @Column(name = "must_change_password", nullable = false)
+    var mustChangePassword: Boolean = false
+
     @Column(name = "onboarding_completed_at")
     var onboardingCompletedAt: Instant? = null
 

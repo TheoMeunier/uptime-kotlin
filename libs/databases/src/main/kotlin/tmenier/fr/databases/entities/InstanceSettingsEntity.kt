@@ -21,6 +21,9 @@ class InstanceSettingsEntity : PanacheEntityBase {
     @Column(name = "default_status_page_private", nullable = false)
     var defaultStatusPagePrivate: Boolean = false
 
+    @Column(name = "admin_password_reset_email", length = 255)
+    var adminPasswordResetEmail: String? = null
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     lateinit var updatedAt: Instant

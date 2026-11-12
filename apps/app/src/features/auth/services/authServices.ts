@@ -26,6 +26,17 @@ const authService = {
 		return localStorage.getItem(auth.SESSION_ID);
 	},
 
+	mustChangePassword(): boolean {
+		const token = this.getAccessToken();
+		if (!token) return false;
+
+		try {
+			return jwtDecode.parseJwt(token).pwd_change === true;
+		} catch {
+			return false;
+		}
+	},
+
 	getUser(): User {
 		const user = localStorage.getItem('user');
 

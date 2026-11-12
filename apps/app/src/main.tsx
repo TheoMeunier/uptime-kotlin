@@ -21,6 +21,7 @@ import NotFoundPage from '@/pages/errors/not-found-page.tsx';
 import { reloadOnce } from '@/lib/chunk-error.ts';
 import {
 	Announcements,
+	ChangePassword,
 	CreateProbe,
 	Dashboard,
 	EditProbe,
@@ -66,6 +67,8 @@ const router = createBrowserRouter(
 		<>
 			<Route path="/" element={<SetupAppProvider />} errorElement={<RouteErrorBoundary fullscreen />}>
 				<Route path="/" element={<ProtectedRouteProvider />}>
+					<Route path="/change-password" element={<ChangePassword />} />
+
 					<Route path="/" element={<Layout />}>
 						<Route errorElement={<RouteErrorBoundary />}>
 							<Route index element={<Navigate to="/dashboard" replace />} />

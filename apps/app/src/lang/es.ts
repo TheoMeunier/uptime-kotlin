@@ -270,6 +270,15 @@ const es: typeof en = {
 		login: {
 			title: 'Acceda a su cuenta',
 			description: 'Introduzca sus credenciales para iniciar sesión.',
+			forgot: '¿Ha olvidado su contraseña? Pida a un admin que la restablezca.',
+		},
+		change_password: {
+			title: 'Elija una nueva contraseña',
+			description: 'Su contraseña se ha restablecido. Elija la suya para continuar.',
+			temporary: 'Contraseña temporal',
+			submit: 'Guardar y continuar',
+			sign_out: 'Cerrar sesión',
+			required: 'Cambie su contraseña para continuar.',
 		},
 	},
 
@@ -715,7 +724,7 @@ const es: typeof en = {
 		},
 		description: {
 			current_password: 'Por seguridad, confirme la contraseña que usa actualmente.',
-			update_password: 'Cambiar la contraseña cerrará todas sus sesiones. Tendrá que volver a iniciar sesión.',
+			update_password: 'Cambiar la contraseña cierra sus otras sesiones.',
 			update_profile: 'Gestione sus datos personales para mantener su cuenta exacta y segura.',
 			create_first_user: 'Introduzca su correo electrónico para crear el primer usuario e inicializar la aplicación.',
 			preferences: 'Se guardan en este navegador, no en su cuenta: otro navegador conserva su propia elección.',
@@ -1111,17 +1120,25 @@ const es: typeof en = {
 	users: {
 		tab: 'Usuarios',
 		title: {
+			reset_password: '¿Restablecer esta contraseña?',
+			reset_password_done: 'Contraseña temporal',
 			index: 'Usuarios',
 			create: 'Añadir usuario',
 			remove: '¿Quitar a este usuario?',
 		},
 		description: {
+			reset_password:
+				'{{name}} se desconectará en todas partes y tendrá que elegir una nueva contraseña al iniciar sesión.',
+			reset_password_done:
+				'Entregue esta contraseña a {{name}}. Solo se muestra una vez; se le pedirá una nueva al iniciar sesión.',
 			index:
 				'Todas las personas que pueden iniciar sesión. Los admins lo cambian todo; los usuarios de solo lectura siguen la supervisión sin modificarla.',
 			create: 'Elige la contraseña inicial y envíasela tú mismo. Podrá cambiarla desde su perfil.',
 			remove: '{{name}} cerrará sesión en todas partes y ya no podrá iniciar sesión.',
 		},
 		actions: {
+			reset_password: 'Restablecer contraseña',
+			resetting: 'Restableciendo…',
 			create: 'Añadir usuario',
 		},
 		form: {
@@ -1138,11 +1155,14 @@ const es: typeof en = {
 			VIEWER: 'Ve monitores, incidentes y páginas de estado; solo cambia su propio perfil.',
 		},
 		you: 'Tú',
+		reset_pending: 'Restablecimiento pendiente',
+		reset_pending_hint: 'Aún no ha elegido una nueva contraseña',
 		alerts: {
 			created: '{{name}} añadido',
 			removed: 'Usuario quitado',
 		},
 		errors: {
+			own_password: 'Cambie su propia contraseña desde su perfil.',
 			last_admin: 'La instancia necesita al menos un admin.',
 			own_account: 'No puedes quitarte a ti mismo.',
 			email_already_used: 'Ya hay una cuenta con esta dirección de correo.',

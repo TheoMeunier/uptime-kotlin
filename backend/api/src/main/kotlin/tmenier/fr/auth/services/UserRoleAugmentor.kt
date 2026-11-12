@@ -24,11 +24,12 @@ class UserRoleAugmentor(
                 runCatching { UUID.fromString(identity.principal.name) }
                     .getOrElse { throw AuthenticationFailedException("Unknown account") }
 
-            val role = userRoleLookup.roleOf(userId) ?: throw AuthenticationFailedException("Unknown account")
+            val access = userRoleLookup.accessOf(userId) ?: throw AuthenticationFailedException("Unknown account")
 
             QuarkusSecurityIdentity
                 .builder(identity)
-                .addRole(role.securityRole)
+                .addRole(access.role.securityRole)
+                .apply { if (access.mustChangePassword) addRole(RoleAccessFilter.PASSWORD_CHANGE_REQUIRED_ROLE) }
                 .build()
         }
     }

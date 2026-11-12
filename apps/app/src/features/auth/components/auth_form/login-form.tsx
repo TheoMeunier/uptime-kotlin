@@ -54,6 +54,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 									{t(isLoading ? 'button.loading' : 'button.login')}
 								</Button>
 							</Field>
+							<p className="text-muted-foreground text-center text-xs">{t('pages.login.forgot')}</p>
 						</FieldGroup>
 					</form>
 				</CardContent>

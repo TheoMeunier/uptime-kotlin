@@ -17,6 +17,14 @@ class RoleAccessFilter : ContainerRequestFilter {
         val security = requestContext.securityContext
         if (security?.userPrincipal == null) return
 
+        val path = "/" + requestContext.uriInfo.path.trimStart('/')
+
+        val passwordChangePending = security.isUserInRole(PASSWORD_CHANGE_REQUIRED_ROLE)
+        if (passwordChangePending && !isAllowedWhilePasswordChangeRequired(requestContext.method, path)) {
+            requestContext.abortWith(forbidden(PASSWORD_CHANGE_REQUIRED, "You must change your password before continuing.", path))
+            return
+        }
+
         val role =
             when {
                 security.isUserInRole(UserRole.ADMIN_ROLE) -> UserRole.ADMIN
@@ -24,25 +32,55 @@ class RoleAccessFilter : ContainerRequestFilter {
                 else -> null
             }
 
-        val path = "/" + requestContext.uriInfo.path.trimStart('/')
         if (isAllowed(role, requestContext.method, path)) return
 
-        requestContext.abortWith(
-            Response
-                .status(Response.Status.FORBIDDEN)
-                .type(MediaType.APPLICATION_JSON)
-                .entity(
-                    ApiErrorResponse(
-                        error = ERROR_CODE,
-                        message = "Your account is read-only.",
-                        path = path,
-                    ),
-                ).build(),
-        )
+        requestContext.abortWith(forbidden(ERROR_CODE, "Your account is read-only.", path))
     }
+
+    private fun forbidden(
+        code: String,
+        message: String,
+        path: String,
+    ): Response =
+        Response
+            .status(Response.Status.FORBIDDEN)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(ApiErrorResponse(error = code, message = message, path = path))
+            .build()
 
     companion object {
         const val ERROR_CODE = "READ_ONLY_ACCOUNT"
+
+        const val PASSWORD_CHANGE_REQUIRED = "PASSWORD_CHANGE_REQUIRED"
+
+        /** Added by [UserRoleAugmentor] when the account carries a temporary password. */
+        const val PASSWORD_CHANGE_REQUIRED_ROLE = "password-change-required"
+
+        // Until the temporary password is replaced, the account may only replace it, end its session,
+        // and read what anonymous visitors can read anyway.
+        private val PASSWORD_CHANGE_ALLOWED_WRITES =
+            listOf(
+                Regex("^/api/auth/(login|refresh|logout)/?$"),
+                Regex("^/api/profile/update/password/?$"),
+            )
+
+        private val PASSWORD_CHANGE_ALLOWED_READS =
+            listOf(
+                Regex("^/api/app/status/?$"),
+                Regex("^/api/version/?$"),
+                Regex("^/api/status-feed/?$"),
+                Regex("^/api/status/[^/]+(/(uptime|feed))?/?$"),
+            )
+
+        fun isAllowedWhilePasswordChangeRequired(
+            method: String,
+            path: String,
+        ): Boolean =
+            when {
+                path.contains("..") -> false
+                method.uppercase() in READ_METHODS -> PASSWORD_CHANGE_ALLOWED_READS.any { it.matches(path) }
+                else -> PASSWORD_CHANGE_ALLOWED_WRITES.any { it.matches(path) }
+            }
 
         private val READ_METHODS = setOf("GET", "HEAD", "OPTIONS")
 

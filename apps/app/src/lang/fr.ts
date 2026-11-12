@@ -273,6 +273,15 @@ const fr: typeof en = {
 		login: {
 			title: 'Connexion à votre compte',
 			description: 'Saisissez vos identifiants pour vous connecter.',
+			forgot: 'Mot de passe oublié ? Demandez à un admin de le réinitialiser.',
+		},
+		change_password: {
+			title: 'Choisissez un nouveau mot de passe',
+			description: 'Votre mot de passe a été réinitialisé. Choisissez le vôtre pour continuer.',
+			temporary: 'Mot de passe temporaire',
+			submit: 'Enregistrer et continuer',
+			sign_out: 'Se déconnecter',
+			required: 'Changez votre mot de passe pour continuer.',
 		},
 	},
 
@@ -718,8 +727,7 @@ const fr: typeof en = {
 		},
 		description: {
 			current_password: 'Par sécurité, confirmez le mot de passe que vous utilisez aujourd’hui.',
-			update_password:
-				'Changer votre mot de passe vous déconnectera de toutes vos sessions. Vous devrez vous reconnecter.',
+			update_password: 'Changer votre mot de passe déconnecte vos autres sessions.',
 			update_profile: 'Gérez vos informations personnelles pour garder votre compte exact et sûr.',
 			create_first_user:
 				'Saisissez votre adresse e-mail pour créer le premier utilisateur et initialiser l’application.',
@@ -1118,17 +1126,25 @@ const fr: typeof en = {
 	users: {
 		tab: 'Utilisateurs',
 		title: {
+			reset_password: 'Réinitialiser ce mot de passe ?',
+			reset_password_done: 'Mot de passe temporaire',
 			index: 'Utilisateurs',
 			create: 'Ajouter un utilisateur',
 			remove: 'Retirer cet utilisateur ?',
 		},
 		description: {
+			reset_password:
+				'{{name}} sera déconnecté partout et devra choisir un nouveau mot de passe à sa prochaine connexion.',
+			reset_password_done:
+				'Transmettez ce mot de passe à {{name}}. Il n’est affiché qu’une fois ; un nouveau sera demandé à la connexion.',
 			index:
 				'Toutes les personnes qui peuvent se connecter. Les admins modifient tout ; les utilisateurs en lecture seule suivent la supervision sans la changer.',
 			create: 'Choisissez le mot de passe initial et transmettez-le vous-même. Il pourra le changer depuis son profil.',
 			remove: '{{name}} sera déconnecté partout et ne pourra plus se connecter.',
 		},
 		actions: {
+			reset_password: 'Réinitialiser le mot de passe',
+			resetting: 'Réinitialisation…',
 			create: 'Ajouter un utilisateur',
 		},
 		form: {
@@ -1145,11 +1161,14 @@ const fr: typeof en = {
 			VIEWER: 'Voit les sondes, incidents et status pages ; ne modifie que son propre profil.',
 		},
 		you: 'Vous',
+		reset_pending: 'Réinitialisation en attente',
+		reset_pending_hint: 'N’a pas encore choisi de nouveau mot de passe',
 		alerts: {
 			created: '{{name}} ajouté',
 			removed: 'Utilisateur retiré',
 		},
 		errors: {
+			own_password: 'Changez votre propre mot de passe depuis votre profil.',
 			last_admin: 'L’instance doit garder au moins un admin.',
 			own_account: 'Vous ne pouvez pas vous retirer vous-même.',
 			email_already_used: 'Un compte utilise déjà cette adresse e-mail.',

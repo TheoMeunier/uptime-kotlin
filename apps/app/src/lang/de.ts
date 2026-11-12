@@ -276,6 +276,15 @@ const de: typeof en = {
 		login: {
 			title: 'Bei Ihrem Konto anmelden',
 			description: 'Bitte geben Sie Ihre Zugangsdaten ein.',
+			forgot: 'Passwort vergessen? Bitten Sie einen Admin, es zurückzusetzen.',
+		},
+		change_password: {
+			title: 'Neues Passwort wählen',
+			description: 'Ihr Passwort wurde zurückgesetzt. Wählen Sie ein eigenes, um fortzufahren.',
+			temporary: 'Temporäres Passwort',
+			submit: 'Speichern und fortfahren',
+			sign_out: 'Abmelden',
+			required: 'Ändern Sie Ihr Passwort, um fortzufahren.',
 		},
 	},
 
@@ -722,7 +731,7 @@ const de: typeof en = {
 		},
 		description: {
 			current_password: 'Bestätigen Sie aus Sicherheitsgründen Ihr aktuelles Passwort.',
-			update_password: 'Eine Passwortänderung meldet Sie von allen Sitzungen ab. Sie müssen sich neu anmelden.',
+			update_password: 'Eine Passwortänderung meldet Ihre anderen Sitzungen ab.',
 			update_profile: 'Pflegen Sie Ihre persönlichen Daten, damit Ihr Konto korrekt und sicher bleibt.',
 			create_first_user:
 				'Geben Sie Ihre E-Mail-Adresse ein, um den ersten Benutzer anzulegen und die Anwendung einzurichten.',
@@ -1120,17 +1129,24 @@ const de: typeof en = {
 	users: {
 		tab: 'Benutzer',
 		title: {
+			reset_password: 'Dieses Passwort zurücksetzen?',
+			reset_password_done: 'Temporäres Passwort',
 			index: 'Benutzer',
 			create: 'Benutzer hinzufügen',
 			remove: 'Diesen Benutzer entfernen?',
 		},
 		description: {
+			reset_password: '{{name}} wird überall abgemeldet und muss bei der nächsten Anmeldung ein neues Passwort wählen.',
+			reset_password_done:
+				'Geben Sie dieses Passwort an {{name}} weiter. Es wird nur einmal angezeigt; bei der Anmeldung wird ein neues verlangt.',
 			index:
 				'Alle, die sich anmelden können. Admins ändern alles; Benutzer mit Lesezugriff verfolgen die Überwachung, ohne sie zu ändern.',
 			create: 'Wählen Sie das Anfangspasswort und geben Sie es selbst weiter. Es kann im Profil geändert werden.',
 			remove: '{{name}} wird überall abgemeldet und kann sich nicht mehr anmelden.',
 		},
 		actions: {
+			reset_password: 'Passwort zurücksetzen',
+			resetting: 'Wird zurückgesetzt…',
 			create: 'Benutzer hinzufügen',
 		},
 		form: {
@@ -1147,11 +1163,14 @@ const de: typeof en = {
 			VIEWER: 'Sieht Monitore, Vorfälle und Statusseiten; ändert nur das eigene Profil.',
 		},
 		you: 'Sie',
+		reset_pending: 'Zurücksetzung ausstehend',
+		reset_pending_hint: 'Hat noch kein neues Passwort gewählt',
 		alerts: {
 			created: '{{name}} hinzugefügt',
 			removed: 'Benutzer entfernt',
 		},
 		errors: {
+			own_password: 'Ändern Sie Ihr eigenes Passwort in Ihrem Profil.',
 			last_admin: 'Die Instanz braucht mindestens einen Admin.',
 			own_account: 'Sie können sich nicht selbst entfernen.',
 			email_already_used: 'Diese E-Mail-Adresse wird bereits von einem Konto verwendet.',

@@ -83,4 +83,32 @@ class RoleAccessFilterTest {
     fun `an identity without a role is refused`() {
         assertFalse(RoleAccessFilter.isAllowed(null, "GET", "/api/probes"))
     }
+
+    @Test
+    fun `an account with a temporary password may only replace it`() {
+        listOf(
+            "POST" to "/api/profile/update/password",
+            "POST" to "/api/auth/logout",
+            "POST" to "/api/auth/refresh",
+            "GET" to "/api/app/status",
+            "GET" to "/api/version",
+            "GET" to "/api/status/main",
+            "GET" to "/api/status/main/uptime",
+        ).forEach { (method, path) ->
+            assertTrue(RoleAccessFilter.isAllowedWhilePasswordChangeRequired(method, path), "$method $path")
+        }
+
+        listOf(
+            "GET" to "/api/probes",
+            "GET" to "/api/users",
+            "GET" to "/api/auth/sessions",
+            "POST" to "/api/profile/update",
+            "POST" to "/api/users/new",
+            "POST" to "/api/auth/sessions/revoke-all",
+            "POST" to "/api/profile/update/password/../../../probes/new",
+            "GET" to "/api/status/main/../../probes",
+        ).forEach { (method, path) ->
+            assertFalse(RoleAccessFilter.isAllowedWhilePasswordChangeRequired(method, path), "$method $path")
+        }
+    }
 }

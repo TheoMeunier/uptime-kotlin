@@ -6,6 +6,7 @@ import profileService from '@/features/profile/services/profileService.tsx';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/lang/i18n.ts';
+import authService from '@/features/auth/services/authServices.ts';
 
 const storeUpdatePasswordSchema = z
 	.object({
@@ -33,7 +34,10 @@ export default function useUpdatePasswordProfile() {
 
 	const mutation = useMutation({
 		mutationFn: async (data: StoreUpdatePasswordSchemaType) => {
-			return profileService.updatePasswordProfile(data);
+			const email = authService.getUser().email;
+
+			await profileService.updatePasswordProfile(data);
+			await authService.login(email, data.password).catch(() => undefined);
 		},
 		onSuccess: () => {
 			form.reset();
