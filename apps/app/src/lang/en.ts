@@ -266,6 +266,15 @@ const en = {
 		login: {
 			title: 'Login to your account',
 			description: 'Please enter your credentials to log in.',
+			forgot: 'Forgot your password? Ask an admin to reset it.',
+		},
+		change_password: {
+			title: 'Choose a new password',
+			description: 'Your password was reset. Choose your own before continuing.',
+			temporary: 'Temporary password',
+			submit: 'Save and continue',
+			sign_out: 'Sign out',
+			required: 'Change your password before continuing.',
 		},
 	},
 
@@ -705,7 +714,7 @@ const en = {
 		},
 		description: {
 			current_password: 'For security reasons, confirm the password you use today.',
-			update_password: 'Changing your password will log you out of all your sessions. You will need to log in again.',
+			update_password: 'Changing your password signs out your other sessions.',
 			update_profile: 'Manage your personal information to keep your account accurate and secure.',
 			create_first_user: 'Enter your email address to create the first user and initialize the application.',
 			preferences: 'Stored in this browser, not on your account: another browser keeps its own choice.',
@@ -1098,17 +1107,25 @@ const en = {
 	users: {
 		tab: 'Users',
 		title: {
+			reset_password: 'Reset this password?',
+			reset_password_done: 'Temporary password',
 			index: 'Users',
 			create: 'Add a user',
 			remove: 'Remove this user?',
 		},
 		description: {
+			reset_password:
+				'{{name}} will be signed out everywhere and will have to choose a new password at their next sign-in.',
+			reset_password_done:
+				'Give this password to {{name}}. It is shown only once; they will choose a new one when signing in.',
 			index:
 				'Everyone who can sign in. Admins change everything; read-only users follow the monitoring without changing it.',
 			create: 'Choose the initial password and send it to them yourself. They can change it from their profile.',
 			remove: '{{name}} will be signed out everywhere and will no longer be able to sign in.',
 		},
 		actions: {
+			reset_password: 'Reset password',
+			resetting: 'Resetting...',
 			create: 'Add a user',
 		},
 		form: {
@@ -1125,11 +1142,14 @@ const en = {
 			VIEWER: 'Sees monitors, incidents and status pages; only changes their own profile.',
 		},
 		you: 'You',
+		reset_pending: 'Reset pending',
+		reset_pending_hint: 'Has not chosen a new password yet',
 		alerts: {
 			created: '{{name}} added',
 			removed: 'User removed',
 		},
 		errors: {
+			own_password: 'Change your own password from your profile.',
 			last_admin: 'The instance needs at least one admin.',
 			own_account: 'You cannot remove yourself.',
 			email_already_used: 'An account already uses this email address.',

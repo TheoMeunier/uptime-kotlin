@@ -1,6 +1,31 @@
 import ky from 'ky';
 import authService from '@/features/auth/services/authServices.ts';
-import { ApiError, createApiError } from '@/api/api-error.ts';
+import { ApiError, createApiError, registerErrorMessage } from '@/api/api-error.ts';
+import { CHANGE_PASSWORD_PATH, changePasswordPath, loginPathFromHere } from '@/features/auth/lib/redirect.ts';
+import i18n from '@/lang/i18n.ts';
+
+registerErrorMessage('PASSWORD_CHANGE_REQUIRED', () => i18n.t('pages.change_password.required'));
+
+async function readErrorCode(response: Response): Promise<string | undefined> {
+	try {
+		const payload = await response.clone().json();
+		return typeof payload?.error === 'string' ? payload.error : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+function onPasswordChangeRequired() {
+	if (window.location.pathname === CHANGE_PASSWORD_PATH) return;
+
+	if (authService.mustChangePassword()) {
+		window.location.href = changePasswordPath(window.location.pathname + window.location.search);
+		return;
+	}
+
+	authService.clearSession();
+	window.location.href = loginPathFromHere();
+}
 
 let refreshTokenRequest: Promise<boolean> | null = null;
 
@@ -49,6 +74,10 @@ const api = ky.extend({
 						request: new Request(request, { headers }),
 						code: 'TOKEN_REFRESHED',
 					});
+				}
+
+				if (response.status === 403 && (await readErrorCode(response)) === 'PASSWORD_CHANGE_REQUIRED') {
+					onPasswordChangeRequired();
 				}
 
 				if (!response.ok) {

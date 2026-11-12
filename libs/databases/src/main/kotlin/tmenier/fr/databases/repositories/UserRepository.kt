@@ -36,6 +36,8 @@ class UserRepository : PanacheRepository<UserEntity> {
 
     fun roleOf(id: UUID): UserRole? = findByIdOrNull(id)?.role
 
+    fun findByEmailIgnoreCaseOrNull(email: String): UserEntity? = find("lower(email) = lower(?1)", email.trim()).firstResult()
+
     fun lockAdmins(): List<UserEntity> =
         find("role = ?1 order by id", UserRole.ADMIN)
             .withLock(LockModeType.PESSIMISTIC_WRITE)
@@ -72,6 +74,16 @@ class UserRepository : PanacheRepository<UserEntity> {
         val userEntity = find("id = ?1", userId).firstResult() ?: throw NotFoundException("User not found with id")
 
         userEntity.password = password
+        userEntity.mustChangePassword = false
+        userEntity.persist()
+    }
+
+    fun setTemporaryPassword(
+        userEntity: UserEntity,
+        passwordHash: String,
+    ) {
+        userEntity.password = passwordHash
+        userEntity.mustChangePassword = true
         userEntity.persist()
     }
 

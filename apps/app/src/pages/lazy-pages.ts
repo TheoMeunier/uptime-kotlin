@@ -2,6 +2,7 @@ import { lazy } from 'react';
 
 export const Dashboard = lazy(() => import('@/pages/dashboard.tsx'));
 export const Login = lazy(() => import('@/pages/auth/login.tsx'));
+export const ChangePassword = lazy(() => import('@/pages/auth/change-password.tsx'));
 export const CreateProbe = lazy(() => import('@/pages/probes/create-probe.tsx'));
 export const EditProbe = lazy(() => import('@/pages/probes/edit-probe.tsx'));
 export const ShowProbe = lazy(() =>

@@ -45,7 +45,7 @@ class LoginAction(
             )
 
         return LoginResponse(
-            token = jwtService.generateJwt(user.id, user.name, user.email, user.role),
+            token = jwtService.generateJwt(user.id, user.name, user.email, user.role, user.mustChangePassword),
             refreshToken = refreshToken.toString(),
             sessionId = sessionId.toString(),
         )

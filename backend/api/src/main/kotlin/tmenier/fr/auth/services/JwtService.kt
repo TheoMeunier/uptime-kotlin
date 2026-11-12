@@ -22,24 +22,30 @@ class JwtService {
         username: String,
         email: String,
         role: UserRole,
+        mustChangePassword: Boolean = false,
     ): String {
         val now = Instant.now()
 
-        return Jwt
-            .claims()
-            .subject(userId.toString())
-            .issuer(jwtIssuer)
-            .issuedAt(now)
-            .expiresAt(now.plus(ACCESS_TOKEN_LIFETIME))
-            .claim("name", username)
-            .claim("email", email)
-            .claim("role", role.securityRole)
-            .sign(keyProvider.privateKey)
+        val claims =
+            Jwt
+                .claims()
+                .subject(userId.toString())
+                .issuer(jwtIssuer)
+                .issuedAt(now)
+                .expiresAt(now.plus(ACCESS_TOKEN_LIFETIME))
+                .claim("name", username)
+                .claim("email", email)
+                .claim("role", role.securityRole)
+
+        if (mustChangePassword) claims.claim(PASSWORD_CHANGE_CLAIM, true)
+
+        return claims.sign(keyProvider.privateKey)
     }
 
     fun generateRefreshToken(): UUID = UUID.randomUUID()
 
     companion object {
         val ACCESS_TOKEN_LIFETIME: Duration = Duration.ofMinutes(15)
+        const val PASSWORD_CHANGE_CLAIM = "pwd_change"
     }
 }

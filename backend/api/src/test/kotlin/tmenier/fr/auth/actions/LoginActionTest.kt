@@ -221,6 +221,7 @@ private class FakeJwtService : JwtService() {
         username: String,
         email: String,
         role: UserRole,
+        mustChangePassword: Boolean,
     ): String = "jwt-for-$email"
 
     override fun generateRefreshToken(): UUID = UUID.randomUUID()

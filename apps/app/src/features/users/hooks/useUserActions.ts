@@ -16,3 +16,19 @@ export function useRemoveUser() {
 
 	return { remove: mutation.mutate, isLoading: mutation.isPending };
 }
+
+export function useResetUserPassword() {
+	const client = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: (userId: string) => userService.resetPassword(userId),
+		onSettled: () => invalidateUsers(client),
+	});
+
+	return {
+		reset: mutation.mutate,
+		temporaryPassword: mutation.data,
+		clear: mutation.reset,
+		isLoading: mutation.isPending,
+	};
+}
