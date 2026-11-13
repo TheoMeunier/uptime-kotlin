@@ -119,13 +119,19 @@ class NotificationTaskRepository(
         deliveryIds: Collection<UUID>,
     ) {
         if (deliveryIds.isEmpty()) return
-        update(
-            "leaseUntil = ?1 where status = ?2 and claimedBy = ?3 and id in ?4",
-            Instant.now().plus(leaseDuration),
-            QueueJobStatus.LEASED,
-            workerId,
-            deliveryIds,
-        )
+        em
+            .createNativeQuery(
+                """
+            UPDATE notification_deliveries
+            SET lease_until = now() + make_interval(secs => :leaseSeconds)
+            WHERE status = 'LEASED'
+              AND lease_owner = :workerId
+              AND id IN (:ids)
+            """,
+            ).setParameter("leaseSeconds", leaseDuration.seconds)
+            .setParameter("workerId", workerId)
+            .setParameter("ids", deliveryIds)
+            .executeUpdate()
     }
 
     @Transactional

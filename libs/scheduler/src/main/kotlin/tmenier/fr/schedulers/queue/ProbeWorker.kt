@@ -155,5 +155,19 @@ class ProbeWorker(
             "Stopping Probe worker $workerId with ${activeTasks.get()} active task(s)"
         }
         executor.shutdownGracefully("Probe worker $workerId", shutdownTimeout)
+        releaseUnfinishedTasks()
+    }
+
+    private fun releaseUnfinishedTasks() {
+        val unfinished = activeTaskIds.toList()
+        if (!schedulerStrategy.runsBackgroundJobs || unfinished.isEmpty()) return
+        try {
+            val released = probeCheckTaskRepository.releaseLeases(workerId, unfinished)
+            if (released > 0) {
+                logger.info { "Released $released unfinished Probe Check task(s) back to the queue" }
+            }
+        } catch (error: Exception) {
+            logger.warn(error) { "Could not release unfinished Probe Check tasks: their leases will expire" }
+        }
     }
 }
