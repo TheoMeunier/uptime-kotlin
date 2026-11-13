@@ -180,13 +180,42 @@ class ProbeCheckTaskRepository(
         taskIds: Collection<UUID>,
     ) {
         if (taskIds.isEmpty()) return
-        update(
-            "leaseUntil = ?1 where status = ?2 and claimedBy = ?3 and id in ?4",
-            Instant.now().plus(leaseDuration),
-            QueueJobStatus.LEASED,
-            workerId,
-            taskIds,
-        )
+        em
+            .createNativeQuery(
+                """
+            UPDATE probe_check_jobs
+            SET lease_until = now() + make_interval(secs => :leaseSeconds)
+            WHERE status = 'LEASED'
+              AND lease_owner = :workerId
+              AND id IN (:ids)
+            """,
+            ).setParameter("leaseSeconds", leaseDuration.seconds)
+            .setParameter("workerId", workerId)
+            .setParameter("ids", taskIds)
+            .executeUpdate()
+    }
+
+    @Transactional
+    fun releaseLeases(
+        workerId: String,
+        taskIds: Collection<UUID>,
+    ): Int {
+        if (taskIds.isEmpty()) return 0
+        return em
+            .createNativeQuery(
+                """
+            UPDATE probe_check_jobs
+            SET status = 'PENDING',
+                lease_owner = NULL,
+                lease_until = NULL,
+                available_at = now()
+            WHERE status = 'LEASED'
+              AND lease_owner = :workerId
+              AND id IN (:ids)
+            """,
+            ).setParameter("workerId", workerId)
+            .setParameter("ids", taskIds)
+            .executeUpdate()
     }
 
     @Transactional
@@ -237,7 +266,7 @@ class ProbeCheckTaskRepository(
 
         when (decision) {
             ImmediateCheckDecision.PULL_JOB_FORWARD ->
-                activeJob!!.availableAt = now
+                if (!pullPendingJobForward(activeJob!!.id, now)) return ImmediateCheckOutcome.ALREADY_RUNNING
 
             ImmediateCheckDecision.PULL_PROBE_SCHEDULE_FORWARD ->
                 probe.nextCheckAt = now
@@ -249,6 +278,22 @@ class ProbeCheckTaskRepository(
 
         return decision.toOutcome()
     }
+
+    private fun pullPendingJobForward(
+        jobId: UUID,
+        now: Instant,
+    ): Boolean =
+        em
+            .createNativeQuery(
+                """
+            UPDATE probe_check_jobs
+            SET available_at = :now
+            WHERE id = :id
+              AND status = 'PENDING'
+            """,
+            ).setParameter("now", now)
+            .setParameter("id", jobId)
+            .executeUpdate() == 1
 
     private fun storeEntity(dto: StoreProbeCheckTaskDto): ProbeCheckTaskEntity {
         val entity =
