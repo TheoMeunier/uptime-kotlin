@@ -26,6 +26,7 @@ export default function AnnouncementForm({ mode, defaultValues = {}, onSubmit, i
 	const { form, errors } = useAnnouncementForm(defaultValues);
 	const { data: pages } = useStatusPages();
 	const bodyLength = form.watch('body')?.length ?? 0;
+	const hasEndsAt = form.watch('has_ends_at');
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -81,21 +82,34 @@ export default function AnnouncementForm({ mode, defaultValues = {}, onSubmit, i
 					</FieldDescription>
 				</Field>
 
-				<div className="grid gap-4 sm:grid-cols-2">
-					<Field>
-						<FieldLabel htmlFor="announcement-starts-at">{t('announcements.form.starts_at')}</FieldLabel>
-						<Input id="announcement-starts-at" type="datetime-local" {...form.register('starts_at')} />
-						<FieldDescription>{t('announcements.form.starts_at_description')}</FieldDescription>
-						<FieldError>{errors.starts_at && t('announcements.validation.starts_at')}</FieldError>
-					</Field>
+				<Field>
+					<FieldLabel htmlFor="announcement-starts-at">{t('announcements.form.starts_at')}</FieldLabel>
+					<Input id="announcement-starts-at" type="datetime-local" {...form.register('starts_at')} />
+					<FieldDescription>{t('announcements.form.starts_at_description')}</FieldDescription>
+					<FieldError>{errors.starts_at && t('announcements.validation.starts_at')}</FieldError>
+				</Field>
 
+				<FormSwitch
+					form={form}
+					name="has_ends_at"
+					label={t('announcements.form.has_ends_at')}
+					description={t(hasEndsAt ? 'announcements.form.has_ends_at_on' : 'announcements.form.has_ends_at_off')}
+				/>
+
+				{hasEndsAt && (
 					<Field>
 						<FieldLabel htmlFor="announcement-ends-at">{t('announcements.form.ends_at')}</FieldLabel>
-						<Input id="announcement-ends-at" type="datetime-local" {...form.register('ends_at')} />
+						<Input
+							id="announcement-ends-at"
+							type="datetime-local"
+							min={form.watch('starts_at')}
+							aria-invalid={Boolean(errors.ends_at)}
+							{...form.register('ends_at')}
+						/>
 						<FieldDescription>{t('announcements.form.ends_at_description')}</FieldDescription>
 						<FieldError>{errors.ends_at?.message}</FieldError>
 					</Field>
-				</div>
+				)}
 
 				<FormMultiSelect
 					form={form}

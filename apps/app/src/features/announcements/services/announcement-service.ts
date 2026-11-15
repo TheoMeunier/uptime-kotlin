@@ -19,7 +19,7 @@ function toBody(values: AnnouncementFormValues) {
 		body: values.body?.trim() || null,
 		severity: values.severity,
 		starts_at: toInstant(values.starts_at),
-		ends_at: values.ends_at ? toInstant(values.ends_at) : null,
+		ends_at: values.has_ends_at && values.ends_at ? toInstant(values.ends_at) : null,
 		show_on_global: values.show_on_global,
 		status_page_ids: values.status_page_ids,
 	});

@@ -13,11 +13,16 @@ export const announcementFormSchema = z
 		body: z.string().max(ANNOUNCEMENT_BODY_MAX).optional(),
 		severity: z.enum(AnnouncementSeverityEnum),
 		starts_at: z.string().min(1),
+		has_ends_at: z.boolean(),
 		ends_at: z.string().optional(),
 		show_on_global: z.boolean(),
 		status_page_ids: z.array(z.uuid()),
 	})
-	.refine((values) => !values.ends_at || values.ends_at > values.starts_at, {
+	.refine((values) => !values.has_ends_at || Boolean(values.ends_at), {
+		error: () => i18n.t('announcements.validation.ends_at_required'),
+		path: ['ends_at'],
+	})
+	.refine((values) => !values.has_ends_at || !values.ends_at || values.ends_at > values.starts_at, {
 		error: () => i18n.t('announcements.validation.ends_after_start'),
 		path: ['ends_at'],
 	})
@@ -35,6 +40,7 @@ export function toFormValues(announcement: Announcement): AnnouncementFormValues
 		body: announcement.body ?? '',
 		severity: announcement.severity,
 		starts_at: toDatetimeLocal(new Date(announcement.starts_at)),
+		has_ends_at: announcement.ends_at !== null,
 		ends_at: announcement.ends_at ? toDatetimeLocal(new Date(announcement.ends_at)) : '',
 		show_on_global: announcement.show_on_global,
 		status_page_ids: announcement.pages.map((page) => page.id),
@@ -49,6 +55,7 @@ export default function useAnnouncementForm(defaultValues: Partial<AnnouncementF
 			body: '',
 			severity: 'INFO',
 			starts_at: toDatetimeLocal(new Date()),
+			has_ends_at: false,
 			ends_at: '',
 			show_on_global: false,
 			status_page_ids: [],
