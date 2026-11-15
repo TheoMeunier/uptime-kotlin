@@ -7,6 +7,7 @@ import { Textarea } from '@/components/atoms/textarea.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
+import FormDateTimePicker from '@/components/molecules/forms/form-datetime-picker.tsx';
 import FormMultiSelect from '@/components/molecules/forms/form-select-multiple.tsx';
 import probeService from '@/features/probes/services/probeService.ts';
 import useMaintenanceForm, { type StoreMaintenanceSchema } from '@/features/maintenances/hooks/useMaintenanceForm.ts';
@@ -69,7 +70,7 @@ export default function MaintenanceForm({ mode, defaultValues = {}, isLoading, o
 				<div className="grid gap-4 sm:grid-cols-2">
 					<Field>
 						<FieldLabel htmlFor="starts_at">{t('maintenances.form.starts_at')}</FieldLabel>
-						<Input id="starts_at" type="datetime-local" {...form.register('starts_at')} />
+						<FormDateTimePicker form={form} name="starts_at" id="starts_at" />
 						<FieldError>{errors.starts_at?.message}</FieldError>
 					</Field>
 
@@ -111,7 +112,12 @@ export default function MaintenanceForm({ mode, defaultValues = {}, isLoading, o
 				{recurrence !== 'ONCE' && (
 					<Field>
 						<FieldLabel htmlFor="recurrence_until">{t('maintenances.form.recurrence_until')}</FieldLabel>
-						<Input id="recurrence_until" type="datetime-local" {...form.register('recurrence_until')} />
+						<FormDateTimePicker
+							form={form}
+							name="recurrence_until"
+							id="recurrence_until"
+							min={form.watch('starts_at')}
+						/>
 						<FieldDescription>{t('maintenances.form.recurrence_until_description')}</FieldDescription>
 						<FieldError>{errors.recurrence_until?.message}</FieldError>
 					</Field>

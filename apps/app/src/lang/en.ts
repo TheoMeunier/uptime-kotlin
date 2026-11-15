@@ -4,6 +4,13 @@ const en = {
 		copied: 'Copied',
 		failed: 'Could not copy to the clipboard',
 	},
+	datetime_picker: {
+		pick_date: 'Pick a date',
+		time: 'Time',
+		hours: 'Hours',
+		minutes: 'Minutes',
+		period: 'AM or PM',
+	},
 	errors: {
 		chunk: {
 			title: 'A new version is available',
