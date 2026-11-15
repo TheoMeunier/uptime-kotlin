@@ -16,10 +16,7 @@ export default function UpdateNotificationDialogue({ notification }: { notificat
 				</Button>
 			</DialogTrigger>
 
-			<DialogContent
-				className="flex flex-col overflow-hidden sm:max-w-xl"
-				onInteractOutside={(event) => event.preventDefault()}
-			>
+			<DialogContent className="flex flex-col sm:max-w-xl" onInteractOutside={(event) => event.preventDefault()}>
 				<FormNotification mode="update" onSubmit={onSubmit} isLoading={isLoading} defaultValues={notification} />
 			</DialogContent>
 		</Dialog>
