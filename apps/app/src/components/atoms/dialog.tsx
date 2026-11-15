@@ -48,8 +48,6 @@ function DialogContent({
 				<DialogPrimitive.Content
 					data-slot="dialog-content"
 					className={cn(
-						// `m-auto` centres the dialog while it fits, and pins it to the top once it is taller
-						// than the screen, so its header is never cut off.
 						'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 relative m-auto grid w-full shrink-0 gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg',
 						className
 					)}
