@@ -6,6 +6,7 @@ import { Textarea } from '@/components/atoms/textarea.tsx';
 import { Button } from '@/components/atoms/button.tsx';
 import FormSelect from '@/components/molecules/forms/form-select.tsx';
 import FormSwitch from '@/components/molecules/forms/form-switch.tsx';
+import FormDateTimePicker from '@/components/molecules/forms/form-datetime-picker.tsx';
 import FormMultiSelect from '@/components/molecules/forms/form-select-multiple.tsx';
 import { useStatusPages } from '@/features/status-pages/hooks/useStatusPages.ts';
 import useAnnouncementForm, {
@@ -84,7 +85,7 @@ export default function AnnouncementForm({ mode, defaultValues = {}, onSubmit, i
 
 				<Field>
 					<FieldLabel htmlFor="announcement-starts-at">{t('announcements.form.starts_at')}</FieldLabel>
-					<Input id="announcement-starts-at" type="datetime-local" {...form.register('starts_at')} />
+					<FormDateTimePicker form={form} name="starts_at" id="announcement-starts-at" />
 					<FieldDescription>{t('announcements.form.starts_at_description')}</FieldDescription>
 					<FieldError>{errors.starts_at && t('announcements.validation.starts_at')}</FieldError>
 				</Field>
@@ -99,13 +100,7 @@ export default function AnnouncementForm({ mode, defaultValues = {}, onSubmit, i
 				{hasEndsAt && (
 					<Field>
 						<FieldLabel htmlFor="announcement-ends-at">{t('announcements.form.ends_at')}</FieldLabel>
-						<Input
-							id="announcement-ends-at"
-							type="datetime-local"
-							min={form.watch('starts_at')}
-							aria-invalid={Boolean(errors.ends_at)}
-							{...form.register('ends_at')}
-						/>
+						<FormDateTimePicker form={form} name="ends_at" id="announcement-ends-at" min={form.watch('starts_at')} />
 						<FieldDescription>{t('announcements.form.ends_at_description')}</FieldDescription>
 						<FieldError>{errors.ends_at?.message}</FieldError>
 					</Field>

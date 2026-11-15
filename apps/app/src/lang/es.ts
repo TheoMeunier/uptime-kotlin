@@ -7,6 +7,13 @@ const es: typeof en = {
 		copied: 'Copiado',
 		failed: 'No se pudo copiar al portapapeles',
 	},
+	datetime_picker: {
+		pick_date: 'Elegir una fecha',
+		time: 'Hora',
+		hours: 'Horas',
+		minutes: 'Minutos',
+		period: 'a. m. o p. m.',
+	},
 	errors: {
 		chunk: {
 			title: 'Hay una nueva versión disponible',

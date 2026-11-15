@@ -7,6 +7,13 @@ const fr: typeof en = {
 		copied: 'Copié',
 		failed: 'Impossible de copier dans le presse-papiers',
 	},
+	datetime_picker: {
+		pick_date: 'Choisir une date',
+		time: 'Heure',
+		hours: 'Heures',
+		minutes: 'Minutes',
+		period: 'Matin ou après-midi',
+	},
 	errors: {
 		chunk: {
 			title: 'Une nouvelle version est disponible',

@@ -7,6 +7,13 @@ const de: typeof en = {
 		copied: 'Kopiert',
 		failed: 'Kopieren in die Zwischenablage fehlgeschlagen',
 	},
+	datetime_picker: {
+		pick_date: 'Datum wählen',
+		time: 'Uhrzeit',
+		hours: 'Stunden',
+		minutes: 'Minuten',
+		period: 'Vormittag oder Nachmittag',
+	},
 	errors: {
 		chunk: {
 			title: 'Eine neue Version ist verfügbar',
