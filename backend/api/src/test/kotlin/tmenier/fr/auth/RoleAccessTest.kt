@@ -44,7 +44,12 @@ class RoleAccessTest {
             "/api/auth/sessions",
             "/api/version",
         ).forEach { path ->
-            given().auth().oauth2(token).get(path).then().statusCode(not(403))
+            given()
+                .auth()
+                .oauth2(token)
+                .get(path)
+                .then()
+                .statusCode(not(403))
         }
     }
 
@@ -106,7 +111,12 @@ class RoleAccessTest {
         val token = token(UserRole.VIEWER)
 
         listOf("/api/probes/$id/edit", "/api/users", "/api/backup").forEach { path ->
-            given().auth().oauth2(token).get(path).then().statusCode(403)
+            given()
+                .auth()
+                .oauth2(token)
+                .get(path)
+                .then()
+                .statusCode(403)
         }
     }
 
@@ -115,7 +125,12 @@ class RoleAccessTest {
         val token = token(UserRole.ADMIN)
 
         listOf("/api/probes/$id/edit", "/api/users", "/api/settings/retention").forEach { path ->
-            given().auth().oauth2(token).get(path).then().statusCode(not(403))
+            given()
+                .auth()
+                .oauth2(token)
+                .get(path)
+                .then()
+                .statusCode(not(403))
         }
     }
 
