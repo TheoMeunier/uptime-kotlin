@@ -16,6 +16,7 @@ export type Permission =
 	| 'status_pages.manage'
 	| 'notifications.manage'
 	| 'retention.manage'
+	| 'backup.manage'
 	| 'users.manage';
 
 const ROLE_PERMISSIONS: Record<Role, '*' | readonly Permission[]> = {

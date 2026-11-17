@@ -27,7 +27,7 @@ class StoreProbeAction(
     fun execute(
         payload: BaseStoreProbeRequest,
         probeId: UUID? = null,
-    ) {
+    ): UUID {
         if (payload.notifications.isEmpty() && !notificationRepository.hasDefault()) {
             throw BadRequestException(
                 "At least one notification is required: select a channel, or mark one as default.",
@@ -64,6 +64,8 @@ class StoreProbeAction(
         }
 
         syncPushState(dto, existingProbe)
+
+        return dto.id
     }
 
     private fun syncPushState(

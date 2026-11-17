@@ -1105,6 +1105,95 @@ const de: typeof en = {
 			new_monitor: 'Neuer Monitor',
 		},
 	},
+	file_dropzone: {
+		prompt: 'Datei hierher ziehen oder',
+		browse: 'durchsuchen',
+		replace: 'Ersetzen',
+		remove: 'Datei entfernen',
+	},
+	backup: {
+		tab: 'Sicherung',
+		download: {
+			title: 'Sicherung herunterladen',
+			description:
+				'Monitore, Benachrichtigungskanäle, Wartungen, Statusseiten und Ankündigungen als JSON-Datei. Prüfverlauf, Vorfälle, Benutzer und Einstellungen sind nicht enthalten.',
+			plain_label: 'Geheimnisse im Klartext',
+			secrets: {
+				encrypted:
+					'Passwörter, Tokens und Verbindungszeichenfolgen bleiben mit dem Hauptschlüssel verschlüsselt: Die Datei lässt sich nur auf einer Instanz mit demselben ENCRYPTION_MASTER_KEY wiederherstellen.',
+				plain:
+					'Geheimnisse werden im Klartext geschrieben: Die Datei funktioniert auf jeder Instanz, aber wer sie liest, erhält alle Passwörter und Tokens. Bewahren Sie sie wie ein Passwort auf.',
+			},
+			button: 'Herunterladen',
+		},
+		restore: {
+			title: 'Sicherung wiederherstellen',
+			description:
+				'Die Datei wird zuerst geprüft: Nichts wird geschrieben, bevor Sie bestätigen. Gültige Elemente werden in einem Schritt wiederhergestellt, ungültige ausgelassen.',
+			file: 'Sicherungsdatei',
+			file_hint: '.json-Datei, erstellt mit „Sicherung herunterladen“',
+			conflict: 'Wenn ein Element bereits existiert',
+			conflict_description:
+				'Ein Element existiert bereits, wenn es denselben Namen hat (denselben Slug bei einer Statusseite).',
+			conflict_strategy: {
+				skip: {
+					title: 'Vorhandenes behalten',
+					description: 'Bereits vorhandene Elemente bleiben unverändert; Links in der Datei verweisen auf sie.',
+				},
+				rename: {
+					title: 'Umbenannte Kopie wiederherstellen',
+					description: 'Eine Kopie wird unter neuem Namen angelegt, z. B. „API (2)“ oder „status-2“.',
+				},
+			},
+			analyze: 'Prüfen',
+			confirm: '{{count}} Element(e) wiederherstellen',
+			restoring: 'Wird wiederhergestellt…',
+			invalid_json: 'Diese Datei ist kein gültiges JSON',
+			nothing: 'Die Datei enthält nichts wiederherzustellen',
+			done: '{{count}} Element(e) wiederhergestellt',
+			summary: {
+				preview: '{{create}} zu erstellen · {{skip}} übersprungen · {{error}} mit Fehlern',
+				done: '{{create}} erstellt · {{skip}} übersprungen · {{error}} mit Fehlern',
+			},
+			renamed_from: 'Umbenannt von „{{name}}“',
+		},
+		column: {
+			kind: 'Typ',
+			name: 'Name',
+			result: 'Ergebnis',
+		},
+		kind: {
+			NOTIFICATION: 'Benachrichtigungskanal',
+			PROBE: 'Monitor',
+			MAINTENANCE: 'Wartung',
+			STATUS_PAGE: 'Statusseite',
+			ANNOUNCEMENT: 'Ankündigung',
+		},
+		outcome: {
+			preview: {
+				CREATE: 'Zu erstellen',
+				RENAME: 'Umzubenennen',
+				SKIP: 'Übersprungen',
+				ERROR: 'Fehler',
+			},
+			done: {
+				CREATE: 'Erstellt',
+				RENAME: 'Umbenannt',
+				SKIP: 'Übersprungen',
+				ERROR: 'Nicht wiederhergestellt',
+			},
+		},
+		issue: {
+			MISSING_KEY: 'Name fehlt',
+			SECRET_UNREADABLE:
+				'Ein Geheimnis wurde mit einem anderen Hauptschlüssel verschlüsselt: Erstellen Sie die Sicherung erneut mit Geheimnissen im Klartext',
+			INVALID: '{{detail}}',
+			ALREADY_EXISTS: 'Existiert bereits: Das vorhandene wird behalten',
+			DUPLICATE_IN_FILE: 'Gleicher Name weiter oben in der Datei: Nur das erste wird wiederhergestellt',
+			UNKNOWN_REFERENCE: 'Link ignoriert: {{target}} {{detail}} ist weder in der Datei noch wiederhergestellt',
+			PUSH_URL_REGENERATED: 'Eine neue Push-URL wird erzeugt: Aktualisieren Sie die Jobs, die sie aufrufen',
+		},
+	},
 	retention: {
 		tab: 'Datenaufbewahrung',
 		title: 'Aufbewahrung des Monitor-Verlaufs',

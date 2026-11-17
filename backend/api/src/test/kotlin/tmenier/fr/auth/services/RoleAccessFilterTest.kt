@@ -77,6 +77,8 @@ class RoleAccessFilterTest {
     fun `a viewer sees neither monitor secrets nor users`() {
         assertFalse(RoleAccessFilter.isAllowed(UserRole.VIEWER, "GET", "/api/probes/$id/edit"))
         assertFalse(RoleAccessFilter.isAllowed(UserRole.VIEWER, "GET", "/api/users"))
+        assertFalse(RoleAccessFilter.isAllowed(UserRole.VIEWER, "GET", "/api/backup"))
+        assertFalse(RoleAccessFilter.isAllowed(UserRole.VIEWER, "POST", "/api/backup/restore"))
     }
 
     @Test

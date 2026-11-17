@@ -1096,6 +1096,94 @@ const es: typeof en = {
 			new_monitor: 'Nuevo monitor',
 		},
 	},
+	file_dropzone: {
+		prompt: 'Suelte su archivo aquí o',
+		browse: 'examine',
+		replace: 'Reemplazar',
+		remove: 'Quitar el archivo',
+	},
+	backup: {
+		tab: 'Copia de seguridad',
+		download: {
+			title: 'Descargar una copia de seguridad',
+			description:
+				'Monitores, canales de notificación, mantenimientos, páginas de estado y anuncios, en un archivo JSON. No se incluyen el historial de comprobaciones, los incidentes, los usuarios ni los ajustes.',
+			plain_label: 'Secretos en texto plano',
+			secrets: {
+				encrypted:
+					'Las contraseñas, tokens y cadenas de conexión siguen cifrados con la clave maestra: el archivo solo se puede restaurar en una instancia con la misma ENCRYPTION_MASTER_KEY.',
+				plain:
+					'Los secretos se escriben en claro: el archivo funciona en cualquier instancia, pero quien lo lea obtiene todas las contraseñas y tokens. Guárdelo como una contraseña.',
+			},
+			button: 'Descargar',
+		},
+		restore: {
+			title: 'Restaurar una copia de seguridad',
+			description:
+				'Primero se analiza el archivo: no se escribe nada hasta que lo confirme. Los elementos válidos se restauran de una vez, los demás se omiten.',
+			file: 'Archivo de copia de seguridad',
+			file_hint: 'Archivo .json creado con «Descargar una copia de seguridad»',
+			conflict: 'Si un elemento ya existe',
+			conflict_description: 'Un elemento ya existe si tiene el mismo nombre (el mismo slug para una página de estado).',
+			conflict_strategy: {
+				skip: {
+					title: 'Conservar el existente',
+					description: 'Los elementos ya presentes no se modifican; los enlaces del archivo apuntan a ellos.',
+				},
+				rename: {
+					title: 'Restaurar una copia renombrada',
+					description: 'Se crea una copia con un nombre nuevo, por ejemplo «API (2)» o «status-2».',
+				},
+			},
+			analyze: 'Analizar',
+			confirm: 'Restaurar {{count}} elemento(s)',
+			restoring: 'Restaurando…',
+			invalid_json: 'Este archivo no es un JSON válido',
+			nothing: 'El archivo no contiene nada que restaurar',
+			done: '{{count}} elemento(s) restaurado(s)',
+			summary: {
+				preview: '{{create}} por crear · {{skip}} omitido(s) · {{error}} con errores',
+				done: '{{create}} creado(s) · {{skip}} omitido(s) · {{error}} con errores',
+			},
+			renamed_from: 'Renombrado desde «{{name}}»',
+		},
+		column: {
+			kind: 'Tipo',
+			name: 'Nombre',
+			result: 'Resultado',
+		},
+		kind: {
+			NOTIFICATION: 'Canal de notificación',
+			PROBE: 'Monitor',
+			MAINTENANCE: 'Mantenimiento',
+			STATUS_PAGE: 'Página de estado',
+			ANNOUNCEMENT: 'Anuncio',
+		},
+		outcome: {
+			preview: {
+				CREATE: 'Por crear',
+				RENAME: 'Por renombrar',
+				SKIP: 'Omitido',
+				ERROR: 'Error',
+			},
+			done: {
+				CREATE: 'Creado',
+				RENAME: 'Renombrado',
+				SKIP: 'Omitido',
+				ERROR: 'No restaurado',
+			},
+		},
+		issue: {
+			MISSING_KEY: 'Falta el nombre',
+			SECRET_UNREADABLE:
+				'Un secreto se cifró con otra clave maestra: vuelva a hacer la copia de seguridad con los secretos en texto plano',
+			INVALID: '{{detail}}',
+			ALREADY_EXISTS: 'Ya existe: se conserva el existente',
+			DUPLICATE_IN_FILE: 'Mismo nombre antes en el archivo: solo se restaura el primero',
+			UNKNOWN_REFERENCE: 'Enlace ignorado: {{target}} {{detail}} no está en el archivo o no se restauró',
+			PUSH_URL_REGENERATED: 'Se genera una nueva URL de push: actualice las tareas que la llaman',
+		},
+	},
 	retention: {
 		tab: 'Retención de datos',
 		title: 'Retención del historial de monitores',

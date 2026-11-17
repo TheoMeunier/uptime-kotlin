@@ -1083,6 +1083,93 @@ const en = {
 			new_monitor: 'New monitor',
 		},
 	},
+	file_dropzone: {
+		prompt: 'Drop your file here or',
+		browse: 'browse',
+		replace: 'Replace',
+		remove: 'Remove the file',
+	},
+	backup: {
+		tab: 'Backup',
+		download: {
+			title: 'Download a backup',
+			description:
+				'Monitors, notification channels, maintenances, status pages and announcements, in a JSON file. Check history, incidents, users and settings are not included.',
+			plain_label: 'Plain-text secrets',
+			secrets: {
+				encrypted:
+					'Passwords, tokens and connection strings stay encrypted with the master key: the file can only be restored on an instance with the same ENCRYPTION_MASTER_KEY.',
+				plain:
+					'Secrets are written in clear: the file works on any instance, but anyone who reads it gets every password and token. Keep it like a password.',
+			},
+			button: 'Download',
+		},
+		restore: {
+			title: 'Restore a backup',
+			description:
+				'The file is analysed first: nothing is written until you confirm. Valid items are restored in one go, invalid ones are left out.',
+			file: 'Backup file',
+			file_hint: '.json file created with “Download a backup”',
+			conflict: 'When an item already exists',
+			conflict_description: 'An item already exists when it has the same name (the same slug for a status page).',
+			conflict_strategy: {
+				skip: {
+					title: 'Keep the existing one',
+					description: 'Items already present are left untouched; links in the file point to them.',
+				},
+				rename: {
+					title: 'Restore a renamed copy',
+					description: 'A copy is created under a new name, such as “API (2)” or “status-2”.',
+				},
+			},
+			analyze: 'Analyse',
+			confirm: 'Restore {{count}} item(s)',
+			restoring: 'Restoring…',
+			invalid_json: 'This file is not valid JSON',
+			nothing: 'The file holds nothing to restore',
+			done: '{{count}} item(s) restored',
+			summary: {
+				preview: '{{create}} to create · {{skip}} skipped · {{error}} with errors',
+				done: '{{create}} created · {{skip}} skipped · {{error}} with errors',
+			},
+			renamed_from: 'Renamed from “{{name}}”',
+		},
+		column: {
+			kind: 'Type',
+			name: 'Name',
+			result: 'Result',
+		},
+		kind: {
+			NOTIFICATION: 'Notification channel',
+			PROBE: 'Monitor',
+			MAINTENANCE: 'Maintenance',
+			STATUS_PAGE: 'Status page',
+			ANNOUNCEMENT: 'Announcement',
+		},
+		outcome: {
+			preview: {
+				CREATE: 'To create',
+				RENAME: 'To rename',
+				SKIP: 'Skipped',
+				ERROR: 'Error',
+			},
+			done: {
+				CREATE: 'Created',
+				RENAME: 'Renamed',
+				SKIP: 'Skipped',
+				ERROR: 'Not restored',
+			},
+		},
+		issue: {
+			MISSING_KEY: 'Name missing',
+			SECRET_UNREADABLE: 'A secret was encrypted with another master key: back up again with plain-text secrets',
+			INVALID: '{{detail}}',
+			ALREADY_EXISTS: 'Already exists: the existing one is kept',
+			DUPLICATE_IN_FILE: 'Same name earlier in the file: only the first one is restored',
+			UNKNOWN_REFERENCE: 'Link ignored: {{target}} {{detail}} is neither in the file nor restored',
+			PUSH_URL_REGENERATED: 'A new push URL is generated: update the jobs that call it',
+		},
+	},
 	retention: {
 		tab: 'Data retention',
 		title: 'Monitor history retention',

@@ -1102,6 +1102,94 @@ const fr: typeof en = {
 			new_monitor: 'Nouvelle sonde',
 		},
 	},
+	file_dropzone: {
+		prompt: 'Glissez votre fichier ici ou',
+		browse: 'parcourez',
+		replace: 'Remplacer',
+		remove: 'Retirer le fichier',
+	},
+	backup: {
+		tab: 'Sauvegarde',
+		download: {
+			title: 'Télécharger une sauvegarde',
+			description:
+				'Sondes, canaux de notification, maintenances, status pages et annonces, dans un fichier JSON. L’historique des checks, les incidents, les utilisateurs et les réglages ne sont pas inclus.',
+			plain_label: 'Secrets en clair',
+			secrets: {
+				encrypted:
+					'Mots de passe, jetons et chaînes de connexion restent chiffrés avec la clé maître : le fichier ne se restaure que sur une instance qui a la même ENCRYPTION_MASTER_KEY.',
+				plain:
+					'Les secrets sont écrits en clair : le fichier fonctionne sur n’importe quelle instance, mais quiconque le lit obtient tous les mots de passe et jetons. Conservez-le comme un mot de passe.',
+			},
+			button: 'Télécharger',
+		},
+		restore: {
+			title: 'Restaurer une sauvegarde',
+			description:
+				'Le fichier est d’abord analysé : rien n’est écrit avant votre confirmation. Les éléments valides sont restaurés en une fois, les autres sont laissés de côté.',
+			file: 'Fichier de sauvegarde',
+			file_hint: 'Fichier .json créé avec « Télécharger une sauvegarde »',
+			conflict: 'Si un élément existe déjà',
+			conflict_description: 'Un élément existe déjà s’il a le même nom (le même slug pour une status page).',
+			conflict_strategy: {
+				skip: {
+					title: 'Garder l’existant',
+					description: 'Les éléments déjà présents ne sont pas modifiés ; les liens du fichier pointent vers eux.',
+				},
+				rename: {
+					title: 'Restaurer une copie renommée',
+					description: 'Une copie est créée sous un nouveau nom, par exemple « API (2) » ou « status-2 ».',
+				},
+			},
+			analyze: 'Analyser',
+			confirm: 'Restaurer {{count}} élément(s)',
+			restoring: 'Restauration…',
+			invalid_json: 'Ce fichier n’est pas un JSON valide',
+			nothing: 'Le fichier ne contient rien à restaurer',
+			done: '{{count}} élément(s) restauré(s)',
+			summary: {
+				preview: '{{create}} à créer · {{skip}} ignoré(s) · {{error}} en erreur',
+				done: '{{create}} créé(s) · {{skip}} ignoré(s) · {{error}} en erreur',
+			},
+			renamed_from: 'Renommé depuis « {{name}} »',
+		},
+		column: {
+			kind: 'Type',
+			name: 'Nom',
+			result: 'Résultat',
+		},
+		kind: {
+			NOTIFICATION: 'Canal de notification',
+			PROBE: 'Sonde',
+			MAINTENANCE: 'Maintenance',
+			STATUS_PAGE: 'Status page',
+			ANNOUNCEMENT: 'Annonce',
+		},
+		outcome: {
+			preview: {
+				CREATE: 'À créer',
+				RENAME: 'À renommer',
+				SKIP: 'Ignoré',
+				ERROR: 'Erreur',
+			},
+			done: {
+				CREATE: 'Créé',
+				RENAME: 'Renommé',
+				SKIP: 'Ignoré',
+				ERROR: 'Non restauré',
+			},
+		},
+		issue: {
+			MISSING_KEY: 'Nom manquant',
+			SECRET_UNREADABLE:
+				'Un secret a été chiffré avec une autre clé maître : refaites la sauvegarde avec les secrets en clair',
+			INVALID: '{{detail}}',
+			ALREADY_EXISTS: 'Existe déjà : l’élément existant est conservé',
+			DUPLICATE_IN_FILE: 'Même nom plus haut dans le fichier : seul le premier est restauré',
+			UNKNOWN_REFERENCE: 'Lien ignoré : {{target}} {{detail}} absent du fichier ou non restauré',
+			PUSH_URL_REGENERATED: 'Une nouvelle URL de push est générée : mettez à jour les tâches qui l’appellent',
+		},
+	},
 	retention: {
 		tab: 'Rétention des données',
 		title: 'Rétention de l’historique des sondes',

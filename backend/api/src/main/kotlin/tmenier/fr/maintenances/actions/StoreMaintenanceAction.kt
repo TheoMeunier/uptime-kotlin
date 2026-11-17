@@ -53,7 +53,7 @@ class StoreMaintenanceAction(
         return dto.id
     }
 
-    private fun validate(payload: StoreMaintenanceRequest) {
+    fun validate(payload: StoreMaintenanceRequest) {
         runCatching { ZoneId.of(payload.timezone) }
             .onFailure { throw BadRequestException("Unknown timezone: ${payload.timezone}") }
 

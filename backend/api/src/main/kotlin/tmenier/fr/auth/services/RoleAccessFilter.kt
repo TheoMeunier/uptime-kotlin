@@ -79,7 +79,7 @@ class RoleAccessFilter : ContainerRequestFilter {
 
         private val READ_METHODS = setOf("GET", "HEAD", "OPTIONS")
 
-        private val ADMIN_ONLY = Regex("^/api/users(/.*)?$")
+        private val ADMIN_ONLY = Regex("^/api/(users|backup)(/.*)?$")
 
         private val VIEWER_DENIED_READS =
             listOf(
