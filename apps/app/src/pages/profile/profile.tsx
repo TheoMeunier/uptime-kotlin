@@ -1,12 +1,13 @@
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Bell, Database, Lock, SlidersHorizontal, User, Users } from 'lucide-react';
+import { ArchiveRestore, Bell, Database, Lock, SlidersHorizontal, User, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UpdateProfileForm from '@/features/profile/components/forms/update-profile-form.tsx';
 import UpdatePasswordProfileForm from '@/features/profile/components/forms/update-password-profile-form.tsx';
 import ListingNotification from '@/features/notifications/components/listing-notification.tsx';
 import PreferencesForm from '@/features/profile/components/forms/preferences-form.tsx';
 import LogRetentionForm from '@/features/settings/components/forms/log-retention-form.tsx';
+import BackupSettings from '@/features/backup/components/backup-settings.tsx';
 import ListingUsers from '@/features/users/components/listing/listing-users.tsx';
 import { usePermissions } from '@/features/auth/lib/role.ts';
 import type { Permission } from '@/features/auth/lib/permissions.ts';
@@ -17,6 +18,7 @@ const SECTIONS: { id: string; labelKey: string; icon: typeof User; permission?: 
 	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell, permission: 'notifications.manage' },
 	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal },
 	{ id: 'retention', labelKey: 'retention.tab', icon: Database, permission: 'retention.manage' },
+	{ id: 'backup', labelKey: 'backup.tab', icon: ArchiveRestore, permission: 'backup.manage' },
 	{ id: 'users', labelKey: 'users.tab', icon: Users, permission: 'users.manage' },
 ];
 
@@ -66,6 +68,7 @@ export default function Profile() {
 				{active === 'notifications' && <ListingNotification />}
 				{active === 'preferences' && <PreferencesForm />}
 				{active === 'retention' && <LogRetentionForm />}
+				{active === 'backup' && <BackupSettings />}
 				{active === 'users' && <ListingUsers />}
 			</div>
 		</div>
