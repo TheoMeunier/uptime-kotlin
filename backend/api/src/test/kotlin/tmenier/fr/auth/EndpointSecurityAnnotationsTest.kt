@@ -49,8 +49,14 @@ class EndpointSecurityAnnotationsTest {
                 root
                     .walk()
                     .filter { it.isFile && it.name.endsWith(".class") && !it.name.contains('$') }
-                    .map { ROOT_PACKAGE + "." + it.relativeTo(root).path.removeSuffix(".class").replace(File.separatorChar, '.') }
-                    .toList()
+                    .map {
+                        ROOT_PACKAGE + "." +
+                            it
+                                .relativeTo(root)
+                                .path
+                                .removeSuffix(".class")
+                                .replace(File.separatorChar, '.')
+                    }.toList()
             }.distinct()
             .map { Class.forName(it, false, loader) }
             .filter { it.isAnnotationPresent(Path::class.java) }
