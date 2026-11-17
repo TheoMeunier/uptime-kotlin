@@ -1,6 +1,6 @@
 package tmenier.fr.monitors.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
@@ -10,6 +10,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.monitors.actions.OnOffProbeMonitorAction
 import tmenier.fr.monitors.requests.OnOffRequest
 import java.util.UUID
@@ -21,7 +22,7 @@ class OnOffMonitorProbeResource(
     private val onOffProbeMonitorAction: OnOffProbeMonitorAction,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     @Transactional
     fun onOffProbeMonitor(
         @PathParam("probeId") probeId: UUID,

@@ -1,6 +1,6 @@
 package tmenier.fr.notifications.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
@@ -9,6 +9,7 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.notifications.actions.TestingNotificationAction
 import tmenier.fr.notifications.dto.NotificationTestResult
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
@@ -20,7 +21,7 @@ class TestingNotificationResource(
     private val testingNotificationAction: TestingNotificationAction,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     @Transactional
     fun store(
         @Valid payload: BaseStoreNotificationRequest,

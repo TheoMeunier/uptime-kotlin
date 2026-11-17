@@ -2,6 +2,7 @@ package tmenier.fr.setup.resources
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.quarkus.runtime.annotations.RegisterForReflection
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -32,6 +33,7 @@ class StatusApplicationResources(
     private val demoMode: DemoMode,
 ) {
     @GET
+    @PermitAll
     fun getStatusApplication(): Response {
         val result = getStatusApplicationAction.execute()
         val status =

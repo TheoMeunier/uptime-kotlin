@@ -1,11 +1,12 @@
 package tmenier.fr.notifications.resources
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.notifications.webpush.StoredVapidKeySource
 
 @RegisterForReflection
@@ -19,6 +20,6 @@ class WebPushPublicKeyResource(
     private val vapidKeys: StoredVapidKeySource,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     fun show(): WebPushPublicKeyResponse = WebPushPublicKeyResponse(vapidKeys.publicKey())
 }

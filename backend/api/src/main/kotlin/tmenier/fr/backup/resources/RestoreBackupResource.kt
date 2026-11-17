@@ -1,6 +1,6 @@
 package tmenier.fr.backup.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.DefaultValue
 import jakarta.ws.rs.POST
@@ -12,6 +12,7 @@ import tmenier.fr.backup.actions.RestoreBackupAction
 import tmenier.fr.backup.dtos.BackupDocument
 import tmenier.fr.backup.dtos.RestoreReport
 import tmenier.fr.common.enums.backup.ConflictStrategy
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.exceptions.common.BadRequestException
 
 @Path("/api/backup/restore")
@@ -21,7 +22,7 @@ class RestoreBackupResource(
     private val restoreBackupAction: RestoreBackupAction,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     fun restore(
         @QueryParam("dry_run") @DefaultValue("true") dryRun: Boolean,
         @QueryParam("on_conflict") @DefaultValue("skip") onConflict: String,

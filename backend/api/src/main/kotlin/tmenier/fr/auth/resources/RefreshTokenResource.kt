@@ -1,5 +1,6 @@
 package tmenier.fr.auth.resources
 
+import jakarta.annotation.security.PermitAll
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
@@ -18,6 +19,7 @@ class RefreshTokenResource(
     private val refreshTokenAction: RefreshTokenAction,
 ) {
     @POST
+    @PermitAll
     @Transactional
     fun login(
         @Valid payload: RefreshTokenRequest,

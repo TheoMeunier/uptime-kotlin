@@ -1,6 +1,6 @@
 package tmenier.fr.settings.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
@@ -8,6 +8,7 @@ import jakarta.ws.rs.PUT
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.dtos.LogRetentionSettingsDto
 import tmenier.fr.databases.repositories.InstanceSettingsRepository
@@ -20,7 +21,7 @@ class UpdateLogRetentionResource(
     private val instanceSettingsRepository: InstanceSettingsRepository,
 ) {
     @PUT
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     @Transactional
     fun update(
         @Valid payload: UpdateLogRetentionRequest,

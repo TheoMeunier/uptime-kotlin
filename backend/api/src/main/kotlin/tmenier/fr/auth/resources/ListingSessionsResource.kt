@@ -1,6 +1,6 @@
 package tmenier.fr.auth.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -10,6 +10,7 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.auth.actions.ListingSessionsAction
 import tmenier.fr.common.config.DemoMode
+import tmenier.fr.common.enums.users.UserRole
 import java.util.UUID
 
 @Path("/api/auth/sessions")
@@ -20,7 +21,7 @@ class ListingSessionsResource(
     private val demoMode: DemoMode,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     fun sessions(
         @QueryParam("current") current: String?,
     ): Response {

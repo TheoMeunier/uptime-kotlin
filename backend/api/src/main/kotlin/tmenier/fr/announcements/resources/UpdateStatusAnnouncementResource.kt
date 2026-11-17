@@ -1,6 +1,6 @@
 package tmenier.fr.announcements.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.announcements.actions.StoreStatusAnnouncementAction
 import tmenier.fr.announcements.requests.StoreStatusAnnouncementRequest
+import tmenier.fr.common.enums.users.UserRole
 import java.util.UUID
 
 @Path("/api/announcements/{announcementId}/update")
@@ -20,7 +21,7 @@ class UpdateStatusAnnouncementResource(
     private val storeStatusAnnouncementAction: StoreStatusAnnouncementAction,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     fun update(
         @PathParam("announcementId") announcementId: UUID,
         @Valid payload: StoreStatusAnnouncementRequest,

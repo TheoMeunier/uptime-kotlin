@@ -1,6 +1,6 @@
 package tmenier.fr.profile.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
@@ -9,6 +9,7 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.profile.actions.UpdateProfileAction
 import tmenier.fr.profile.dtos.requests.UpdateProfileRequest
 
@@ -19,7 +20,7 @@ class UpdateProfileResources(
     private val updateProfile: UpdateProfileAction,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     @Transactional
     fun update(
         @Valid payload: UpdateProfileRequest,

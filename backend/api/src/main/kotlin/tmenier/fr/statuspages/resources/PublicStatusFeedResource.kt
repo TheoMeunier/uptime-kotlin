@@ -1,5 +1,6 @@
 package tmenier.fr.statuspages.resources
 
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
@@ -20,6 +21,7 @@ class PublicStatusFeedResource(
     private val accessGuard: StatusPageAccessGuard,
 ) {
     @GET
+    @PermitAll
     fun feed(
         @PathParam("slug") slug: String,
         @Context request: Request,

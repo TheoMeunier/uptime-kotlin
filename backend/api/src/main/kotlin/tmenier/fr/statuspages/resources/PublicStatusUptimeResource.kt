@@ -1,5 +1,6 @@
 package tmenier.fr.statuspages.resources
 
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
@@ -25,6 +26,7 @@ class PublicStatusUptimeResource(
     private val accessGuard: StatusPageAccessGuard,
 ) {
     @GET
+    @PermitAll
     fun uptime(
         @PathParam("slug") slug: String,
         @QueryParam("tz") tz: String?,

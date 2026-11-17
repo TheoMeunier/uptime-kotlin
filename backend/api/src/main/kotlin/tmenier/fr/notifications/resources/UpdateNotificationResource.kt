@@ -1,6 +1,6 @@
 package tmenier.fr.notifications.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.validation.Valid
 import jakarta.validation.groups.ConvertGroup
 import jakarta.ws.rs.Consumes
@@ -10,6 +10,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.notifications.actions.StoreNotificationAction
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.OnUpdate
@@ -22,7 +23,7 @@ class UpdateNotificationResource(
     private val storeNotificationAction: StoreNotificationAction,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     fun update(
         @PathParam("id") id: UUID,
         @Valid @ConvertGroup(to = OnUpdate::class) payload: BaseStoreNotificationRequest,

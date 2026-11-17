@@ -1,6 +1,6 @@
 package tmenier.fr.announcements.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
@@ -8,6 +8,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.databases.repositories.StatusAnnouncementRepository
 import java.util.UUID
 
@@ -17,7 +18,7 @@ class RemoveStatusAnnouncementResource(
     private val statusAnnouncementRepository: StatusAnnouncementRepository,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     @Transactional
     fun remove(
         @PathParam("announcementId") announcementId: UUID,

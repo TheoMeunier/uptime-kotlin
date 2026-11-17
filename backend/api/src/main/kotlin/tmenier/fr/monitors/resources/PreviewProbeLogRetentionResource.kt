@@ -1,6 +1,6 @@
 package tmenier.fr.monitors.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.NotFoundException
@@ -9,6 +9,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.MediaType
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.databases.dtos.LogRetention
 import tmenier.fr.databases.dtos.LogRetentionPreviewDto
 import tmenier.fr.databases.repositories.ProbeRepository
@@ -22,7 +23,7 @@ class PreviewProbeLogRetentionResource(
     private val previewLogRetention: PreviewLogRetentionAction,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     fun preview(
         @PathParam("probeId") probeId: UUID,
         @QueryParam("days") days: Int?,
