@@ -1,5 +1,6 @@
 package tmenier.fr.setup.resources
 
+import jakarta.annotation.security.PermitAll
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -17,6 +18,7 @@ class CreateFirstUserApplicationResources(
     private val createFirstUserApplicationAction: CreateFirstUserAction,
 ) {
     @POST
+    @PermitAll
     fun store(
         @Valid payload: CreateFirstUserRequest,
     ): Response {

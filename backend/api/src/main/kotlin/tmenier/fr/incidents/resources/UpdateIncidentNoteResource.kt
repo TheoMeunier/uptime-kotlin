@@ -1,6 +1,6 @@
 package tmenier.fr.incidents.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.validation.Valid
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.PUT
@@ -9,6 +9,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.incidents.actions.UpdateIncidentNoteAction
 import tmenier.fr.incidents.requests.UpdateIncidentNoteRequest
 import java.util.UUID
@@ -20,7 +21,7 @@ class UpdateIncidentNoteResource(
     private val updateIncidentNoteAction: UpdateIncidentNoteAction,
 ) {
     @PUT
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     fun update(
         @PathParam("incidentId") incidentId: UUID,
         @Valid payload: UpdateIncidentNoteRequest,

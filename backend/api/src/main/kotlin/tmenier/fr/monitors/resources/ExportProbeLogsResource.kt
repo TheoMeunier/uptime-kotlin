@@ -1,6 +1,6 @@
 package tmenier.fr.monitors.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.Path
@@ -8,6 +8,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.utils.CsvCell
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import tmenier.fr.databases.repositories.ProbeMonitorRepository
@@ -20,7 +21,7 @@ class ExportProbeLogsResource(
     private val probeMonitorRepository: ProbeMonitorRepository,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     @Produces("text/csv")
     fun exportProbeLogs(
         @PathParam("probeId") probeId: UUID,

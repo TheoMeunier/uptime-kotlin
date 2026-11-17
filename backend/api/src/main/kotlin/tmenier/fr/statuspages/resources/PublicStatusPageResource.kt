@@ -1,5 +1,6 @@
 package tmenier.fr.statuspages.resources
 
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -27,6 +28,7 @@ class PublicStatusPageResource(
     private val accessGuard: StatusPageAccessGuard,
 ) {
     @GET
+    @PermitAll
     fun show(
         @PathParam("slug") slug: String,
         @Context request: Request,

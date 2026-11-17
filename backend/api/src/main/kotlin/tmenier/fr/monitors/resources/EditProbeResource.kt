@@ -1,6 +1,6 @@
 package tmenier.fr.monitors.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.NotFoundException
@@ -10,6 +10,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.encryption.EncryptionService
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.mappers.ProbeContentMapper
 import tmenier.fr.databases.mappers.ProbeMapper
@@ -24,7 +25,7 @@ class EditProbeResource(
     private val encryptionService: EncryptionService,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     fun edit(
         @PathParam("probeId") probeId: UUID,
     ): Response {

@@ -1,5 +1,6 @@
 package tmenier.fr.monitors.resources
 
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
@@ -17,6 +18,7 @@ class ReceivePushResource(
     private val receivePushAction: ReceivePushAction,
 ) {
     @GET
+    @PermitAll
     fun receiveGet(
         @PathParam("token") token: String,
         @QueryParam("status") status: String?,
@@ -24,6 +26,7 @@ class ReceivePushResource(
     ): Response = receive(token, status, message)
 
     @POST
+    @PermitAll
     fun receivePost(
         @PathParam("token") token: String,
         @QueryParam("status") status: String?,

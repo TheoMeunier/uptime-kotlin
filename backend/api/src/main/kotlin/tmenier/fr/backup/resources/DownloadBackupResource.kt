@@ -1,6 +1,6 @@
 package tmenier.fr.backup.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.DefaultValue
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.backup.actions.CreateBackupAction
 import tmenier.fr.common.enums.backup.SecretsMode
+import tmenier.fr.common.enums.users.UserRole
 import java.time.LocalDate
 import java.time.ZoneOffset
 
@@ -19,7 +20,7 @@ class DownloadBackupResource(
     private val createBackupAction: CreateBackupAction,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     @Produces(MediaType.APPLICATION_JSON)
     fun download(
         @QueryParam("secrets") @DefaultValue("encrypted") secrets: String,

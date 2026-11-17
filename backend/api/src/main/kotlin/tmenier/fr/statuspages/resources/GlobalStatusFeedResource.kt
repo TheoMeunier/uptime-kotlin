@@ -1,6 +1,7 @@
 package tmenier.fr.statuspages.resources
 
 import io.quarkus.security.identity.SecurityIdentity
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
@@ -23,6 +24,7 @@ class GlobalStatusFeedResource(
     private val identity: SecurityIdentity,
 ) {
     @GET
+    @PermitAll
     fun feed(
         @Context request: Request,
     ): Response {

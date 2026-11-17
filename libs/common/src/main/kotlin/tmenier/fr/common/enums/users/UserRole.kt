@@ -10,5 +10,6 @@ enum class UserRole {
     companion object {
         const val ADMIN_ROLE = "admin"
         const val VIEWER_ROLE = "viewer"
+        const val PASSWORD_CHANGE_REQUIRED_ROLE = "password-change-required"
     }
 }

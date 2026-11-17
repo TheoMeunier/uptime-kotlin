@@ -1,12 +1,13 @@
 package tmenier.fr.version.resources
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import tmenier.fr.common.enums.users.UserRole
 
 @RegisterForReflection
 data class VersionResponse(
@@ -20,7 +21,7 @@ class ShowVersionResource(
     private val version: String,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE, UserRole.PASSWORD_CHANGE_REQUIRED_ROLE)
     fun show(): VersionResponse = VersionResponse(normalize(version))
 
     companion object {

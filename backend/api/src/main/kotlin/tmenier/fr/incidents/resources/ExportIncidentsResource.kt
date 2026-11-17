@@ -1,12 +1,13 @@
 package tmenier.fr.incidents.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.incidents.actions.ListIncidentsAction
 import tmenier.fr.incidents.services.IncidentCsvWriter
 
@@ -15,7 +16,7 @@ class ExportIncidentsResource(
     private val listIncidentsAction: ListIncidentsAction,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     @Produces("text/csv")
     fun export(
         @QueryParam("probe_id") probeId: String?,

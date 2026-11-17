@@ -1,6 +1,6 @@
 package tmenier.fr.monitors.resources
 
-import io.quarkus.security.Authenticated
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
@@ -8,6 +8,7 @@ import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.databases.repositories.ProbePushStateRepository
 import java.util.UUID
 
@@ -17,7 +18,7 @@ class RegeneratePushTokenResource(
     private val probePushStateRepository: ProbePushStateRepository,
 ) {
     @POST
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE)
     fun regenerate(
         @PathParam("probeId") probeId: UUID,
     ): Response {

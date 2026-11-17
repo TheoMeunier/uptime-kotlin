@@ -1,7 +1,7 @@
 package tmenier.fr.monitors.resources
 
-import io.quarkus.security.Authenticated
 import io.quarkus.security.identity.SecurityIdentity
+import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
@@ -42,7 +42,7 @@ class ShowProbeResource(
     private val identity: SecurityIdentity,
 ) {
     @GET
-    @Authenticated
+    @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     fun show(
         @PathParam("probeId") probeId: UUID,
         @QueryParam("hours") hours: Long,

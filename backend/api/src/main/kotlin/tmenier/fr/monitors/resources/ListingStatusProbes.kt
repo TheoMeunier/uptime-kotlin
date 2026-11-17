@@ -1,6 +1,7 @@
 package tmenier.fr.monitors.resources
 
 import io.quarkus.security.identity.SecurityIdentity
+import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -28,6 +29,7 @@ class ListingStatusProbes(
     private val identity: SecurityIdentity,
 ) {
     @GET
+    @PermitAll
     fun list(
         @Context request: Request,
     ): Response {
