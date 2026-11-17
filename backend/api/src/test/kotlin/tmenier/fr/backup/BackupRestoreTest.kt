@@ -230,6 +230,15 @@ class BackupFixtures(
         val like = "$prefix%"
         em.createNativeQuery("DELETE FROM status_pages WHERE slug LIKE :like").setParameter("like", like).executeUpdate()
         em
+            .createNativeQuery(
+                """
+                DELETE FROM probes_notifications_channels
+                WHERE probe_id IN (SELECT id FROM probes WHERE name LIKE :like)
+                   OR notification_channel_id IN (SELECT id FROM notifications_channels WHERE name LIKE :like)
+                """.trimIndent(),
+            ).setParameter("like", like)
+            .executeUpdate()
+        em
             .createNativeQuery("DELETE FROM probes_monitors_logs WHERE probe_id IN (SELECT id FROM probes WHERE name LIKE :like)")
             .setParameter("like", like)
             .executeUpdate()
