@@ -17,6 +17,7 @@ import {
 	Activity,
 	BadgeCheck,
 	BookOpen,
+	Bug,
 	ChevronsUpDown,
 	Compass,
 	Home,
@@ -57,7 +58,8 @@ import PageBreadcrumb from '@/components/molecules/page-breadcrumb.tsx';
 import GuidedTour from '@/features/onboarding/components/guided-tour.tsx';
 import useOnboardingTour from '@/features/onboarding/hooks/useOnboardingTour.ts';
 import { DemoBanner } from '@/features/demo/slots.ts';
-import { DOCUMENTATION_URL } from '@/lib/links.ts';
+import { DOCUMENTATION_URL, newIssueUrl } from '@/lib/links.ts';
+import versionService from '@/features/version/services/versionService.ts';
 import { usePermissions } from '@/features/auth/lib/role.ts';
 import ReadOnlyBanner from '@/features/users/components/read-only-banner.tsx';
 import UserRoleBadge from '@/features/users/components/listing/user-role-badge.tsx';
@@ -81,6 +83,13 @@ export default function Layout() {
 		refetchInterval: 60 * 1000,
 		refetchOnWindowFocus: true,
 		refetchIntervalInBackground: true,
+	});
+
+	const { data: version } = useQuery({
+		queryKey: ['version'],
+		queryFn: () => versionService.getVersion(),
+		staleTime: Infinity,
+		retry: false,
 	});
 
 	const attention = useMemo(() => summarizeAttention(data?.map((probe: ProbeListItem) => probe.status)), [data]);
@@ -217,6 +226,14 @@ export default function Layout() {
 										<DropdownMenuItem onSelect={tour.start}>
 											<Compass />
 											{t('layout.sidebar.guide')}
+										</DropdownMenuItem>
+
+										<DropdownMenuItem asChild>
+											<a href={newIssueUrl({ version: version?.version })} target="_blank" rel="noopener noreferrer">
+												<Bug />
+												{t('layout.sidebar.report_issue')}
+												<span className="sr-only">{t('layout.sidebar.new_tab')}</span>
+											</a>
 										</DropdownMenuItem>
 
 										<DropdownMenuItem onClick={logout}>

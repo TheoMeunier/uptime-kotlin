@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { LayoutDashboard, LoaderCircle, RefreshCw, RotateCw } from 'lucide-react';
+import { Bug, LayoutDashboard, LoaderCircle, RefreshCw, RotateCw } from 'lucide-react';
 import { Button } from '@/components/atoms/button.tsx';
 import { Card, CardContent } from '@/components/atoms/card.tsx';
 import { cn } from '@/lib/utils.ts';
 import ErrorPage from '@/components/molecules/error-page.tsx';
+import versionService from '@/features/version/services/versionService.ts';
+import { newIssueUrl } from '@/lib/links.ts';
 
 interface ErrorScreenProps {
 	kind: 'chunk' | 'crash';
@@ -20,6 +22,11 @@ function errorDetails(error: unknown): string | undefined {
 	} catch {
 		return String(error);
 	}
+}
+
+function errorTitle(error: unknown): string | undefined {
+	if (error instanceof Error) return error.message.split('\n')[0].slice(0, 120) || error.name;
+	return undefined;
 }
 
 export default function ErrorScreen({ kind, reloading = false, error, fullscreen = false }: ErrorScreenProps) {
@@ -47,6 +54,21 @@ export default function ErrorScreen({ kind, reloading = false, error, fullscreen
 								<a href="/dashboard">
 									<LayoutDashboard className="size-4" />
 									{t('errors.actions.dashboard')}
+								</a>
+							</Button>
+							<Button variant="ghost" asChild>
+								<a
+									href={newIssueUrl({
+										version: versionService.lastKnownVersion(),
+										title: errorTitle(error),
+										logs: details,
+									})}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									<Bug className="size-4" />
+									{t('errors.actions.report')}
+									<span className="sr-only">{t('layout.sidebar.new_tab')}</span>
 								</a>
 							</Button>
 						</>
