@@ -22,6 +22,7 @@ data class StoreStatusPageDto(
     val uptimePeriod: StatusPageUptimePeriod,
     val isPrivate: Boolean,
     val groups: List<StoreStatusPageGroupDto>,
+    val customDomain: String? = null,
 )
 
 @RegisterForReflection
@@ -36,6 +37,7 @@ data class StatusPageListItemDto(
     val groupCount: Int,
     val probeCount: Int,
     val updatedAt: Instant,
+    val customDomain: String? = null,
 )
 
 @RegisterForReflection
@@ -56,6 +58,7 @@ data class StatusPageDto(
     val groups: List<StatusPageGroupDto>,
     val createdAt: Instant,
     val updatedAt: Instant,
+    val customDomain: String? = null,
 )
 
 @RegisterForReflection

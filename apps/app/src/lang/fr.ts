@@ -940,6 +940,9 @@ const fr: typeof en = {
 			private: 'Page privée',
 			private_description:
 				'Seuls les utilisateurs connectés à cette instance peuvent la voir. Ses sondes disparaissent aussi de /status pour les visiteurs.',
+			custom_domain: 'Domaine personnalisé',
+			custom_domain_description:
+				'Facultatif. Créez un CNAME vers {{host}} et déclarez le domaine dans votre reverse proxy, qui gère le HTTPS. La page s’affiche alors à la racine de ce domaine.',
 			save: 'Enregistrer',
 			unsaved: 'Modifications non enregistrées',
 			layout_title: 'Groupes et sondes',
@@ -961,6 +964,8 @@ const fr: typeof en = {
 		validation: {
 			title: 'Le titre est obligatoire.',
 			slug: 'Utilisez uniquement des minuscules, des chiffres et des tirets simples.',
+			custom_domain: 'Saisissez un nom de domaine, par exemple status.example.com.',
+			custom_domain_private: 'Une page privée ne peut pas avoir de domaine personnalisé.',
 		},
 		alerts: {
 			created: 'Page de statut « {{title}} » créée',

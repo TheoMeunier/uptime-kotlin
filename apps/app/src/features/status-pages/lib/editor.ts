@@ -14,6 +14,20 @@ export interface EditorProbe {
 
 export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+/** Same rule as the API: lower-case host name with at least one dot and an alphabetic TLD (no IP, no port). */
+export const DOMAIN_PATTERN = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+
+/** Keeps the host of a pasted address: `https://Status.Example.com/foo` → `status.example.com`. */
+export function cleanDomain(value: string) {
+	return value
+		.trim()
+		.toLowerCase()
+		.replace(/^[a-z][a-z0-9+.-]*:\/\//, '')
+		.replace(/[/?#].*$/, '')
+		.replace(/:\d*$/, '')
+		.replace(/\.$/, '');
+}
+
 let groupKeySeq = 0;
 
 export function newGroupKey() {

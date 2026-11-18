@@ -33,6 +33,7 @@ class ListStatusPageAction(
                 groupCount = page.groups.size,
                 probeCount = page.groups.sumOf { it.orderedProbes().size },
                 updatedAt = page.updatedAt,
+                customDomain = page.customDomain,
             )
         }
 
@@ -57,6 +58,7 @@ class ListStatusPageAction(
                 },
             createdAt = page.createdAt,
             updatedAt = page.updatedAt,
+            customDomain = page.customDomain,
         )
     }
 

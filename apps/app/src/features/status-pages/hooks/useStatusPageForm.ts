@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import {
+	cleanDomain,
+	DOMAIN_PATTERN,
 	emptyGroup,
 	type EditorGroup,
 	newGroupKey,
@@ -19,10 +21,11 @@ export interface StatusPageFormValues {
 	defaultLayout: StatusPageLayoutValue;
 	uptimePeriod: UptimePeriod;
 	isPrivate: boolean;
+	customDomain: string;
 	groups: EditorGroup[];
 }
 
-export type StatusPageFormErrors = Partial<Record<'title' | 'slug', string>>;
+export type StatusPageFormErrors = Partial<Record<'title' | 'slug' | 'customDomain', string>>;
 
 function initialValues(page?: StatusPageDetail): StatusPageFormValues {
 	if (!page) {
@@ -33,6 +36,7 @@ function initialValues(page?: StatusPageDetail): StatusPageFormValues {
 			defaultLayout: 'GRID',
 			uptimePeriod: 'H1',
 			isPrivate: false,
+			customDomain: '',
 			groups: [emptyGroup()],
 		};
 	}
@@ -44,6 +48,7 @@ function initialValues(page?: StatusPageDetail): StatusPageFormValues {
 		defaultLayout: page.default_layout,
 		uptimePeriod: page.uptime_period,
 		isPrivate: page.is_private,
+		customDomain: page.custom_domain ?? '',
 		groups: page.groups.map((group) => ({
 			key: newGroupKey(),
 			name: group.name ?? '',
@@ -60,6 +65,7 @@ function toPayload(values: StatusPageFormValues): StatusPagePayload {
 		default_layout: values.defaultLayout,
 		uptime_period: values.uptimePeriod,
 		is_private: values.isPrivate,
+		custom_domain: cleanDomain(values.customDomain),
 		groups: values.groups.map((group) => ({ name: group.name.trim(), probe_ids: group.probeIds })),
 	};
 }
@@ -77,9 +83,15 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 			slug: z.string().trim().max(64).regex(SLUG_PATTERN, t('status_pages.validation.slug')),
 		});
 		const result = schema.safeParse(values);
-		if (result.success) return {};
+		const found: StatusPageFormErrors = result.success
+			? {}
+			: Object.fromEntries(result.error.issues.map((issue) => [issue.path[0], issue.message]));
 
-		return Object.fromEntries(result.error.issues.map((issue) => [issue.path[0], issue.message]));
+		const domain = cleanDomain(values.customDomain);
+		if (domain && !DOMAIN_PATTERN.test(domain)) found.customDomain = t('status_pages.validation.custom_domain');
+		else if (domain && values.isPrivate) found.customDomain = t('status_pages.validation.custom_domain_private');
+
+		return found;
 	}, [values, t]);
 
 	const payload = toPayload(values);
@@ -102,6 +114,7 @@ export default function useStatusPageForm(page: StatusPageDetail | undefined) {
 		setDefaultLayout: (defaultLayout: StatusPageLayoutValue) => update({ defaultLayout }),
 		setUptimePeriod: (uptimePeriod: UptimePeriod) => update({ uptimePeriod }),
 		setIsPrivate: (isPrivate: boolean) => update({ isPrivate }),
+		setCustomDomain: (customDomain: string) => update({ customDomain }),
 		setGroups: (groups: EditorGroup[]) => update({ groups }),
 		handleSubmit:
 			<T>(onSubmit: (payload: StatusPagePayload) => Promise<T>, onSaved?: (result: T) => void) =>

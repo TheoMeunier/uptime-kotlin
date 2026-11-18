@@ -923,6 +923,9 @@ const en = {
 			private: 'Private page',
 			private_description:
 				'Only users signed in to this instance can see it. Its monitors are also hidden from visitors on /status.',
+			custom_domain: 'Custom domain',
+			custom_domain_description:
+				'Optional. Point a CNAME to {{host}} and add the domain to your reverse proxy, which handles HTTPS. The page is then served at the root of that domain.',
 			save: 'Save',
 			unsaved: 'Unsaved changes',
 			layout_title: 'Groups and monitors',
@@ -943,6 +946,8 @@ const en = {
 		validation: {
 			title: 'The title is required.',
 			slug: 'Use lower-case letters, digits and single dashes only.',
+			custom_domain: 'Enter a domain name, e.g. status.example.com.',
+			custom_domain_private: 'A private page cannot have a custom domain.',
 		},
 		alerts: {
 			created: 'Status page “{{title}}” created',

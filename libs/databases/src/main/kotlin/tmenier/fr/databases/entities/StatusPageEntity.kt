@@ -45,6 +45,10 @@ class StatusPageEntity : PanacheEntityBase {
     @Column(name = "is_private", nullable = false)
     var isPrivate: Boolean = false
 
+    /** Host name (lower case, no scheme nor port) serving this page at its root. TLS is handled by the reverse proxy. */
+    @Column(name = "custom_domain", length = 253)
+    var customDomain: String? = null
+
     @OneToMany(mappedBy = "statusPage", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("position ASC")
     var groups: MutableList<StatusPageGroupEntity> = mutableListOf()

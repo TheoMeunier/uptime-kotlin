@@ -934,6 +934,9 @@ const es: typeof en = {
 			private: 'Página privada',
 			private_description:
 				'Solo los usuarios con sesión iniciada en esta instancia pueden verla. Sus monitores también se ocultan a los visitantes en /status.',
+			custom_domain: 'Dominio personalizado',
+			custom_domain_description:
+				'Opcional. Cree un CNAME hacia {{host}} y declare el dominio en su proxy inverso, que gestiona el HTTPS. La página se mostrará en la raíz de ese dominio.',
 			save: 'Guardar',
 			unsaved: 'Cambios sin guardar',
 			layout_title: 'Grupos y monitores',
@@ -955,6 +958,8 @@ const es: typeof en = {
 		validation: {
 			title: 'El título es obligatorio.',
 			slug: 'Use solo minúsculas, cifras y guiones simples.',
+			custom_domain: 'Introduzca un nombre de dominio, por ejemplo status.example.com.',
+			custom_domain_private: 'Una página privada no puede tener dominio personalizado.',
 		},
 		alerts: {
 			created: 'Página de estado «{{title}}» creada',

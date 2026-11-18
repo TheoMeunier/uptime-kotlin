@@ -943,6 +943,9 @@ const de: typeof en = {
 			private: 'Private Seite',
 			private_description:
 				'Nur bei dieser Instanz angemeldete Benutzer können sie sehen. Ihre Monitore werden Besuchern auch auf /status nicht angezeigt.',
+			custom_domain: 'Eigene Domain',
+			custom_domain_description:
+				'Optional. Legen Sie einen CNAME auf {{host}} an und tragen Sie die Domain in Ihrem Reverse Proxy ein, der HTTPS übernimmt. Die Seite erscheint dann im Stammverzeichnis dieser Domain.',
 			save: 'Speichern',
 			unsaved: 'Ungespeicherte Änderungen',
 			layout_title: 'Gruppen und Monitore',
@@ -964,6 +967,8 @@ const de: typeof en = {
 		validation: {
 			title: 'Der Titel ist erforderlich.',
 			slug: 'Nur Kleinbuchstaben, Ziffern und einfache Bindestriche verwenden.',
+			custom_domain: 'Geben Sie einen Domainnamen ein, z. B. status.example.com.',
+			custom_domain_private: 'Eine private Seite kann keine eigene Domain haben.',
 		},
 		alerts: {
 			created: 'Statusseite „{{title}}“ erstellt',

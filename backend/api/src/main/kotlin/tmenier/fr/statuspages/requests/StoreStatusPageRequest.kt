@@ -34,6 +34,10 @@ class StoreStatusPageRequest {
 
     var isPrivate: Boolean = false
 
+    /** Optional host name serving the page at its root, e.g. `status.example.com`. */
+    @field:Size(max = 253, message = "Custom domain must be at most 253 characters")
+    var customDomain: String? = null
+
     @field:Valid
     @field:Size(max = 50, message = "A status page holds at most 50 groups")
     var groups: List<StoreStatusPageGroupRequest> = emptyList()

@@ -19,6 +19,8 @@ import AppErrorBoundary from '@/components/molecules/app-error-boundary.tsx';
 import RouteErrorBoundary from '@/components/molecules/route-error-boundary.tsx';
 import NotFoundPage from '@/pages/errors/not-found-page.tsx';
 import { reloadOnce } from '@/lib/chunk-error.ts';
+import CustomDomainApp from '@/features/status-pages/components/custom-domain-app.tsx';
+import { resolveCustomDomainSlug } from '@/features/status-pages/lib/custom-domain.ts';
 import {
 	Announcements,
 	ChangePassword,
@@ -128,19 +130,28 @@ const router = createBrowserRouter(
 	)
 );
 
-createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-			<AppErrorBoundary>
-				<QueryClientProvider client={queryClient}>
-					<SetupProvider>
-						<Suspense fallback={<LoaderPage />}>
-							<RouterProvider router={router} />
-						</Suspense>
-						<Toaster />
-					</SetupProvider>
-				</QueryClientProvider>
-			</AppErrorBoundary>
-		</ThemeProvider>
-	</StrictMode>
-);
+const root = createRoot(document.getElementById('root')!);
+
+// A custom domain only shows its status page; the main domain gets the full app.
+void resolveCustomDomainSlug().then((customDomainSlug) => {
+	root.render(
+		<StrictMode>
+			<ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+				<AppErrorBoundary>
+					<QueryClientProvider client={queryClient}>
+						{customDomainSlug ? (
+							<CustomDomainApp slug={customDomainSlug} />
+						) : (
+							<SetupProvider>
+								<Suspense fallback={<LoaderPage />}>
+									<RouterProvider router={router} />
+								</Suspense>
+								<Toaster />
+							</SetupProvider>
+						)}
+					</QueryClientProvider>
+				</AppErrorBoundary>
+			</ThemeProvider>
+		</StrictMode>
+	);
+});

@@ -20,9 +20,17 @@ import statusPageService from '@/features/status-pages/services/status-page-serv
 
 const isNotFound = (error: unknown) => error instanceof ApiError && error.status === 404;
 
-export default function PublicStatusPage() {
+interface PublicStatusPageProps {
+	/** Set when the page is served at the root of its custom domain instead of `/status/:slug`. */
+	slug?: string;
+	/** Custom domain: no link back to the instance (login, `/status`), which lives on another host. */
+	standalone?: boolean;
+}
+
+export default function PublicStatusPage({ slug: slugProp, standalone = false }: PublicStatusPageProps) {
 	const { t } = useTranslation();
-	const { slug = '' } = useParams();
+	const params = useParams();
+	const slug = slugProp ?? params.slug ?? '';
 	const location = useLocation();
 
 	const { data, isLoading, isError, error, refetch } = useQuery({
@@ -59,16 +67,18 @@ export default function PublicStatusPage() {
 					title={t('pages.status_page.not_found.title')}
 					description={t('pages.status_page.not_found.description', { slug })}
 					actions={
-						<>
-							{!authService.getAccessToken() && (
-								<Button asChild>
-									<Link to={loginPath(location.pathname + location.search)}>{t('button.login')}</Link>
+						!standalone && (
+							<>
+								{!authService.getAccessToken() && (
+									<Button asChild>
+										<Link to={loginPath(location.pathname + location.search)}>{t('button.login')}</Link>
+									</Button>
+								)}
+								<Button variant="outline" asChild>
+									<Link to="/status">{t('errors.actions.status')}</Link>
 								</Button>
-							)}
-							<Button variant="outline" asChild>
-								<Link to="/status">{t('errors.actions.status')}</Link>
-							</Button>
-						</>
+							</>
+						)
 					}
 				/>
 			);

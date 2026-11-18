@@ -6,10 +6,13 @@ import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.Context
+import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.statuspages.actions.StoreStatusPageAction
+import tmenier.fr.statuspages.domains.RequestHost
 import tmenier.fr.statuspages.requests.StoreStatusPageRequest
 
 @Path("/api/status-pages/new")
@@ -22,5 +25,9 @@ class StoreStatusPageResource(
     @RolesAllowed(UserRole.ADMIN_ROLE)
     fun store(
         @Valid payload: StoreStatusPageRequest,
-    ): Response = Response.ok(mapOf("id" to storeStatusPageAction.execute(payload))).build()
+        @Context headers: HttpHeaders,
+    ): Response {
+        val id = storeStatusPageAction.execute(payload, currentHost = RequestHost.resolve(headers::getHeaderString))
+        return Response.ok(mapOf("id" to id)).build()
+    }
 }
