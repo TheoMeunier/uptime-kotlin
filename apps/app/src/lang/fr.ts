@@ -29,6 +29,7 @@ const fr: typeof en = {
 		actions: {
 			reload: 'Recharger',
 			dashboard: 'Retour au tableau de bord',
+			report: 'Signaler ce bug',
 			status: 'Voir le statut global',
 		},
 		not_found: {
@@ -1091,6 +1092,7 @@ const fr: typeof en = {
 			settings: 'Paramètres',
 			logout: 'Se déconnecter',
 			guide: 'Guide d’utilisation',
+			report_issue: 'Signaler un problème',
 			documentation: 'Documentation',
 			new_tab: '(s’ouvre dans un nouvel onglet)',
 			release_notes: 'Notes de version',

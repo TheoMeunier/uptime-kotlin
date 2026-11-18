@@ -29,6 +29,7 @@ const de: typeof en = {
 		actions: {
 			reload: 'Neu laden',
 			dashboard: 'Zurück zum Dashboard',
+			report: 'Fehler melden',
 			status: 'Globaler Status',
 		},
 		not_found: {
@@ -1094,6 +1095,7 @@ const de: typeof en = {
 			settings: 'Einstellungen',
 			logout: 'Abmelden',
 			guide: 'Benutzerhandbuch',
+			report_issue: 'Problem melden',
 			documentation: 'Dokumentation',
 			new_tab: '(öffnet in neuem Tab)',
 			release_notes: 'Versionshinweise',

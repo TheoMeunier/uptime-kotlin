@@ -26,6 +26,7 @@ const en = {
 		actions: {
 			reload: 'Reload',
 			dashboard: 'Back to dashboard',
+			report: 'Report this bug',
 			status: 'Global status',
 		},
 		not_found: {
@@ -1072,6 +1073,7 @@ const en = {
 			settings: 'Settings',
 			logout: 'Logout',
 			guide: 'User guide',
+			report_issue: 'Report an issue',
 			documentation: 'Documentation',
 			new_tab: '(opens in a new tab)',
 			release_notes: 'Release notes',

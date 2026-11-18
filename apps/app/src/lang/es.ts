@@ -29,6 +29,7 @@ const es: typeof en = {
 		actions: {
 			reload: 'Recargar',
 			dashboard: 'Volver al panel',
+			report: 'Informar del error',
 			status: 'Estado global',
 		},
 		not_found: {
@@ -1085,6 +1086,7 @@ const es: typeof en = {
 			settings: 'Ajustes',
 			logout: 'Cerrar sesión',
 			guide: 'Guía de uso',
+			report_issue: 'Informar de un problema',
 			documentation: 'Documentación',
 			new_tab: '(se abre en una pestaña nueva)',
 			release_notes: 'Notas de la versión',

@@ -1,0 +1,75 @@
+name: "Bug report 🐞"
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please check the [documentation](https://uptime-kotlin.com/docs) and existing issues first.
+        **Security vulnerabilities must not be reported here**: use a [private security advisory](https://github.com/TheoMeunier/uptime-kotlin/security/advisories/new) instead.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to …
+        2. Click on …
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen instead.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown at the bottom of the sidebar, next to "Documentation".
+      placeholder: "1.6.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment
+      options:
+        - Docker Compose (separate images)
+        - All-in-one Docker image
+        - Native binary
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, reverse proxy, or anything else that may matter.
+      placeholder: "Debian 12, Firefox 132, behind Traefik"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or error details
+      description: Browser console, API or worker logs. Remove any secret, token or internal hostname before posting.
+      render: text
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, configuration, or anything else that helps.
