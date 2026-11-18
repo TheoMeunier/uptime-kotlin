@@ -25,7 +25,7 @@ export default function StatusPageEditor() {
 
 	return (
 		<div className="space-y-4">
-			<StatusPageEditorHeader title={title} slug={page?.slug} />
+			<StatusPageEditorHeader title={title} slug={page?.slug} customDomain={page?.custom_domain} />
 
 			{isError ? (
 				<ErrorState onRetry={() => refetch()} />

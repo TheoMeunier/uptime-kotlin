@@ -47,6 +47,7 @@ class StatusPageBackupSection(
             put("default_layout", page.defaultLayout.name)
             put("uptime_period", page.uptimePeriod.name)
             put("is_private", page.isPrivate)
+            put("custom_domain", page.customDomain)
             set<JsonNode>("groups", JsonTrees.factory.arrayNode().apply { page.groups.forEach { add(toItem(it)) } })
         }
 

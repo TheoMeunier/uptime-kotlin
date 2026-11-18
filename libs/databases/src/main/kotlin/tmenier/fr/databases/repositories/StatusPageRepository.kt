@@ -56,6 +56,25 @@ class StatusPageRepository(
             count("slug = ?1 and id <> ?2", slug, excludingId) > 0
         }
 
+    fun isCustomDomainTaken(
+        domain: String,
+        excludingId: UUID?,
+    ): Boolean =
+        if (excludingId == null) {
+            count("customDomain = ?1", domain) > 0
+        } else {
+            count("customDomain = ?1 and id <> ?2", domain, excludingId) > 0
+        }
+
+    /** Custom domain → slug, for every page that has one. */
+    fun findCustomDomains(): Map<String, String> =
+        em
+            .createQuery(
+                "SELECT p.customDomain, p.slug FROM StatusPageEntity p WHERE p.customDomain IS NOT NULL",
+                Array<Any>::class.java,
+            ).resultList
+            .associate { row -> row[0] as String to row[1] as String }
+
     fun save(dto: StoreStatusPageDto): StatusPageEntity {
         val entity =
             StatusPageEntity().apply {
@@ -66,6 +85,7 @@ class StatusPageRepository(
                 defaultLayout = dto.defaultLayout
                 uptimePeriod = dto.uptimePeriod
                 isPrivate = dto.isPrivate
+                customDomain = dto.customDomain
             }
 
         replaceGroups(entity, dto.groups)
@@ -82,6 +102,7 @@ class StatusPageRepository(
         entity.defaultLayout = dto.defaultLayout
         entity.uptimePeriod = dto.uptimePeriod
         entity.isPrivate = dto.isPrivate
+        entity.customDomain = dto.customDomain
         entity.updatedAt = Instant.now()
 
         replaceGroups(entity, dto.groups)

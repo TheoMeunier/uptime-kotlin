@@ -8,6 +8,7 @@ import { Textarea } from '@/components/atoms/textarea.tsx';
 import ViewModeToggle from '@/components/molecules/view-mode-toggle.tsx';
 import SlugField from '@/features/status-pages/components/forms/slug-field.tsx';
 import PrivateField from '@/features/status-pages/components/forms/private-field.tsx';
+import CustomDomainField from '@/features/status-pages/components/forms/custom-domain-field.tsx';
 import type useStatusPageForm from '@/features/status-pages/hooks/useStatusPageForm.ts';
 import { fromApiLayout, toApiLayout } from '@/features/status-pages/lib/status-layout.ts';
 
@@ -45,6 +46,13 @@ export default function StatusPageSettingsCard({ form, isSaving, canSave, showUn
 					<SlugField value={values.slug} onChange={form.setSlug} error={errors.slug} showError={showErrors} />
 
 					<PrivateField value={values.isPrivate} onChange={form.setIsPrivate} />
+
+					<CustomDomainField
+						value={values.customDomain}
+						onChange={form.setCustomDomain}
+						error={errors.customDomain}
+						showError={showErrors}
+					/>
 
 					<Field>
 						<FieldLabel htmlFor="description">{t('status_pages.form.description')}</FieldLabel>

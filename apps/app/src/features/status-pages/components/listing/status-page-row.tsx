@@ -24,7 +24,7 @@ export default function StatusPageRow({ page }: { page: StatusPageListItem }) {
 					</Badge>
 				)
 			}
-			href={`/status/${page.slug}`}
+			href={page.custom_domain ? `https://${page.custom_domain}` : `/status/${page.slug}`}
 			meta={[
 				t('status_pages.count.groups', { count: page.group_count }),
 				t('status_pages.count.probes', { count: page.probe_count }),

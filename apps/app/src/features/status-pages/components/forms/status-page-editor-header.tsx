@@ -6,9 +6,10 @@ import { Button } from '@/components/atoms/button.tsx';
 interface StatusPageEditorHeaderProps {
 	title: string;
 	slug?: string;
+	customDomain?: string | null;
 }
 
-export default function StatusPageEditorHeader({ title, slug }: StatusPageEditorHeaderProps) {
+export default function StatusPageEditorHeader({ title, slug, customDomain }: StatusPageEditorHeaderProps) {
 	const { t } = useTranslation();
 
 	return (
@@ -28,7 +29,7 @@ export default function StatusPageEditorHeader({ title, slug }: StatusPageEditor
 
 				{slug && (
 					<Button variant="outline" asChild className="shrink-0">
-						<a href={`/status/${slug}`} target="_blank" rel="noreferrer">
+						<a href={customDomain ? `https://${customDomain}` : `/status/${slug}`} target="_blank" rel="noreferrer">
 							<ExternalLink className="size-4" />
 							{t('status_pages.actions.view')}
 						</a>
