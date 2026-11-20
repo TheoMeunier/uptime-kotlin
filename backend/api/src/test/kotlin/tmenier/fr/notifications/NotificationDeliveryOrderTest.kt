@@ -40,8 +40,7 @@ class NotificationDeliveryOrderTest {
         channels.forEach(fixtures::deleteChannel)
     }
 
-    private fun claim(ours: Set<UUID>): Set<UUID> =
-        repository.claimDueTasks("it-order-worker", 500, Duration.ofMinutes(2)).filter(ours::contains).toSet()
+    private fun claim(ours: Set<UUID>): Set<UUID> = repository.claimDueTasks("it-order-worker", 500, Duration.ofMinutes(2)).filter(ours::contains).toSet()
 
     @Test
     fun `a recovery is not sent while the failure before it is waiting for its retry`() {
