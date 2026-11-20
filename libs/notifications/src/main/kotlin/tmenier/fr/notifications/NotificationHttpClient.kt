@@ -63,7 +63,7 @@ class NotificationHttpClient(
 
             if (response.statusCode() == HTTP_TOO_MANY_REQUESTS) {
                 val retryAfter = retryAfter(response.headers().firstValue("Retry-After").orElse(null))
-                throw NotificationRateLimitedException("$channel is rate limiting, retrying in ${retryAfter.toMillis()} ms", retryAfter)
+                throw NotificationRateLimitedException("$channel returned HTTP 429: too many requests, retry after ${retryAfter.toMillis()} ms", retryAfter)
             }
 
             check(response.statusCode() in 200..299) {

@@ -20,6 +20,7 @@ import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.notifications.NotificationHttpClient
+import tmenier.fr.notifications.NotificationRateLimitedException
 import java.net.InetSocketAddress
 import java.time.Duration
 import java.time.Instant
@@ -162,7 +163,7 @@ class PagerDutyNotificationServiceTest {
         status = 429
         answer = "Too many requests"
 
-        assertThrows<IllegalStateException> { service.sendTest(NotificationContent.PagerDuty("k")) }
+        assertThrows<NotificationRateLimitedException> { service.sendTest(NotificationContent.PagerDuty("k")) }
         assertEquals(1, bodies.size)
     }
 
