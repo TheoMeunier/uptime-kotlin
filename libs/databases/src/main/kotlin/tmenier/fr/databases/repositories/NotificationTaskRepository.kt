@@ -46,6 +46,26 @@ class NotificationTaskRepository(
                 }
             em.persist(delivery)
         }
+        bringForwardWaitingRetries(probe)
+    }
+
+    /**
+     * A new state change must go out now, and it can only go out once the older deliveries of the
+     * same probe have (see [claimDueTasks]). So the older ones still waiting for a retry are retried
+     * right away rather than holding the new one behind their backoff.
+     */
+    private fun bringForwardWaitingRetries(probe: ProbesEntity) {
+        em
+            .createNativeQuery(
+                """
+            UPDATE notification_deliveries
+            SET available_at = now()
+            WHERE probe_id = :probeId
+              AND status = 'PENDING'
+              AND available_at > now()
+            """,
+            ).setParameter("probeId", probe.id)
+            .executeUpdate()
     }
 
     @Transactional
@@ -66,15 +86,23 @@ class NotificationTaskRepository(
                 lease_until = now() + make_interval(secs => :leaseSeconds),
                 delivery_attempts = delivery_attempts + 1
             WHERE id IN (
-                SELECT id
-                FROM notification_deliveries
-                WHERE available_at <= now()
-                  AND delivery_attempts < max_delivery_attempts
+                SELECT d.id
+                FROM notification_deliveries d
+                WHERE d.available_at <= now()
+                  AND d.delivery_attempts < d.max_delivery_attempts
                   AND (
-                      status = 'PENDING'
-                      OR (status = 'LEASED' AND lease_until < now())
+                      d.status = 'PENDING'
+                      OR (d.status = 'LEASED' AND d.lease_until < now())
                   )
-                ORDER BY available_at, created_at
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM notification_deliveries older
+                      WHERE older.probe_id = d.probe_id
+                        AND older.notification_channel_id IS NOT DISTINCT FROM d.notification_channel_id
+                        AND older.status IN ('PENDING', 'LEASED')
+                        AND (older.created_at, older.id) < (d.created_at, d.id)
+                  )
+                ORDER BY d.available_at, d.created_at
                 FOR UPDATE SKIP LOCKED
                 LIMIT :limit
             )
@@ -91,25 +119,37 @@ class NotificationTaskRepository(
         delete("id = ?1", id)
     }
 
+    /**
+     * Schedules the next attempt of a delivery that failed. A channel that answered "too many
+     * requests" is retried when it asked to be, without spending an attempt, as long as the
+     * delivery is still recent: a burst of alerts is not a broken channel.
+     */
     @Transactional
     fun markFailedAndReschedule(
         id: UUID,
         errorMessage: String,
-        baseBackoffSeconds: Long = 10,
+        retryAfter: Duration? = null,
     ) {
         val entity = findById(id) ?: return
+        val now = Instant.now()
         entity.errorMessage = errorMessage
         entity.claimedBy = null
         entity.leaseUntil = null
+
+        if (retryAfter != null && entity.createdAt.isAfter(now.minus(NotificationRetryDelay.RATE_LIMIT_PATIENCE))) {
+            entity.attemptCount = (entity.attemptCount - 1).coerceAtLeast(0)
+            entity.status = QueueJobStatus.PENDING
+            entity.nextAttemptAt = now.plus(retryAfter)
+            return
+        }
 
         if (entity.attemptCount >= entity.maxAttempts) {
             entity.status = QueueJobStatus.DEAD
             return
         }
 
-        val backoff = baseBackoffSeconds * (1L shl entity.attemptCount.coerceAtMost(6))
         entity.status = QueueJobStatus.PENDING
-        entity.nextAttemptAt = Instant.now().plusSeconds(backoff)
+        entity.nextAttemptAt = now.plus(maxOf(NotificationRetryDelay.after(entity.attemptCount), retryAfter ?: Duration.ZERO))
     }
 
     @Transactional
