@@ -61,6 +61,11 @@ class NotificationHttpClient(
             val response = send(request)
             logger.info { "$channel answered HTTP ${response.statusCode()}" }
 
+            if (response.statusCode() == HTTP_TOO_MANY_REQUESTS) {
+                val retryAfter = retryAfter(response.headers().firstValue("Retry-After").orElse(null))
+                throw NotificationRateLimitedException("$channel is rate limiting, retrying in ${retryAfter.toMillis()} ms", retryAfter)
+            }
+
             check(response.statusCode() in 200..299) {
                 "$channel returned HTTP ${response.statusCode()}: ${describeError(response.body())}"
             }
@@ -77,7 +82,17 @@ class NotificationHttpClient(
         client.shutdownNow()
     }
 
-    private companion object {
+    internal companion object {
         const val MAX_ERROR_BODY_LENGTH = 500
+        const val HTTP_TOO_MANY_REQUESTS = 429
+        private val DEFAULT_RETRY_AFTER = Duration.ofSeconds(5)
+        private val MIN_RETRY_AFTER = Duration.ofSeconds(1)
+        private val MAX_RETRY_AFTER = Duration.ofMinutes(5)
+
+        fun retryAfter(header: String?): Duration {
+            val seconds = header?.trim()?.toBigDecimalOrNull() ?: return DEFAULT_RETRY_AFTER
+            val delay = Duration.ofMillis(seconds.movePointRight(3).toLong())
+            return delay.coerceIn(MIN_RETRY_AFTER, MAX_RETRY_AFTER)
+        }
     }
 }

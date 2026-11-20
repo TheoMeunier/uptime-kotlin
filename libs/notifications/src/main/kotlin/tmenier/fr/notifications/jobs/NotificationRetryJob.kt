@@ -10,6 +10,7 @@ import tmenier.fr.common.utils.logger
 import tmenier.fr.common.utils.shutdownGracefully
 import tmenier.fr.databases.repositories.NotificationTaskRepository
 import tmenier.fr.notifications.NotificationDispatcher
+import tmenier.fr.notifications.NotificationRateLimitedException
 import tmenier.fr.notifications.metrics.NotificationMetrics
 import java.net.InetAddress
 import java.time.Duration
@@ -93,6 +94,7 @@ class NotificationRetryJob(
                         notificationTaskRepository.markFailedAndReschedule(
                             id = id,
                             errorMessage = error.message ?: "Unknown notification delivery error",
+                            retryAfter = (error as? NotificationRateLimitedException)?.retryAfter,
                         )
                     } finally {
                         watchdog.finished(id)
