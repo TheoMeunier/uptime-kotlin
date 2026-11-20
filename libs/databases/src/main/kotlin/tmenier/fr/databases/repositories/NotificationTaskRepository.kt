@@ -49,11 +49,6 @@ class NotificationTaskRepository(
         bringForwardWaitingRetries(probe)
     }
 
-    /**
-     * A new state change must go out now, and it can only go out once the older deliveries of the
-     * same probe have (see [claimDueTasks]). So the older ones still waiting for a retry are retried
-     * right away rather than holding the new one behind their backoff.
-     */
     private fun bringForwardWaitingRetries(probe: ProbesEntity) {
         em
             .createNativeQuery(
@@ -119,11 +114,6 @@ class NotificationTaskRepository(
         delete("id = ?1", id)
     }
 
-    /**
-     * Schedules the next attempt of a delivery that failed. A channel that answered "too many
-     * requests" is retried when it asked to be, without spending an attempt, as long as the
-     * delivery is still recent: a burst of alerts is not a broken channel.
-     */
     @Transactional
     fun markFailedAndReschedule(
         id: UUID,
