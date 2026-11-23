@@ -1,6 +1,5 @@
 package tmenier.fr.notifications.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -13,6 +12,7 @@ import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.dtos.WebPushSubscription
 import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
+import tmenier.fr.notifications.requests.ValidNotificationChannelMailRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelMatrixRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelNtfyRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelPagerDutyRequest
@@ -23,7 +23,7 @@ import java.util.UUID
 
 class ResolveNotificationContentServiceTest {
     private val encryption = EncryptionService("0123456789abcdef0123456789abcdef")
-    private val service = ResolveNotificationContentService(encryption, ObjectMapper())
+    private val service = ResolveNotificationContentService(encryption)
 
     private fun telegram(botToken: String?) =
         ValidNotificationChannelTelegramRequest(botToken = botToken, chatId = "42").apply {
@@ -291,5 +291,65 @@ class ResolveNotificationContentServiceTest {
 
         assertEquals("", (content as NotificationContent.PagerDuty).routingKey)
         assertEquals("error", content.severity)
+    }
+
+    private fun mail(password: String?) =
+        ValidNotificationChannelMailRequest(
+            hostname = "smtp.example.com",
+            port = 587,
+            username = "user",
+            password = password,
+            from = "from@example.com",
+            to = "to@example.com",
+        ).apply {
+            name = "Mail"
+            notificationType = NotificationChannelsEnum.MAIL
+        }
+
+    private fun NotificationContent.password() = (this as NotificationContent.Mail).password
+
+    @Test
+    fun `keeps the stored mail password when the field is left empty on update`() {
+        val existing =
+            stored(
+                NotificationContent.Mail(
+                    hostname = "smtp.example.com",
+                    port = 587,
+                    username = "user",
+                    password = encryption.encrypt("secret"),
+                    from = "from@example.com",
+                    to = "to@example.com",
+                ),
+            )
+
+        val password = service.resolve(mail(null), isUpdate = true, existingNotification = existing).password()
+
+        assertEquals(existing.content.password(), password)
+    }
+
+    @Test
+    fun `replaces the mail password when a new one is typed`() {
+        val password = service.resolve(mail("new-secret"), isUpdate = true, existingNotification = null).password()
+
+        assertEquals("new-secret", encryption.decrypt(requireNotNull(password)))
+    }
+
+    @Test
+    fun `a test of an edited mail channel reuses the stored password when the field is empty`() {
+        val existing =
+            stored(
+                NotificationContent.Mail(
+                    hostname = "smtp.example.com",
+                    port = 587,
+                    username = "user",
+                    password = encryption.encrypt("secret"),
+                    from = "from@example.com",
+                    to = "to@example.com",
+                ),
+            )
+
+        assertEquals(existing.content.password(), service.resolveForTesting(mail(""), existing).password())
+        assertEquals("typed", service.resolveForTesting(mail("typed"), existing).password())
+        assertThrows<IllegalArgumentException> { service.resolveForTesting(mail(null)) }
     }
 }

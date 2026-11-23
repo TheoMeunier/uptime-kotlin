@@ -27,11 +27,18 @@ interface NotificationFormProps {
 	defaultValues: Partial<StoreNotificationSchema>;
 	onSubmit: (values: StoreNotificationSchema) => void;
 	isLoading?: boolean;
+	notificationId?: string;
 }
 
-export default function FormNotification({ mode, defaultValues, isLoading, onSubmit }: NotificationFormProps) {
+export default function FormNotification({
+	mode,
+	defaultValues,
+	isLoading,
+	onSubmit,
+	notificationId,
+}: NotificationFormProps) {
 	const { t } = useTranslation();
-	const { isTesting, testNotification } = useNotificationTesting();
+	const { isTesting, testNotification } = useNotificationTesting(notificationId);
 	const { form, errors } = useNotificationForm({ defaultValues, mode });
 
 	const notificationType = form.watch('notification_type');

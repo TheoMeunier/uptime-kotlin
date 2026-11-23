@@ -45,10 +45,11 @@ const notificationService = {
 		return response.public_key;
 	},
 
-	async testNotification(data: StoreNotificationSchema) {
+	async testNotification(data: StoreNotificationSchema, notificationId?: string) {
 		await api
 			.post('notifications/testing', {
 				body: JSON.stringify(data),
+				searchParams: notificationId ? { notificationId } : undefined,
 			})
 			.json();
 	},

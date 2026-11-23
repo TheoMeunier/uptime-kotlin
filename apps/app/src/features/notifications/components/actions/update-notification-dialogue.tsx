@@ -17,7 +17,13 @@ export default function UpdateNotificationDialogue({ notification }: { notificat
 			</DialogTrigger>
 
 			<DialogContent className="flex flex-col sm:max-w-xl" onInteractOutside={(event) => event.preventDefault()}>
-				<FormNotification mode="update" onSubmit={onSubmit} isLoading={isLoading} defaultValues={notification} />
+				<FormNotification
+					mode="update"
+					onSubmit={onSubmit}
+					isLoading={isLoading}
+					defaultValues={notification}
+					notificationId={notification.id}
+				/>
 			</DialogContent>
 		</Dialog>
 	);

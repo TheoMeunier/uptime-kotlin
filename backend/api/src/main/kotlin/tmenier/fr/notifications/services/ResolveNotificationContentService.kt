@@ -1,14 +1,11 @@
 package tmenier.fr.notifications.services
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.encryption.EncryptionService
 import tmenier.fr.common.enums.monitors.SmtpSecurity
 import tmenier.fr.databases.dtos.NotificationContent
 import tmenier.fr.databases.dtos.NotificationDto
 import tmenier.fr.databases.dtos.WebPushSubscription
-import tmenier.fr.databases.mappers.NotificationContentMapper
 import tmenier.fr.notifications.requests.BaseStoreNotificationRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelDiscordRequest
 import tmenier.fr.notifications.requests.ValidNotificationChannelGotifyRequest
@@ -25,10 +22,11 @@ import tmenier.fr.notifications.requests.ValidNotificationChannelWebhookRequest
 @ApplicationScoped
 class ResolveNotificationContentService(
     private val encryptionService: EncryptionService,
-    private val objectMapper: ObjectMapper,
 ) {
-    fun resolveForTesting(request: BaseStoreNotificationRequest): NotificationContent =
-        resolve(request, isUpdate = false, existingNotification = null, isTesting = true)
+    fun resolveForTesting(
+        request: BaseStoreNotificationRequest,
+        existingNotification: NotificationDto? = null,
+    ): NotificationContent = resolve(request, isUpdate = existingNotification != null, existingNotification, isTesting = true)
 
     fun resolve(
         request: BaseStoreNotificationRequest,
@@ -127,9 +125,11 @@ class ResolveNotificationContentService(
                     username = request.username,
                     password =
                         if (isTesting) {
-                            requireNotNull(request.password) { "Password is required for testing" }
+                            request.password?.ifBlank { null }
+                                ?: existingContent<NotificationContent.Mail>(existingNotification)?.password
+                                ?: throw IllegalArgumentException("Password is required for testing")
                         } else {
-                            resolvePassword(request.password, isUpdate, existingNotification)
+                            resolvePassword(request.password?.ifBlank { null }, isUpdate, existingNotification)
                         },
                     from = request.from,
                     to = request.to,
@@ -217,9 +217,7 @@ class ResolveNotificationContentService(
                     "Existing notification not found for update"
                 }.content
 
-            val contentAsJsonNode = objectMapper.valueToTree<JsonNode>(content)
-
-            NotificationContentMapper.extractPassword(contentAsJsonNode)
+            (content as? NotificationContent.Mail)?.password
                 ?: error("Existing notification has no password to preserve")
         }
     }

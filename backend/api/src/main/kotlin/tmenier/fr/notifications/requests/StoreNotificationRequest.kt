@@ -165,7 +165,6 @@ data class ValidNotificationChannelMailRequest(
     var security: SmtpSecurity? = null,
     @field:NotBlank(message = "Username is required")
     var username: String,
-    @field:NotBlank(message = "Password is required", groups = [OnCreate::class])
     var password: String? = null,
     @field:NotBlank(message = "From address is required")
     @field:Email(message = "Invalid email format")

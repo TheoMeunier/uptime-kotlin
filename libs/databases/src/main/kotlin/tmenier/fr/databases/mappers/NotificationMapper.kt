@@ -14,15 +14,19 @@ import tmenier.fr.databases.entities.NotificationsChannelEntity
 object NotificationContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
 
-    fun extractPassword(content: JsonNode): String? = content.get("password")?.asText()
-
     fun toDTO(
         notification: NotificationsChannelEntity,
         isPassword: Boolean = true,
     ): NotificationContent {
-        val node = notification.content
+        val node = notification.content?.deepCopy<JsonNode>()
         if (notification.type == NotificationChannelsEnum.MAIL && isPassword) (node as ObjectNode).remove("password")
-        return objectMapper.treeToValue(node, contentClass(notification.type))
+        val content = objectMapper.treeToValue(node, contentClass(notification.type))
+
+        // The password is write-only for Jackson: take it straight from the stored JSON rather than relying on the conversion.
+        if (!isPassword && content is NotificationContent.Mail) {
+            return content.copy(password = node?.get("password")?.takeUnless { it.isNull }?.asText())
+        }
+        return content
     }
 
     fun withoutTokens(content: NotificationContent): NotificationContent =
@@ -68,6 +72,10 @@ object NotificationContentMapper {
                 is NotificationContent.Matrix -> NotificationChannelsEnum.MATRIX
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
+        // The mail password is write-only for the API, so Jackson skips it here: store it explicitly.
+        if (content is NotificationContent.Mail && content.password != null) {
+            (jsonNode as ObjectNode).put("password", content.password)
+        }
 
         return jsonNode to type
     }
@@ -83,13 +91,16 @@ object NotificationMapper {
             content = NotificationContentMapper.toEntity(dto.content).first
         }
 
-    fun toDto(entity: NotificationsChannelEntity): NotificationDto =
+    fun toDto(
+        entity: NotificationsChannelEntity,
+        withSecrets: Boolean = false,
+    ): NotificationDto =
         NotificationDto(
             id = entity.id,
             name = entity.name,
             type = entity.type,
             isDefault = entity.isDefault,
-            content = NotificationContentMapper.toDTO(entity),
+            content = NotificationContentMapper.toDTO(entity, isPassword = !withSecrets),
         )
 
     fun toSmallDto(entity: NotificationsChannelEntity): ListingNotificationsDto =
