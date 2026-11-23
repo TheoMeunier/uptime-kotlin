@@ -16,6 +16,7 @@ data class UserDto(
     val createdAt: Instant? = null,
     val role: UserRole = UserRole.ADMIN,
     val mustChangePassword: Boolean = false,
+    val twoFactorEnabled: Boolean = false,
 )
 
 object UserMapper {
@@ -28,6 +29,7 @@ object UserMapper {
             createdAt = userEntity.createdAt,
             role = userEntity.role,
             mustChangePassword = userEntity.mustChangePassword,
+            twoFactorEnabled = userEntity.totpEnabledAt != null,
         )
 
     fun toListItemDto(
@@ -42,6 +44,7 @@ object UserMapper {
             createdAt = userEntity.createdAt,
             current = userEntity.id == currentUserId,
             mustChangePassword = userEntity.mustChangePassword,
+            twoFactorEnabled = userEntity.totpEnabledAt != null,
         )
 
     fun toEntity(userDto: UserDto): UserEntity =

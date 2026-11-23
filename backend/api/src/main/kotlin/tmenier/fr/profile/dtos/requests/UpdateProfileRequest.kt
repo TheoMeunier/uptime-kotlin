@@ -25,4 +25,5 @@ data class UpdatePasswordRequest(
     @field:NotBlank(message = "Confirmation password is required")
     @field:Size(min = 8, max = 72, message = "Confirmation password must be between 8 and 72 characters long")
     val passwordConfirmation: String,
+    val currentSessionId: String? = null,
 )

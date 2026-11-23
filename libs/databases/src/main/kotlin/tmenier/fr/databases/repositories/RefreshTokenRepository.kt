@@ -79,6 +79,16 @@ class RefreshTokenRepository : PanacheRepositoryBase<RefreshTokenEntity, UUID> {
 
     fun revokeAllForUser(userId: UUID): Long = delete("user.id = ?1", userId)
 
+    fun revokeAllForUserExcept(
+        userId: UUID,
+        keptSessionId: UUID?,
+    ): Long =
+        if (keptSessionId == null) {
+            revokeAllForUser(userId)
+        } else {
+            delete("user.id = ?1 and id <> ?2", userId, keptSessionId)
+        }
+
     fun purgeExpired(now: Instant = Instant.now()): Long = delete("expiredAt <= ?1", now)
 
     companion object {

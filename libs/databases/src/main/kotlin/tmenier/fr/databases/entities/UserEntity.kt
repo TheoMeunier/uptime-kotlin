@@ -44,6 +44,15 @@ class UserEntity : PanacheEntityBase {
     @Column(name = "onboarding_completed_at")
     var onboardingCompletedAt: Instant? = null
 
+    @Column(name = "totp_secret")
+    var totpSecret: String? = null
+
+    @Column(name = "totp_enabled_at")
+    var totpEnabledAt: Instant? = null
+
+    @Column(name = "totp_last_step")
+    var totpLastStep: Long? = null
+
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE])
     var refreshToken: MutableList<RefreshTokenEntity> = mutableListOf()
 }

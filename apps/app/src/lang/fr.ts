@@ -158,6 +158,7 @@ const fr: typeof en = {
 		retry: 'Réessayer',
 		close: 'Fermer',
 		cancel: 'Annuler',
+		download: 'Télécharger',
 		loading: 'Connexion…',
 		exporting: 'Export en cours…',
 		create: 'Créer {{entity}}',
@@ -1283,6 +1284,90 @@ const fr: typeof en = {
 		read_only: {
 			title: 'Accès en lecture seule',
 			description: 'Vous voyez tout ; demandez à un admin pour toute modification.',
+		},
+	},
+	two_factor: {
+		tab: 'Authentification 2FA',
+		title: 'Double authentification',
+		description:
+			"Demande un code d'une application d'authentification (Bitwarden, Aegis, 1Password, Google Authenticator…) à chaque connexion.",
+		status: {
+			on: 'Activée',
+			off: 'Désactivée',
+			enabled_since: 'Activée depuis le {{date}}.',
+			codes_remaining_one: '{{count}} code de secours restant.',
+			codes_remaining_other: '{{count}} codes de secours restants.',
+		},
+		setup: {
+			intro:
+				'Même avec votre mot de passe, personne ne pourra se connecter sans le code à 6 chiffres généré par votre application.',
+			start: 'Activer',
+			starting: 'Préparation…',
+			qr_alt: "QR code pour ajouter le compte à une application d'authentification",
+			scan: "Scannez ce QR code avec votre application d'authentification.",
+			bitwarden_hint:
+				"Avec Bitwarden : modifiez l'élément de connexion de ce site, puis scannez le QR code ou collez la clé ci-dessous dans le champ « Clé d'authentification (TOTP) ». Bitwarden remplira ensuite le code à la connexion.",
+			manual_key: 'Clé pour une saisie manuelle',
+			code_label: "Code de l'application",
+			code_hint: "Saisissez le code à 6 chiffres affiché par l'application pour confirmer.",
+			confirm: 'Confirmer et activer',
+			confirming: 'Vérification…',
+		},
+		recovery: {
+			title: 'Vos codes de secours',
+			description:
+				"Chaque code ne sert qu'une fois, si vous perdez l'accès à votre application. Gardez-les en lieu sûr : ils ne seront plus affichés.",
+			copy_all: 'Tout copier',
+			done: "J'ai enregistré mes codes",
+			file_header: "Codes de secours Uptime Kotlin ({{host}}). Chaque code ne sert qu'une fois.",
+			regenerate: 'Nouveaux codes de secours',
+			regenerate_title: 'Nouveaux codes de secours',
+			regenerate_description:
+				'Les codes actuels ne fonctionneront plus. Saisissez un code de votre application pour continuer.',
+			regenerating: 'Génération…',
+		},
+		disable: {
+			button: 'Désactiver',
+			title: 'Désactiver la double authentification',
+			description: 'Votre mot de passe suffira de nouveau pour vous connecter.',
+			code_label: "Code de l'application ou code de secours",
+			confirm: 'Désactiver',
+			disabling: 'Désactivation…',
+		},
+		login: {
+			title: 'Double authentification',
+			description: "Saisissez le code à 6 chiffres de votre application d'authentification.",
+			recovery_description: "Saisissez l'un de vos codes de secours. Il ne fonctionnera plus ensuite.",
+			code_label: 'Code',
+			code_hint: 'Bitwarden peut le remplir pour vous.',
+			recovery_label: 'Code de secours',
+			use_recovery: 'Utiliser un code de secours',
+			use_app: "Utiliser le code de l'application",
+			verify: 'Vérifier',
+			verifying: 'Vérification…',
+			back: 'Retour à la connexion',
+		},
+		alerts: {
+			disabled: 'Double authentification désactivée.',
+		},
+		errors: {
+			challenge_invalid: 'Cette connexion a expiré. Saisissez de nouveau votre mot de passe.',
+			invalid_code: 'Code invalide.',
+			too_many_attempts: 'Trop de codes invalides. Patientez 15 minutes, puis reconnectez-vous.',
+			already_enabled: 'La double authentification est déjà activée.',
+			setup_required: "Recommencez l'activation.",
+			not_enabled: "La double authentification n'est pas activée.",
+			own: 'Désactivez votre propre double authentification depuis votre profil.',
+			invalid_current_password: 'Le mot de passe actuel est incorrect.',
+		},
+		admin: {
+			badge: '2FA',
+			badge_hint: 'Double authentification activée',
+			disable: 'Désactiver la double authentification',
+			disable_title: 'Désactiver la double authentification ?',
+			disable_description:
+				"{{name}} se connectera avec son seul mot de passe, puis pourra la réactiver depuis son profil. À utiliser quand l'application et les codes de secours sont perdus.",
+			disabled: 'Double authentification désactivée.',
 		},
 	},
 };

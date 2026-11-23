@@ -12,6 +12,7 @@ import tmenier.fr.common.utils.logger
 import tmenier.fr.databases.repositories.InstanceSettingsRepository
 import tmenier.fr.databases.repositories.RefreshTokenRepository
 import tmenier.fr.databases.repositories.UserRepository
+import tmenier.fr.twofactor.services.TwoFactorVerifier
 import tmenier.fr.users.services.AdminPasswordResetPolicy.Decision
 import java.util.Optional
 
@@ -24,6 +25,7 @@ class AdminPasswordResetOnStartup(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val bcryptService: BcryptService,
     private val passwordGenerator: TemporaryPasswordGenerator,
+    private val twoFactorVerifier: TwoFactorVerifier,
 ) {
     fun onStart(
         @Observes event: StartupEvent,
@@ -88,6 +90,9 @@ class AdminPasswordResetOnStartup(
                 refreshTokenRepository.revokeAllForUser(user.id)
                 settings.adminPasswordResetEmail = email
 
+                val twoFactorWasOn = user.totpEnabledAt != null
+                twoFactorVerifier.disable(user)
+
                 logger.warn {
                     """
                     |
@@ -100,6 +105,10 @@ class AdminPasswordResetOnStartup(
                     |  RESET_ADMIN_PASSWORD and restart.
                     |==================================================================
                     """.trimMargin()
+                }
+
+                if (twoFactorWasOn) {
+                    logger.warn { "RESET_ADMIN_PASSWORD: two-factor authentication of $email was turned off. Turn it on again from the profile." }
                 }
             }
         }

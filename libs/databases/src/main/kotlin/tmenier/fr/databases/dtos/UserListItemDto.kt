@@ -14,4 +14,5 @@ data class UserListItemDto(
     val createdAt: Instant,
     val current: Boolean,
     val mustChangePassword: Boolean = false,
+    val twoFactorEnabled: Boolean = false,
 )

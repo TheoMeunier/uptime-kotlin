@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ArchiveRestore, Bell, Database, Lock, SlidersHorizontal, User, Users } from 'lucide-react';
+import { ArchiveRestore, Bell, Database, Lock, ShieldCheck, SlidersHorizontal, User, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UpdateProfileForm from '@/features/profile/components/forms/update-profile-form.tsx';
 import UpdatePasswordProfileForm from '@/features/profile/components/forms/update-password-profile-form.tsx';
@@ -9,12 +9,14 @@ import PreferencesForm from '@/features/profile/components/forms/preferences-for
 import LogRetentionForm from '@/features/settings/components/forms/log-retention-form.tsx';
 import BackupSettings from '@/features/backup/components/backup-settings.tsx';
 import ListingUsers from '@/features/users/components/listing/listing-users.tsx';
+import TwoFactorSettings from '@/features/two-factor/components/two-factor-settings.tsx';
 import { usePermissions } from '@/features/auth/lib/role.ts';
 import type { Permission } from '@/features/auth/lib/permissions.ts';
 
 const SECTIONS: { id: string; labelKey: string; icon: typeof User; permission?: Permission }[] = [
 	{ id: 'account', labelKey: 'profile.tabs.account', icon: User },
 	{ id: 'password', labelKey: 'profile.tabs.password', icon: Lock },
+	{ id: 'two-factor', labelKey: 'two_factor.tab', icon: ShieldCheck },
 	{ id: 'notifications', labelKey: 'profile.tabs.notifications', icon: Bell, permission: 'notifications.manage' },
 	{ id: 'preferences', labelKey: 'profile.tabs.preferences', icon: SlidersHorizontal },
 	{ id: 'retention', labelKey: 'retention.tab', icon: Database, permission: 'retention.manage' },
@@ -48,7 +50,7 @@ export default function Profile() {
 								className={cn(
 									'flex shrink-0 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors',
 									'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
-									'md:w-full md:justify-start',
+									'text-left md:w-full md:justify-start',
 									isActive
 										? 'bg-muted text-foreground font-medium'
 										: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
@@ -65,6 +67,7 @@ export default function Profile() {
 			<div className="min-w-0 flex-1">
 				{active === 'account' && <UpdateProfileForm />}
 				{active === 'password' && <UpdatePasswordProfileForm />}
+				{active === 'two-factor' && <TwoFactorSettings />}
 				{active === 'notifications' && <ListingNotification />}
 				{active === 'preferences' && <PreferencesForm />}
 				{active === 'retention' && <LogRetentionForm />}

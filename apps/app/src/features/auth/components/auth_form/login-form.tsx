@@ -7,10 +7,19 @@ import useLoginForm from '@/features/auth/hooks/useLoginForm.ts';
 import { useTranslation } from 'react-i18next';
 import { Suspense } from 'react';
 import { DemoLoginHint } from '@/features/demo/slots.ts';
+import TwoFactorStep from '@/features/two-factor/components/two-factor-step.tsx';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
 	const { t } = useTranslation();
-	const { form, isLoading, onsubmit } = useLoginForm();
+	const { form, isLoading, onsubmit, twoFactor } = useLoginForm();
+
+	if (twoFactor.awaitingCode) {
+		return (
+			<div className={cn('flex flex-col gap-6', className)} {...props}>
+				<TwoFactorStep onSubmit={twoFactor.submit} onBack={twoFactor.cancel} isVerifying={twoFactor.isVerifying} />
+			</div>
+		);
+	}
 
 	return (
 		<div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -33,6 +42,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 									{...form.register('email')}
 									id="email"
 									type="email"
+									autoComplete="username"
 									placeholder={t('form.placeholder.email')}
 									required
 								/>
@@ -45,6 +55,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 									{...form.register('password')}
 									id="password"
 									type="password"
+									autoComplete="current-password"
 									placeholder={t('form.placeholder.password')}
 									required
 								/>

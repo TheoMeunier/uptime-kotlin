@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.jwt.JsonWebToken
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.BadRequestException
+import tmenier.fr.common.utils.toUuidOrNull
 import tmenier.fr.databases.repositories.RefreshTokenRepository
 import tmenier.fr.databases.repositories.UserRepository
 import tmenier.fr.profile.dtos.requests.UpdatePasswordRequest
@@ -36,6 +37,6 @@ class UpdatePasswordAction(
         val password = passwordService.hashPassword(payload.password)
         userRepository.updatePassword(userId, password)
 
-        refreshTokenRepository.revokeAllForUser(userId)
+        refreshTokenRepository.revokeAllForUserExcept(userId, payload.currentSessionId.toUuidOrNull())
     }
 }

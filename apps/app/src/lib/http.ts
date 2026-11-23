@@ -13,3 +13,7 @@ export function downloadBlob(blob: Blob, fileName: string) {
 	link.click();
 	URL.revokeObjectURL(url);
 }
+
+export function downloadText(content: string, fileName: string, type = 'text/plain') {
+	downloadBlob(new Blob([content], { type }), fileName);
+}

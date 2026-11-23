@@ -75,7 +75,8 @@ Prefer the public side? Open the **[demo status page](https://demo.uptime-kotlin
 - **Lightweight**: a native image that runs in **~50 MB of RAM**, on amd64 and ARM64
 - **Cluster mode**: add workers to spread the checks, with no extra service (the job queue lives in PostgreSQL)
 - **Prometheus metrics** and a ready-made Grafana dashboard to watch the monitor itself
-- **Secure by default**: JWT authentication, stored secrets encrypted with your own key
+- **Secure by default**: JWT authentication, optional two-factor authentication (TOTP, works with Bitwarden and
+  authenticator apps), stored secrets encrypted with your own key
 - Interface in **English, French, German and Spanish**
 
 <table>
@@ -152,7 +153,8 @@ services:
 | `NOTIFICATIONS_DATE_FORMAT`                                                                     | see right  | Format of those dates, as a [Java `DateTimeFormatter` pattern](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/format/DateTimeFormatter.html#patterns) (English words). Default `dd/MM/yyyy HH:mm:ss VV`. See [Notification date format](#notification-date-format). Same value on the application and the workers. |
 | `NOTIFICATIONS_WEB_PUSH_SUBJECT`                                                                | repo URL   | Contact given to the browser push services with each Web Push notification (`mailto:you@example.com` or an `https://` URL). Same value on the application and the workers. Browser notifications need the interface served over HTTPS (or `localhost`).                                                                                    |
 | `NOTIFICATIONS_PAGERDUTY_EVENTS_URL`                                                            | PagerDuty  | PagerDuty Events API v2 endpoint (`https://events.pagerduty.com/v2/enqueue`). Accounts in the EU service region use `https://events.eu.pagerduty.com/v2/enqueue`. Same value on the application and the workers.                                                                                                                           |
-| `RESET_ADMIN_PASSWORD`                                                                          |            | E-mail of an admin locked out: on startup, its password is replaced by a temporary one printed in the logs, to change at the next sign-in. Remove it once done.                                                                                                                                                                            |
+| `RESET_ADMIN_PASSWORD`                                                                          |            | E-mail of an admin locked out: on startup, its password is replaced by a temporary one printed in the logs, to change at the next sign-in. Its two-factor authentication is turned off too. Remove it once done.                                                                                                                           |
+| `TWO_FACTOR_ISSUER`                                                                             | see right  | Name of the entry created in Bitwarden or the authenticator app when a user turns on two-factor authentication (`Uptime Kotlin`).                                                                                                                                                                                                          |
 
 <details>
 <summary>Use your own JWT keys</summary>

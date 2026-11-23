@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.jwt.JsonWebToken
 import tmenier.fr.common.enums.users.UserRole
+import tmenier.fr.common.utils.noStore
 import tmenier.fr.users.actions.ResetUserPasswordAction
 import java.util.UUID
 
@@ -27,7 +28,7 @@ class ResetUserPasswordResource(
 
         return Response
             .ok(mapOf("password" to password))
-            .header("Cache-Control", "no-store")
+            .noStore()
             .build()
     }
 }

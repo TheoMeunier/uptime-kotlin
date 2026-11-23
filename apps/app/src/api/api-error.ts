@@ -38,6 +38,13 @@ function readViolations(payload: ApiErrorPayload | undefined): ApiViolation[] {
 	);
 }
 
+export function getApiErrorCode(error: unknown): string | undefined {
+	if (!(error instanceof ApiError)) return undefined;
+
+	const details = error.details as { error?: unknown } | undefined;
+	return typeof details?.error === 'string' ? details.error : undefined;
+}
+
 export function getApiErrorMessage(error: unknown) {
 	if (error instanceof ApiError) {
 		return error.message;

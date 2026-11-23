@@ -41,7 +41,7 @@ class DemoReadOnlyFilter(
 
         private val ALLOWED_WRITES =
             listOf(
-                Regex("^/api/auth/(login|refresh|logout)/?$"),
+                Regex("^/api/auth/(login|login/totp|refresh|logout)/?$"),
                 Regex("^/api/probes/[^/]+/check-now/?$"),
             )
 
