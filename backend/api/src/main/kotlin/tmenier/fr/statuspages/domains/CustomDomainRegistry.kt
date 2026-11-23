@@ -15,14 +15,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- * In-memory map of custom domains to slugs.
- *
- * [CustomDomainScopeFilter] reads it on the Vert.x I/O thread, where blocking (hence the database) is forbidden: reads
- * only ever look at the snapshot. The database is queried on a dedicated thread, at startup, right after a local change
- * (so the admin sees it at once) and in the background once the snapshot is older than [TTL] (changes made by another
- * instance).
- */
 @ApplicationScoped
 class CustomDomainRegistry(
     private val statusPageRepository: StatusPageRepository,
@@ -47,7 +39,6 @@ class CustomDomainRegistry(
 
     fun isCustomDomain(host: String?): Boolean = slugFor(host) != null
 
-    /** Reloads from the database and waits for it. Never call it from an I/O thread. */
     fun reload() {
         loader.submit(::load).get(RELOAD_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
     }

@@ -132,7 +132,6 @@ const router = createBrowserRouter(
 
 const root = createRoot(document.getElementById('root')!);
 
-// A custom domain only shows its status page; the main domain gets the full app.
 void resolveCustomDomainSlug().then((customDomainSlug) => {
 	root.render(
 		<StrictMode>

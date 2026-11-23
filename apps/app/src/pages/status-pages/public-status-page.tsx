@@ -21,9 +21,7 @@ import statusPageService from '@/features/status-pages/services/status-page-serv
 const isNotFound = (error: unknown) => error instanceof ApiError && error.status === 404;
 
 interface PublicStatusPageProps {
-	/** Set when the page is served at the root of its custom domain instead of `/status/:slug`. */
 	slug?: string;
-	/** Custom domain: no link back to the instance (login, `/status`), which lives on another host. */
 	standalone?: boolean;
 }
 

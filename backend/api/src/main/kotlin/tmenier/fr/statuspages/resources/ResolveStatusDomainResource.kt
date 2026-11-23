@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.Response
 import tmenier.fr.statuspages.domains.CustomDomainRegistry
 import tmenier.fr.statuspages.domains.RequestHost
 
-/** Tells the front which status page the current host serves, if any (404 on the main domain). */
 @Path("/api/status-domains/resolve")
 @Produces(MediaType.APPLICATION_JSON)
 class ResolveStatusDomainResource(

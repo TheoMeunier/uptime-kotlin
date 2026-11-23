@@ -8,10 +8,6 @@ import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.ext.Provider
 import tmenier.fr.common.exceptions.core.ApiErrorResponse
 
-/**
- * A custom domain only serves its public status page: the rest of the API (login, admin) stays on the main domain,
- * so no session ever lives on a host the instance owner does not control.
- */
 @Provider
 @PreMatching
 class CustomDomainScopeFilter(
