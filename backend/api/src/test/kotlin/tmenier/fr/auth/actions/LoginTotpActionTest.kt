@@ -198,8 +198,7 @@ private class FakeVerifier :
     ): Boolean = code == "123456"
 }
 
-private class RecordingSessionIssuer :
-    SessionIssuer(RefreshTokenRepository(), JwtService(), SessionContextService(noHeaders())) {
+private class RecordingSessionIssuer : SessionIssuer(RefreshTokenRepository(), JwtService(), SessionContextService(noHeaders())) {
     val openedFor = mutableListOf<UUID>()
 
     override fun open(user: UserDto): LoginResponse {
