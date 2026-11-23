@@ -72,7 +72,6 @@ object NotificationContentMapper {
                 is NotificationContent.Matrix -> NotificationChannelsEnum.MATRIX
             }
         val jsonNode = objectMapper.valueToTree<JsonNode>(content)
-        // The mail password is write-only for the API, so Jackson skips it here: store it explicitly.
         if (content is NotificationContent.Mail && content.password != null) {
             (jsonNode as ObjectNode).put("password", content.password)
         }
