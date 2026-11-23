@@ -22,7 +22,7 @@ class StoreNotificationAction(
         val isUpdate = notificationId != null
         val existingNotification =
             if (isUpdate) {
-                NotificationMapper.toDto(notificationChanelRepository.findById(notificationId))
+                NotificationMapper.toDto(notificationChanelRepository.findById(notificationId), withSecrets = true)
             } else {
                 null
             }

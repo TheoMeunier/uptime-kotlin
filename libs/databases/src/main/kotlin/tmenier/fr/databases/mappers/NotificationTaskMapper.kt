@@ -22,7 +22,7 @@ object NotificationTaskMapper {
         NotificationQueueDto(
             id = entity.id,
             probe = entity.probe.let { ProbeMapper.toDto(it) },
-            notification = entity.notification.let { NotificationMapper.toDto(it) },
+            notification = entity.notification.let { NotificationMapper.toDto(it, withSecrets = true) },
             taskId = entity.checkTaskId,
             status = entity.status,
             event = entity.event,
