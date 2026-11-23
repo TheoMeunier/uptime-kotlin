@@ -20,7 +20,8 @@ import java.util.UUID
 
 @Entity
 @Table(name = "status_pages")
-class StatusPageEntity : PanacheEntityBase {
+class
+StatusPageEntity : PanacheEntityBase {
     @Id
     @Column(nullable = false)
     lateinit var id: UUID
@@ -45,7 +46,6 @@ class StatusPageEntity : PanacheEntityBase {
     @Column(name = "is_private", nullable = false)
     var isPrivate: Boolean = false
 
-    /** Host name (lower case, no scheme nor port) serving this page at its root. TLS is handled by the reverse proxy. */
     @Column(name = "custom_domain", length = 253)
     var customDomain: String? = null
 

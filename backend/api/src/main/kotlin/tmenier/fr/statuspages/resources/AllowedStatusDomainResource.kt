@@ -8,10 +8,6 @@ import jakarta.ws.rs.core.Response
 import tmenier.fr.statuspages.domains.CustomDomainRegistry
 import tmenier.fr.statuspages.domains.RequestHost
 
-/**
- * 200 when [domain] is attached to a status page, 404 otherwise. Meant for Caddy's on-demand TLS `ask` endpoint, so a
- * reverse proxy only requests certificates for domains declared here.
- */
 @Path("/api/status-domains/allowed")
 class AllowedStatusDomainResource(
     private val registry: CustomDomainRegistry,
