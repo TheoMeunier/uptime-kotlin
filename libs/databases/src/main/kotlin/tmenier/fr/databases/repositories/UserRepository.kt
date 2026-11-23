@@ -87,6 +87,49 @@ class UserRepository : PanacheRepository<UserEntity> {
         userEntity.persist()
     }
 
+    fun startTwoFactorSetup(
+        userEntity: UserEntity,
+        encryptedSecret: String,
+    ) {
+        userEntity.totpSecret = encryptedSecret
+        userEntity.totpEnabledAt = null
+        userEntity.totpLastStep = null
+        userEntity.persist()
+    }
+
+    fun enableTwoFactor(
+        userEntity: UserEntity,
+        acceptedStep: Long,
+        at: Instant = Instant.now(),
+    ) {
+        userEntity.totpEnabledAt = at
+        userEntity.totpLastStep = acceptedStep
+        userEntity.persist()
+    }
+
+    fun recordTotpStep(
+        userEntity: UserEntity,
+        step: Long,
+    ) {
+        userEntity.totpLastStep = step
+        userEntity.persist()
+    }
+
+    fun disableTwoFactor(userEntity: UserEntity) {
+        userEntity.totpSecret = null
+        userEntity.totpEnabledAt = null
+        userEntity.totpLastStep = null
+        userEntity.persist()
+    }
+
+    fun findTotpSecrets(): List<Pair<UUID, String>> = list("totpSecret is not null").map { it.id to it.totpSecret!! }
+
+    fun replaceTotpSecret(
+        id: UUID,
+        previous: String,
+        next: String,
+    ): Boolean = update("totpSecret = ?1 where id = ?2 and totpSecret = ?3", next, id, previous) > 0
+
     fun isOnboardingCompleted(userId: UUID): Boolean = findById(userId).onboardingCompletedAt != null
 
     fun markOnboardingCompleted(

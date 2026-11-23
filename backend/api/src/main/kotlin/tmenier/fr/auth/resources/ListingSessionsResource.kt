@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response
 import tmenier.fr.auth.actions.ListingSessionsAction
 import tmenier.fr.common.config.DemoMode
 import tmenier.fr.common.enums.users.UserRole
-import java.util.UUID
+import tmenier.fr.common.utils.toUuidOrNull
 
 @Path("/api/auth/sessions")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,8 +25,7 @@ class ListingSessionsResource(
     fun sessions(
         @QueryParam("current") current: String?,
     ): Response {
-        val currentSessionId = current?.let { runCatching { UUID.fromString(it) }.getOrNull() }
-        val sessions = listingSessionsAction.execute(currentSessionId)
+        val sessions = listingSessionsAction.execute(current.toUuidOrNull())
 
         return Response.ok(if (demoMode.enabled) sessions.filter { it.current } else sessions).build()
     }

@@ -3,21 +3,19 @@ package tmenier.fr.auth.actions
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.auth.dtos.requests.LoginRequest
 import tmenier.fr.auth.dtos.responses.LoginResponse
-import tmenier.fr.auth.services.JwtService
-import tmenier.fr.auth.services.SessionContextService
+import tmenier.fr.auth.services.SessionIssuer
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
-import tmenier.fr.databases.repositories.RefreshTokenRepository
 import tmenier.fr.databases.repositories.UserRepository
+import tmenier.fr.twofactor.services.MfaChallengeService
 import java.util.UUID
 
 @ApplicationScoped
 class LoginAction(
     val userRepository: UserRepository,
-    val refreshTokenRepository: RefreshTokenRepository,
     val passwordService: BcryptService,
-    val jwtService: JwtService,
-    val sessionContextService: SessionContextService,
+    val sessionIssuer: SessionIssuer,
+    val mfaChallengeService: MfaChallengeService,
 ) {
     private val unknownUserHash: String by lazy {
         passwordService.hashPassword(UUID.randomUUID().toString())
@@ -35,19 +33,10 @@ class LoginAction(
             throw InvalidCredentialsException()
         }
 
-        val refreshToken = jwtService.generateRefreshToken()
-        val sessionId =
-            refreshTokenRepository.storeRefreshToken(
-                refreshToken,
-                user,
-                sessionContextService.userAgent(),
-                sessionContextService.ipAddress(),
-            )
+        if (user.twoFactorEnabled) {
+            return LoginResponse(mfaRequired = true, challengeToken = mfaChallengeService.issue(user.id))
+        }
 
-        return LoginResponse(
-            token = jwtService.generateJwt(user.id, user.name, user.email, user.role, user.mustChangePassword),
-            refreshToken = refreshToken.toString(),
-            sessionId = sessionId.toString(),
-        )
+        return sessionIssuer.open(user)
     }
 }

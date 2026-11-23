@@ -3,9 +3,10 @@ package tmenier.fr.users.services
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import tmenier.fr.common.security.SecureRandomService
 
 class TemporaryPasswordGeneratorTest {
-    private val generator = TemporaryPasswordGenerator()
+    private val generator = TemporaryPasswordGenerator(SecureRandomService())
 
     @Test
     fun `passwords are four groups of four unambiguous characters`() {

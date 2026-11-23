@@ -32,3 +32,16 @@ export function useResetUserPassword() {
 		isLoading: mutation.isPending,
 	};
 }
+
+export function useDisableUserTwoFactor() {
+	const { t } = useTranslation();
+	const client = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: (userId: string) => userService.disableTwoFactor(userId),
+		onSuccess: () => toast.success(t('two_factor.admin.disabled')),
+		onSettled: () => invalidateUsers(client),
+	});
+
+	return { disable: mutation.mutate, isLoading: mutation.isPending };
+}

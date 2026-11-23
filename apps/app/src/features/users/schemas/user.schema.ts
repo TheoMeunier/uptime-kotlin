@@ -11,6 +11,7 @@ export const UserSchema = z.object({
 	created_at: z.string(),
 	current: z.boolean(),
 	must_change_password: z.boolean().default(false),
+	two_factor_enabled: z.boolean().default(false),
 });
 
 export type User = z.infer<typeof UserSchema>;

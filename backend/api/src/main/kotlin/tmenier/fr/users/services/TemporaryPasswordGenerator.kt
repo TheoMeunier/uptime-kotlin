@@ -1,16 +1,13 @@
 package tmenier.fr.users.services
 
 import jakarta.enterprise.context.ApplicationScoped
-import java.security.SecureRandom
+import tmenier.fr.common.security.SecureRandomService
 
 @ApplicationScoped
-class TemporaryPasswordGenerator {
-    private val random = SecureRandom()
-
-    fun generate(): String =
-        (0 until GROUPS).joinToString("-") {
-            (0 until GROUP_SIZE).map { ALPHABET[random.nextInt(ALPHABET.length)] }.joinToString("")
-        }
+class TemporaryPasswordGenerator(
+    private val randomService: SecureRandomService,
+) {
+    fun generate(): String = randomService.groupedString(ALPHABET, GROUPS, GROUP_SIZE)
 
     companion object {
         const val ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"

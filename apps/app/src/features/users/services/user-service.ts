@@ -27,6 +27,10 @@ const userService = {
 		const response = await api.post(`users/${userId}/reset-password`).json();
 		return ResetPasswordResponseSchema.parse(response).password;
 	},
+
+	async disableTwoFactor(userId: string) {
+		await api.post(`users/${userId}/disable-two-factor`);
+	},
 };
 
 export default userService;

@@ -47,10 +47,8 @@ export default function useChangeTemporaryPassword() {
 
 	const mutation = useMutation({
 		mutationFn: async (data: ChangeTemporaryPasswordSchema) => {
-			const email = authService.getUser().email;
-
 			await profileService.updatePasswordProfile(data);
-			await authService.login(email, data.password);
+			await authService.renewSession();
 		},
 		onSuccess: () => navigate(safeRedirect(searchParams.get('redirect')), { replace: true }),
 	});

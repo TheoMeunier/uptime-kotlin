@@ -34,10 +34,8 @@ export default function useUpdatePasswordProfile() {
 
 	const mutation = useMutation({
 		mutationFn: async (data: StoreUpdatePasswordSchemaType) => {
-			const email = authService.getUser().email;
-
 			await profileService.updatePasswordProfile(data);
-			await authService.login(email, data.password).catch(() => undefined);
+			await authService.renewSession();
 		},
 		onSuccess: () => {
 			form.reset();

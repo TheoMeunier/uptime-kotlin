@@ -42,6 +42,7 @@ class RoleAccessTest {
             "/api/notifications",
             "/api/dashboard/stats",
             "/api/auth/sessions",
+            "/api/profile/two-factor",
             "/api/version",
         ).forEach { path ->
             given()
@@ -63,6 +64,9 @@ class RoleAccessTest {
             "POST" to "/api/profile/update",
             "POST" to "/api/profile/update/password",
             "POST" to "/api/profile/onboarding/complete",
+            "POST" to "/api/profile/two-factor/enable",
+            "POST" to "/api/profile/two-factor/disable",
+            "POST" to "/api/profile/two-factor/recovery-codes",
         ).forEach { (method, path) ->
             given()
                 .auth()
@@ -93,6 +97,7 @@ class RoleAccessTest {
             "PUT" to "/api/settings/status-page",
             "POST" to "/api/users/new",
             "POST" to "/api/backup/restore",
+            "POST" to "/api/users/$id/disable-two-factor",
         ).forEach { (method, path) ->
             given()
                 .auth()

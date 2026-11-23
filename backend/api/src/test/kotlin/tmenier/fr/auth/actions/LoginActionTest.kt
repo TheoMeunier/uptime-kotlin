@@ -14,12 +14,17 @@ import org.junit.jupiter.api.assertThrows
 import tmenier.fr.auth.dtos.requests.LoginRequest
 import tmenier.fr.auth.services.JwtService
 import tmenier.fr.auth.services.SessionContextService
+import tmenier.fr.auth.services.SessionIssuer
 import tmenier.fr.common.bcrypt.BcryptService
 import tmenier.fr.common.enums.users.UserRole
 import tmenier.fr.common.exceptions.common.InvalidCredentialsException
+import tmenier.fr.common.security.SecureRandomService
 import tmenier.fr.databases.mappers.UserDto
+import tmenier.fr.databases.repositories.MfaChallengeRepository
 import tmenier.fr.databases.repositories.RefreshTokenRepository
 import tmenier.fr.databases.repositories.UserRepository
+import tmenier.fr.twofactor.services.MfaChallengeService
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -141,21 +146,62 @@ class LoginActionTest {
         assertNull(refreshTokens.lastUserAgent)
     }
 
+    @Test
+    fun `with two-factor authentication on, the password alone opens no session`() {
+        val refreshTokens = RecordingRefreshTokenRepository()
+        val challenges = RecordingMfaChallengeService()
+        val action = buildAction(refreshTokens = refreshTokens, challenges = challenges)
+
+        val response = action.execute(LoginRequest(email = TWO_FACTOR_EMAIL, password = KNOWN_PASSWORD))
+
+        assertTrue(response.mfaRequired)
+        assertEquals("challenge-for-${twoFactorUser.id}", response.challengeToken)
+        assertNull(response.token)
+        assertNull(response.refreshToken)
+        assertNull(response.sessionId)
+        assertEquals(0, refreshTokens.storedCount)
+        assertEquals(listOf(twoFactorUser.id), challenges.issuedFor)
+    }
+
+    @Test
+    fun `a wrong password never reveals that two-factor authentication is on`() {
+        val challenges = RecordingMfaChallengeService()
+        val action = buildAction(challenges = challenges)
+
+        assertThrows<InvalidCredentialsException> {
+            action.execute(LoginRequest(email = TWO_FACTOR_EMAIL, password = "wrong-password"))
+        }
+
+        assertTrue(challenges.issuedFor.isEmpty())
+    }
+
+    @Test
+    fun `without two-factor authentication no challenge is issued`() {
+        val challenges = RecordingMfaChallengeService()
+
+        val response = buildAction(challenges = challenges).execute(LoginRequest(email = KNOWN_EMAIL, password = KNOWN_PASSWORD))
+
+        assertEquals(false, response.mfaRequired)
+        assertNull(response.challengeToken)
+        assertTrue(challenges.issuedFor.isEmpty())
+    }
+
     private fun buildAction(
         bcrypt: BcryptService = BcryptService(),
         refreshTokens: RecordingRefreshTokenRepository = RecordingRefreshTokenRepository(),
         headers: Map<String, String> = emptyMap(),
+        challenges: RecordingMfaChallengeService = RecordingMfaChallengeService(),
     ) = LoginAction(
-        userRepository = FakeUserRepository(mapOf(KNOWN_EMAIL to knownUser)),
-        refreshTokenRepository = refreshTokens,
+        userRepository = FakeUserRepository(mapOf(KNOWN_EMAIL to knownUser, TWO_FACTOR_EMAIL to twoFactorUser)),
         passwordService = bcrypt,
-        jwtService = FakeJwtService(),
-        sessionContextService = SessionContextService(FakeHttpHeaders(headers)),
+        sessionIssuer = SessionIssuer(refreshTokens, FakeJwtService(), SessionContextService(FakeHttpHeaders(headers))),
+        mfaChallengeService = challenges,
     )
 
     private companion object {
         const val KNOWN_EMAIL = "someone@example.com"
         const val KNOWN_PASSWORD = "correct-horse-battery"
+        const val TWO_FACTOR_EMAIL = "second@example.com"
 
         /** Hashed once: bcrypt at cost 12 is deliberately slow. */
         val knownUser: UserDto =
@@ -164,6 +210,13 @@ class LoginActionTest {
                 name = "Someone",
                 email = KNOWN_EMAIL,
                 password = BcryptService().hashPassword(KNOWN_PASSWORD),
+            )
+
+        val twoFactorUser: UserDto =
+            knownUser.copy(
+                id = UUID.fromString("22222222-2222-2222-2222-222222222222"),
+                email = TWO_FACTOR_EMAIL,
+                twoFactorEnabled = true,
             )
     }
 }
@@ -199,6 +252,18 @@ private class RecordingRefreshTokenRepository : RefreshTokenRepository() {
         lastSessionId = UUID.randomUUID()
 
         return lastSessionId!!
+    }
+}
+
+private class RecordingMfaChallengeService : MfaChallengeService(MfaChallengeRepository(), SecureRandomService()) {
+    val issuedFor = mutableListOf<UUID>()
+
+    override fun issue(
+        userId: UUID,
+        now: Instant,
+    ): String {
+        issuedFor += userId
+        return "challenge-for-$userId"
     }
 }
 

@@ -7,6 +7,14 @@ import { loginPathFromHere } from '@/features/auth/lib/redirect.ts';
 
 const REFRESH_LOCK = 'uptime-auth-refresh';
 
+export type LoginResult = { mfaRequired: false } | { mfaRequired: true; challengeToken: string };
+
+type SessionPayload = {
+	token: string;
+	refresh_token: string;
+	session_id?: string;
+};
+
 interface User {
 	username: string;
 	email: string;
@@ -123,9 +131,7 @@ const authService = {
 				throw error;
 			}
 
-			const data = await res.json();
-			this.saveUser(jwtDecode.parseJwt(data.token).email, jwtDecode.parseJwt(data.token).name);
-			this.saveTokens(data.token, data.refresh_token, data.session_id);
+			this.openSession(await res.json());
 
 			return true;
 		} catch {
@@ -135,7 +141,13 @@ const authService = {
 		}
 	},
 
-	async login(username: string, password: string): Promise<void> {
+	openSession(data: SessionPayload) {
+		const claims = jwtDecode.parseJwt(data.token);
+		this.saveUser(claims.email, claims.name);
+		this.saveTokens(data.token, data.refresh_token, data.session_id);
+	},
+
+	async login(username: string, password: string): Promise<LoginResult> {
 		const res = await fetch(`/api/auth/login`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -147,8 +159,32 @@ const authService = {
 		}
 
 		const data = await res.json();
-		this.saveUser(jwtDecode.parseJwt(data.token).email, jwtDecode.parseJwt(data.token).name);
-		this.saveTokens(data.token, data.refresh_token, data.session_id);
+
+		if (data.mfa_required === true && typeof data.challenge_token === 'string') {
+			return { mfaRequired: true, challengeToken: data.challenge_token };
+		}
+
+		this.openSession(data);
+		return { mfaRequired: false };
+	},
+
+	async loginWithCode(challengeToken: string, code: string): Promise<void> {
+		const res = await fetch(`/api/auth/login/totp`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ challenge_token: challengeToken, code }),
+		});
+
+		if (!res.ok) {
+			throw await createApiError(res, 'Unable to verify the code.');
+		}
+
+		this.openSession(await res.json());
+	},
+
+	async renewSession(): Promise<boolean> {
+		const refresh = this.getRefreshToken();
+		return refresh ? this.refreshWith(refresh) : false;
 	},
 };
 export default authService;

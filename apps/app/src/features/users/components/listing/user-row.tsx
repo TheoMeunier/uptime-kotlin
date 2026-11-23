@@ -4,6 +4,7 @@ import { Badge } from '@/components/atoms/badge.tsx';
 import { getInitials } from '@/lib/utils.ts';
 import RemoveUserDialogue from '@/features/users/components/actions/remove-user-dialogue.tsx';
 import ResetPasswordDialogue from '@/features/users/components/actions/reset-password-dialogue.tsx';
+import DisableTwoFactorUserDialogue from '@/features/users/components/actions/disable-two-factor-dialogue.tsx';
 import UserRoleBadge from '@/features/users/components/listing/user-role-badge.tsx';
 import type { User } from '@/features/users/schemas/user.schema.ts';
 
@@ -24,6 +25,11 @@ export default function UserRow({ user, isLastAdmin }: { user: User; isLastAdmin
 								{t('users.you')}
 							</Badge>
 						)}
+						{user.two_factor_enabled && (
+							<Badge variant="outline" className="font-normal" title={t('two_factor.admin.badge_hint')}>
+								{t('two_factor.admin.badge')}
+							</Badge>
+						)}
 						{user.must_change_password && (
 							<Badge variant="outline" className="font-normal" title={t('users.reset_pending_hint')}>
 								{t('users.reset_pending')}
@@ -36,6 +42,7 @@ export default function UserRow({ user, isLastAdmin }: { user: User; isLastAdmin
 
 			<div className="flex shrink-0 items-center gap-2">
 				<UserRoleBadge role={user.role} />
+				{user.two_factor_enabled && !user.current && <DisableTwoFactorUserDialogue user={user} />}
 				<ResetPasswordDialogue user={user} disabled={user.current} />
 				<RemoveUserDialogue user={user} disabled={user.current || isLastAdmin} />
 			</div>
