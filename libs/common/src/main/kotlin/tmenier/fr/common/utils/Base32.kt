@@ -27,7 +27,12 @@ object Base32 {
     }
 
     fun decode(text: String): ByteArray {
-        val clean = text.trim().trimEnd('=').replace(" ", "").uppercase()
+        val clean =
+            text
+                .trim()
+                .trimEnd('=')
+                .replace(" ", "")
+                .uppercase()
         val output = ByteArrayOutputStream(clean.length * BITS_PER_CHAR / BITS_PER_BYTE)
         var buffer = 0
         var bits = 0
