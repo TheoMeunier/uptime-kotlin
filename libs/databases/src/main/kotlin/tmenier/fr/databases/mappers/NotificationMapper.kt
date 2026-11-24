@@ -41,6 +41,15 @@ object NotificationContentMapper {
             else -> content
         }
 
+    fun withoutWebhookUrls(content: NotificationContent): NotificationContent =
+        when (content) {
+            is NotificationContent.Discord -> content.copy(webhookUrl = "")
+            is NotificationContent.Slack -> content.copy(webhookUrl = "")
+            is NotificationContent.Teams -> content.copy(webhookUrl = "")
+            is NotificationContent.Webhook -> content.copy(url = "")
+            else -> content
+        }
+
     private fun contentClass(type: NotificationChannelsEnum): Class<out NotificationContent> =
         when (type) {
             NotificationChannelsEnum.DISCORD -> NotificationContent.Discord::class.java
@@ -109,12 +118,18 @@ object NotificationMapper {
             isDefault = entity.isDefault,
         )
 
-    fun toShowDto(entity: NotificationsChannelEntity): ShowNotificationsDto =
+    fun toShowDto(
+        entity: NotificationsChannelEntity,
+        revealWebhookUrls: Boolean = false,
+    ): ShowNotificationsDto =
         ShowNotificationsDto(
             id = entity.id,
             name = entity.name,
             notificationType = entity.type,
-            content = NotificationContentMapper.withoutTokens(NotificationContentMapper.toDTO(entity, false)),
+            content =
+                NotificationContentMapper
+                    .withoutTokens(NotificationContentMapper.toDTO(entity, false))
+                    .let { if (revealWebhookUrls) it else NotificationContentMapper.withoutWebhookUrls(it) },
             isDefault = entity.isDefault,
             createdAt = entity.createdAt,
         )

@@ -1,5 +1,6 @@
 package tmenier.fr.notifications.resources
 
+import io.quarkus.security.identity.SecurityIdentity
 import jakarta.annotation.security.RolesAllowed
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
@@ -16,11 +17,13 @@ import tmenier.fr.databases.repositories.NotificationRepository
 @Consumes(MediaType.APPLICATION_JSON)
 class ListSettingNotificationResource(
     private val notificationRepository: NotificationRepository,
+    private val identity: SecurityIdentity,
 ) {
     @GET
     @RolesAllowed(UserRole.ADMIN_ROLE, UserRole.VIEWER_ROLE)
     fun listSettings(): Response {
-        val notifications = notificationRepository.getAll().map { NotificationMapper.toShowDto(it) }
+        val revealWebhookUrls = identity.hasRole(UserRole.ADMIN_ROLE)
+        val notifications = notificationRepository.getAll().map { NotificationMapper.toShowDto(it, revealWebhookUrls) }
 
         return Response.ok(notifications).build()
     }
