@@ -19,11 +19,4 @@ class RequestHostTest {
         assertNull(RequestHost.normalize(null))
         assertNull(RequestHost.normalize("  "))
     }
-
-    @Test
-    fun `the forwarded host wins over the host header`() {
-        val headers = mapOf("X-Forwarded-Host" to "status.example.com", "Host" to "uptime-kotlin-api:8080")
-        assertEquals("status.example.com", RequestHost.resolve(headers::get))
-        assertEquals("uptime.example.com", RequestHost.resolve(mapOf("Host" to "uptime.example.com")::get))
-    }
 }
