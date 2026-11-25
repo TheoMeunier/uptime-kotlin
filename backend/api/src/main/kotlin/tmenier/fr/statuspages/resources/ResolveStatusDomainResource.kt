@@ -1,5 +1,6 @@
 package tmenier.fr.statuspages.resources
 
+import io.vertx.core.http.HttpServerRequest
 import jakarta.annotation.security.PermitAll
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -19,10 +20,10 @@ class ResolveStatusDomainResource(
     @GET
     @PermitAll
     fun resolve(
-        @Context headers: HttpHeaders,
+        @Context request: HttpServerRequest,
     ): Response {
         val slug =
-            registry.slugFor(RequestHost.resolve(headers::getHeaderString))
+            registry.slugFor(RequestHost.of(request))
                 ?: return Response.status(Response.Status.NOT_FOUND).build()
 
         return Response

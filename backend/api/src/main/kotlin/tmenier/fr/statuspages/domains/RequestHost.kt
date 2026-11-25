@@ -1,10 +1,16 @@
 package tmenier.fr.statuspages.domains
 
-object RequestHost {
-    const val FORWARDED_HOST = "X-Forwarded-Host"
-    const val HOST = "Host"
+import io.vertx.core.http.HttpServerRequest
 
-    fun resolve(header: (String) -> String?): String? = normalize(header(FORWARDED_HOST)) ?: normalize(header(HOST))
+object RequestHost {
+    /**
+     * Host the request was sent to, as Quarkus sees it.
+     *
+     * X-Forwarded-Host (or Forwarded) only replaces the Host header when proxy forwarding is enabled
+     * and the request comes from one of `quarkus.http.proxy.trusted-proxies`; a header sent by any
+     * other client is ignored. Never read X-Forwarded-Host directly: it picks the custom domain.
+     */
+    fun of(request: HttpServerRequest): String? = normalize(request.host())
 
     fun normalize(raw: String?): String? {
         val first = raw?.substringBefore(',')?.trim()?.lowercase()

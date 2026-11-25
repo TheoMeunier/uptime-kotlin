@@ -1,5 +1,6 @@
 package tmenier.fr.statuspages.domains
 
+import io.vertx.core.http.HttpServerRequest
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.container.PreMatching
@@ -12,9 +13,10 @@ import tmenier.fr.common.exceptions.core.ApiErrorResponse
 @PreMatching
 class CustomDomainScopeFilter(
     private val registry: CustomDomainRegistry,
+    private val request: HttpServerRequest,
 ) : ContainerRequestFilter {
     override fun filter(requestContext: ContainerRequestContext) {
-        val host = RequestHost.resolve(requestContext::getHeaderString)
+        val host = RequestHost.of(request)
         if (!registry.isCustomDomain(host)) return
 
         val path = "/" + requestContext.uriInfo.path.trimStart('/')

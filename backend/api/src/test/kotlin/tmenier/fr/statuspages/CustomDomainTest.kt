@@ -41,17 +41,34 @@ class CustomDomainTest {
         val slug = page(domain = domain)
 
         given()
-            .header("X-Forwarded-Host", domain)
+            .header("Host", domain)
             .get("/api/status-domains/resolve")
             .then()
             .statusCode(200)
             .body("slug", equalTo(slug))
         given()
-            .header("X-Forwarded-Host", domain.uppercase() + ":443")
+            .header("Host", domain.uppercase() + ":443")
             .get("/api/status-domains/resolve")
             .then()
             .statusCode(200)
         given().get("/api/status-domains/resolve").then().statusCode(404)
+    }
+
+    @Test
+    fun `a forwarded host sent by a client that is not a trusted proxy is ignored`() {
+        val domain = domain()
+        page(domain = domain)
+
+        given()
+            .header("X-Forwarded-Host", domain)
+            .get("/api/status-domains/resolve")
+            .then()
+            .statusCode(404)
+        given()
+            .header("X-Forwarded-Host", domain)
+            .get("/api/probes")
+            .then()
+            .statusCode(401)
     }
 
     @Test
@@ -78,17 +95,17 @@ class CustomDomainTest {
         val slug = page(domain = domain)
 
         given()
-            .header("X-Forwarded-Host", domain)
+            .header("Host", domain)
             .get("/api/status/$slug")
             .then()
             .statusCode(200)
         given()
-            .header("X-Forwarded-Host", domain)
+            .header("Host", domain)
             .get("/api/probes")
             .then()
             .statusCode(404)
         given()
-            .header("X-Forwarded-Host", domain)
+            .header("Host", domain)
             .contentType("application/json")
             .body("{}")
             .post("/api/auth/login")
