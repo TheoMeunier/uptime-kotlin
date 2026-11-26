@@ -191,7 +191,7 @@ export function buildNotificationFieldsConfig(t: TFunction) {
 				span: 'half' as const,
 				label: t('form.label.username'),
 				input_type: 'text',
-				placeholder: 'uptime-kotlin@exemple.com',
+				placeholder: 'apikey',
 			},
 			{
 				name: 'password',

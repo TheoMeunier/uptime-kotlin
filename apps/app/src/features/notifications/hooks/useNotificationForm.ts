@@ -90,7 +90,7 @@ const MailNotificationSchema = baseStoreNotificationSchema.extend({
 	notification_type: z.literal('MAIL'),
 	hostname: z.string().trim().refine(isValidHostnameOrIp, i18n.t('validation.hostname')),
 	port: z.number().min(1).max(65535),
-	username: z.email().min(3).max(255),
+	username: z.string().trim().min(1).max(255),
 	password: z.string().max(255).nullish(),
 	starttls: z.boolean().optional(),
 	security: z.enum(['SMTPS', 'STARTTLS', 'IGNORE_TLS']).optional(),
