@@ -1,6 +1,8 @@
 package tmenier.fr.notifications.services
 
+import jakarta.validation.Validation
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -293,18 +295,20 @@ class ResolveNotificationContentServiceTest {
         assertEquals("error", content.severity)
     }
 
-    private fun mail(password: String?) =
-        ValidNotificationChannelMailRequest(
-            hostname = "smtp.example.com",
-            port = 587,
-            username = "user",
-            password = password,
-            from = "from@example.com",
-            to = "to@example.com",
-        ).apply {
-            name = "Mail"
-            notificationType = NotificationChannelsEnum.MAIL
-        }
+    private fun mail(
+        password: String?,
+        username: String = "user",
+    ) = ValidNotificationChannelMailRequest(
+        hostname = "smtp.example.com",
+        port = 587,
+        username = username,
+        password = password,
+        from = "from@example.com",
+        to = "to@example.com",
+    ).apply {
+        name = "Mail"
+        notificationType = NotificationChannelsEnum.MAIL
+    }
 
     private fun NotificationContent.password() = (this as NotificationContent.Mail).password
 
@@ -351,5 +355,27 @@ class ResolveNotificationContentServiceTest {
         assertEquals(existing.content.password(), service.resolveForTesting(mail(""), existing).password())
         assertEquals("typed", service.resolveForTesting(mail("typed"), existing).password())
         assertThrows<IllegalArgumentException> { service.resolveForTesting(mail(null)) }
+    }
+
+    @Test
+    fun `accepts a mail username that is not an email address`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+
+        for (username in listOf("resend", "AKIAIOSFODNN7EXAMPLE")) {
+            val request = mail("secret", username)
+            val invalidFields = validator.validate(request).map { it.propertyPath.toString() }
+
+            assertFalse("username" in invalidFields, "username '$username' should be valid")
+            val content = service.resolve(request, isUpdate = false, existingNotification = null) as NotificationContent.Mail
+            assertEquals(username, content.username)
+        }
+    }
+
+    @Test
+    fun `rejects a blank mail username`() {
+        val validator = Validation.buildDefaultValidatorFactory().validator
+        val invalidFields = validator.validate(mail("secret", "  ")).map { it.propertyPath.toString() }
+
+        assertTrue("username" in invalidFields)
     }
 }
