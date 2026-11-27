@@ -1125,7 +1125,7 @@ const fr: typeof en = {
 			plain_label: 'Secrets en clair',
 			secrets: {
 				encrypted:
-					'Mots de passe, jetons et chaînes de connexion restent chiffrés avec la clé maître : le fichier ne se restaure que sur une instance qui a la même ENCRYPTION_MASTER_KEY.',
+					'Mots de passe, jetons et chaînes de connexion restent chiffrés avec la clé maître : le fichier ne se restaure que sur une instance qui a la même ENCRYPTION_MASTER_KEY. Les URLs de webhook, ainsi que les en-têtes, corps de requête et identifiants des sondes HTTP, restent en clair dans le fichier.',
 				plain:
 					'Les secrets sont écrits en clair : le fichier fonctionne sur n’importe quelle instance, mais quiconque le lit obtient tous les mots de passe et jetons. Conservez-le comme un mot de passe.',
 			},

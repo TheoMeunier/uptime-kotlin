@@ -1106,7 +1106,7 @@ const en = {
 			plain_label: 'Plain-text secrets',
 			secrets: {
 				encrypted:
-					'Passwords, tokens and connection strings stay encrypted with the master key: the file can only be restored on an instance with the same ENCRYPTION_MASTER_KEY.',
+					'Passwords, tokens and connection strings stay encrypted with the master key: the file can only be restored on an instance with the same ENCRYPTION_MASTER_KEY. Webhook URLs, and the headers, request bodies and credentials of HTTP monitors, stay in clear in the file.',
 				plain:
 					'Secrets are written in clear: the file works on any instance, but anyone who reads it gets every password and token. Keep it like a password.',
 			},
