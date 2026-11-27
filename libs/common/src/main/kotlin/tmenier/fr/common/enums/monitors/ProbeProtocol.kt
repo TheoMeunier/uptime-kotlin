@@ -4,11 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 import tmenier.fr.common.dtos.ProbeContent
 
-/**
- * The ordinal is persisted: add new protocols at the end, never reorder.
- *
- * [contentClass] is the [ProbeContent] stored in the probe's JSON column for this protocol.
- */
 enum class ProbeProtocol(
     @get:JsonValue val value: String,
     val contentClass: Class<out ProbeContent>,
