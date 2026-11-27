@@ -35,7 +35,7 @@ class SaveProbeMonitor(
     ): Boolean {
         if (probeMonitorRepository.existsByCheckTaskId(checkTaskId)) return false
 
-        val probe = probeRepository.findByIdForUpdate(probeId)
+        val probe = probeRepository.findByIdForUpdate(probeId) ?: return false
         if (!probe.enabled) return false
 
         val underMaintenance =

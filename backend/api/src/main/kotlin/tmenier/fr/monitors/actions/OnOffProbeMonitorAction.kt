@@ -2,6 +2,7 @@ package tmenier.fr.monitors.actions
 
 import jakarta.enterprise.context.ApplicationScoped
 import tmenier.fr.common.enums.monitors.ProbeMonitorLogStatus
+import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.databases.dtos.ProbeOnOffDto
 import tmenier.fr.databases.repositories.ProbePushStateRepository
 import tmenier.fr.databases.repositories.ProbeRepository
@@ -23,7 +24,7 @@ class OnOffProbeMonitorAction(
                 status = if (enabled) ProbeMonitorLogStatus.SUCCESS else ProbeMonitorLogStatus.PAUSE,
             )
 
-        probeRepository.onOff(dto)
+        if (!probeRepository.onOff(dto)) throw NotFoundException(null)
 
         if (enabled) probePushStateRepository.rearm(probeId)
     }

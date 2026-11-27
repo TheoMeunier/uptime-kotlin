@@ -56,7 +56,7 @@ class ProbeEditConcurrencyTest {
             val worker =
                 pool.submit {
                     QuarkusTransaction.requiringNew().run {
-                        probeRepository.findByIdForUpdate(probeId).status = ProbeMonitorLogStatus.FAILURE
+                        probeRepository.findByIdForUpdate(probeId)!!.status = ProbeMonitorLogStatus.FAILURE
                         em.flush()
                         workerHoldsLock.countDown()
                         workerMayCommit.await(30, SECONDS)
@@ -87,7 +87,7 @@ class ProbeEditConcurrencyTest {
 
     private fun renameDto(probeId: UUID): StoreProbeDto =
         QuarkusTransaction.requiringNew().call {
-            val probe = ProbeMapper.toDto(probeRepository.findById(probeId))
+            val probe = ProbeMapper.toDto(probeRepository.findById(probeId)!!)
             StoreProbeDto(
                 id = probe.id,
                 name = "renamed-$probeId",

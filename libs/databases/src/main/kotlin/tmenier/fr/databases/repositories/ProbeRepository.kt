@@ -31,7 +31,7 @@ class ProbeRepository(
     private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbesEntity, UUID> {
     @Transactional
-    override fun findById(id: UUID): ProbesEntity = find("id = ?1", id).firstResult() ?: throw IllegalArgumentException("Probe not found")
+    override fun findById(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
 
     fun findByIdOrNull(id: UUID): ProbesEntity? = find("id = ?1", id).firstResult()
 
@@ -41,9 +41,7 @@ class ProbeRepository(
             id,
         ).firstResult()
 
-    fun findByIdForUpdate(id: UUID): ProbesEntity =
-        em.find(ProbesEntity::class.java, id, LockModeType.PESSIMISTIC_WRITE)
-            ?: throw IllegalArgumentException("Probe not found")
+    fun findByIdForUpdate(id: UUID): ProbesEntity? = em.find(ProbesEntity::class.java, id, LockModeType.PESSIMISTIC_WRITE)
 
     fun findByIds(ids: List<UUID>): List<ProbesEntity> = find("id in ?1", ids).list()
 
@@ -161,8 +159,8 @@ class ProbeRepository(
     fun update(
         dto: StoreProbeDto,
         notifications: List<UUID>,
-    ) {
-        val entity = findByIdForUpdate(dto.id)
+    ): Boolean {
+        val entity = findByIdForUpdate(dto.id) ?: return false
         if (entity.enabled && !dto.enabled) {
             incidentRepository.close(entity.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
         }
@@ -183,16 +181,18 @@ class ProbeRepository(
 
         entity.persist()
         probeCheckTaskRepository.reschedulePendingRetries(dto.id, dto.intervalRetry)
+        return true
     }
 
     fun updateStatus(
         probeId: UUID,
         status: ProbeMonitorLogStatus,
-    ) {
-        val entity = findById(probeId)
+    ): Boolean {
+        val entity = findById(probeId) ?: return false
         entity.status = status
         entity.updatedAt = Instant.now()
         entity.persist()
+        return true
     }
 
     private fun applyAlertRepeat(
@@ -212,8 +212,8 @@ class ProbeRepository(
         }
     }
 
-    fun onOff(dto: ProbeOnOffDto) {
-        val probe = findByIdForUpdate(dto.id)
+    fun onOff(dto: ProbeOnOffDto): Boolean {
+        val probe = findByIdForUpdate(dto.id) ?: return false
         probe.enabled = dto.enabled
         probe.status = dto.status
         probe.alertedStatus = dto.status
@@ -226,5 +226,6 @@ class ProbeRepository(
         }
         incidentRepository.close(probe.id, Instant.now(), IncidentClosedReason.PROBE_DISABLED)
         probe.persist()
+        return true
     }
 }

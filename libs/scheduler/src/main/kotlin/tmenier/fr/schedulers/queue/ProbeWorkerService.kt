@@ -24,8 +24,8 @@ class ProbeWorkerService(
         workerId: String,
     ) {
         val probeEntity = probeRepository.findById(task.probeId)
-        if (!probeEntity.enabled) {
-            logger.info { "Discarding Probe Check task ${task.id}: probe ${task.probeId} is disabled" }
+        if (probeEntity == null || !probeEntity.enabled) {
+            logger.info { "Discarding Probe Check task ${task.id}: probe ${task.probeId} is deleted or disabled" }
             probeAttemptRecorder.discardDisabledTask(task.id, workerId)
             return
         }
