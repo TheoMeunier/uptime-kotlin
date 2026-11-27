@@ -12,9 +12,9 @@ abstract class ProbeProtocolAbstract<T : ProbeContent> : ProbeSchedulerInterface
         probe: ProbeDTO,
         isLastAttempt: Boolean,
     ): ProbeResult {
-        // contentClass.cast checks the content at runtime; the cast to T only restores the erased type.
         @Suppress("UNCHECKED_CAST")
         val content = protocol.contentClass.cast(probe.content) as T
+
         return execute(probe, content, isLastAttempt)
     }
 
