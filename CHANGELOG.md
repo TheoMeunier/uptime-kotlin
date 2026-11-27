@@ -6,6 +6,61 @@ All notable changes to Uptime Kotlin are documented in this file. The same notes
 The project follows [Semantic Versioning](https://semver.org/). Security fixes are listed under a **Security** heading
 (see [SECURITY.md](SECURITY.md)).
 
+## [v1.6.4](https://github.com/TheoMeunier/uptime-kotlin/releases/tag/v1.6.4) - 2026-11-21
+
+### New Features
+
+* Added **backup and restore**: admins can download a JSON backup of their monitors, notifications, maintenances, status pages and announcements from the profile page, with secrets encrypted or in plain text. Restoring shows a preview first, then skips or renames the items that already exist by [@TheoMeunier](https://github.com/TheoMeunier) in [#262](https://github.com/TheoMeunier/uptime-kotlin/pull/262)
+* Added **custom date and time pickers** to the maintenance and announcement forms by [@TheoMeunier](https://github.com/TheoMeunier) in [#261](https://github.com/TheoMeunier/uptime-kotlin/pull/261)
+* Added a **"Report an issue"** link in the interface and a "Report this bug" button on the error screen, which open a new GitHub issue prefilled with the version and the error, using the new bug report form by [@TheoMeunier](https://github.com/TheoMeunier) in [#264](https://github.com/TheoMeunier/uptime-kotlin/pull/264)
+
+### Improvements
+
+* The end date of an **announcement** is now optional by [@TheoMeunier](https://github.com/TheoMeunier) in [#260](https://github.com/TheoMeunier/uptime-kotlin/pull/260)
+* Notifications to a channel that answers **"too many requests"** (HTTP 429) are now retried when the channel asks (`Retry-After`), without using up a delivery attempt by [@TheoMeunier](https://github.com/TheoMeunier) in [#266](https://github.com/TheoMeunier/uptime-kotlin/pull/266)
+
+### Bug Fixes
+
+* Fixed **notifications arriving out of order**: the deliveries of a monitor to a channel are now sent in the order the events happened, so a "down" alert can no longer arrive after the "up" that followed it by [@TheoMeunier](https://github.com/TheoMeunier) in [#266](https://github.com/TheoMeunier/uptime-kotlin/pull/266)
+* Fixed the delete maintenance dialog, which now uses the same confirmation dialog as the rest of the app by [@TheoMeunier](https://github.com/TheoMeunier) in [#259](https://github.com/TheoMeunier/uptime-kotlin/pull/259)
+
+### Security
+
+* Every API endpoint must now declare who may call it: an endpoint without a role annotation is refused. A user who must change a temporary password can only reach the password change until they do by [@TheoMeunier](https://github.com/TheoMeunier) in [#263](https://github.com/TheoMeunier/uptime-kotlin/pull/263)
+
+**Full Changelog**: [v1.6.3...v1.6.4](https://github.com/TheoMeunier/uptime-kotlin/compare/v1.6.3...v1.6.4)
+
+## [v1.6.3](https://github.com/TheoMeunier/uptime-kotlin/releases/tag/v1.6.3) - 2026-11-13
+
+### New Features
+
+* Added **password recovery**: admins can reset a user's password from the users page, which generates a temporary password to change at the next sign-in. A locked-out admin can set `RESET_ADMIN_PASSWORD` to their email: on startup, a temporary password is printed in the logs by [@TheoMeunier](https://github.com/TheoMeunier) in [#249](https://github.com/TheoMeunier/uptime-kotlin/pull/249)
+
+### Improvements
+
+* The interface now checks **permissions** instead of roles to show or hide actions (monitors, incidents, maintenances, announcements, status pages) by [@TheoMeunier](https://github.com/TheoMeunier) in [#248](https://github.com/TheoMeunier/uptime-kotlin/pull/248)
+* An invalid Docker host now returns a clear error message (expected `unix:///var/run/docker.sock` or `tcp://host:2375`) by [@TheoMeunier](https://github.com/TheoMeunier) in [#250](https://github.com/TheoMeunier/uptime-kotlin/pull/250), [#251](https://github.com/TheoMeunier/uptime-kotlin/pull/251) and [#252](https://github.com/TheoMeunier/uptime-kotlin/pull/252)
+
+### Bug Fixes
+
+* Fixed **duplicate checks** when several workers schedule the same monitor: scheduling now takes an advisory lock by [@TheoMeunier](https://github.com/TheoMeunier) in [#255](https://github.com/TheoMeunier/uptime-kotlin/pull/255)
+* Fixed concurrent edits of the same monitor overwriting each other: the monitor is now locked while it is updated by [@TheoMeunier](https://github.com/TheoMeunier) in [#256](https://github.com/TheoMeunier/uptime-kotlin/pull/256)
+* Fixed check and notification tasks staying leased when a worker stops: their leases are now released so another worker picks them up by [@TheoMeunier](https://github.com/TheoMeunier) in [#257](https://github.com/TheoMeunier/uptime-kotlin/pull/257)
+* Fixed the incidents list failing on a very large page number: it now returns a clear error by [@TheoMeunier](https://github.com/TheoMeunier) in [#254](https://github.com/TheoMeunier/uptime-kotlin/pull/254)
+* Fixed the notification dialog not scrolling on long forms by [@TheoMeunier](https://github.com/TheoMeunier) in [#246](https://github.com/TheoMeunier/uptime-kotlin/pull/246)
+* Fixed the notifications list not refreshing after an update or a deletion by [@TheoMeunier](https://github.com/TheoMeunier) in [#247](https://github.com/TheoMeunier/uptime-kotlin/pull/247)
+
+### Documentation
+
+* Added this `CHANGELOG.md`, an **OpenSSF Best Practices** badge in the README, and security reporting and coding guidelines in `CONTRIBUTING.md` by [@TheoMeunier](https://github.com/TheoMeunier) in [#250](https://github.com/TheoMeunier/uptime-kotlin/pull/250), [#251](https://github.com/TheoMeunier/uptime-kotlin/pull/251) and [#252](https://github.com/TheoMeunier/uptime-kotlin/pull/252)
+
+### Maintenance
+
+* Added a **CodeQL** analysis workflow and a test workflow with PostgreSQL and test reports by [@TheoMeunier](https://github.com/TheoMeunier) in [#250](https://github.com/TheoMeunier/uptime-kotlin/pull/250), [#251](https://github.com/TheoMeunier/uptime-kotlin/pull/251) and [#252](https://github.com/TheoMeunier/uptime-kotlin/pull/252)
+* Added a Gradle wrapper validation step to the CI and updated the Docker image annotations by [@TheoMeunier](https://github.com/TheoMeunier) in [#253](https://github.com/TheoMeunier/uptime-kotlin/pull/253)
+
+**Full Changelog**: [v1.6.2...v1.6.3](https://github.com/TheoMeunier/uptime-kotlin/compare/v1.6.2...v1.6.3)
+
 ## [v1.6.2](https://github.com/TheoMeunier/uptime-kotlin/releases/tag/v1.6.2) - 2026-11-10
 
 ### New Features
