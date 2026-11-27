@@ -1,0 +1,94 @@
+name: Preview environment
+
+on:
+  pull_request:
+    types: [ labeled, unlabeled, synchronize, reopened, closed ]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/theomeunier/uptime-kotlin/staging
+  PLATFORM: linux/amd64
+
+jobs:
+  build:
+    name: Build preview image
+    if: >-
+      github.event.action != 'closed' && github.event.action != 'unlabeled' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      ((github.event.action == 'labeled' && github.event.label.name == 'preview') ||
+       (github.event.action != 'labeled' && contains(github.event.pull_request.labels.*.name, 'preview')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Comment build started
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await require('./.github/scripts/preview-comment.js')({ github, context, status: 'building' })
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/all-in-one/Dockerfile.native
+          platforms: ${{ env.PLATFORM }}
+          build-args: APP_VERSION=pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          tags: ${{ env.IMAGE }}:pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          push: true
+          cache-from: type=gha,scope=preview
+          cache-to: type=gha,mode=max,scope=preview
+
+      - name: Comment image ready
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await require('./.github/scripts/preview-comment.js')({ github, context, status: 'ready' })
+
+      - name: Comment build failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await require('./.github/scripts/preview-comment.js')({ github, context, status: 'failed' })
+
+  removed:
+    name: Mark preview removed
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
+       (github.event.action == 'unlabeled' && github.event.label.name == 'preview'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
+
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            await require('./.github/scripts/preview-comment.js')({ github, context, status: 'removed' })
