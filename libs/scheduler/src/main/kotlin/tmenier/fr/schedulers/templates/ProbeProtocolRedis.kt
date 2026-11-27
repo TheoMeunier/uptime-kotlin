@@ -38,7 +38,7 @@ class ProbeProtocolRedis(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.REDIS.name
+    override val protocol = ProbeProtocol.REDIS
 
     private fun failureStatus(
         isLastAttempt: Boolean,

@@ -38,7 +38,7 @@ class ProbeProtocolMongoDb(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.MONGODB.name
+    override val protocol = ProbeProtocol.MONGODB
 
     private fun failureStatus(
         isLastAttempt: Boolean,

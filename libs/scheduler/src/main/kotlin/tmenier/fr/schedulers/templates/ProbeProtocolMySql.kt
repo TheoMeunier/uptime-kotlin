@@ -38,7 +38,7 @@ class ProbeProtocolMySql(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.MYSQL.name
+    override val protocol = ProbeProtocol.MYSQL
 
     private fun failureStatus(
         isLastAttempt: Boolean,

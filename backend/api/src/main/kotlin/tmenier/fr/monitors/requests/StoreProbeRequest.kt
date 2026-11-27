@@ -49,7 +49,7 @@ interface OnUpdate : Default
     JsonSubTypes.Type(value = ValidProbeProtocolPushRequest::class, name = "PUSH"),
 )
 @RegisterForReflection
-abstract class BaseStoreProbeRequest {
+sealed class BaseStoreProbeRequest {
     @field:NotBlank(message = "Name is required")
     lateinit var name: String
 

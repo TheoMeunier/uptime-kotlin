@@ -7,7 +7,6 @@ import tmenier.fr.databases.dtos.ProbeCheckTaskDto
 import tmenier.fr.databases.mappers.ProbeMapper
 import tmenier.fr.databases.repositories.ProbeRepository
 import tmenier.fr.schedulers.ProbeSchedulerFactory
-import tmenier.fr.schedulers.ProbeSchedulerInterfaceType
 import tmenier.fr.schedulers.metrics.ProbeCheckMetrics
 import java.time.Duration
 import java.time.Instant
@@ -31,12 +30,7 @@ class ProbeWorkerService(
         }
 
         val probe = ProbeMapper.toDto(probeEntity)
-        val handler =
-            probeSchedulerFactory.getProtocol(probe.protocol)
-                ?: throw IllegalArgumentException("Unknown Probe protocol ${probe.protocol}")
-
-        @Suppress("UNCHECKED_CAST")
-        val typedHandler = handler as ProbeSchedulerInterfaceType<Any>
+        val handler = probeSchedulerFactory.handlerFor(probe.protocol)
         val isLastAttempt =
             probe.status == ProbeMonitorLogStatus.FAILURE ||
                 task.attemptNumber >= probe.retry + 1
@@ -48,7 +42,7 @@ class ProbeWorkerService(
         val startedAt = System.nanoTime()
         val result =
             try {
-                typedHandler.execute(probe, probe.content, isLastAttempt)
+                handler.check(probe, isLastAttempt)
             } catch (error: Exception) {
                 probeCheckMetrics.recordCheck(probe.protocol, null, Duration.ofNanos(System.nanoTime() - startedAt))
                 throw error

@@ -38,7 +38,7 @@ class ProbeProtocolKafka(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.KAFKA.name
+    override val protocol = ProbeProtocol.KAFKA
 
     private fun failureStatus(
         isLastAttempt: Boolean,

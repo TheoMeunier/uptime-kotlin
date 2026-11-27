@@ -38,7 +38,7 @@ class ProbeProtocolSmtp(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.SMTP.name
+    override val protocol = ProbeProtocol.SMTP
 
     private fun failureStatus(
         isLastAttempt: Boolean,

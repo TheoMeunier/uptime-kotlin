@@ -30,98 +30,10 @@ import java.time.Instant
 object ProbeContentMapper {
     private val objectMapper = ObjectMapper().registerKotlinModule()
 
-    fun toDto(probe: ProbesEntity): ProbeContent =
-        when (probe.protocol) {
-            ProbeProtocol.HTTP -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Http::class.java)
-            }
+    fun toDto(probe: ProbesEntity): ProbeContent = objectMapper.treeToValue(probe.content, probe.protocol.contentClass)
 
-            ProbeProtocol.DNS -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Dns::class.java)
-            }
-
-            ProbeProtocol.TCP -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Tcp::class.java)
-            }
-
-            ProbeProtocol.PING -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Ping::class.java)
-            }
-
-            ProbeProtocol.POSTGRESQL -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.PostgreSql::class.java)
-            }
-
-            ProbeProtocol.SQLSERVER -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.SqlServer::class.java)
-            }
-
-            ProbeProtocol.MYSQL -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.MySql::class.java)
-            }
-
-            ProbeProtocol.REDIS -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Redis::class.java)
-            }
-
-            ProbeProtocol.MONGODB -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.MongoDb::class.java)
-            }
-
-            ProbeProtocol.ORACLE -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Oracle::class.java)
-            }
-
-            ProbeProtocol.WEBSOCKET -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.WebSocketUpgrade::class.java)
-            }
-
-            ProbeProtocol.DOCKER -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.DockerContainer::class.java)
-            }
-
-            ProbeProtocol.PUSH -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Push::class.java)
-            }
-
-            ProbeProtocol.SMTP -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Smtp::class.java)
-            }
-
-            ProbeProtocol.KAFKA -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.Kafka::class.java)
-            }
-
-            ProbeProtocol.RABBITMQ -> {
-                objectMapper.treeToValue(probe.content, ProbeContent.RabbitMq::class.java)
-            }
-        } as ProbeContent
-
-    fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> {
-        val type =
-            when (content) {
-                is ProbeContent.Http -> ProbeProtocol.HTTP
-                is ProbeContent.Dns -> ProbeProtocol.DNS
-                is ProbeContent.Tcp -> ProbeProtocol.TCP
-                is ProbeContent.Ping -> ProbeProtocol.PING
-                is ProbeContent.PostgreSql -> ProbeProtocol.POSTGRESQL
-                is ProbeContent.SqlServer -> ProbeProtocol.SQLSERVER
-                is ProbeContent.MySql -> ProbeProtocol.MYSQL
-                is ProbeContent.Redis -> ProbeProtocol.REDIS
-                is ProbeContent.MongoDb -> ProbeProtocol.MONGODB
-                is ProbeContent.Oracle -> ProbeProtocol.ORACLE
-                is ProbeContent.WebSocketUpgrade -> ProbeProtocol.WEBSOCKET
-                is ProbeContent.DockerContainer -> ProbeProtocol.DOCKER
-                is ProbeContent.Smtp -> ProbeProtocol.SMTP
-                is ProbeContent.Kafka -> ProbeProtocol.KAFKA
-                is ProbeContent.RabbitMq -> ProbeProtocol.RABBITMQ
-                is ProbeContent.Push -> ProbeProtocol.PUSH
-            }
-
-        val jsonNode = objectMapper.valueToTree<JsonNode>(content)
-
-        return jsonNode to type
-    }
+    fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> =
+        objectMapper.valueToTree<JsonNode>(content) to ProbeProtocol.of(content)
 
     fun redactSecrets(content: ProbeContent): ProbeContent =
         when (content) {
@@ -176,7 +88,16 @@ object ProbeContentMapper {
             is ProbeContent.MongoDb -> content.copy(connectionString = decrypt(content.connectionString))
             is ProbeContent.Oracle -> content.copy(connectionString = decrypt(content.connectionString))
             is ProbeContent.RabbitMq -> content.copy(password = decrypt(content.password))
-            else -> content
+            is ProbeContent.Http,
+            is ProbeContent.Dns,
+            is ProbeContent.Tcp,
+            is ProbeContent.Ping,
+            is ProbeContent.WebSocketUpgrade,
+            is ProbeContent.DockerContainer,
+            is ProbeContent.Smtp,
+            is ProbeContent.Kafka,
+            is ProbeContent.Push,
+            -> content
         }
 
     fun toUrl(content: ProbeContent): String =

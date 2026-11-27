@@ -47,5 +47,5 @@ class ProbeProtocolPush(
         )
     }
 
-    override fun getProtocolType() = ProbeProtocol.PUSH.name
+    override val protocol = ProbeProtocol.PUSH
 }

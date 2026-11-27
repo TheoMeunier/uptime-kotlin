@@ -44,7 +44,7 @@ class ProbeProtocolTcp : ProbeProtocolAbstract<ProbeContent.Tcp>() {
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.TCP.name
+    override val protocol = ProbeProtocol.TCP
 
     private fun getStatus(
         isLastAttempt: Boolean,
