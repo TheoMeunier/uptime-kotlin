@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
 import tmenier.fr.common.enums.monitors.ProbeProtocol
 import tmenier.fr.common.exceptions.common.BadRequestException
+import tmenier.fr.common.exceptions.common.NotFoundException
 import tmenier.fr.databases.dtos.ProbeDTO
 import tmenier.fr.databases.dtos.StoreProbeDto
 import tmenier.fr.databases.mappers.ProbeMapper
@@ -37,7 +38,7 @@ class StoreProbeAction(
         val isUpdate = probeId != null
         val existingProbe =
             probeId?.let {
-                ProbeMapper.toDto(probeRepository.findById(it))
+                ProbeMapper.toDto(probeRepository.findById(it) ?: throw NotFoundException(null))
             }
 
         val isPush = payload is ValidProbeProtocolPushRequest
@@ -58,7 +59,7 @@ class StoreProbeAction(
             )
 
         if (isUpdate) {
-            probeRepository.update(dto, payload.notifications)
+            if (!probeRepository.update(dto, payload.notifications)) throw NotFoundException(null)
         } else {
             probeRepository.save(dto, payload.notifications)
         }

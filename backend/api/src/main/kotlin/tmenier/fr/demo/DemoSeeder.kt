@@ -133,7 +133,8 @@ class DemoSeeder(
 
         incidents.forEach { node ->
             val name = node.required("probe").asText()
-            val probe = probeRepository.findById(probeIds[name] ?: error("Demo seed: unknown probe '$name'"))
+            val probeId = probeIds[name] ?: error("Demo seed: unknown probe '$name'")
+            val probe = probeRepository.findById(probeId) ?: error("Demo seed: probe '$name' was not created")
             val startedAt = now.minus(Duration.ofHours(node.required("started_hours_ago").asLong()))
             val endedAt = startedAt.plusSeconds(node.required("duration_seconds").asLong())
 

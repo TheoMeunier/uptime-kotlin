@@ -44,8 +44,8 @@ class ProbeAttemptRecorder(
         }
 
         val probe = probeRepository.findByIdForUpdate(task.probeId)
-        if (!probe.enabled) {
-            logger.info { "Deleting Probe Check task $taskId without result: probe ${probe.id} is disabled" }
+        if (probe == null || !probe.enabled) {
+            logger.info { "Deleting Probe Check task $taskId without result: probe ${task.probeId} is deleted or disabled" }
             probeCheckTaskRepository.deleteTask(task)
             return
         }

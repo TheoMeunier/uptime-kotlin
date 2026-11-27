@@ -4,13 +4,13 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.persistence.EntityManager
 import tmenier.fr.databases.dtos.StoreProbeMonitorLogDto
+import tmenier.fr.databases.entities.ProbesEntity
 import tmenier.fr.databases.entities.ProbesMonitorsLogEntity
 import java.time.Instant
 import java.util.UUID
 
 @ApplicationScoped
 class ProbeMonitorRepository(
-    private val probeRepository: ProbeRepository,
     private val em: EntityManager,
 ) : PanacheRepositoryBase<ProbesMonitorsLogEntity, UUID> {
     fun findByProbeAfter(
@@ -33,7 +33,7 @@ class ProbeMonitorRepository(
         ).list()
 
     fun store(dto: StoreProbeMonitorLogDto) {
-        val probe = probeRepository.findById(dto.probe.id)
+        val probe = em.getReference(ProbesEntity::class.java, dto.probe.id)
 
         val entity = ProbesMonitorsLogEntity()
         entity.id = UUID.randomUUID()
