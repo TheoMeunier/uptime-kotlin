@@ -93,7 +93,7 @@ class ProbeProtocolPing : ProbeProtocolAbstract<ProbeContent.Ping>() {
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.PING.name
+    override val protocol = ProbeProtocol.PING
 
     private fun systemPing(
         host: String,

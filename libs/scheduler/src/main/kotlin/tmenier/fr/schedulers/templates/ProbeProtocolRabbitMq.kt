@@ -38,7 +38,7 @@ class ProbeProtocolRabbitMq(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.RABBITMQ.name
+    override val protocol = ProbeProtocol.RABBITMQ
 
     private fun failureStatus(
         isLastAttempt: Boolean,

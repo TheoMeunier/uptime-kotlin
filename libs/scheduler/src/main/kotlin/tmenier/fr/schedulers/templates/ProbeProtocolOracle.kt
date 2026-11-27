@@ -38,7 +38,7 @@ class ProbeProtocolOracle(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.ORACLE.name
+    override val protocol = ProbeProtocol.ORACLE
 
     private fun failureStatus(
         isLastAttempt: Boolean,

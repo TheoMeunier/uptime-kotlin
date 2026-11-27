@@ -40,7 +40,7 @@ class ProbeProtocolDockerContainer(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.DOCKER.name
+    override val protocol = ProbeProtocol.DOCKER
 
     internal fun problemOf(state: DockerContainerState): String? {
         val name = state.name

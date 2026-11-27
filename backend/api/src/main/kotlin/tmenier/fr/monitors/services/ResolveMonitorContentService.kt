@@ -203,8 +203,6 @@ class ResolveMonitorContentService(
                     periodSeconds = request.periodSeconds,
                     graceSeconds = request.graceSeconds,
                 )
-
-            else -> throw IllegalArgumentException("Unsupported protocol")
         }
 
     private fun resolveEncryptedValue(

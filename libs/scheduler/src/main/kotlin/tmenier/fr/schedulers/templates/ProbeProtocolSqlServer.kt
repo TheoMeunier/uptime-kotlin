@@ -38,7 +38,7 @@ class ProbeProtocolSqlServer(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.SQLSERVER.name
+    override val protocol = ProbeProtocol.SQLSERVER
 
     private fun failureStatus(
         isLastAttempt: Boolean,

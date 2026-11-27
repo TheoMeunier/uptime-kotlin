@@ -147,7 +147,7 @@ class ProbeProtocolDns : ProbeProtocolAbstract<ProbeContent.Dns>() {
             }
         }
 
-    override fun getProtocolType() = ProbeProtocol.DNS.name
+    override val protocol = ProbeProtocol.DNS
 
     private fun getStatus(
         isLastAttempt: Boolean,

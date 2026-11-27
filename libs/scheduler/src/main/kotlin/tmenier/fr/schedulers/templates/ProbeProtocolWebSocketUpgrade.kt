@@ -66,7 +66,7 @@ class ProbeProtocolWebSocketUpgrade(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.WEBSOCKET.name
+    override val protocol = ProbeProtocol.WEBSOCKET
 
     internal fun parseUrl(url: String): URI {
         val uri = URI(url.trim())

@@ -38,7 +38,7 @@ class ProbeProtocolPostgreSql(
         }
     }
 
-    override fun getProtocolType() = ProbeProtocol.POSTGRESQL.name
+    override val protocol = ProbeProtocol.POSTGRESQL
 
     private fun failureStatus(
         isLastAttempt: Boolean,

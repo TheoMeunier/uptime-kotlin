@@ -189,5 +189,5 @@ class ProbeProtocolHttp(
             else -> ProbeMonitorLogStatus.WARNING
         }
 
-    override fun getProtocolType() = ProbeProtocol.HTTP.name
+    override val protocol = ProbeProtocol.HTTP
 }
