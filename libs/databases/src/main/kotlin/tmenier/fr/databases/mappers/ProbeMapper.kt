@@ -32,8 +32,7 @@ object ProbeContentMapper {
 
     fun toDto(probe: ProbesEntity): ProbeContent = objectMapper.treeToValue(probe.content, probe.protocol.contentClass)
 
-    fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> =
-        objectMapper.valueToTree<JsonNode>(content) to ProbeProtocol.of(content)
+    fun toEntity(content: ProbeContent): Pair<JsonNode, ProbeProtocol> = objectMapper.valueToTree<JsonNode>(content) to ProbeProtocol.of(content)
 
     fun redactSecrets(content: ProbeContent): ProbeContent =
         when (content) {
